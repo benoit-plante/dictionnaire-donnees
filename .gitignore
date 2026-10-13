@@ -1,0 +1,51 @@
+# ---------------------------------------------------------------------------
+# Anything that could hold research data is ignored by default.
+# Only fictional databases generated in exemples/ are tracked (principle 7).
+# ---------------------------------------------------------------------------
+
+# Data files
+*.sav
+*.zsav
+*.por
+*.dta
+*.sas7bdat
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.ods
+~$*
+!exemples/**/*.sav
+!exemples/**/*.csv
+!exemples/**/*.xlsx
+
+# Project files and what was sent to the model
+*.dd.json
+*.dd-envois/
+
+# Scratch folders
+scratch/
+tmp/
+
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local secrets
+.env
