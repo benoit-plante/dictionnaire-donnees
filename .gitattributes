@@ -1,3 +1,5 @@
 * text=auto eol=lf
 *.sav binary
 *.xlsx binary
+# Example CSVs keep their exact bytes (CRLF, Windows-1252): they are test references.
+exemples/**/*.csv binary
