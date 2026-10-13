@@ -15,7 +15,7 @@ from ddict.project.model import Code, Profile, TrackedValue, VariableEntry
 
 ExportKind = Literal["final", "work"]
 
-MASKED = "< 5"
+MASKED = _("masqué")
 
 TYPES = {
     "empty": _("vide"),
@@ -81,13 +81,17 @@ def text(tracked: TrackedValue, kind: ExportKind) -> str:
 
 
 def number(value: float | None) -> str:
+    """A statistic written the French way: decimal comma (0,363)."""
     if value is None:
         return ""
-    return str(int(value)) if float(value).is_integer() else f"{value:g}"
+    return str(int(value)) if float(value).is_integer() else f"{value:g}".replace(".", ",")
 
 
 def code_text(code: Code) -> str:
-    return number(code) if isinstance(code, int | float) else str(code)
+    """A code as in the data file (decimal point), since it identifies a value."""
+    if isinstance(code, int | float):
+        return str(int(code)) if float(code).is_integer() else f"{code:g}"
+    return str(code)
 
 
 def codes(values: list[Code]) -> str:
@@ -116,7 +120,7 @@ def anomalies(profile: Profile) -> list[str]:
     if profile.reverse_suspect:
         found.append(
             _("Item probablement inversé (corrélation avec le reste de l'échelle : {r})").format(
-                r=f"{profile.item_rest_r:g}"
+                r=number(profile.item_rest_r)
             )
         )
     if profile.duplicate_of:
@@ -173,7 +177,7 @@ def pct_missing(profile: Profile) -> float:
 
 
 def value_rows(entry: VariableEntry) -> list[tuple[str, str, str, bool]]:
-    """Code, label, count ("< 5" when masked, "" when not observed or not listed), missing."""
+    """Code, label, count ("masqué" when masked, "" when not observed or not listed), missing."""
     labels = {lab.code: lab.label for lab in entry.file.value_labels}
     observed = {o.code: o for o in entry.profile.observed_values or []}
     declared = {m.low for m in entry.file.declared_missing if m.low == m.high}

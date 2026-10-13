@@ -79,8 +79,8 @@ def test_xlsx_values_sheet_masks_small_counts(run):
     rows = [r for r in _rows(run["xlsx"], "Valeurs") if r[0] == "genre"]
     assert rows == [
         ("genre", "1", "Femme", "114", None),
-        ("genre", "2", "Homme", "< 5", None),
-        ("genre", "3", "Autre identité", "< 5", None),
+        ("genre", "2", "Homme", "masqué", None),
+        ("genre", "3", "Autre identité", "masqué", None),
         ("genre", "9", "Préfère ne pas répondre", "4", "oui"),
     ]
     unused = [r for r in _rows(run["xlsx"], "Valeurs") if r[0] == "satisfaction_globale"]
@@ -91,7 +91,7 @@ def test_markdown_report(run):
     text = run["md"].read_text(encoding="utf-8")
     assert text.startswith("# Dictionnaire de données : etude-sommeil.sav\n")
     assert "### `sommeil_q1` — Q1 endormissement" in text
-    assert "| 3 | Autre identité | < 5 |  |" in text
+    assert "| 3 | Autre identité | masqué |  |" in text
     assert "Variable sensible : aucune statistique sur ses valeurs." in text
     assert "\r\n" not in run["md"].read_bytes().decode("utf-8")
 

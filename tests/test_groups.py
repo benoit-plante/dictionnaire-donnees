@@ -168,3 +168,10 @@ def test_project_and_exports_show_the_groups(fictional_files, tmp_path):
     assert sleep_row["Items inversés probables"] == "sommeil_q3, sommeil_q6"
     assert sleep_row["Instrument (source)"] is None
     assert "Alpha de Cronbach observé" in header
+
+
+def test_report_writes_statistics_with_a_decimal_comma(fictional_files):
+    report = render_markdown(build_project(read_sav(fictional_files["etude-sommeil.sav"])))
+    assert "Alpha de Cronbach observé : 0,363 (150 lignes complètes)" in report
+    assert "corrélation avec le reste du groupe : -0,719" in report
+    assert "0.363" not in report

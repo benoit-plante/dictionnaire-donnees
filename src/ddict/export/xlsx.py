@@ -60,7 +60,8 @@ def _about(project: Project, kind: w.ExportKind) -> list[list]:
         [
             _("Confidentialité"),
             _(
-                "Effectifs inférieurs à {n} masqués (« < {n} ») ; variables sensibles "
+                "Effectifs inférieurs à {n} masqués, ainsi qu'un second effectif quand le "
+                "premier pourrait être recalculé par soustraction ; variables sensibles "
                 "décrites sans statistiques."
             ).format(n=project.settings.min_cell_count),
         ],

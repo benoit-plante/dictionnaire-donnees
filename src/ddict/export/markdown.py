@@ -36,9 +36,10 @@ def _overview(project: Project, kind: w.ExportKind) -> list[str]:
         f"- {_('Lignes')} : {source.n_rows} ; {_('variables')} : {source.n_columns}",
         f"- {_('Version')} : {kind_text}",
         "- "
-        + _("Effectifs inférieurs à {n} masqués (« < {n} »).").format(
-            n=project.settings.min_cell_count
-        ),
+        + _(
+            "Effectifs inférieurs à {n} masqués, ainsi qu'un second effectif quand le "
+            "premier pourrait être recalculé par soustraction."
+        ).format(n=project.settings.min_cell_count),
         "",
         _("## Vue d'ensemble"),
         "",
@@ -80,7 +81,7 @@ def _variable(entry: VariableEntry, kind: w.ExportKind) -> list[str]:
             valid=p.n_valid,
             empty=p.n_system_missing,
             declared=p.n_declared_missing,
-            pct=f"{w.pct_missing(p):g}",
+            pct=w.number(w.pct_missing(p)),
         )
     )
     if entry.file.declared_missing:
@@ -102,7 +103,7 @@ def _variable(entry: VariableEntry, kind: w.ExportKind) -> list[str]:
         fact = f"{_('Groupe')} : {_inline(group)}"
         if p.item_rest_r is not None:
             fact += " " + _("(corrélation avec le reste du groupe : {r})").format(
-                r=f"{p.item_rest_r:g}"
+                r=w.number(p.item_rest_r)
             )
         facts.append(fact)
     privacy_class = entry.privacy.privacy_class.value or "ordinary"
@@ -180,11 +181,11 @@ def _groups(project: Project, kind: w.ExportKind) -> list[str]:
             )
         if group.cronbach_alpha is not None:
             alpha = _("Alpha de Cronbach observé : {alpha} ({n} lignes complètes)").format(
-                alpha=f"{group.cronbach_alpha:g}", n=group.n_complete_rows
+                alpha=w.number(group.cronbach_alpha), n=group.n_complete_rows
             )
             if group.cronbach_alpha_reversed is not None:
                 alpha += " ; " + _("avec les items probables inversés : {alpha}").format(
-                    alpha=f"{group.cronbach_alpha_reversed:g}"
+                    alpha=w.number(group.cronbach_alpha_reversed)
                 )
             facts.append(alpha)
         lines += [f"- {fact}" for fact in facts] + [""]
