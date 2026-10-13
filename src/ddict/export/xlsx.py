@@ -1,0 +1,246 @@
+"""The Excel codebook: one sheet per kind of information."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Font
+from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.worksheet import Worksheet
+
+from ddict.export import wording as w
+from ddict.i18n import _
+from ddict.project.model import Project, TrackedValue
+
+MAX_WIDTH = 60
+
+
+def _cell_value(value: object) -> object:
+    return "" if value is None else value
+
+
+def _sheet(book: Workbook, title: str, header: list[str], rows: list[list]) -> Worksheet:
+    sheet = book.create_sheet(title)
+    sheet.append(header)
+    for row in rows:
+        sheet.append([_cell_value(v) for v in row])
+    for cell in sheet[1]:
+        cell.font = Font(bold=True)
+    for row in sheet.iter_rows(min_row=2):
+        for cell in row:
+            # A label starting with "=" must stay text, never become a formula.
+            if cell.data_type == "f":
+                cell.data_type = "s"
+            cell.alignment = Alignment(vertical="top", wrap_text=True)
+    sheet.freeze_panes = "B2"
+    if rows:
+        sheet.auto_filter.ref = sheet.dimensions
+    for index, title_text in enumerate(header, start=1):
+        values = [str(title_text)] + [str(_cell_value(r[index - 1])) for r in rows]
+        width = max(len(line) for v in values for line in v.split("\n"))
+        sheet.column_dimensions[get_column_letter(index)].width = min(width + 2, MAX_WIDTH)
+    return sheet
+
+
+def _about(project: Project, kind: w.ExportKind) -> list[list]:
+    source = project.source
+    kind_text = (
+        _("finale (valeurs acceptées seulement)")
+        if kind == "final"
+        else _("de travail (propositions de l'IA en attente incluses)")
+    )
+    return [
+        [_("Fichier de données"), source.name],
+        [_("Empreinte SHA-256"), source.sha256],
+        [_("Lignes"), source.n_rows],
+        [_("Variables"), source.n_columns],
+        [_("Étiquette du fichier"), source.label],
+        [_("Version"), kind_text],
+        [
+            _("Confidentialité"),
+            _(
+                "Effectifs inférieurs à {n} masqués (« < {n} ») ; variables sensibles "
+                "décrites sans statistiques."
+            ).format(n=project.settings.min_cell_count),
+        ],
+        [_("Format du projet"), project.schema_version],
+    ]
+
+
+def _variables(project: Project, kind: w.ExportKind) -> list[list]:
+    rows = []
+    for e in project.variables:
+        p = e.profile
+        sourced_range = ""
+        if e.theoretical_range:
+            r = e.theoretical_range
+            sourced_range = f"{w.number(r.min)} – {w.number(r.max)} ({r.source})"
+        thresholds = "\n".join(
+            f"{w.number(t.value)} : {t.meaning} ({t.source})" for t in e.thresholds
+        )
+        rows.append(
+            [
+                e.position,
+                e.name,
+                w.text(e.label, kind),
+                w.text(e.description, kind),
+                w.TYPES.get(p.inferred_type, p.inferred_type),
+                w.MEASURES.get(e.file.measure_level or "", ""),
+                e.file.display_format,
+                w.text(e.unit, kind),
+                p.n_valid,
+                p.n_system_missing,
+                p.n_declared_missing,
+                w.pct_missing(p),
+                p.n_distinct,
+                p.min,
+                p.max,
+                p.mean,
+                p.sd,
+                p.median,
+                p.date_min,
+                p.date_max,
+                w.missing_codes(e),
+                w.privacy_text(e),
+                w.text(e.group_id, kind),
+                sourced_range,
+                thresholds,
+                "\n".join(e.references),
+                "\n".join(w.issues(e, kind)),
+                e.notes,
+            ]
+        )
+    return rows
+
+
+VARIABLE_HEADER = [
+    _("Position"),
+    _("Nom"),
+    _("Libellé"),
+    _("Description"),
+    _("Type"),
+    _("Niveau de mesure"),
+    _("Format"),
+    _("Unité"),
+    _("Valides"),
+    _("Cases vides"),
+    _("Manquants déclarés"),
+    _("% manquants"),
+    _("Valeurs distinctes"),
+    _("Min"),
+    _("Max"),
+    _("Moyenne"),
+    _("Écart-type"),
+    _("Médiane"),
+    _("Date min"),
+    _("Date max"),
+    _("Codes manquants déclarés"),
+    _("Confidentialité"),
+    _("Groupe"),
+    _("Étendue théorique (source)"),
+    _("Seuils (source)"),
+    _("Références"),
+    _("Signalements"),
+    _("Notes"),
+]
+
+
+def _values(project: Project) -> list[list]:
+    rows = []
+    for e in project.variables:
+        for code, label, count, is_missing in w.value_rows(e):
+            rows.append([e.name, code, label, count, _("oui") if is_missing else ""])
+    return rows
+
+
+def _groups(project: Project, kind: w.ExportKind) -> list[list]:
+    rows = []
+    for g in project.groups:
+        members = w.shown(g.members, kind)
+        rows.append(
+            [
+                g.group_id,
+                w.text(g.descriptive_label, kind),
+                ", ".join(members.value) if members else "",
+                ", ".join(g.reverse_items),
+                f"{g.instrument_name.value} ({g.instrument_name.source})"
+                if g.instrument_name
+                else "",
+                f"{g.scoring.value} ({g.scoring.source})" if g.scoring else "",
+                g.cronbach_alpha,
+            ]
+        )
+    return rows
+
+
+def _provenance(project: Project, kind: w.ExportKind) -> list[list]:
+    rows = []
+
+    def add(name: str, field: str, tracked: TrackedValue) -> None:
+        value = w.shown(tracked, kind)
+        if value is None:
+            return
+        rows.append(
+            [
+                name,
+                field,
+                str(value.value),
+                w.ORIGINS[tracked.origin],
+                w.STATUSES[tracked.status],
+                "" if tracked.proposed_value is None else str(tracked.proposed_value),
+                tracked.ai_run,
+            ]
+        )
+
+    for e in project.variables:
+        add(e.name, _("Libellé"), e.label)
+        add(e.name, _("Description"), e.description)
+        add(e.name, _("Unité"), e.unit)
+        add(e.name, _("Groupe"), e.group_id)
+        add(e.name, _("Confidentialité"), e.privacy.privacy_class)
+        for issue in e.issues:
+            add(e.name, _("Signalement"), issue)
+    return rows
+
+
+def write_xlsx(project: Project, path: Path | str, *, kind: w.ExportKind = "final") -> None:
+    book = Workbook()
+    book.remove(book.active)
+    _sheet(book, _("Informations"), [_("Élément"), _("Valeur")], _about(project, kind))
+    _sheet(book, _("Variables"), VARIABLE_HEADER, _variables(project, kind))
+    _sheet(
+        book,
+        _("Valeurs"),
+        [_("Variable"), _("Code"), _("Étiquette"), _("Effectif"), _("Manquant déclaré")],
+        _values(project),
+    )
+    _sheet(
+        book,
+        _("Groupes"),
+        [
+            _("Groupe"),
+            _("Libellé"),
+            _("Variables"),
+            _("Items inversés"),
+            _("Instrument (source)"),
+            _("Cotation (source)"),
+            _("Alpha de Cronbach"),
+        ],
+        _groups(project, kind),
+    )
+    _sheet(
+        book,
+        _("Provenance"),
+        [
+            _("Variable"),
+            _("Champ"),
+            _("Valeur"),
+            _("Origine"),
+            _("Statut"),
+            _("Valeur d'origine"),
+            _("Appel IA"),
+        ],
+        _provenance(project, kind),
+    )
+    book.save(Path(path))

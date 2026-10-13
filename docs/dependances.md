@@ -18,6 +18,8 @@ Toute nouvelle dépendance est ajoutée à ce tableau après vérification de sa
 | annotated-types | Contraintes de types (requis par pydantic) | MIT | Oui | 6 |
 | typing-extensions | Compléments de typage (requis par pydantic) | PSF-2.0 | Oui | 6 |
 | typing-inspection | Inspection des types (requis par pydantic) | MIT | Oui | 6 |
+| openpyxl | Écriture du codebook Excel | MIT | Oui | 7 |
+| et-xmlfile | Écriture XML en flux (requis par openpyxl) | MIT | Oui | 7 |
 
 ## Dépendances de développement
 
