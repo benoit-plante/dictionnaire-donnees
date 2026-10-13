@@ -52,6 +52,8 @@ class SourceFile:
     n_columns: int
     label: str | None = None
     encoding: str | None = None
+    delimiter: str | None = None  # CSV only
+    decimal: str | None = None  # CSV only
 
 
 @dataclass(frozen=True)
