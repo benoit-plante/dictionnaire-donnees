@@ -1,14 +1,16 @@
-"""Command line: `ddict profiler` and `ddict exporter`."""
+"""Command line: `ddict profiler`, `ddict exporter` and `ddict enrichir`."""
 
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
 from ddict.export import write_markdown, write_xlsx
 from ddict.i18n import _
 from ddict.io import ReadError, read_database
+from ddict.llm import DEFAULT_BLOCK_SIZE, PROMPT_VERSION, build_blocks
 from ddict.privacy import MIN_CELL_COUNT
 from ddict.project import (
     PROJECT_SUFFIX,
@@ -85,6 +87,41 @@ def cmd_export(args: argparse.Namespace) -> int:
     return 0
 
 
+def _exchange_dir(project_path: Path) -> Path:
+    """Where what is (or would be) sent to the model is kept, next to the project."""
+    return project_path.with_name(_strip_project_suffix(project_path) + ".dd-envois")
+
+
+def cmd_enrich(args: argparse.Namespace) -> int:
+    project_path = Path(args.projet)
+    project = load_project(project_path)
+    if not args.apercu:
+        print(
+            _("L'envoi au modèle n'est pas encore disponible : utilisez --apercu."),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
+    blocks = build_blocks(project, size=args.taille_bloc)
+    folder = _exchange_dir(project_path) / "apercu"
+    folder.mkdir(parents=True, exist_ok=True)
+    for old in folder.glob("b-*.json"):
+        old.unlink()
+    for block in blocks:
+        record = {
+            "prompt_version": PROMPT_VERSION,
+            "block": block.block_id,
+            "variables": list(block.names),
+            "message_sha256": block.sha256,
+            "messages": list(block.messages),
+        }
+        path = folder / f"{block.block_id}.json"
+        with path.open("w", encoding="utf-8", newline="\n") as stream:
+            stream.write(json.dumps(record, ensure_ascii=False, indent=2) + "\n")
+    print(_("Aperçu : {n} blocs de messages, rien n'a été envoyé.").format(n=len(blocks)))
+    print(_("Messages enregistrés dans : {path}").format(path=folder))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="ddict",
@@ -123,6 +160,24 @@ def build_parser() -> argparse.ArgumentParser:
         help=_("Inclure les propositions de l'IA en attente, marquées comme telles."),
     )
     export.set_defaults(handler=cmd_export)
+
+    enrich = commands.add_parser(
+        "enrichir",
+        help=_("Faire proposer libellés et descriptions par un modèle local (facultatif)."),
+    )
+    enrich.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    enrich.add_argument(
+        "--apercu",
+        action="store_true",
+        help=_("Écrire les messages qui seraient envoyés, sans rien envoyer."),
+    )
+    enrich.add_argument(
+        "--taille-bloc",
+        type=int,
+        default=DEFAULT_BLOCK_SIZE,
+        help=_("Nombre de variables par message (défaut : 12)."),
+    )
+    enrich.set_defaults(handler=cmd_enrich)
     return parser
 
 
