@@ -21,6 +21,7 @@
 
 # Project files and what was sent to the model
 *.dd.json
+!exemples/**/*.dd.json
 *.dd-envois/
 
 # Scratch folders

@@ -13,6 +13,11 @@ Toute nouvelle dépendance est ajoutée à ce tableau après vérification de sa
 | tzdata | Fuseaux horaires (requis par pandas) | Apache-2.0 | Oui | 1 |
 | pyreadstat | Lecture et écriture des fichiers SPSS | Apache-2.0 | Oui | 1 |
 | narwhals | Couche commune entre bibliothèques de tableaux (requis par pyreadstat) | MIT | Oui | 1 |
+| pydantic | Modèle et validation du fichier projet, puis des réponses du modèle | MIT | Oui | 6 |
+| pydantic-core | Noyau compilé (requis par pydantic) | MIT | Oui | 6 |
+| annotated-types | Contraintes de types (requis par pydantic) | MIT | Oui | 6 |
+| typing-extensions | Compléments de typage (requis par pydantic) | PSF-2.0 | Oui | 6 |
+| typing-inspection | Inspection des types (requis par pydantic) | MIT | Oui | 6 |
 
 ## Dépendances de développement
 

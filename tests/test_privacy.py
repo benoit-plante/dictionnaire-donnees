@@ -61,7 +61,32 @@ def test_small_counts_are_masked(database):
     assert genre[1].count >= MIN_CELL_COUNT
     for variable in safe.values():
         for count in variable.observed_values or ():
-            assert count.count is None or count.count >= MIN_CELL_COUNT
+            if not count.declared_missing:
+                assert count.count is None or count.count >= MIN_CELL_COUNT
+
+
+def test_masked_counts_cannot_be_recovered(database):
+    """Neither by subtraction from n_valid nor from the mean of the codes (D-008)."""
+    data, profiles, classes = database
+    safe = _by_name(safe_database(data.variables, profiles, classes, audience="storage"))
+    for variable in safe.values():
+        valid = [c for c in variable.observed_values or () if not c.declared_missing]
+        masked = sum(1 for c in valid if c.masked) + variable.n_rare_values_hidden
+        assert masked != 1, variable.name
+        if masked:
+            assert variable.mean is None and variable.sd is None, variable.name
+    genre = safe["genre"]
+    assert genre.mean is None
+    assert sum(1 for c in genre.observed_values if c.masked) >= 2
+
+
+def test_declared_missing_counts_stay_exact(fictional_files):
+    data = read_sav(fictional_files["etude-sommeil.sav"])
+    profiles, classes = _pipeline(data)
+    safe = _by_name(safe_database(data.variables, profiles, classes, audience="storage"))
+    genre = {c.code: c for c in safe["genre"].observed_values}
+    assert genre[9] == SafeCount(9, 4, True)
+    assert safe["anx1"].mean is not None  # its small count is a declared missing code
 
 
 def test_sensitive_variables_keep_only_metadata(database):

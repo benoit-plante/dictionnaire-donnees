@@ -6,7 +6,9 @@ metadata and aggregates only:
 
 - identifiers, free text and quasi-identifiers keep their name, labels, type and missing
   counts, and nothing computed from their values;
-- counts of categories below the threshold (D-006) are masked;
+- counts of categories below the threshold (D-006) are masked, with a second count when
+  one alone could be recovered by subtraction, and without the mean and sd (D-008);
+- counts of declared missing values stay exact (D-007);
 - rare text categories, which could be a name or a rare place, are hidden altogether;
 - for the model, date ranges are reduced to years.
 """
@@ -77,17 +79,31 @@ class SafeVariable:
 
 def _safe_counts(
     profile: VariableProfile, labels: dict[Code, str], threshold: int
-) -> tuple[tuple[SafeCount, ...] | None, int]:
+) -> tuple[tuple[SafeCount, ...] | None, int, bool]:
+    """Return the safe counts, the number of hidden categories, and whether any was masked.
+
+    Counts of declared missing values stay exact (D-007). Among valid values, a single
+    small count could be recovered by subtraction from n_valid; the smallest other count is
+    then masked too (secondary suppression, D-008).
+    """
     if profile.observed_values is None:
-        return None, 0
-    kept, hidden = [], 0
+        return None, 0, False
+    kept: list[SafeCount] = []
+    hidden = 0
     for value in profile.observed_values:
-        rare = value.count < threshold
+        rare = value.count < threshold and not value.declared_missing
         if rare and isinstance(value.code, str) and value.code not in labels:
             hidden += 1
             continue
         kept.append(SafeCount(value.code, None if rare else value.count, value.declared_missing))
-    return tuple(kept), hidden
+
+    valid = [c for c in kept if not c.declared_missing]
+    n_suppressed = hidden + sum(1 for c in valid if c.masked)
+    visible = [c for c in valid if not c.masked]
+    if n_suppressed == 1 and visible:
+        smallest = min(visible, key=lambda c: c.count)
+        kept = [SafeCount(c.code, None, False) if c is smallest else c for c in kept]
+    return tuple(kept), hidden, n_suppressed > 0
 
 
 def _numeric_codes(codes: tuple[Code, ...], labels: dict[Code, str]) -> tuple[Code, ...]:
@@ -125,7 +141,9 @@ def safe_variable(
         return SafeVariable(**base)
 
     labels = variable.value_labels
-    observed, hidden = _safe_counts(profile, labels, threshold)
+    observed, hidden, suppressed = _safe_counts(profile, labels, threshold)
+    # With the visible counts, the mean and sd of the codes would reveal the masked ones.
+    mean, sd = (None, None) if suppressed else (profile.mean, profile.sd)
     date_min, date_max = profile.date_min, profile.date_max
     if audience == "model" and date_min and date_max:
         date_min, date_max = date_min[:4], date_max[:4]
@@ -134,8 +152,8 @@ def safe_variable(
         n_distinct=profile.n_distinct,
         min=profile.min,
         max=profile.max,
-        mean=profile.mean,
-        sd=profile.sd,
+        mean=mean,
+        sd=sd,
         median=profile.median,
         q1=profile.q1,
         q3=profile.q3,

@@ -1,0 +1,3450 @@
+{
+  "schema_version": "0.1.0",
+  "source": {
+    "name": "etude-sommeil.sav",
+    "format": "sav",
+    "sha256": "0ddde91dc21cd5898fef47425258dfe3b5a5b4f856551f51a88b59b66a82b6fb",
+    "n_rows": 200,
+    "n_columns": 29,
+    "label": "Etude sommeil (fictive)",
+    "encoding": "UTF-8",
+    "delimiter": null,
+    "decimal": null
+  },
+  "settings": {
+    "min_cell_count": 5,
+    "max_observed_values": 20,
+    "language": "fr"
+  },
+  "variables": [
+    {
+      "name": "id_participant",
+      "position": 1,
+      "file": {
+        "storage_type": "string",
+        "storage_width": 16,
+        "display_format": "A10",
+        "measure_level": "nominal",
+        "label": "Identifiant participant",
+        "value_labels": [],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "text",
+        "n_rows": 200,
+        "n_valid": 200,
+        "n_system_missing": 0,
+        "n_declared_missing": 0,
+        "n_distinct": null,
+        "min": null,
+        "max": null,
+        "mean": null,
+        "sd": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": null,
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "likely_identifier",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": [
+          "identifier_name"
+        ]
+      },
+      "label": {
+        "value": "Identifiant participant",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "courriel",
+      "position": 2,
+      "file": {
+        "storage_type": "string",
+        "storage_width": 24,
+        "display_format": "A23",
+        "measure_level": "nominal",
+        "label": "Courriel",
+        "value_labels": [],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "text",
+        "n_rows": 200,
+        "n_valid": 200,
+        "n_system_missing": 0,
+        "n_declared_missing": 0,
+        "n_distinct": null,
+        "min": null,
+        "max": null,
+        "mean": null,
+        "sd": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": null,
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "likely_identifier",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": [
+          "identifier_name",
+          "email_values"
+        ]
+      },
+      "label": {
+        "value": "Courriel",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "date_passation",
+      "position": 3,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "DATETIME20",
+        "measure_level": "scale",
+        "label": "Date passation",
+        "value_labels": [],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "datetime",
+        "n_rows": 200,
+        "n_valid": 200,
+        "n_system_missing": 0,
+        "n_declared_missing": 0,
+        "n_distinct": 200,
+        "min": null,
+        "max": null,
+        "mean": null,
+        "sd": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "date_min": "2026-01-08T04:54:00",
+        "date_max": "2026-06-03T14:02:00",
+        "n_non_numeric": null,
+        "observed_values": null,
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Date passation",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "date_naissance",
+      "position": 4,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "DATE11",
+        "measure_level": "scale",
+        "label": "DDN",
+        "value_labels": [],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "date",
+        "n_rows": 200,
+        "n_valid": 200,
+        "n_system_missing": 0,
+        "n_declared_missing": 0,
+        "n_distinct": null,
+        "min": null,
+        "max": null,
+        "mean": null,
+        "sd": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": null,
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "quasi_identifier",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": [
+          "birth_date_name",
+          "wide_date_range"
+        ]
+      },
+      "label": {
+        "value": "DDN",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "age",
+      "position": 5,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F3.0",
+        "measure_level": "scale",
+        "label": "Age",
+        "value_labels": [],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 200,
+        "n_system_missing": 0,
+        "n_declared_missing": 0,
+        "n_distinct": 58,
+        "min": 18.0,
+        "max": 999.0,
+        "mean": 59.105,
+        "sd": 117.4489,
+        "median": 46.0,
+        "q1": 29.75,
+        "q3": 60.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": null,
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [
+          999
+        ],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Age",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "genre",
+      "position": 6,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F1.0",
+        "measure_level": "nominal",
+        "label": "Genre",
+        "value_labels": [
+          {
+            "code": 1,
+            "label": "Femme"
+          },
+          {
+            "code": 2,
+            "label": "Homme"
+          },
+          {
+            "code": 3,
+            "label": "Autre identité"
+          },
+          {
+            "code": 9,
+            "label": "Préfère ne pas répondre"
+          }
+        ],
+        "declared_missing": [
+          {
+            "low": 9,
+            "high": 9
+          }
+        ]
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 196,
+        "n_system_missing": 0,
+        "n_declared_missing": 4,
+        "n_distinct": 3,
+        "min": 1.0,
+        "max": 3.0,
+        "mean": null,
+        "sd": null,
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 2.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": 1,
+            "count": 114,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": null,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": null,
+            "declared_missing": false
+          },
+          {
+            "code": 9,
+            "count": 4,
+            "declared_missing": true
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Genre",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "vague",
+      "position": 7,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F1.0",
+        "measure_level": "nominal",
+        "label": "Vague",
+        "value_labels": [
+          {
+            "code": 1,
+            "label": "Vague 1"
+          }
+        ],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 200,
+        "n_system_missing": 0,
+        "n_declared_missing": 0,
+        "n_distinct": 1,
+        "min": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "sd": 0.0,
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": 1,
+            "count": 200,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [
+          "constant"
+        ],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Vague",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "sommeil_q1",
+      "position": 8,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F1.0",
+        "measure_level": "ordinal",
+        "label": "Q1 endormissement",
+        "value_labels": [
+          {
+            "code": 1,
+            "label": "Pas du tout"
+          },
+          {
+            "code": 2,
+            "label": "Un peu"
+          },
+          {
+            "code": 3,
+            "label": "Moyennement"
+          },
+          {
+            "code": 4,
+            "label": "Beaucoup"
+          },
+          {
+            "code": 5,
+            "label": "Extrêmement"
+          }
+        ],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 194,
+        "n_system_missing": 6,
+        "n_declared_missing": 0,
+        "n_distinct": 5,
+        "min": 1.0,
+        "max": 5.0,
+        "mean": 2.8866,
+        "sd": 1.1729,
+        "median": 3.0,
+        "q1": 2.0,
+        "q3": 4.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": 1,
+            "count": 29,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": 41,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": 64,
+            "declared_missing": false
+          },
+          {
+            "code": 4,
+            "count": 43,
+            "declared_missing": false
+          },
+          {
+            "code": 5,
+            "count": 17,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Q1 endormissement",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "sommeil_q2",
+      "position": 9,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F1.0",
+        "measure_level": "ordinal",
+        "label": "Q2 sommeil reparateur",
+        "value_labels": [
+          {
+            "code": 1,
+            "label": "Pas du tout"
+          },
+          {
+            "code": 2,
+            "label": "Un peu"
+          },
+          {
+            "code": 3,
+            "label": "Moyennement"
+          },
+          {
+            "code": 4,
+            "label": "Beaucoup"
+          },
+          {
+            "code": 5,
+            "label": "Extrêmement"
+          }
+        ],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 190,
+        "n_system_missing": 10,
+        "n_declared_missing": 0,
+        "n_distinct": 5,
+        "min": 1.0,
+        "max": 5.0,
+        "mean": 3.0947,
+        "sd": 1.1914,
+        "median": 3.0,
+        "q1": 2.0,
+        "q3": 4.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": 1,
+            "count": 18,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": 46,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": 52,
+            "declared_missing": false
+          },
+          {
+            "code": 4,
+            "count": 48,
+            "declared_missing": false
+          },
+          {
+            "code": 5,
+            "count": 26,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Q2 sommeil reparateur",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "sommeil_q3",
+      "position": 10,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F1.0",
+        "measure_level": "ordinal",
+        "label": "Q3 reveils nocturnes",
+        "value_labels": [
+          {
+            "code": 1,
+            "label": "Pas du tout"
+          },
+          {
+            "code": 2,
+            "label": "Un peu"
+          },
+          {
+            "code": 3,
+            "label": "Moyennement"
+          },
+          {
+            "code": 4,
+            "label": "Beaucoup"
+          },
+          {
+            "code": 5,
+            "label": "Extrêmement"
+          }
+        ],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 191,
+        "n_system_missing": 9,
+        "n_declared_missing": 0,
+        "n_distinct": 6,
+        "min": 1.0,
+        "max": 9.0,
+        "mean": null,
+        "sd": null,
+        "median": 3.0,
+        "q1": 2.0,
+        "q3": 4.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": 1,
+            "count": null,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": 45,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": 55,
+            "declared_missing": false
+          },
+          {
+            "code": 4,
+            "count": 44,
+            "declared_missing": false
+          },
+          {
+            "code": 5,
+            "count": 25,
+            "declared_missing": false
+          },
+          {
+            "code": 9,
+            "count": null,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [
+          9
+        ],
+        "unused_labels": [],
+        "suspect_missing_codes": [
+          9
+        ],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Q3 reveils nocturnes",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "sommeil_q4",
+      "position": 11,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F1.0",
+        "measure_level": "ordinal",
+        "label": "Q4 satisf sommeil",
+        "value_labels": [
+          {
+            "code": 1,
+            "label": "Pas du tout"
+          },
+          {
+            "code": 2,
+            "label": "Un peu"
+          },
+          {
+            "code": 3,
+            "label": "Moyennement"
+          },
+          {
+            "code": 4,
+            "label": "Beaucoup"
+          },
+          {
+            "code": 5,
+            "label": "Extrêmement"
+          }
+        ],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 192,
+        "n_system_missing": 8,
+        "n_declared_missing": 0,
+        "n_distinct": 5,
+        "min": 1.0,
+        "max": 5.0,
+        "mean": 2.901,
+        "sd": 1.2132,
+        "median": 3.0,
+        "q1": 2.0,
+        "q3": 4.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": 1,
+            "count": 32,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": 37,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": 59,
+            "declared_missing": false
+          },
+          {
+            "code": 4,
+            "count": 46,
+            "declared_missing": false
+          },
+          {
+            "code": 5,
+            "count": 18,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Q4 satisf sommeil",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "sommeil_q5",
+      "position": 12,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F1.0",
+        "measure_level": "ordinal",
+        "label": "Q5 energie matin",
+        "value_labels": [
+          {
+            "code": 1,
+            "label": "Pas du tout"
+          },
+          {
+            "code": 2,
+            "label": "Un peu"
+          },
+          {
+            "code": 3,
+            "label": "Moyennement"
+          },
+          {
+            "code": 4,
+            "label": "Beaucoup"
+          },
+          {
+            "code": 5,
+            "label": "Extrêmement"
+          }
+        ],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 195,
+        "n_system_missing": 5,
+        "n_declared_missing": 0,
+        "n_distinct": 5,
+        "min": 1.0,
+        "max": 5.0,
+        "mean": 3.0103,
+        "sd": 1.197,
+        "median": 3.0,
+        "q1": 2.0,
+        "q3": 4.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": 1,
+            "count": 27,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": 36,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": 61,
+            "declared_missing": false
+          },
+          {
+            "code": 4,
+            "count": 50,
+            "declared_missing": false
+          },
+          {
+            "code": 5,
+            "count": 21,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Q5 energie matin",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "sommeil_q6",
+      "position": 13,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F1.0",
+        "measure_level": "ordinal",
+        "label": "Q6 somnolence jour",
+        "value_labels": [
+          {
+            "code": 1,
+            "label": "Pas du tout"
+          },
+          {
+            "code": 2,
+            "label": "Un peu"
+          },
+          {
+            "code": 3,
+            "label": "Moyennement"
+          },
+          {
+            "code": 4,
+            "label": "Beaucoup"
+          },
+          {
+            "code": 5,
+            "label": "Extrêmement"
+          }
+        ],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 197,
+        "n_system_missing": 3,
+        "n_declared_missing": 0,
+        "n_distinct": 5,
+        "min": 1.0,
+        "max": 5.0,
+        "mean": 3.0711,
+        "sd": 1.1451,
+        "median": 3.0,
+        "q1": 2.0,
+        "q3": 4.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": 1,
+            "count": 10,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": 62,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": 59,
+            "declared_missing": false
+          },
+          {
+            "code": 4,
+            "count": 36,
+            "declared_missing": false
+          },
+          {
+            "code": 5,
+            "count": 30,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Q6 somnolence jour",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "sommeil_q7",
+      "position": 14,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F1.0",
+        "measure_level": "ordinal",
+        "label": null,
+        "value_labels": [
+          {
+            "code": 1,
+            "label": "Pas du tout"
+          },
+          {
+            "code": 2,
+            "label": "Un peu"
+          },
+          {
+            "code": 3,
+            "label": "Moyennement"
+          },
+          {
+            "code": 4,
+            "label": "Beaucoup"
+          },
+          {
+            "code": 5,
+            "label": "Extrêmement"
+          }
+        ],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 195,
+        "n_system_missing": 5,
+        "n_declared_missing": 0,
+        "n_distinct": 5,
+        "min": 1.0,
+        "max": 5.0,
+        "mean": 2.959,
+        "sd": 1.205,
+        "median": 3.0,
+        "q1": 2.0,
+        "q3": 4.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": 1,
+            "count": 25,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": 45,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": 63,
+            "declared_missing": false
+          },
+          {
+            "code": 4,
+            "count": 37,
+            "declared_missing": false
+          },
+          {
+            "code": 5,
+            "count": 25,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "sommeil_q8",
+      "position": 15,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F1.0",
+        "measure_level": "ordinal",
+        "label": "Q8 routine",
+        "value_labels": [
+          {
+            "code": 1,
+            "label": "Pas du tout"
+          },
+          {
+            "code": 2,
+            "label": "Un peu"
+          },
+          {
+            "code": 3,
+            "label": "Moyennement"
+          },
+          {
+            "code": 4,
+            "label": "Beaucoup"
+          },
+          {
+            "code": 5,
+            "label": "Extrêmement"
+          }
+        ],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 191,
+        "n_system_missing": 9,
+        "n_declared_missing": 0,
+        "n_distinct": 5,
+        "min": 1.0,
+        "max": 5.0,
+        "mean": 3.0209,
+        "sd": 1.1741,
+        "median": 3.0,
+        "q1": 2.0,
+        "q3": 4.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": 1,
+            "count": 20,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": 44,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": 64,
+            "declared_missing": false
+          },
+          {
+            "code": 4,
+            "count": 38,
+            "declared_missing": false
+          },
+          {
+            "code": 5,
+            "count": 25,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Q8 routine",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "anx1",
+      "position": 16,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F2.0",
+        "measure_level": "ordinal",
+        "label": "ANX inquiet",
+        "value_labels": [
+          {
+            "code": -9,
+            "label": "Refus"
+          },
+          {
+            "code": 0,
+            "label": "Jamais"
+          },
+          {
+            "code": 1,
+            "label": "Parfois"
+          },
+          {
+            "code": 2,
+            "label": "Souvent"
+          },
+          {
+            "code": 3,
+            "label": "Presque toujours"
+          }
+        ],
+        "declared_missing": [
+          {
+            "low": -9,
+            "high": -9
+          }
+        ]
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 197,
+        "n_system_missing": 0,
+        "n_declared_missing": 3,
+        "n_distinct": 4,
+        "min": 0.0,
+        "max": 3.0,
+        "mean": 1.3147,
+        "sd": 0.8586,
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 2.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": -9,
+            "count": 3,
+            "declared_missing": true
+          },
+          {
+            "code": 0,
+            "count": 37,
+            "declared_missing": false
+          },
+          {
+            "code": 1,
+            "count": 75,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": 71,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": 14,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "ANX inquiet",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "anx2",
+      "position": 17,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F2.0",
+        "measure_level": "ordinal",
+        "label": "ANX tendu",
+        "value_labels": [
+          {
+            "code": -9,
+            "label": "Refus"
+          },
+          {
+            "code": 0,
+            "label": "Jamais"
+          },
+          {
+            "code": 1,
+            "label": "Parfois"
+          },
+          {
+            "code": 2,
+            "label": "Souvent"
+          },
+          {
+            "code": 3,
+            "label": "Presque toujours"
+          }
+        ],
+        "declared_missing": [
+          {
+            "low": -9,
+            "high": -9
+          }
+        ]
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 197,
+        "n_system_missing": 0,
+        "n_declared_missing": 3,
+        "n_distinct": 4,
+        "min": 0.0,
+        "max": 3.0,
+        "mean": 1.3452,
+        "sd": 0.8285,
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 2.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": -9,
+            "count": 3,
+            "declared_missing": true
+          },
+          {
+            "code": 0,
+            "count": 30,
+            "declared_missing": false
+          },
+          {
+            "code": 1,
+            "count": 84,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": 68,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": 15,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "ANX tendu",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "anx3",
+      "position": 18,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F2.0",
+        "measure_level": "ordinal",
+        "label": "ANX controle inquietude",
+        "value_labels": [
+          {
+            "code": -9,
+            "label": "Refus"
+          },
+          {
+            "code": 0,
+            "label": "Jamais"
+          },
+          {
+            "code": 1,
+            "label": "Parfois"
+          },
+          {
+            "code": 2,
+            "label": "Souvent"
+          },
+          {
+            "code": 3,
+            "label": "Presque toujours"
+          }
+        ],
+        "declared_missing": [
+          {
+            "low": -9,
+            "high": -9
+          }
+        ]
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 198,
+        "n_system_missing": 0,
+        "n_declared_missing": 2,
+        "n_distinct": 4,
+        "min": 0.0,
+        "max": 3.0,
+        "mean": 1.298,
+        "sd": 0.8592,
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 2.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": -9,
+            "count": 2,
+            "declared_missing": true
+          },
+          {
+            "code": 0,
+            "count": 38,
+            "declared_missing": false
+          },
+          {
+            "code": 1,
+            "count": 77,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": 69,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": 14,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "ANX controle inquietude",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "anx4",
+      "position": 19,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F2.0",
+        "measure_level": "ordinal",
+        "label": "ANX agite",
+        "value_labels": [
+          {
+            "code": -9,
+            "label": "Refus"
+          },
+          {
+            "code": 0,
+            "label": "Jamais"
+          },
+          {
+            "code": 1,
+            "label": "Parfois"
+          },
+          {
+            "code": 2,
+            "label": "Souvent"
+          },
+          {
+            "code": 3,
+            "label": "Presque toujours"
+          }
+        ],
+        "declared_missing": [
+          {
+            "low": -9,
+            "high": -9
+          }
+        ]
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 197,
+        "n_system_missing": 0,
+        "n_declared_missing": 3,
+        "n_distinct": 4,
+        "min": 0.0,
+        "max": 3.0,
+        "mean": 1.3299,
+        "sd": 0.8735,
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 2.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": -9,
+            "count": 3,
+            "declared_missing": true
+          },
+          {
+            "code": 0,
+            "count": 36,
+            "declared_missing": false
+          },
+          {
+            "code": 1,
+            "count": 77,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": 67,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": 17,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "ANX agite",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "heures_sommeil",
+      "position": 20,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F4.1",
+        "measure_level": "scale",
+        "label": "Nb heures sommeil (moy)",
+        "value_labels": [],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "decimal",
+        "n_rows": 200,
+        "n_valid": 200,
+        "n_system_missing": 0,
+        "n_declared_missing": 0,
+        "n_distinct": 49,
+        "min": 3.5,
+        "max": 9.7,
+        "mean": 6.9945,
+        "sd": 1.0898,
+        "median": 7.1,
+        "q1": 6.3,
+        "q3": 7.7,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": null,
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Nb heures sommeil (moy)",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "heures_sommeil_2",
+      "position": 21,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F4.1",
+        "measure_level": "scale",
+        "label": "Nb heures sommeil (moy)",
+        "value_labels": [],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "decimal",
+        "n_rows": 200,
+        "n_valid": 200,
+        "n_system_missing": 0,
+        "n_declared_missing": 0,
+        "n_distinct": 49,
+        "min": 3.5,
+        "max": 9.7,
+        "mean": 6.9945,
+        "sd": 1.0898,
+        "median": 7.1,
+        "q1": 6.3,
+        "q3": 7.7,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": null,
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [
+          "duplicate"
+        ],
+        "duplicate_of": "heures_sommeil"
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Nb heures sommeil (moy)",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "nb_reveils",
+      "position": 22,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F2.0",
+        "measure_level": "scale",
+        "label": "Nb reveils / nuit",
+        "value_labels": [],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 200,
+        "n_system_missing": 0,
+        "n_declared_missing": 0,
+        "n_distinct": 7,
+        "min": -9.0,
+        "max": 5.0,
+        "mean": null,
+        "sd": null,
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 2.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": -9,
+            "count": null,
+            "declared_missing": false
+          },
+          {
+            "code": 0,
+            "count": 45,
+            "declared_missing": false
+          },
+          {
+            "code": 1,
+            "count": 62,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": 48,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": 26,
+            "declared_missing": false
+          },
+          {
+            "code": 4,
+            "count": 13,
+            "declared_missing": false
+          },
+          {
+            "code": 5,
+            "count": null,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [
+          -9
+        ],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Nb reveils / nuit",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "anx5",
+      "position": 23,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F2.0",
+        "measure_level": "ordinal",
+        "label": "ANX irritable",
+        "value_labels": [
+          {
+            "code": -9,
+            "label": "Refus"
+          },
+          {
+            "code": 0,
+            "label": "Jamais"
+          },
+          {
+            "code": 1,
+            "label": "Parfois"
+          },
+          {
+            "code": 2,
+            "label": "Souvent"
+          },
+          {
+            "code": 3,
+            "label": "Presque toujours"
+          }
+        ],
+        "declared_missing": [
+          {
+            "low": -9,
+            "high": -9
+          }
+        ]
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 198,
+        "n_system_missing": 0,
+        "n_declared_missing": 2,
+        "n_distinct": 4,
+        "min": 0.0,
+        "max": 3.0,
+        "mean": 1.298,
+        "sd": 0.8473,
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 2.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": -9,
+            "count": 2,
+            "declared_missing": true
+          },
+          {
+            "code": 0,
+            "count": 34,
+            "declared_missing": false
+          },
+          {
+            "code": 1,
+            "count": 87,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": 61,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": 16,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "ANX irritable",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "anx6",
+      "position": 24,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F2.0",
+        "measure_level": "ordinal",
+        "label": "ANX peur",
+        "value_labels": [
+          {
+            "code": -9,
+            "label": "Refus"
+          },
+          {
+            "code": 0,
+            "label": "Jamais"
+          },
+          {
+            "code": 1,
+            "label": "Parfois"
+          },
+          {
+            "code": 2,
+            "label": "Souvent"
+          },
+          {
+            "code": 3,
+            "label": "Presque toujours"
+          }
+        ],
+        "declared_missing": [
+          {
+            "low": -9,
+            "high": -9
+          }
+        ]
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 194,
+        "n_system_missing": 0,
+        "n_declared_missing": 6,
+        "n_distinct": 4,
+        "min": 0.0,
+        "max": 3.0,
+        "mean": 1.2474,
+        "sd": 0.8084,
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 2.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": -9,
+            "count": 6,
+            "declared_missing": true
+          },
+          {
+            "code": 0,
+            "count": 36,
+            "declared_missing": false
+          },
+          {
+            "code": 1,
+            "count": 83,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": 66,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": 9,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "ANX peur",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "anx7",
+      "position": 25,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F2.0",
+        "measure_level": "ordinal",
+        "label": "ANX difficulte relaxer",
+        "value_labels": [
+          {
+            "code": -9,
+            "label": "Refus"
+          },
+          {
+            "code": 0,
+            "label": "Jamais"
+          },
+          {
+            "code": 1,
+            "label": "Parfois"
+          },
+          {
+            "code": 2,
+            "label": "Souvent"
+          },
+          {
+            "code": 3,
+            "label": "Presque toujours"
+          }
+        ],
+        "declared_missing": [
+          {
+            "low": -9,
+            "high": -9
+          }
+        ]
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 197,
+        "n_system_missing": 0,
+        "n_declared_missing": 3,
+        "n_distinct": 4,
+        "min": 0.0,
+        "max": 3.0,
+        "mean": 1.2995,
+        "sd": 0.8551,
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 2.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": -9,
+            "count": 3,
+            "declared_missing": true
+          },
+          {
+            "code": 0,
+            "count": 37,
+            "declared_missing": false
+          },
+          {
+            "code": 1,
+            "count": 78,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": 68,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": 14,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "ANX difficulte relaxer",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "satisfaction_globale",
+      "position": 26,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F2.0",
+        "measure_level": "scale",
+        "label": "Satisfaction globale 0-10",
+        "value_labels": [
+          {
+            "code": 0,
+            "label": "Pas du tout satisfait"
+          },
+          {
+            "code": 10,
+            "label": "Tout à fait satisfait"
+          },
+          {
+            "code": 99,
+            "label": "Ne sait pas"
+          }
+        ],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 200,
+        "n_system_missing": 0,
+        "n_declared_missing": 0,
+        "n_distinct": 11,
+        "min": 0.0,
+        "max": 10.0,
+        "mean": null,
+        "sd": null,
+        "median": 6.0,
+        "q1": 5.0,
+        "q3": 7.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": 0,
+            "count": null,
+            "declared_missing": false
+          },
+          {
+            "code": 1,
+            "count": null,
+            "declared_missing": false
+          },
+          {
+            "code": 2,
+            "count": 6,
+            "declared_missing": false
+          },
+          {
+            "code": 3,
+            "count": 16,
+            "declared_missing": false
+          },
+          {
+            "code": 4,
+            "count": 25,
+            "declared_missing": false
+          },
+          {
+            "code": 5,
+            "count": 32,
+            "declared_missing": false
+          },
+          {
+            "code": 6,
+            "count": 42,
+            "declared_missing": false
+          },
+          {
+            "code": 7,
+            "count": 38,
+            "declared_missing": false
+          },
+          {
+            "code": 8,
+            "count": 22,
+            "declared_missing": false
+          },
+          {
+            "code": 9,
+            "count": 9,
+            "declared_missing": false
+          },
+          {
+            "code": 10,
+            "count": 8,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [
+          99
+        ],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Satisfaction globale 0-10",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "taille_cm",
+      "position": 27,
+      "file": {
+        "storage_type": "string",
+        "storage_width": 8,
+        "display_format": "A3",
+        "measure_level": "nominal",
+        "label": "Taille (cm)",
+        "value_labels": [],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "mixed",
+        "n_rows": 200,
+        "n_valid": 200,
+        "n_system_missing": 0,
+        "n_declared_missing": 0,
+        "n_distinct": 43,
+        "min": null,
+        "max": null,
+        "mean": null,
+        "sd": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": 7,
+        "observed_values": null,
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [
+          "mixed_types"
+        ],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Taille (cm)",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "q_retiree",
+      "position": 28,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F1.0",
+        "measure_level": "scale",
+        "label": "Question retiree v2",
+        "value_labels": [],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "empty",
+        "n_rows": 200,
+        "n_valid": 0,
+        "n_system_missing": 200,
+        "n_declared_missing": 0,
+        "n_distinct": 0,
+        "min": null,
+        "max": null,
+        "mean": null,
+        "sd": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [
+          "all_missing"
+        ],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Question retiree v2",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    },
+    {
+      "name": "commentaire",
+      "position": 29,
+      "file": {
+        "storage_type": "string",
+        "storage_width": 72,
+        "display_format": "A70",
+        "measure_level": "nominal",
+        "label": "Commentaires",
+        "value_labels": [],
+        "declared_missing": []
+      },
+      "profile": {
+        "inferred_type": "text",
+        "n_rows": 200,
+        "n_valid": 60,
+        "n_system_missing": 140,
+        "n_declared_missing": 0,
+        "n_distinct": null,
+        "min": null,
+        "max": null,
+        "mean": null,
+        "sd": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": null,
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "free_text",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": [
+          "free_text_name",
+          "long_text_values"
+        ]
+      },
+      "label": {
+        "value": "Commentaires",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null
+    }
+  ],
+  "groups": [],
+  "ai_runs": []
+}
