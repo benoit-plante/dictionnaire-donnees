@@ -1,0 +1,253 @@
+"""Compute the profile of every variable, without any model."""
+
+from __future__ import annotations
+
+import datetime as dt
+import re
+from dataclasses import replace
+
+import numpy as np
+import pandas as pd
+
+from ddict.io.model import Code, LoadedData, MissingRange, VariableMetadata
+from ddict.io.sav import normalize_code
+from ddict.profile.model import Flag, InferredType, ObservedValue, VariableProfile
+
+# Above this many distinct values, observed values are not listed.
+MAX_OBSERVED_VALUES = 20
+
+# Usual codes for "no answer" when they are not declared missing.
+NEGATIVE_SENTINELS = {-1, -7, -8, -9, -77, -88, -99, -777, -888, -999, -9999}
+POSITIVE_SENTINELS = {7, 8, 9, 77, 88, 98, 99, 777, 888, 998, 999, 9998, 9999}
+# A positive sentinel must stand clearly above the other values (9 after a 1-5 scale, yes;
+# 9 after a 1-8 scale, no).
+SENTINEL_GAP = 1.5
+
+# Labels on only some values (often the ends of a 0-10 scale) do not make the others
+# "unlabeled"; codes without a label are reported when most observed values have one.
+LABELED_SHARE_FOR_UNLABELED = 0.5
+
+_SPSS_DATETIME_FORMATS = ("DATETIME", "YMDHMS", "MTIME", "DTIME")
+_SPSS_DATE_FORMATS = ("DATE", "ADATE", "EDATE", "SDATE", "JDATE", "MOYR", "QYR", "WKYR")
+_ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
+_ISO_DATETIME = re.compile(r"\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}(:\d{2}(\.\d+)?)?")
+_NUMBER = re.compile(r"[+-]?(\d+([.,]\d*)?|[.,]\d+)([eE][+-]?\d+)?")
+
+
+def _is_declared(value: object, ranges: tuple[MissingRange, ...]) -> bool:
+    for item in ranges:
+        if isinstance(value, str) != isinstance(item.low, str):
+            continue
+        if item.low == item.high:
+            if value == item.low:
+                return True
+        elif item.low <= value <= item.high:
+            return True
+    return False
+
+
+def _system_missing(series: pd.Series) -> pd.Series:
+    missing = series.isna()
+    if not (pd.api.types.is_numeric_dtype(series) or pd.api.types.is_datetime64_any_dtype(series)):
+        missing |= series.map(lambda value: isinstance(value, str) and not value.strip())
+    return missing
+
+
+def _spss_kind(variable: VariableMetadata) -> InferredType | None:
+    spss_format = (variable.display_format or "").upper()
+    if spss_format.startswith(_SPSS_DATETIME_FORMATS):
+        return "datetime"
+    if spss_format.startswith(_SPSS_DATE_FORMATS):
+        return "date"
+    return None
+
+
+def _infer_type(values: pd.Series, variable: VariableMetadata) -> InferredType:
+    if values.empty:
+        return "empty"
+    spss_kind = _spss_kind(variable)
+    if spss_kind is not None:
+        return spss_kind
+    if pd.api.types.is_datetime64_any_dtype(values):
+        return "datetime"
+    if pd.api.types.is_numeric_dtype(values):
+        if not np.all(np.mod(values.to_numpy(dtype=float), 1) == 0):
+            return "decimal"
+        return "boolean" if set(values.unique()) == {0, 1} else "integer"
+    items = list(values)
+    if all(isinstance(v, dt.datetime | pd.Timestamp) for v in items):
+        return "datetime"
+    if all(isinstance(v, dt.date) for v in items):
+        return "date"
+    texts = [str(v).strip() for v in items]
+    if all(_ISO_DATE.fullmatch(t) for t in texts):
+        return "date"
+    if all(_ISO_DATETIME.fullmatch(t) for t in texts):
+        return "datetime"
+    numeric = sum(1 for t in texts if _NUMBER.fullmatch(t))
+    if numeric < len(texts) and numeric >= len(texts) / 2:
+        return "mixed"
+    return "text"
+
+
+def _as_timestamps(values: pd.Series) -> pd.Series:
+    return pd.to_datetime(values.map(lambda v: str(v).strip() if isinstance(v, str) else v))
+
+
+def _number(value: float) -> float:
+    return float(value) + 0.0  # turns -0.0 into 0.0
+
+
+def _numeric_stats(values: pd.Series) -> dict:
+    array = values.to_numpy(dtype=float)
+    q1, median, q3 = np.quantile(array, [0.25, 0.5, 0.75])
+    return {
+        "min": _number(array.min()),
+        "max": _number(array.max()),
+        "mean": _number(array.mean()),
+        "sd": _number(array.std(ddof=1)) if len(array) > 1 else None,
+        "median": _number(median),
+        "q1": _number(q1),
+        "q3": _number(q3),
+    }
+
+
+def _code(value: object) -> Code:
+    if isinstance(value, np.generic):
+        value = value.item()
+    if isinstance(value, str):
+        return value
+    return normalize_code(float(value))
+
+
+def _sort_key(code: Code) -> tuple:
+    return (isinstance(code, str), code)
+
+
+def _suspect_sentinels(valid_codes: list[Code]) -> tuple[Code, ...]:
+    numbers = sorted({c for c in valid_codes if not isinstance(c, str)})
+    found = []
+    for code in numbers:
+        others = [c for c in numbers if c != code]
+        if not others:
+            continue
+        negative = code in NEGATIVE_SENTINELS and min(others) >= 0
+        positive = code in POSITIVE_SENTINELS and max(others) > 0
+        if negative or (positive and code > SENTINEL_GAP * max(others)):
+            found.append(code)
+    return tuple(found)
+
+
+def profile_variable(series: pd.Series, variable: VariableMetadata) -> VariableProfile:
+    n_rows = len(series)
+    system = _system_missing(series)
+    present = series[~system]
+    declared = pd.Series(False, index=present.index)
+    if variable.declared_missing:
+        declared = present.map(lambda v: _is_declared(_code(v), variable.declared_missing))
+    valid = present[~declared.astype(bool)]
+
+    inferred = _infer_type(valid, variable)
+    stats: dict = {}
+    if inferred in ("boolean", "integer", "decimal"):
+        stats.update(_numeric_stats(valid))
+    elif inferred in ("date", "datetime") and not valid.empty:
+        stamps = _as_timestamps(valid)
+        fmt = "%Y-%m-%d" if inferred == "date" else "%Y-%m-%dT%H:%M:%S"
+        stats["date_min"] = stamps.min().strftime(fmt)
+        stats["date_max"] = stamps.max().strftime(fmt)
+    elif inferred in ("text", "mixed") and not valid.empty:
+        lengths = valid.map(lambda v: len(str(v)))
+        stats["length_min"] = int(lengths.min())
+        stats["length_max"] = int(lengths.max())
+        if inferred == "mixed":
+            stats["n_non_numeric"] = int(
+                sum(1 for v in valid if not _NUMBER.fullmatch(str(v).strip()))
+            )
+
+    is_temporal = inferred in ("date", "datetime")
+    valid_codes = [] if is_temporal else [_code(v) for v in valid]
+    distinct_valid = set(valid_codes) if not is_temporal else set(valid.map(str))
+    n_distinct = len(distinct_valid)
+
+    observed = None
+    if not is_temporal:
+        counts: dict[Code, list] = {}
+        for value, is_declared in zip(present, declared, strict=True):
+            code = _code(value)
+            entry = counts.setdefault(code, [0, bool(is_declared)])
+            entry[0] += 1
+        if len(counts) <= MAX_OBSERVED_VALUES:
+            observed = tuple(
+                ObservedValue(code, count, is_declared)
+                for code, (count, is_declared) in sorted(
+                    counts.items(), key=lambda item: _sort_key(item[0])
+                )
+            )
+        all_codes = set(counts)
+    else:
+        all_codes = set()
+
+    labels = variable.value_labels
+    unlabeled: tuple[Code, ...] = ()
+    unused: tuple[Code, ...] = ()
+    if labels and not is_temporal:
+        labeled = [c for c in distinct_valid if c in labels]
+        if distinct_valid and len(labeled) / len(distinct_valid) >= LABELED_SHARE_FOR_UNLABELED:
+            unlabeled = tuple(sorted((c for c in distinct_valid if c not in labels), key=_sort_key))
+        unused = tuple(sorted((c for c in labels if c not in all_codes), key=_sort_key))
+
+    flags: list[Flag] = []
+    if valid.empty:
+        flags.append("all_missing")
+    elif n_distinct == 1:
+        flags.append("constant")
+    if inferred == "mixed":
+        flags.append("mixed_types")
+
+    return VariableProfile(
+        name=variable.name,
+        inferred_type=inferred,
+        n_rows=n_rows,
+        n_valid=len(valid),
+        n_system_missing=int(system.sum()),
+        n_declared_missing=int(declared.sum()),
+        n_distinct=n_distinct,
+        observed_values=observed,
+        unlabeled_codes=unlabeled,
+        unused_labels=unused,
+        suspect_missing_codes=_suspect_sentinels(valid_codes),
+        flags=tuple(flags),
+        **stats,
+    )
+
+
+def _find_duplicates(data: LoadedData, profiles: list[VariableProfile]) -> dict[str, str]:
+    """Map each column identical to an earlier one onto that earlier column."""
+    table = data.table
+    seen: dict[int, list[str]] = {}
+    duplicates: dict[str, str] = {}
+    for variable, profile in zip(data.variables, profiles, strict=True):
+        if "all_missing" in profile.flags:
+            continue
+        column = table[variable.name]
+        key = int(pd.util.hash_pandas_object(column.astype(str), index=False).sum())
+        for earlier in seen.get(key, []):
+            if column.equals(table[earlier]):
+                duplicates[variable.name] = earlier
+                break
+        else:
+            seen.setdefault(key, []).append(variable.name)
+    return duplicates
+
+
+def profile_database(data: LoadedData) -> tuple[VariableProfile, ...]:
+    """Profile every variable, in file order."""
+    profiles = [profile_variable(data.table[v.name], v) for v in data.variables]
+    duplicates = _find_duplicates(data, profiles)
+    return tuple(
+        replace(p, duplicate_of=duplicates[p.name], flags=(*p.flags, "duplicate"))
+        if p.name in duplicates
+        else p
+        for p in profiles
+    )
