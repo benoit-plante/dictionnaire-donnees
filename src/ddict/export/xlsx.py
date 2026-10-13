@@ -104,6 +104,7 @@ def _variables(project: Project, kind: w.ExportKind) -> list[list]:
                 w.missing_codes(e),
                 w.privacy_text(e),
                 w.text(e.group_id, kind),
+                p.item_rest_r,
                 sourced_range,
                 thresholds,
                 "\n".join(e.references),
@@ -138,6 +139,7 @@ VARIABLE_HEADER = [
     _("Codes manquants déclarés"),
     _("Confidentialité"),
     _("Groupe"),
+    _("Corrélation avec le reste du groupe"),
     _("Étendue théorique (source)"),
     _("Seuils (source)"),
     _("Références"),
@@ -158,24 +160,55 @@ def _groups(project: Project, kind: w.ExportKind) -> list[list]:
     rows = []
     for g in project.groups:
         members = w.shown(g.members, kind)
+        suspects = [
+            e.name
+            for e in project.variables
+            if e.profile.reverse_suspect and members and e.name in members.value
+        ]
         rows.append(
             [
                 g.group_id,
                 w.text(g.descriptive_label, kind),
                 ", ".join(members.value) if members else "",
+                w.basis_text(g.basis),
+                ", ".join(suspects),
                 ", ".join(g.reverse_items),
+                w.text(g.ai_hypothesis, kind),
                 f"{g.instrument_name.value} ({g.instrument_name.source})"
                 if g.instrument_name
                 else "",
                 f"{g.scoring.value} ({g.scoring.source})" if g.scoring else "",
+                g.n_complete_rows,
                 g.cronbach_alpha,
+                g.cronbach_alpha_reversed,
             ]
         )
     return rows
 
 
+GROUP_HEADER = [
+    _("Groupe"),
+    _("Description"),
+    _("Variables"),
+    _("Indices du regroupement"),
+    _("Items inversés probables"),
+    _("Items inversés confirmés"),
+    _("Hypothèse de l'IA"),
+    _("Instrument (source)"),
+    _("Cotation (source)"),
+    _("Lignes complètes"),
+    _("Alpha de Cronbach observé"),
+    _("Alpha, items probables inversés"),
+]
+
+
 def _provenance(project: Project, kind: w.ExportKind) -> list[list]:
     rows = []
+
+    def as_text(value: object) -> str:
+        if value is None:
+            return ""
+        return ", ".join(value) if isinstance(value, list) else str(value)
 
     def add(name: str, field: str, tracked: TrackedValue) -> None:
         value = w.shown(tracked, kind)
@@ -185,10 +218,10 @@ def _provenance(project: Project, kind: w.ExportKind) -> list[list]:
             [
                 name,
                 field,
-                str(value.value),
+                as_text(value.value),
                 w.ORIGINS[tracked.origin],
                 w.STATUSES[tracked.status],
-                "" if tracked.proposed_value is None else str(tracked.proposed_value),
+                as_text(tracked.proposed_value),
                 tracked.ai_run,
             ]
         )
@@ -201,6 +234,10 @@ def _provenance(project: Project, kind: w.ExportKind) -> list[list]:
         add(e.name, _("Confidentialité"), e.privacy.privacy_class)
         for issue in e.issues:
             add(e.name, _("Signalement"), issue)
+    for g in project.groups:
+        add(g.group_id, _("Variables"), g.members)
+        add(g.group_id, _("Description"), g.descriptive_label)
+        add(g.group_id, _("Hypothèse de l'IA"), g.ai_hypothesis)
     return rows
 
 
@@ -215,20 +252,7 @@ def write_xlsx(project: Project, path: Path | str, *, kind: w.ExportKind = "fina
         [_("Variable"), _("Code"), _("Étiquette"), _("Effectif"), _("Manquant déclaré")],
         _values(project),
     )
-    _sheet(
-        book,
-        _("Groupes"),
-        [
-            _("Groupe"),
-            _("Libellé"),
-            _("Variables"),
-            _("Items inversés"),
-            _("Instrument (source)"),
-            _("Cotation (source)"),
-            _("Alpha de Cronbach"),
-        ],
-        _groups(project, kind),
-    )
+    _sheet(book, _("Groupes"), GROUP_HEADER, _groups(project, kind))
     _sheet(
         book,
         _("Provenance"),

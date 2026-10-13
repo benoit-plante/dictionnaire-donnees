@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+from ddict.groups import GroupCandidate, find_groups
+from ddict.i18n import _
 from ddict.io.model import LoadedData
 from ddict.privacy import MIN_CELL_COUNT, SafeVariable, classify_database, safe_database
 from ddict.profile import profile_database
 from ddict.profile.compute import MAX_OBSERVED_VALUES
 from ddict.project.model import (
     FileMetadata,
+    Group,
     MissingRange,
     ObservedCount,
     Privacy,
@@ -87,13 +90,62 @@ def _entry(safe: SafeVariable, storage_type: str, storage_width: int | None) -> 
     )
 
 
+def descriptive_label(group: GroupCandidate) -> str:
+    """A neutral description of what the items have in common, never a guess at a name."""
+    parts = [_("{n} items").format(n=len(group.members))]
+    if group.code_min is not None:
+        parts.append(
+            _("codes de {low} à {high}").format(
+                low=f"{group.code_min:g}", high=f"{group.code_max:g}"
+            )
+        )
+    if group.prefix:
+        parts.append(_("préfixe « {prefix} »").format(prefix=group.prefix))
+    else:
+        parts.append(_("variables voisines aux mêmes étiquettes"))
+    return ", ".join(parts)
+
+
+def _group(group: GroupCandidate) -> Group:
+    return Group(
+        group_id=group.group_id,
+        members=TrackedValue[list[str]](value=list(group.members), origin="computed"),
+        basis=list(group.basis),
+        descriptive_label=TrackedValue[str](value=descriptive_label(group), origin="computed"),
+        ai_hypothesis=TrackedValue[str](origin="human"),
+        n_complete_rows=group.n_complete_rows,
+        cronbach_alpha=group.cronbach_alpha,
+        cronbach_alpha_reversed=group.cronbach_alpha_reversed,
+    )
+
+
+def _with_group(entry: VariableEntry, groups: tuple[GroupCandidate, ...]) -> VariableEntry:
+    for group in groups:
+        for item in group.items:
+            if item.name == entry.name:
+                profile = entry.profile.model_copy(
+                    update={
+                        "item_rest_r": item.item_rest_r,
+                        "reverse_suspect": item.reverse_suspect,
+                    }
+                )
+                return entry.model_copy(
+                    update={
+                        "profile": profile,
+                        "group_id": TrackedValue[str](value=group.group_id, origin="computed"),
+                    }
+                )
+    return entry
+
+
 def build_project(data: LoadedData, *, min_cell_count: int = MIN_CELL_COUNT) -> Project:
-    """Profile and classify the database, then keep only what the privacy gate lets through."""
+    """Profile, classify and group, then keep only what the privacy gate lets through."""
     profiles = profile_database(data)
     classes = classify_database(data, profiles)
     safe = safe_database(
         data.variables, profiles, classes, audience="storage", threshold=min_cell_count
     )
+    groups = find_groups(data, profiles, classes)
     source = data.source
     return Project(
         source=SourceInfo(
@@ -109,7 +161,8 @@ def build_project(data: LoadedData, *, min_cell_count: int = MIN_CELL_COUNT) -> 
         ),
         settings=Settings(min_cell_count=min_cell_count, max_observed_values=MAX_OBSERVED_VALUES),
         variables=[
-            _entry(s, v.storage_type, v.storage_width)
+            _with_group(_entry(s, v.storage_type, v.storage_width), groups)
             for s, v in zip(safe, data.variables, strict=True)
         ],
+        groups=[_group(g) for g in groups],
     )

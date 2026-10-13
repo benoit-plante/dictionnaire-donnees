@@ -52,7 +52,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -140,7 +142,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -229,7 +233,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -315,7 +321,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -406,7 +414,9 @@
           999
         ],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -535,7 +545,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -634,7 +646,9 @@
         "flags": [
           "constant"
         ],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -767,7 +781,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": 0.563,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -806,8 +822,8 @@
         "updated_at": null
       },
       "group_id": {
-        "value": null,
-        "origin": "human",
+        "value": "G1",
+        "origin": "computed",
         "status": "none",
         "proposed_value": null,
         "ai_run": null,
@@ -900,7 +916,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": 0.577,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -939,8 +957,8 @@
         "updated_at": null
       },
       "group_id": {
-        "value": null,
-        "origin": "human",
+        "value": "G1",
+        "origin": "computed",
         "status": "none",
         "proposed_value": null,
         "ai_run": null,
@@ -1042,7 +1060,9 @@
           9
         ],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": -0.719,
+        "reverse_suspect": true
       },
       "privacy": {
         "privacy_class": {
@@ -1081,8 +1101,8 @@
         "updated_at": null
       },
       "group_id": {
-        "value": null,
-        "origin": "human",
+        "value": "G1",
+        "origin": "computed",
         "status": "none",
         "proposed_value": null,
         "ai_run": null,
@@ -1175,7 +1195,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": 0.578,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -1214,8 +1236,8 @@
         "updated_at": null
       },
       "group_id": {
-        "value": null,
-        "origin": "human",
+        "value": "G1",
+        "origin": "computed",
         "status": "none",
         "proposed_value": null,
         "ai_run": null,
@@ -1308,7 +1330,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": 0.675,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -1347,8 +1371,8 @@
         "updated_at": null
       },
       "group_id": {
-        "value": null,
-        "origin": "human",
+        "value": "G1",
+        "origin": "computed",
         "status": "none",
         "proposed_value": null,
         "ai_run": null,
@@ -1441,7 +1465,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": -0.727,
+        "reverse_suspect": true
       },
       "privacy": {
         "privacy_class": {
@@ -1480,8 +1506,8 @@
         "updated_at": null
       },
       "group_id": {
-        "value": null,
-        "origin": "human",
+        "value": "G1",
+        "origin": "computed",
         "status": "none",
         "proposed_value": null,
         "ai_run": null,
@@ -1574,7 +1600,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": 0.512,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -1613,8 +1641,8 @@
         "updated_at": null
       },
       "group_id": {
-        "value": null,
-        "origin": "human",
+        "value": "G1",
+        "origin": "computed",
         "status": "none",
         "proposed_value": null,
         "ai_run": null,
@@ -1707,7 +1735,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": 0.601,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -1746,8 +1776,8 @@
         "updated_at": null
       },
       "group_id": {
-        "value": null,
-        "origin": "human",
+        "value": "G1",
+        "origin": "computed",
         "status": "none",
         "proposed_value": null,
         "ai_run": null,
@@ -1845,7 +1875,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": 0.619,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -1884,8 +1916,8 @@
         "updated_at": null
       },
       "group_id": {
-        "value": null,
-        "origin": "human",
+        "value": "G2",
+        "origin": "computed",
         "status": "none",
         "proposed_value": null,
         "ai_run": null,
@@ -1983,7 +2015,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": 0.642,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -2022,8 +2056,8 @@
         "updated_at": null
       },
       "group_id": {
-        "value": null,
-        "origin": "human",
+        "value": "G2",
+        "origin": "computed",
         "status": "none",
         "proposed_value": null,
         "ai_run": null,
@@ -2121,7 +2155,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": 0.64,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -2160,8 +2196,8 @@
         "updated_at": null
       },
       "group_id": {
-        "value": null,
-        "origin": "human",
+        "value": "G2",
+        "origin": "computed",
         "status": "none",
         "proposed_value": null,
         "ai_run": null,
@@ -2259,7 +2295,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": 0.575,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -2298,8 +2336,8 @@
         "updated_at": null
       },
       "group_id": {
-        "value": null,
-        "origin": "human",
+        "value": "G2",
+        "origin": "computed",
         "status": "none",
         "proposed_value": null,
         "ai_run": null,
@@ -2345,7 +2383,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -2433,7 +2473,9 @@
         "flags": [
           "duplicate"
         ],
-        "duplicate_of": "heures_sommeil"
+        "duplicate_of": "heures_sommeil",
+        "item_rest_r": null,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -2557,7 +2599,9 @@
           -9
         ],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -2695,7 +2739,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": 0.655,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -2734,8 +2780,8 @@
         "updated_at": null
       },
       "group_id": {
-        "value": null,
-        "origin": "human",
+        "value": "G2",
+        "origin": "computed",
         "status": "none",
         "proposed_value": null,
         "ai_run": null,
@@ -2833,7 +2879,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": 0.583,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -2872,8 +2920,8 @@
         "updated_at": null
       },
       "group_id": {
-        "value": null,
-        "origin": "human",
+        "value": "G2",
+        "origin": "computed",
         "status": "none",
         "proposed_value": null,
         "ai_run": null,
@@ -2971,7 +3019,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": 0.556,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -3010,8 +3060,8 @@
         "updated_at": null
       },
       "group_id": {
-        "value": null,
-        "origin": "human",
+        "value": "G2",
+        "origin": "computed",
         "status": "none",
         "proposed_value": null,
         "ai_run": null,
@@ -3128,7 +3178,9 @@
         ],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -3216,7 +3268,9 @@
         "flags": [
           "mixed_types"
         ],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -3304,7 +3358,9 @@
         "flags": [
           "all_missing"
         ],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -3390,7 +3446,9 @@
         "unused_labels": [],
         "suspect_missing_codes": [],
         "flags": [],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
       },
       "privacy": {
         "privacy_class": {
@@ -3445,6 +3503,103 @@
       "notes": null
     }
   ],
-  "groups": [],
+  "groups": [
+    {
+      "group_id": "G1",
+      "members": {
+        "value": [
+          "sommeil_q1",
+          "sommeil_q2",
+          "sommeil_q3",
+          "sommeil_q4",
+          "sommeil_q5",
+          "sommeil_q6",
+          "sommeil_q7",
+          "sommeil_q8"
+        ],
+        "origin": "computed",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "basis": [
+        "common_prefix",
+        "shared_value_labels",
+        "contiguous"
+      ],
+      "descriptive_label": {
+        "value": "8 items, codes de 1 à 5, préfixe « sommeil_q »",
+        "origin": "computed",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "ai_hypothesis": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "instrument_name": null,
+      "reverse_items": [],
+      "scoring": null,
+      "theoretical_range": null,
+      "thresholds": [],
+      "n_complete_rows": 150,
+      "cronbach_alpha": 0.363,
+      "cronbach_alpha_reversed": 0.912
+    },
+    {
+      "group_id": "G2",
+      "members": {
+        "value": [
+          "anx1",
+          "anx2",
+          "anx3",
+          "anx4",
+          "anx5",
+          "anx6",
+          "anx7"
+        ],
+        "origin": "computed",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "basis": [
+        "common_prefix",
+        "shared_value_labels"
+      ],
+      "descriptive_label": {
+        "value": "7 items, codes de 0 à 3, préfixe « anx »",
+        "origin": "computed",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "ai_hypothesis": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "instrument_name": null,
+      "reverse_items": [],
+      "scoring": null,
+      "theoretical_range": null,
+      "thresholds": [],
+      "n_complete_rows": 179,
+      "cronbach_alpha": 0.85,
+      "cronbach_alpha_reversed": null
+    }
+  ],
   "ai_runs": []
 }

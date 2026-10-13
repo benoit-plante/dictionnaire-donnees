@@ -131,6 +131,9 @@ class Profile(Strict):
     suspect_missing_codes: list[Code] = []
     flags: list[str] = []
     duplicate_of: str | None = None
+    # Within its probable scale: correlation with the sum of the other items.
+    item_rest_r: float | None = None
+    reverse_suspect: bool = False
 
 
 class Privacy(Strict):
@@ -168,7 +171,9 @@ class Group(Strict):
     scoring: SourcedText | None = None
     theoretical_range: TheoreticalRange | None = None
     thresholds: list[Threshold] = []
-    cronbach_alpha: float | None = None
+    n_complete_rows: int | None = None
+    cronbach_alpha: float | None = None  # as observed, for information
+    cronbach_alpha_reversed: float | None = None  # with the suspect items reversed
 
 
 class AiRun(Strict):

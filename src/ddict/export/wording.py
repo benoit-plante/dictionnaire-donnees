@@ -113,6 +113,12 @@ def anomalies(profile: Profile) -> list[str]:
         found.append(
             _("Types mélangés ({n} valeurs non numériques)").format(n=profile.n_non_numeric)
         )
+    if profile.reverse_suspect:
+        found.append(
+            _("Item probablement inversé (corrélation avec le reste de l'échelle : {r})").format(
+                r=f"{profile.item_rest_r:g}"
+            )
+        )
     if profile.duplicate_of:
         found.append(_("Identique à {name}").format(name=profile.duplicate_of))
     if profile.n_rare_values_hidden:
@@ -129,6 +135,17 @@ def issues(entry: VariableEntry, kind: ExportKind) -> list[str]:
     found = anomalies(entry.profile)
     found.extend(t for t in (text(issue, kind) for issue in entry.issues) if t)
     return found
+
+
+BASIS = {
+    "common_prefix": _("préfixe commun"),
+    "shared_value_labels": _("mêmes étiquettes de valeurs"),
+    "contiguous": _("variables voisines"),
+}
+
+
+def basis_text(basis: list[str]) -> str:
+    return ", ".join(BASIS.get(b, b) for b in basis)
 
 
 def missing_codes(entry: VariableEntry) -> str:

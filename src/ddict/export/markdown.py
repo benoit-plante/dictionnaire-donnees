@@ -97,6 +97,14 @@ def _variable(entry: VariableEntry, kind: w.ExportKind) -> list[str]:
         facts.append(f"{_('Dates')} : {p.date_min} – {p.date_max}")
     if p.n_distinct is not None:
         facts.append(f"{_('Valeurs distinctes')} : {p.n_distinct}")
+    group = w.text(entry.group_id, kind)
+    if group:
+        fact = f"{_('Groupe')} : {_inline(group)}"
+        if p.item_rest_r is not None:
+            fact += " " + _("(corrélation avec le reste du groupe : {r})").format(
+                r=f"{p.item_rest_r:g}"
+            )
+        facts.append(fact)
     privacy_class = entry.privacy.privacy_class.value or "ordinary"
     facts.append(f"{_('Confidentialité')} : {w.privacy_text(entry)}")
     if privacy_class != "ordinary":
@@ -135,8 +143,57 @@ def _variable(entry: VariableEntry, kind: w.ExportKind) -> list[str]:
     return lines
 
 
+def _groups(project: Project, kind: w.ExportKind) -> list[str]:
+    if not project.groups:
+        return []
+    lines = [_("## Groupes de variables"), ""]
+    for group in project.groups:
+        description = w.text(group.descriptive_label, kind)
+        lines += [f"### {group.group_id}" + (f" — {_inline(description)}" if description else "")]
+        lines.append("")
+        members = w.shown(group.members, kind)
+        facts = []
+        if members:
+            facts.append(f"{_('Variables')} : " + ", ".join(f"`{m}`" for m in members.value))
+        facts.append(f"{_('Indices du regroupement')} : {w.basis_text(group.basis)}")
+        hypothesis = w.text(group.ai_hypothesis, kind)
+        if hypothesis:
+            facts.append(_("Hypothèse de l'IA") + f" : {_inline(hypothesis)}")
+        if group.instrument_name:
+            facts.append(
+                f"{_('Instrument')} : {_inline(group.instrument_name.value)} "
+                f"({_('source')} : {_inline(group.instrument_name.source)})"
+            )
+        suspects = [
+            e.name
+            for e in project.variables
+            if e.profile.reverse_suspect and members and e.name in members.value
+        ]
+        if suspects:
+            facts.append(
+                f"{_('Items probablement inversés')} : " + ", ".join(f"`{s}`" for s in suspects)
+            )
+        if group.reverse_items:
+            facts.append(
+                f"{_('Items inversés confirmés')} : "
+                + ", ".join(f"`{s}`" for s in group.reverse_items)
+            )
+        if group.cronbach_alpha is not None:
+            alpha = _("Alpha de Cronbach observé : {alpha} ({n} lignes complètes)").format(
+                alpha=f"{group.cronbach_alpha:g}", n=group.n_complete_rows
+            )
+            if group.cronbach_alpha_reversed is not None:
+                alpha += " ; " + _("avec les items probables inversés : {alpha}").format(
+                    alpha=f"{group.cronbach_alpha_reversed:g}"
+                )
+            facts.append(alpha)
+        lines += [f"- {fact}" for fact in facts] + [""]
+    return lines
+
+
 def render_markdown(project: Project, *, kind: w.ExportKind = "final") -> str:
     lines = _overview(project, kind)
+    lines += _groups(project, kind)
     lines += [_("## Variables"), ""]
     for entry in project.variables:
         lines += _variable(entry, kind)
