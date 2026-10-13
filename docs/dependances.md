@@ -34,6 +34,22 @@ Installée seulement sur demande (`pip install "ddict[ia]"`, ou `uv sync --extra
 | idna | Noms de domaine (requis par httpx) | BSD-3-Clause | Oui | 10 |
 | certifi | Certificats racines (requis par httpx) | MPL-2.0 | Oui, distribué sans modification | 10 |
 
+### Option « revision » : interface de révision dans le navigateur
+
+Installée seulement sur demande (`pip install "ddict[revision]"`, ou `uv sync --extra revision`). Sans elle, le fichier projet reste modifiable par les autres commandes.
+
+| Paquet | Rôle | Licence | Compatible Apache-2.0 | Ajouté à l'étape |
+|---|---|---|---|---|
+| streamlit | Interface de révision locale | Apache-2.0 | Oui | 12 |
+| starlette, uvicorn, httptools, websockets, python-multipart, itsdangerous | Serveur web local (requis par streamlit) | BSD-3-Clause, MIT ou Apache-2.0 | Oui | 12 |
+| altair, pydeck | Graphiques (requis par streamlit) | BSD-3-Clause, Apache-2.0 | Oui | 12 |
+| jinja2, markupsafe, jsonschema, referencing, jsonschema-specifications, rpds-py, attrs | Gabarits et schémas (requis par altair) | BSD-3-Clause ou MIT | Oui | 12 |
+| pyarrow | Échange de tableaux (requis par streamlit) | Apache-2.0 | Oui | 12 |
+| pillow | Images (requis par streamlit) | MIT-CMU | Oui | 12 |
+| protobuf | Messages entre serveur et navigateur (requis par streamlit) | BSD-3-Clause | Oui | 12 |
+| requests, urllib3, charset-normalizer | Client HTTP (requis par streamlit ; l'outil ne s'en sert pas) | Apache-2.0, MIT | Oui | 12 |
+| click, toml, watchdog, packaging | Ligne de commande, configuration, surveillance de fichiers | BSD-3-Clause, MIT, Apache-2.0 | Oui | 12 |
+
 ## Dépendances de développement
 
 | Paquet | Rôle | Licence | Ajouté à l'étape |
@@ -43,3 +59,4 @@ Installée seulement sur demande (`pip install "ddict[ia]"`, ou `uv sync --extra
 | ruff | Lint et formatage | MIT | 0 |
 | hatchling | Construction du paquet | MIT | 0 |
 | httpx | Faux serveur des tests du client IA (aussi dans l'option « ia ») | BSD-3-Clause | 10 |
+| streamlit | Tests de l'interface de révision (aussi dans l'option « revision ») | Apache-2.0 | 12 |

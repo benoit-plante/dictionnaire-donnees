@@ -1,10 +1,16 @@
-"""Command line: `ddict profiler`, `ddict exporter` and `ddict enrichir`."""
+"""Command line: `ddict profiler`, `ddict exporter`, `ddict enrichir`, `ddict reviser`."""
 
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
+import os
+import socket
+import subprocess
 import sys
+import time
+import webbrowser
 from datetime import datetime
 from pathlib import Path
 
@@ -199,6 +205,85 @@ def _preview(project, project_path: Path, block_size: int) -> int:
     return 0
 
 
+REVIEW_HOST = "127.0.0.1"
+
+
+def review_command(project_path: Path, port: int) -> tuple[list[str], dict[str, str]]:
+    """The Streamlit command and environment: this computer only, no usage statistics."""
+    app = Path(__file__).resolve().parent / "review" / "app.py"
+    command = [
+        sys.executable,
+        "-m",
+        "streamlit",
+        "run",
+        str(app),
+        "--server.address",
+        REVIEW_HOST,
+        "--server.port",
+        str(port),
+        "--browser.serverAddress",
+        REVIEW_HOST,
+        "--browser.gatherUsageStats",
+        "false",
+        "--global.developmentMode",
+        "false",
+        "--server.fileWatcherType",
+        "none",
+        # Headless: no first-run prompt asking for an email address in the console, and no
+        # browser opened by Streamlit; cmd_review opens it once the page answers.
+        "--server.headless",
+        "true",
+        "--",
+        str(project_path.resolve()),
+    ]
+    env = {
+        **os.environ,
+        "STREAMLIT_SERVER_ADDRESS": REVIEW_HOST,
+        "STREAMLIT_BROWSER_GATHER_USAGE_STATS": "false",
+    }
+    return command, env
+
+
+def _wait_for_port(host: str, port: int, process: subprocess.Popen, timeout: float = 60) -> bool:
+    """Wait until the local interface accepts connections (or the process ends)."""
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline and process.poll() is None:
+        try:
+            with socket.create_connection((host, port), timeout=1):
+                return True
+        except OSError:
+            time.sleep(0.3)
+    return False
+
+
+def cmd_review(args: argparse.Namespace) -> int:
+    project_path = Path(args.projet)
+    load_project(project_path)  # a readable project, before starting anything
+    if importlib.util.find_spec("streamlit") is None:
+        print(
+            _(
+                "L'interface de révision n'est pas installée. Installez-la avec : "
+                'uv sync --extra revision (ou pip install "ddict[revision]").'
+            ),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
+    command, env = review_command(project_path, args.port)
+    print(
+        _(
+            "Révision sur http://{host}:{port} (cet ordinateur seulement). Ctrl+C pour arrêter."
+        ).format(host=REVIEW_HOST, port=args.port)
+    )
+    process = subprocess.Popen(command, env=env)
+    try:
+        if _wait_for_port(REVIEW_HOST, args.port, process):
+            webbrowser.open(f"http://{REVIEW_HOST}:{args.port}")
+        return process.wait()
+    except KeyboardInterrupt:
+        process.terminate()
+        return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="ddict",
@@ -271,6 +356,16 @@ def build_parser() -> argparse.ArgumentParser:
         help=_("Renvoyer aussi les blocs déjà enrichis."),
     )
     enrich.set_defaults(handler=cmd_enrich)
+
+    review = commands.add_parser(
+        "reviser",
+        help=_("Ouvrir l'interface de révision dans le navigateur (cet ordinateur seulement)."),
+    )
+    review.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    review.add_argument(
+        "--port", type=int, default=8501, help=_("Port local de l'interface (défaut : 8501).")
+    )
+    review.set_defaults(handler=cmd_review)
     return parser
 
 

@@ -34,6 +34,9 @@ ddict = "ddict.cli:main"
 ia = [
     "httpx>=0.28.1",
 ]
+revision = [
+    "streamlit>=1.65.0",
+]
 
 [dependency-groups]
 dev = [
@@ -41,6 +44,7 @@ dev = [
     "pytest>=8",
     "pytest-socket>=0.7",
     "ruff>=0.6",
+    "streamlit>=1.65.0",
 ]
 
 [tool.hatch.build.targets.wheel]
