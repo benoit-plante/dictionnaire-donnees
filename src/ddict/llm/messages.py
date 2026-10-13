@@ -5,7 +5,8 @@ counts masked). Messages reduce it further (CONCEPTION.md, § 6.1):
 - sensitive variables: name, file label, type and a note, nothing else;
 - counts become proportions, rounded; masked counts stay "masqué";
 - date ranges become years;
-- never the data file name or path, nor the team's notes.
+- never the data file name or path, nor the team's notes;
+- no computed anomalies: the model is not asked for coding inconsistencies (D-009).
 """
 
 from __future__ import annotations
@@ -15,10 +16,10 @@ import json
 from dataclasses import dataclass
 from importlib import resources
 
-from ddict.export.wording import anomalies, code_text
+from ddict.export.wording import code_text
 from ddict.project.model import Group, Project, VariableEntry
 
-PROMPT_VERSION = "variables-v1"
+PROMPT_VERSION = "variables-v2"
 DEFAULT_BLOCK_SIZE = 12
 MASKED = "masqué"
 
@@ -99,9 +100,6 @@ def variable_payload(entry: VariableEntry, neighbors: list[str], groups: dict[st
         payload["group"] = {"id": group_id}
         if group.descriptive_label.value:
             payload["group"]["description"] = group.descriptive_label.value
-    found = anomalies(p)
-    if found:
-        payload["anomalies"] = found
     return payload
 
 

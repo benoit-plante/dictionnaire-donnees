@@ -32,7 +32,7 @@ def _good_answer(request_body):
     return {
         "block": content["block"],
         "variables": [
-            {"name": v["name"], "label": f"Libellé {v['name']}", "description": "", "issues": []}
+            {"name": v["name"], "label": f"Libellé {v['name']}", "description": ""}
             for v in content["variables"]
         ],
     }
@@ -147,7 +147,7 @@ def test_trace_of_a_successful_run(block):
     assert run.endpoint == "http://127.0.0.1:11434/v1"
     assert run.model == "modele-test"
     assert run.parameters == {"temperature": 0, "seed": 42}
-    assert run.prompt_version == "variables-v1"
+    assert run.prompt_version == "variables-v2"
     assert run.message_sha256 == block.sha256
     assert (run.attempts, run.outcome, run.detail) == (1, "succeeded", None)
 
@@ -168,9 +168,7 @@ def _extra_field(answer):
 
 
 def _invented_variable(answer):
-    answer["variables"].append(
-        {"name": "variable_inventee", "label": "X", "description": "", "issues": []}
-    )
+    answer["variables"].append({"name": "variable_inventee", "label": "X", "description": ""})
 
 
 def _missing_variable(answer):
@@ -189,6 +187,10 @@ def _too_long(answer):
     answer["variables"][0]["label"] = "x" * 200
 
 
+def _with_issues(answer):
+    answer["variables"][0]["issues"] = ["Le code 9 n'a pas d'étiquette."]
+
+
 @pytest.mark.parametrize(
     ("scenario", "code"),
     [
@@ -197,6 +199,7 @@ def _too_long(answer):
         (chat({"answer": "?"}), "schema"),
         (_with(_extra_field), "schema"),
         (_with(_too_long), "schema"),
+        (_with(_with_issues), "schema"),  # no longer asked (D-009)
         (_with(_invented_variable), "names_mismatch"),
         (_with(_missing_variable), "names_mismatch"),
         (_with(_reordered), "names_mismatch"),

@@ -27,7 +27,6 @@ def _answer(body, describe=None):
                 "name": v["name"],
                 "label": f"Libellé IA {v['name']}",
                 "description": description,
-                "issues": ["Le code 9 n'a pas d'étiquette."] if v["name"] == "sommeil_q3" else [],
             }
         )
     return {"block": content["block"], "variables": variables}
@@ -70,8 +69,19 @@ def test_every_variable_gets_proposals(project):
         "run-0001",
     )
     assert q1.description.value == "Description de sommeil_q1."
-    (issue,) = project.variable("sommeil_q3").issues
-    assert (issue.value, issue.status) == ("Le code 9 n'a pas d'étiquette.", "proposed")
+    assert project.variable("sommeil_q3").issues == []
+
+
+def test_pending_issues_from_an_older_prompt_are_dropped(project):
+    """D-009: issues are no longer asked; those a person accepted stay."""
+    q3 = project.variable("sommeil_q3")
+    old = {"origin": "ai", "ai_run": "run-0000"}
+    q3.issues = [
+        TrackedValue[str](value="En attente", status="proposed", **old),
+        TrackedValue[str](value="Acceptée", status="validated", **old),
+    ]
+    _run(project, Server())
+    assert [i.value for i in project.variable("sommeil_q3").issues] == ["Acceptée"]
 
 
 def test_file_label_stays_until_the_proposal_is_accepted(project):

@@ -2,18 +2,18 @@
 
 There is deliberately no field for a clinical threshold, a theoretical range, a reference
 or an instrument name (principle 4): with extra="forbid", an answer that adds one is
-refused as a whole.
+refused as a whole. Coding inconsistencies are not asked either (D-009): the tool computes
+them exactly.
 """
 
 from __future__ import annotations
 
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+from pydantic import BaseModel, ConfigDict, StringConstraints
 
 Label = Annotated[str, StringConstraints(strip_whitespace=True, max_length=80)]
 Description = Annotated[str, StringConstraints(strip_whitespace=True, max_length=300)]
-Issue = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)]
 
 
 class VariableProposal(BaseModel):
@@ -22,7 +22,6 @@ class VariableProposal(BaseModel):
     name: str
     label: Label
     description: Description
-    issues: list[Issue] = Field(max_length=5)
 
 
 class BlockResponse(BaseModel):

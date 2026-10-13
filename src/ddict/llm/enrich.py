@@ -62,17 +62,10 @@ def _apply(entry: VariableEntry, proposal: VariableProposal, run_id: str) -> Non
         if new is not None and _may_replace(getattr(entry, field)):
             setattr(entry, field, new)
             signals += [f"{field}:{s}" for s in invention_signals(new.value)]
-    kept = [i for i in entry.issues if i.status in ("validated", "corrected")]
-    known = {i.value for i in kept}
-    new_issues = [
-        i
-        for i in (_proposal(text, run_id) for text in proposal.issues)
-        if i is not None and i.value not in known
-    ]
-    entry.issues = kept + new_issues
+    # Inconsistencies are no longer asked of the model (D-009): pending ones from an
+    # earlier prompt are dropped, those a person accepted are kept.
+    entry.issues = [i for i in entry.issues if i.status in ("validated", "corrected")]
     signals = [s for s in signals if not s.startswith("issues:")]
-    for issue in new_issues:
-        signals += [f"issues:{s}" for s in invention_signals(issue.value)]
     entry.ai_signals = sorted(set(signals))
 
 

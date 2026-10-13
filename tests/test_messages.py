@@ -91,12 +91,10 @@ def test_dates_are_years_only(payloads):
     assert "date_min" not in payloads["date_passation"]
 
 
-def test_anomalies_and_groups_are_sent(payloads):
-    assert "Code 9 observé sans étiquette" in " ".join(payloads["sommeil_q3"]["anomalies"]) or (
-        "Valeur 9 probablement manquante" in " ".join(payloads["sommeil_q3"]["anomalies"])
-    )
-    assert any("inversé" in a for a in payloads["sommeil_q3"]["anomalies"])
+def test_groups_are_sent_but_not_anomalies(payloads):
+    """The model is not asked for inconsistencies (D-009): computed ones are not sent."""
     assert payloads["anx5"]["group"]["id"] == "G2"
+    assert not any("anomalies" in payload for payload in payloads.values())
     assert payloads["age"]["max"] == 999.0
 
 
@@ -107,9 +105,12 @@ def test_neighbors(payloads):
 
 def test_system_prompt_forbids_invention():
     prompt = system_prompt()
-    assert PROMPT_VERSION == "variables-v1"
+    assert PROMPT_VERSION == "variables-v2"
     assert "N'invente jamais de seuil clinique" in prompt
     assert "nom d'instrument" in prompt
+    assert "ne reprends pas le libellé d'une variable voisine" in prompt
+    assert "rétablis les accents" in prompt
+    assert "issues" not in prompt
 
 
 def test_response_schema_has_no_field_for_inventions():
@@ -121,9 +122,7 @@ def test_response_schema_has_no_field_for_inventions():
 def test_response_with_an_extra_field_is_refused():
     answer = {
         "block": "b-001",
-        "variables": [
-            {"name": "x", "label": "X", "description": "", "issues": [], "seuil_clinique": 14}
-        ],
+        "variables": [{"name": "x", "label": "X", "description": "", "seuil_clinique": 14}],
     }
     with pytest.raises(ValidationError):
         BlockResponse.model_validate(answer)
@@ -132,7 +131,7 @@ def test_response_with_an_extra_field_is_refused():
 def test_response_lengths_are_bounded():
     answer = {
         "block": "b-001",
-        "variables": [{"name": "x", "label": "L" * 81, "description": "", "issues": []}],
+        "variables": [{"name": "x", "label": "L" * 81, "description": ""}],
     }
     with pytest.raises(ValidationError):
         BlockResponse.model_validate(answer)
