@@ -1,5 +1,6 @@
 """Step 7: from the fictional database to the codebook, without any AI ("useful without AI")."""
 
+import subprocess
 import sys
 import zipfile
 
@@ -43,8 +44,28 @@ def test_commands_produce_the_three_files(run):
         assert path.exists() and path.stat().st_size > 0
 
 
-def test_no_ai_module_was_needed(run):
-    assert not [name for name in AI_MODULES if name in sys.modules]
+def test_whole_chain_works_with_ai_libraries_missing(fictional_files, tmp_path):
+    """In a separate process where importing an AI library fails, as if not installed."""
+    script = (
+        "import sys\n"
+        f"for name in {AI_MODULES!r}:\n"
+        "    sys.modules[name] = None\n"
+        "from ddict.cli import main\n"
+        "base, project = sys.argv[1], sys.argv[2]\n"
+        "assert main(['profiler', base, '-o', project]) == 0\n"
+        "assert main(['exporter', project]) == 0\n"
+        "assert main(['enrichir', project, '--apercu']) == 0\n"
+    )
+    project = tmp_path / "sans-ia.dd.json"
+    result = subprocess.run(
+        [sys.executable, "-c", script, str(fictional_files["etude-sommeil.sav"]), str(project)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert (tmp_path / "sans-ia.xlsx").exists()
 
 
 @pytest.mark.parametrize("output", ["project", "xlsx", "md"])

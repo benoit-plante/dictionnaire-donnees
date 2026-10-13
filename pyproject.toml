@@ -30,8 +30,14 @@ classifiers = [
 [project.scripts]
 ddict = "ddict.cli:main"
 
+[project.optional-dependencies]
+ia = [
+    "httpx>=0.28.1",
+]
+
 [dependency-groups]
 dev = [
+    "httpx>=0.28.1",
     "pytest>=8",
     "pytest-socket>=0.7",
     "ruff>=0.6",

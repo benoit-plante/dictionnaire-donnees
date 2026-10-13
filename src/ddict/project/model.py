@@ -177,14 +177,19 @@ class Group(Strict):
 
 
 class AiRun(Strict):
+    """One call to the model for one block. Never holds the content of the exchange."""
+
     run_id: str
+    block: str
     endpoint: str
     model: str
     parameters: dict[str, float | int | str] = {}
     prompt_version: str
     message_sha256: str
     started_at: str
+    attempts: int = 1
     outcome: Literal["succeeded", "invalid_response", "refused", "failed"]
+    detail: str | None = None  # a reason code when the call did not succeed
 
 
 class SourceInfo(Strict):

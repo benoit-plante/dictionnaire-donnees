@@ -21,6 +21,19 @@ Toute nouvelle dépendance est ajoutée à ce tableau après vérification de sa
 | openpyxl | Écriture du codebook Excel | MIT | Oui | 7 |
 | et-xmlfile | Écriture XML en flux (requis par openpyxl) | MIT | Oui | 7 |
 
+### Option « ia » : enrichissement par un modèle local
+
+Installée seulement sur demande (`pip install "ddict[ia]"`, ou `uv sync --extra ia`). Sans elle, l'outil profile et exporte normalement.
+
+| Paquet | Rôle | Licence | Compatible Apache-2.0 | Ajouté à l'étape |
+|---|---|---|---|---|
+| httpx | Appels au serveur local compatible OpenAI | BSD-3-Clause | Oui | 10 |
+| httpcore | Transport HTTP (requis par httpx) | BSD-3-Clause | Oui | 10 |
+| h11 | Protocole HTTP/1.1 (requis par httpcore) | MIT | Oui | 10 |
+| anyio | Entrées-sorties (requis par httpx) | MIT | Oui | 10 |
+| idna | Noms de domaine (requis par httpx) | BSD-3-Clause | Oui | 10 |
+| certifi | Certificats racines (requis par httpx) | MPL-2.0 | Oui, distribué sans modification | 10 |
+
 ## Dépendances de développement
 
 | Paquet | Rôle | Licence | Ajouté à l'étape |
@@ -29,3 +42,4 @@ Toute nouvelle dépendance est ajoutée à ce tableau après vérification de sa
 | pytest-socket | Blocage du réseau dans les tests | MIT | 0 |
 | ruff | Lint et formatage | MIT | 0 |
 | hatchling | Construction du paquet | MIT | 0 |
+| httpx | Faux serveur des tests du client IA (aussi dans l'option « ia ») | BSD-3-Clause | 10 |
