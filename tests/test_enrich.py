@@ -195,3 +195,10 @@ def test_command_refuses_a_remote_address(fictional_files, tmp_path, capsys):
     assert code == 2
     assert "Adresse refusée" in capsys.readouterr().err
     assert load_project(project_path).ai_runs == []
+
+
+def test_label_guessed_without_a_file_label_is_flagged(project):
+    _run(project, Server())
+    assert project.variable("sommeil_q7").file.label is None
+    assert project.variable("sommeil_q7").ai_signals == ["label:no_file_label"]
+    assert project.variable("sommeil_q8").ai_signals == []

@@ -62,6 +62,10 @@ def _apply(entry: VariableEntry, proposal: VariableProposal, run_id: str) -> Non
         if new is not None and _may_replace(getattr(entry, field)):
             setattr(entry, field, new)
             signals += [f"{field}:{s}" for s in invention_signals(new.value)]
+            if field == "label" and not entry.file.label:
+                # Without a label in the file, models borrow a neighbour's (trial of
+                # 2026-10-13): the label is a guess, to be checked against the questionnaire.
+                signals.append("label:no_file_label")
     # Inconsistencies are no longer asked of the model (D-009): pending ones from an
     # earlier prompt are dropped, those a person accepted are kept.
     entry.issues = [i for i in entry.issues if i.status in ("validated", "corrected")]
