@@ -5,12 +5,14 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import datetime
 from pathlib import Path
 
 from ddict.export import write_markdown, write_xlsx
 from ddict.i18n import _
 from ddict.io import ReadError, read_database
 from ddict.llm import DEFAULT_BLOCK_SIZE, PROMPT_VERSION, build_blocks
+from ddict.llm.defaults import DEFAULT_ENDPOINT
 from ddict.privacy import MIN_CELL_COUNT
 from ddict.project import (
     PROJECT_SUFFIX,
@@ -95,13 +97,88 @@ def _exchange_dir(project_path: Path) -> Path:
 def cmd_enrich(args: argparse.Namespace) -> int:
     project_path = Path(args.projet)
     project = load_project(project_path)
-    if not args.apercu:
+    if args.apercu:
+        return _preview(project, project_path, args.taille_bloc)
+    if not args.modele:
+        print(_("Indiquez le modèle avec --modele, ou utilisez --apercu."), file=sys.stderr)
+        return EXIT_ERROR
+    try:
+        from ddict.llm.client import EndpointRefused, LocalModelClient
+        from ddict.llm.enrich import enrich
+    except ImportError:
         print(
-            _("L'envoi au modèle n'est pas encore disponible : utilisez --apercu."),
+            _(
+                "L'option IA n'est pas installée. Installez-la avec : "
+                'uv sync --extra ia (ou pip install "ddict[ia]").'
+            ),
             file=sys.stderr,
         )
         return EXIT_ERROR
-    blocks = build_blocks(project, size=args.taille_bloc)
+    try:
+        client = LocalModelClient(args.modele, endpoint=args.adresse)
+    except EndpointRefused as error:
+        print(
+            _("Adresse refusée : seul un serveur sur cet ordinateur est permis ({detail}).").format(
+                detail=error
+            ),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
+
+    outcomes = {
+        "succeeded": _("réussi"),
+        "invalid_response": _("réponse invalide"),
+        "failed": _("échec"),
+        "refused": _("refusé"),
+    }
+    failed = 0
+    with client:
+        events = enrich(
+            project,
+            client,
+            now=lambda: datetime.now().isoformat(timespec="seconds"),
+            block_size=args.taille_bloc,
+            redo=args.refaire,
+            save=lambda p: save_project(p, project_path),
+            log_dir=_exchange_dir(project_path),
+        )
+        try:
+            for event in events:
+                names = len(event.block.names)
+                if event.result is None:
+                    print(
+                        _("Bloc {block} ({n} variables) : déjà fait.").format(
+                            block=event.block.block_id, n=names
+                        )
+                    )
+                    continue
+                run = event.result.run
+                status = outcomes[run.outcome]
+                if run.detail:
+                    status += f" ({run.detail})"
+                    failed += 1
+                print(
+                    _("Bloc {block} ({n} variables) : {status}.").format(
+                        block=event.block.block_id, n=names, status=status
+                    ),
+                    flush=True,
+                )
+        except KeyboardInterrupt:
+            print(_("Interrompu. Les blocs terminés sont enregistrés ; relancez pour continuer."))
+            return EXIT_ERROR
+    if failed and project.ai_runs and project.ai_runs[-1].detail == "connection":
+        print(
+            _("Le serveur {endpoint} ne répond pas. Ollama est-il lancé ?").format(
+                endpoint=client.endpoint
+            ),
+            file=sys.stderr,
+        )
+    print(_("Propositions enregistrées dans {path}, à réviser.").format(path=project_path))
+    return EXIT_ERROR if failed else 0
+
+
+def _preview(project, project_path: Path, block_size: int) -> int:
+    blocks = build_blocks(project, size=block_size)
     folder = _exchange_dir(project_path) / "apercu"
     folder.mkdir(parents=True, exist_ok=True)
     for old in folder.glob("b-*.json"):
@@ -176,6 +253,22 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=DEFAULT_BLOCK_SIZE,
         help=_("Nombre de variables par message (défaut : 12)."),
+    )
+    enrich.add_argument(
+        "--modele",
+        help=_("Nom du modèle dans le serveur local, p. ex. qwen2.5:7b-instruct-q4_K_M."),
+    )
+    enrich.add_argument(
+        "--adresse",
+        default=DEFAULT_ENDPOINT,
+        help=_("Adresse du serveur local compatible OpenAI (défaut : Ollama, {default}).").format(
+            default=DEFAULT_ENDPOINT
+        ),
+    )
+    enrich.add_argument(
+        "--refaire",
+        action="store_true",
+        help=_("Renvoyer aussi les blocs déjà enrichis."),
     )
     enrich.set_defaults(handler=cmd_enrich)
     return parser

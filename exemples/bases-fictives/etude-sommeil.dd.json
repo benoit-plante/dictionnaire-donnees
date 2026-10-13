@@ -105,7 +105,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "courriel",
@@ -196,7 +197,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "date_passation",
@@ -284,7 +286,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "date_naissance",
@@ -375,7 +378,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "age",
@@ -465,7 +469,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "genre",
@@ -596,7 +601,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "vague",
@@ -697,7 +703,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "sommeil_q1",
@@ -832,7 +839,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "sommeil_q2",
@@ -967,7 +975,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "sommeil_q3",
@@ -1111,7 +1120,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "sommeil_q4",
@@ -1246,7 +1256,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "sommeil_q5",
@@ -1381,7 +1392,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "sommeil_q6",
@@ -1516,7 +1528,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "sommeil_q7",
@@ -1651,7 +1664,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "sommeil_q8",
@@ -1786,7 +1800,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "anx1",
@@ -1926,7 +1941,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "anx2",
@@ -2066,7 +2082,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "anx3",
@@ -2206,7 +2223,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "anx4",
@@ -2346,7 +2364,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "heures_sommeil",
@@ -2434,7 +2453,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "heures_sommeil_2",
@@ -2524,7 +2544,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "nb_reveils",
@@ -2650,7 +2671,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "anx5",
@@ -2790,7 +2812,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "anx6",
@@ -2930,7 +2953,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "anx7",
@@ -3070,7 +3094,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "satisfaction_globale",
@@ -3229,7 +3254,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "taille_cm",
@@ -3319,7 +3345,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "q_retiree",
@@ -3409,7 +3436,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     },
     {
       "name": "commentaire",
@@ -3500,7 +3528,8 @@
       "theoretical_range": null,
       "thresholds": [],
       "references": [],
-      "notes": null
+      "notes": null,
+      "ai_signals": []
     }
   ],
   "groups": [

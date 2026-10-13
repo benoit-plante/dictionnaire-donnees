@@ -17,6 +17,7 @@ MAX_ATTEMPTS = 2
 class BlockResult:
     run: AiRun
     proposals: tuple[VariableProposal, ...] | None  # None unless the run succeeded
+    answers: tuple[str, ...] = ()  # raw answers, for the exchange log only
 
 
 def run_block(client: LocalModelClient, block: Block, *, run_id: str, now: str) -> BlockResult:
@@ -24,10 +25,12 @@ def run_block(client: LocalModelClient, block: Block, *, run_id: str, now: str) 
     schema = response_schema()
     outcome, detail, proposals = "failed", None, None
     attempts = 0
+    answers: list[str] = []
     while attempts < MAX_ATTEMPTS:
         attempts += 1
         try:
             content = client.complete(list(block.messages), schema)
+            answers.append(content)
         except ModelCallError as error:
             # The server is down or refuses: trying again at once would not help.
             outcome, detail = "failed", error.code
@@ -52,4 +55,8 @@ def run_block(client: LocalModelClient, block: Block, *, run_id: str, now: str) 
         outcome=outcome,
         detail=detail,
     )
-    return BlockResult(run=run, proposals=proposals if outcome == "succeeded" else None)
+    return BlockResult(
+        run=run,
+        proposals=proposals if outcome == "succeeded" else None,
+        answers=tuple(answers),
+    )

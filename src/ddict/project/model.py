@@ -157,6 +157,8 @@ class VariableEntry(Strict):
     thresholds: list[Threshold] = []
     references: list[NonEmptyText] = []
     notes: str | None = None
+    # What in the AI proposals looks like an invention, e.g. "description:threshold".
+    ai_signals: list[str] = []
 
 
 class Group(Strict):

@@ -84,7 +84,7 @@ def _variables(project: Project, kind: w.ExportKind) -> list[list]:
             [
                 e.position,
                 e.name,
-                w.text(e.label, kind),
+                w.label_text(e, kind),
                 w.text(e.description, kind),
                 w.TYPES.get(p.inferred_type, p.inferred_type),
                 w.MEASURES.get(e.file.measure_level or "", ""),

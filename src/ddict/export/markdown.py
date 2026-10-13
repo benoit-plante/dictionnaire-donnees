@@ -59,7 +59,7 @@ def _overview(project: Project, kind: w.ExportKind) -> list[str]:
 
 def _variable(entry: VariableEntry, kind: w.ExportKind) -> list[str]:
     p = entry.profile
-    label = w.text(entry.label, kind)
+    label = w.label_text(entry, kind)
     title = f"### `{entry.name}`" + (f" — {_inline(label)}" if label else "")
     lines = [title, ""]
     description = w.text(entry.description, kind)

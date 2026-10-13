@@ -1,5 +1,6 @@
 """Step 7: from the fictional database to the codebook, without any AI ("useful without AI")."""
 
+import os
 import subprocess
 import sys
 import zipfile
@@ -62,6 +63,7 @@ def test_whole_chain_works_with_ai_libraries_missing(fictional_files, tmp_path):
         capture_output=True,
         text=True,
         encoding="utf-8",
+        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
         check=False,
     )
     assert result.returncode == 0, result.stderr

@@ -80,6 +80,14 @@ def text(tracked: TrackedValue, kind: ExportKind) -> str:
     return f"{value.value}{suffix}"
 
 
+def label_text(entry: VariableEntry, kind: ExportKind) -> str:
+    """The label shown; while an AI label is not accepted, the file's label stays."""
+    value = text(entry.label, kind)
+    if value:
+        return value
+    return entry.file.label or ""
+
+
 def number(value: float | None) -> str:
     """A statistic written the French way: decimal comma (0,363)."""
     if value is None:

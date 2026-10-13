@@ -1,0 +1,187 @@
+"""Step 11: enrichment block by block — proposals, human decisions kept, resume, logs."""
+
+import json
+
+import httpx
+import pytest
+
+import ddict.llm.client as client_module
+from ddict.cli import main
+from ddict.export import render_markdown
+from ddict.io import read_sav
+from ddict.llm.client import LocalModelClient
+from ddict.llm.enrich import enrich
+from ddict.project import build_project, load_project, validate
+from ddict.project.model import TrackedValue
+
+NOW = "2026-10-13T16:00:00"
+
+
+def _answer(body, describe=None):
+    content = json.loads(body["messages"][1]["content"])
+    variables = []
+    for v in content["variables"]:
+        description = describe(v["name"]) if describe else f"Description de {v['name']}."
+        variables.append(
+            {
+                "name": v["name"],
+                "label": f"Libellé IA {v['name']}",
+                "description": description,
+                "issues": ["Le code 9 n'a pas d'étiquette."] if v["name"] == "sommeil_q3" else [],
+            }
+        )
+    return {"block": content["block"], "variables": variables}
+
+
+class Server:
+    def __init__(self, describe=None, fail_after=None):
+        self.describe = describe
+        self.fail_after = fail_after
+        self.calls = 0
+
+    def __call__(self, request):
+        self.calls += 1
+        if self.fail_after is not None and self.calls > self.fail_after:
+            raise httpx.ConnectError("refused", request=request)
+        body = json.loads(request.content)
+        text = json.dumps(_answer(body, self.describe), ensure_ascii=False)
+        return httpx.Response(200, json={"choices": [{"message": {"content": text}}]})
+
+
+@pytest.fixture
+def project(fictional_files):
+    return build_project(read_sav(fictional_files["etude-sommeil.sav"]))
+
+
+def _run(project, server, **kwargs):
+    client = LocalModelClient("modele-test", transport=httpx.MockTransport(server))
+    return list(enrich(project, client, now=lambda: NOW, block_size=12, **kwargs))
+
+
+def test_every_variable_gets_proposals(project):
+    events = _run(project, Server())
+    assert [e.result.run.outcome for e in events] == ["succeeded"] * 3
+    assert [r.run_id for r in project.ai_runs] == ["run-0001", "run-0002", "run-0003"]
+    q1 = project.variable("sommeil_q1")
+    assert (q1.label.value, q1.label.origin, q1.label.status, q1.label.ai_run) == (
+        "Libellé IA sommeil_q1",
+        "ai",
+        "proposed",
+        "run-0001",
+    )
+    assert q1.description.value == "Description de sommeil_q1."
+    (issue,) = project.variable("sommeil_q3").issues
+    assert (issue.value, issue.status) == ("Le code 9 n'a pas d'étiquette.", "proposed")
+
+
+def test_file_label_stays_until_the_proposal_is_accepted(project):
+    _run(project, Server())
+    report = render_markdown(project, kind="final")
+    assert "### `sommeil_q1` — Q1 endormissement" in report
+    assert "Libellé IA" not in report
+    project.variable("sommeil_q1").label = validate(project.variable("sommeil_q1").label, now=NOW)
+    assert "### `sommeil_q1` — Libellé IA sommeil_q1" in render_markdown(project, kind="final")
+
+
+def test_human_decisions_are_never_replaced(project):
+    q2 = project.variable("sommeil_q2")
+    q2.description = TrackedValue[str](value="Écrite par l'équipe.", origin="human")
+    _run(project, Server())
+    first = project.variable("sommeil_q4")
+    first.label = validate(first.label, now=NOW)
+    _run(project, Server(), redo=True)
+    assert project.variable("sommeil_q2").description.value == "Écrite par l'équipe."
+    assert project.variable("sommeil_q4").label.status == "validated"
+    assert project.variable("sommeil_q4").label.ai_run == "run-0001"
+    # A pending proposal is replaced by the newer one.
+    assert project.variable("sommeil_q5").label.ai_run == "run-0004"
+
+
+def test_resume_skips_blocks_already_done(project):
+    server = Server(fail_after=1)
+    events = _run(project, server)
+    assert [e.result.run.outcome for e in events] == ["succeeded", "failed"]
+    assert project.ai_runs[-1].detail == "connection"  # stops: the server is down
+    events = _run(project, Server())
+    assert [e.result is None for e in events] == [True, False, False]
+    assert [r.outcome for r in project.ai_runs] == ["succeeded", "failed", "succeeded", "succeeded"]
+
+
+def test_another_model_is_not_considered_done(project):
+    _run(project, Server())
+    other = LocalModelClient("autre-modele", transport=httpx.MockTransport(Server()))
+    events = list(enrich(project, other, now=lambda: NOW, block_size=12))
+    assert all(e.result is not None for e in events)
+
+
+def test_inventions_are_flagged(project):
+    def describe(name):
+        return "Un score ≥ 14 selon Beck et al. (1996)." if name == "sommeil_q1" else ""
+
+    _run(project, Server(describe=describe))
+    assert project.variable("sommeil_q1").ai_signals == [
+        "description:citation",
+        "description:threshold",
+    ]
+    assert project.variable("sommeil_q2").ai_signals == []
+    assert project.variable("sommeil_q2").description.value is None  # empty: no proposal
+
+
+def test_project_saved_after_each_block_and_exchanges_logged(project, tmp_path, generator):
+    saved = []
+    _run(project, Server(), save=lambda p: saved.append(len(p.ai_runs)), log_dir=tmp_path)
+    assert saved == [1, 2, 3]
+    files = sorted(p.name for p in tmp_path.iterdir())
+    assert files == ["run-0001-b-001.json", "run-0002-b-002.json", "run-0003-b-003.json"]
+    record = json.loads((tmp_path / files[0]).read_text(encoding="utf-8"))
+    assert record["run"]["message_sha256"] == project.ai_runs[0].message_sha256
+    assert "Libellé IA id_participant" in record["answers"][0]
+    text = "".join(p.read_text(encoding="utf-8") for p in tmp_path.iterdir())
+    for canary in generator.CANARIES:
+        assert canary not in text
+
+
+@pytest.fixture
+def fake_ollama(monkeypatch):
+    """The command line's client, with the fake server as transport."""
+    server = Server()
+    real = client_module.LocalModelClient.__init__
+
+    def init(self, model, *, endpoint=client_module.DEFAULT_ENDPOINT, **kwargs):
+        real(self, model, endpoint=endpoint, transport=httpx.MockTransport(server))
+
+    monkeypatch.setattr(client_module.LocalModelClient, "__init__", init)
+    return server
+
+
+def test_command(fictional_files, tmp_path, capsys, fake_ollama):
+    project_path = tmp_path / "etude.dd.json"
+    main(["profiler", str(fictional_files["etude-sommeil.sav"]), "-o", str(project_path)])
+    assert main(["enrichir", str(project_path), "--modele", "qwen-test"]) == 0
+    out = capsys.readouterr().out
+    assert "Bloc b-001 (12 variables) : réussi." in out
+    project = load_project(project_path)
+    assert len(project.ai_runs) == 3
+    assert project.variable("anx1").label.status == "proposed"
+    assert len(list((tmp_path / "etude.dd-envois").glob("run-*.json"))) == 3
+    assert main(["enrichir", str(project_path), "--modele", "qwen-test"]) == 0
+    assert "déjà fait" in capsys.readouterr().out
+    assert fake_ollama.calls == 3
+
+
+def test_command_needs_a_model(fictional_files, tmp_path, capsys):
+    project_path = tmp_path / "etude.dd.json"
+    main(["profiler", str(fictional_files["etude-sommeil.sav"]), "-o", str(project_path)])
+    assert main(["enrichir", str(project_path)]) == 2
+    assert "--modele" in capsys.readouterr().err
+
+
+def test_command_refuses_a_remote_address(fictional_files, tmp_path, capsys):
+    project_path = tmp_path / "etude.dd.json"
+    main(["profiler", str(fictional_files["etude-sommeil.sav"]), "-o", str(project_path)])
+    code = main(
+        ["enrichir", str(project_path), "--modele", "m", "--adresse", "https://api.example.com/v1"]
+    )
+    assert code == 2
+    assert "Adresse refusée" in capsys.readouterr().err
+    assert load_project(project_path).ai_runs == []

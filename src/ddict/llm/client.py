@@ -16,7 +16,8 @@ from urllib.parse import urlsplit
 
 import httpx
 
-DEFAULT_ENDPOINT = "http://127.0.0.1:11434/v1"  # Ollama
+from ddict.llm.defaults import DEFAULT_ENDPOINT
+
 DEFAULT_TIMEOUT = 300.0  # seconds: a small model on a processor can be slow
 TEMPERATURE = 0
 SEED = 42
