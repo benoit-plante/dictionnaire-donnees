@@ -340,6 +340,8 @@ Toutes les dépendances ci-dessus sont sous licences permissives (BSD, MIT, Apac
 
 **v0.1** (§ 13) : `.sav` et `.csv`, profilage complet, regroupement déterministe, enrichissement IA facultatif, révision Streamlit, fichier projet, exports `.xlsx` et `.md`, interface en français.
 
+**v0.2** : questionnaire comme source documentée, glossaire des sigles, autres formats ; plan proposé dans [`plan-v0.2.md`](plan-v0.2.md).
+
 **Plus tard** (hors v0.1) :
 - bases SQL ;
 - export Frictionless Table Schema ;
