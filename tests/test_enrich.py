@@ -36,10 +36,13 @@ class Server:
     def __init__(self, describe=None, fail_after=None):
         self.describe = describe
         self.fail_after = fail_after
+        self.status = None  # an HTTP error to answer instead
         self.calls = 0
 
     def __call__(self, request):
         self.calls += 1
+        if self.status is not None:
+            return httpx.Response(self.status, text="model not found")
         if self.fail_after is not None and self.calls > self.fail_after:
             raise httpx.ConnectError("refused", request=request)
         body = json.loads(request.content)
@@ -177,6 +180,17 @@ def test_command(fictional_files, tmp_path, capsys, fake_ollama):
     assert main(["enrichir", str(project_path), "--modele", "qwen-test"]) == 0
     assert "déjà fait" in capsys.readouterr().out
     assert fake_ollama.calls == 3
+
+
+def test_command_explains_a_missing_model(fictional_files, tmp_path, capsys, fake_ollama):
+    project_path = tmp_path / "etude.dd.json"
+    main(["profiler", str(fictional_files["etude-sommeil.sav"]), "-o", str(project_path)])
+    capsys.readouterr()
+    fake_ollama.status = 404
+    assert main(["enrichir", str(project_path), "--modele", "qwen-absent"]) == 2
+    out, err = capsys.readouterr()
+    assert "ollama pull qwen-absent" in err
+    assert "Aucune nouvelle proposition" in err and "à réviser" not in out
 
 
 def test_command_needs_a_model(fictional_files, tmp_path, capsys):

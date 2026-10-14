@@ -14,6 +14,7 @@ import webbrowser
 from datetime import datetime
 from pathlib import Path
 
+from ddict import __version__
 from ddict.export import write_markdown, write_xlsx
 from ddict.i18n import _
 from ddict.io import ReadError, read_database
@@ -114,8 +115,8 @@ def cmd_enrich(args: argparse.Namespace) -> int:
     except ImportError:
         print(
             _(
-                "L'option IA n'est pas installée. Installez-la avec : "
-                'uv sync --extra ia (ou pip install "ddict[ia]").'
+                "L'option IA n'est pas installée. Réinstallez l'outil avec ses options : "
+                'uv tool install --reinstall ".[ia,revision]" (voir docs/installation-windows.md).'
             ),
             file=sys.stderr,
         )
@@ -137,7 +138,7 @@ def cmd_enrich(args: argparse.Namespace) -> int:
         "failed": _("échec"),
         "refused": _("refusé"),
     }
-    failed = 0
+    failed = succeeded = 0
     with client:
         events = enrich(
             project,
@@ -163,6 +164,8 @@ def cmd_enrich(args: argparse.Namespace) -> int:
                 if run.detail:
                     status += f" ({run.detail})"
                     failed += 1
+                else:
+                    succeeded += 1
                 print(
                     _("Bloc {block} ({n} variables) : {status}.").format(
                         block=event.block.block_id, n=names, status=status
@@ -172,14 +175,26 @@ def cmd_enrich(args: argparse.Namespace) -> int:
         except KeyboardInterrupt:
             print(_("Interrompu. Les blocs terminés sont enregistrés ; relancez pour continuer."))
             return EXIT_ERROR
-    if failed and project.ai_runs and project.ai_runs[-1].detail == "connection":
+    last = project.ai_runs[-1].detail if failed and project.ai_runs else None
+    if last == "connection":
         print(
             _("Le serveur {endpoint} ne répond pas. Ollama est-il lancé ?").format(
                 endpoint=client.endpoint
             ),
             file=sys.stderr,
         )
-    print(_("Propositions enregistrées dans {path}, à réviser.").format(path=project_path))
+    elif last == "http_404":
+        print(
+            _(
+                "Le modèle « {model} » est introuvable sur le serveur. "
+                "Avec Ollama, téléchargez-le d'abord : ollama pull {model}"
+            ).format(model=args.modele),
+            file=sys.stderr,
+        )
+    if succeeded:
+        print(_("Propositions enregistrées dans {path}, à réviser.").format(path=project_path))
+    elif failed:
+        print(_("Aucune nouvelle proposition."), file=sys.stderr)
     return EXIT_ERROR if failed else 0
 
 
@@ -266,7 +281,7 @@ def cmd_review(args: argparse.Namespace) -> int:
         print(
             _(
                 "L'interface de révision n'est pas installée. Installez-la avec : "
-                'uv sync --extra revision (ou pip install "ddict[revision]").'
+                'uv tool install --reinstall ".[ia,revision]" (voir docs/installation-windows.md).'
             ),
             file=sys.stderr,
         )
@@ -292,6 +307,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="ddict",
         description=_("Création de dictionnaires de données, en local."),
     )
+    parser.add_argument("--version", action="version", version=f"ddict {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
 
     profile = commands.add_parser(
