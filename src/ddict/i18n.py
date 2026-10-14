@@ -40,6 +40,21 @@ def _(text: str) -> str:
     return _catalog(_current).gettext(text)
 
 
+def colon() -> str:
+    """ " : " in French, ": " in English."""
+    return " : " if _current == "fr" else ": "
+
+
+def field_label(text: str) -> str:
+    """ "Format : " in French, "Format: " in English: a translated label before a value."""
+    return _(text) + colon()
+
+
+def quoted(text: str) -> str:
+    """« text » in French, "text" in English."""
+    return f"« {text} »" if _current == "fr" else f'"{text}"'
+
+
 def N_(text: str) -> str:
     """Mark a string for translation without translating it (it is kept in a table)."""
     return text

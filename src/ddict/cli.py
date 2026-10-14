@@ -498,6 +498,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     profile = commands.add_parser(
         "profiler",
+        aliases=["profile"],
         help=_("Lire une base (.sav, .csv, .dta, .sas7bdat ou .xlsx) et créer le fichier projet."),
     )
     profile.add_argument(
@@ -510,30 +511,38 @@ def build_parser() -> argparse.ArgumentParser:
     profile.add_argument(
         "-o",
         "--sortie",
+        "--output",
         help=_("Fichier projet à créer (par défaut : à côté de la base, en .dd.json)."),
     )
     profile.add_argument(
         "--seuil",
+        "--threshold",
         type=int,
         default=MIN_CELL_COUNT,
         help=_("Effectif minimal affiché ; en dessous, il est masqué (défaut : 5)."),
     )
-    profile.add_argument("--remplacer", action="store_true", help=_("Écraser un projet existant."))
+    profile.add_argument(
+        "--remplacer", "--replace", action="store_true", help=_("Écraser un projet existant.")
+    )
     profile.set_defaults(handler=cmd_profile)
 
     export = commands.add_parser(
-        "exporter", help=_("Produire le codebook Excel et le rapport Markdown d'un projet.")
+        "exporter",
+        aliases=["export"],
+        help=_("Produire le codebook Excel et le rapport Markdown d'un projet."),
     )
     export.add_argument("projet", help=_("Fichier projet (.dd.json)."))
     export.add_argument("--xlsx", help=_("Codebook Excel à écrire."))
     export.add_argument("--md", help=_("Rapport Markdown à écrire."))
     export.add_argument(
         "--travail",
+        "--work",
         action="store_true",
         help=_("Inclure les propositions de l'IA en attente, marquées comme telles."),
     )
     export.add_argument(
         "--sans-texte",
+        "--no-text",
         nargs="+",
         metavar="GROUPE",
         help=_(
@@ -543,6 +552,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     export.add_argument(
         "--syntaxe",
+        "--syntax",
         action="store_true",
         help=_(
             "Écrire aussi les fichiers de commandes SPSS et R qui appliquent les "
@@ -553,18 +563,23 @@ def build_parser() -> argparse.ArgumentParser:
 
     copy = commands.add_parser(
         "documenter",
+        aliases=["document"],
         help=_(
             "Écrire une copie de la base au format SPSS (.sav), avec les décisions acceptées. "
             "L'original n'est jamais modifié."
         ),
     )
     copy.add_argument("projet", help=_("Fichier projet (.dd.json)."))
-    copy.add_argument("--base", help=_("La base d'origine, si elle n'est pas à côté du projet."))
     copy.add_argument(
-        "--sortie", help=_("Copie à écrire (défaut : à côté de la base, « -documente.sav »).")
+        "--base", "--database", help=_("La base d'origine, si elle n'est pas à côté du projet.")
     )
     copy.add_argument(
-        "--remplacer", action="store_true", help=_("Remplacer une copie déjà écrite.")
+        "--sortie",
+        "--output",
+        help=_("Copie à écrire (défaut : à côté de la base, « -documente.sav »)."),
+    )
+    copy.add_argument(
+        "--remplacer", "--replace", action="store_true", help=_("Remplacer une copie déjà écrite.")
     )
     copy.set_defaults(handler=cmd_copy)
 
@@ -575,12 +590,16 @@ def build_parser() -> argparse.ArgumentParser:
     questionnaire.add_argument("projet", help=_("Fichier projet (.dd.json)."))
     questionnaire.add_argument("fichier", help=_("Questionnaire (.pdf ou .txt)."))
     questionnaire.add_argument(
-        "--remplacer", action="store_true", help=_("Remplacer le questionnaire déjà lu.")
+        "--remplacer",
+        "--replace",
+        action="store_true",
+        help=_("Remplacer le questionnaire déjà lu."),
     )
     questionnaire.set_defaults(handler=cmd_questionnaire)
 
     enrich = commands.add_parser(
         "enrichir",
+        aliases=["enrich"],
         help=_("Faire proposer libellés et descriptions par un modèle local (facultatif)."),
     )
     _model_arguments(enrich, _("Renvoyer aussi les blocs déjà enrichis."), DEFAULT_BLOCK_SIZE)
@@ -588,6 +607,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     link = commands.add_parser(
         "rattacher",
+        aliases=["link"],
         help=_(
             "Rattacher les variables aux questions du questionnaire : questions candidates, "
             "puis choix proposé par un modèle local (facultatif)."
@@ -598,6 +618,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     bench = commands.add_parser(
         "evaluer",
+        aliases=["evaluate"],
         help=_(
             "Mesurer un modèle installé sur les deux bases fictives : rattachements justes, "
             "inventions signalées, durée."
@@ -605,11 +626,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     bench.add_argument(
         "--modele",
+        "--model",
         required=True,
         help=_("Nom du modèle dans le serveur local, p. ex. qwen2.5:7b-instruct-q4_K_M."),
     )
     bench.add_argument(
         "--adresse",
+        "--address",
         default=DEFAULT_ENDPOINT,
         help=_("Adresse du serveur local compatible OpenAI (défaut : Ollama, {default}).").format(
             default=DEFAULT_ENDPOINT
@@ -617,6 +640,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     bench.add_argument(
         "--dossier",
+        "--folder",
         default=".",
         help=_("Dossier où écrire le rapport (défaut : le dossier courant)."),
     )
@@ -624,6 +648,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     review = commands.add_parser(
         "reviser",
+        aliases=["review"],
         help=_("Ouvrir l'interface de révision dans le navigateur (cet ordinateur seulement)."),
     )
     review.add_argument("projet", help=_("Fichier projet (.dd.json)."))
@@ -639,27 +664,31 @@ def _model_arguments(command: argparse.ArgumentParser, redo_help: str, block_siz
     command.add_argument("projet", help=_("Fichier projet (.dd.json)."))
     command.add_argument(
         "--apercu",
+        "--preview",
         action="store_true",
         help=_("Écrire les messages qui seraient envoyés, sans rien envoyer."),
     )
     command.add_argument(
         "--taille-bloc",
+        "--block-size",
         type=int,
         default=block_size,
         help=_("Nombre de variables par message (défaut : {n}).").format(n=block_size),
     )
     command.add_argument(
         "--modele",
+        "--model",
         help=_("Nom du modèle dans le serveur local, p. ex. qwen2.5:7b-instruct-q4_K_M."),
     )
     command.add_argument(
         "--adresse",
+        "--address",
         default=DEFAULT_ENDPOINT,
         help=_("Adresse du serveur local compatible OpenAI (défaut : Ollama, {default}).").format(
             default=DEFAULT_ENDPOINT
         ),
     )
-    command.add_argument("--refaire", action="store_true", help=redo_help)
+    command.add_argument("--refaire", "--redo", action="store_true", help=redo_help)
 
 
 def main(argv: list[str] | None = None) -> int:

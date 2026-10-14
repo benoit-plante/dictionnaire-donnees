@@ -11,7 +11,7 @@ import pandas as pd
 import streamlit as st
 
 from ddict.export import wording as w
-from ddict.i18n import N_, Texts, _
+from ddict.i18n import N_, Texts, _, field_label
 from ddict.project.model import Project, TrackedValue, VariableEntry
 from ddict.questionnaire import link
 from ddict.questionnaire.labels import ASSUMED_ORDER
@@ -232,16 +232,16 @@ def _file_and_computed(entry: VariableEntry) -> None:
     left, right = st.columns(2)
     with left:
         st.subheader(_("Dans le fichier"))
-        st.write(f"{_('Étiquette')} : {entry.file.label or _('(aucune)')}")
+        st.write(f"{field_label('Étiquette')}{entry.file.label or _('(aucune)')}")
         if entry.file.measure_level:
-            st.write(f"{_('Niveau de mesure')} : {w.MEASURES[entry.file.measure_level]}")
+            st.write(f"{field_label('Niveau de mesure')}{w.MEASURES[entry.file.measure_level]}")
         if entry.file.display_format:
-            st.write(f"{_('Format')} : {entry.file.display_format}")
+            st.write(f"{field_label('Format')}{entry.file.display_format}")
         if w.missing_codes(entry):
-            st.write(f"{_('Codes manquants déclarés')} : {w.missing_codes(entry)}")
+            st.write(f"{field_label('Codes manquants déclarés')}{w.missing_codes(entry)}")
     with right:
         st.subheader(_("Calculé"))
-        st.write(f"{_('Type')} : {w.TYPES.get(p.inferred_type, p.inferred_type)}")
+        st.write(f"{field_label('Type')}{w.TYPES.get(p.inferred_type, p.inferred_type)}")
         st.write(
             _("Valides : {v} ; cases vides : {e} ; manquants déclarés : {d}").format(
                 v=p.n_valid, e=p.n_system_missing, d=p.n_declared_missing
@@ -253,9 +253,9 @@ def _file_and_computed(entry: VariableEntry) -> None:
                 stats += f" ; {_('moyenne')} {w.number(p.mean)}"
             st.write(stats)
         if p.date_min:
-            st.write(f"{_('Dates')} : {p.date_min} – {p.date_max}")
+            st.write(f"{field_label('Dates')}{p.date_min} – {p.date_max}")
         if entry.group_id.value:
-            group = f"{_('Groupe')} : {entry.group_id.value}"
+            group = f"{field_label('Groupe')}{entry.group_id.value}"
             if p.item_rest_r is not None:
                 group += " " + _("(corrélation avec le reste : {r})").format(
                     r=w.number(p.item_rest_r)
@@ -365,7 +365,8 @@ def _sourced(entry: VariableEntry) -> None:
         r = entry.theoretical_range
         if r:
             st.write(
-                f"{_('Étendue théorique')} : {w.number(r.min)} – {w.number(r.max)} ({r.source})"
+                field_label("Étendue théorique")
+                + f"{w.number(r.min)} – {w.number(r.max)} ({r.source})"
             )
             c.button(
                 _("Retirer l'étendue"), f"clear-range-{name}", logic.clear_theoretical_range, name

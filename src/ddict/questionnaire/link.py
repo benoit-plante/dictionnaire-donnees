@@ -33,6 +33,7 @@ import unicodedata
 from dataclasses import dataclass
 
 from ddict import glossary
+from ddict.i18n import _, colon
 from ddict.project.model import Project, Question, Questionnaire, TrackedValue, VariableEntry
 
 NO_QUESTION = "none"  # a decision: the variable comes from no question of the questionnaire
@@ -141,12 +142,12 @@ def describe(questionnaire: Questionnaire | None, target_id: str | None) -> str 
     if target_id is None:
         return None
     if target_id == NO_QUESTION:
-        return "Aucune question du questionnaire"
+        return _("Aucune question du questionnaire")
     found = target(questionnaire, target_id)
     if found is None:
         return None
     page = f", p. {found.question.page}" if found.question.page else ""
-    return f"{target_id}{page} : {target_text(found)}"
+    return f"{target_id}{page}{colon()}{target_text(found)}"
 
 
 def is_linked(entry: VariableEntry) -> bool:

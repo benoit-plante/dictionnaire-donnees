@@ -6,7 +6,7 @@ from collections import Counter
 from pathlib import Path
 
 from ddict.export import wording as w
-from ddict.i18n import _
+from ddict.i18n import _, field_label
 from ddict.project.model import Project, VariableEntry
 
 
@@ -30,11 +30,11 @@ def _overview(project: Project, kind: w.ExportKind) -> list[str]:
     lines = [
         _("# Dictionnaire de données : {name}").format(name=_inline(source.name)),
         "",
-        f"- {_('Fichier')} : `{_inline(source.name)}`"
+        f"- {field_label('Fichier')}`{_inline(source.name)}`"
         + (f" ({_inline(source.label)})" if source.label else ""),
-        f"- {_('Empreinte SHA-256')} : `{source.sha256}`",
-        f"- {_('Lignes')} : {source.n_rows} ; {_('variables')} : {source.n_columns}",
-        f"- {_('Version')} : {kind_text}",
+        f"- {field_label('Empreinte SHA-256')}`{source.sha256}`",
+        f"- {field_label('Lignes')}{source.n_rows} ; {field_label('variables')}{source.n_columns}",
+        f"- {field_label('Version')}{kind_text}",
         "- "
         + _(
             "Effectifs inférieurs à {n} masqués, ainsi qu'un second effectif quand le "
@@ -79,13 +79,13 @@ def _variable(
         lines += [f"> {question} : {_inline(text)}" if text else f"> {question}", ""]
 
     facts = [
-        f"{_('Type')} : {w.TYPES.get(p.inferred_type, p.inferred_type)}",
+        f"{field_label('Type')}{w.TYPES.get(p.inferred_type, p.inferred_type)}",
     ]
     if entry.file.measure_level:
-        facts.append(f"{_('Niveau de mesure')} : {w.MEASURES[entry.file.measure_level]}")
+        facts.append(f"{field_label('Niveau de mesure')}{w.MEASURES[entry.file.measure_level]}")
     unit = w.text(entry.unit, kind)
     if unit:
-        facts.append(f"{_('Unité')} : {_inline(unit)}")
+        facts.append(f"{field_label('Unité')}{_inline(unit)}")
     facts.append(
         _(
             "Valides : {valid} ; cases vides : {empty} ; manquants déclarés : {declared} ({pct} %)"
@@ -97,7 +97,7 @@ def _variable(
         )
     )
     if w.missing_codes(entry):
-        facts.append(f"{_('Codes manquants déclarés')} : {w.missing_codes(entry)}")
+        facts.append(f"{field_label('Codes manquants déclarés')}{w.missing_codes(entry)}")
     if p.min is not None:
         stats = f"{_('Min')} {w.number(p.min)} ; {_('max')} {w.number(p.max)}"
         if p.mean is not None:
@@ -107,34 +107,34 @@ def _variable(
         stats += f" ; {_('médiane')} {w.number(p.median)}"
         facts.append(stats)
     if p.date_min:
-        facts.append(f"{_('Dates')} : {p.date_min} – {p.date_max}")
+        facts.append(f"{field_label('Dates')}{p.date_min} – {p.date_max}")
     if p.n_distinct is not None:
-        facts.append(f"{_('Valeurs distinctes')} : {p.n_distinct}")
+        facts.append(f"{field_label('Valeurs distinctes')}{p.n_distinct}")
     group = w.text(entry.group_id, kind)
     if group:
-        fact = f"{_('Groupe')} : {_inline(group)}"
+        fact = f"{field_label('Groupe')}{_inline(group)}"
         if p.item_rest_r is not None:
             fact += " " + _("(corrélation avec le reste du groupe : {r})").format(
                 r=w.number(p.item_rest_r)
             )
         facts.append(fact)
     privacy_class = entry.privacy.privacy_class.value or "ordinary"
-    facts.append(f"{_('Confidentialité')} : {w.privacy_text(entry)}")
+    facts.append(f"{field_label('Confidentialité')}{w.privacy_text(entry)}")
     if privacy_class != "ordinary":
         facts.append(_("Variable sensible : aucune statistique sur ses valeurs."))
     if entry.theoretical_range:
         r = entry.theoretical_range
         facts.append(
-            f"{_('Étendue théorique')} : {w.number(r.min)} – {w.number(r.max)} "
-            f"({_('source')} : {_inline(r.source)})"
+            f"{field_label('Étendue théorique')}{w.number(r.min)} – {w.number(r.max)} "
+            f"({field_label('source')}{_inline(r.source)})"
         )
     for t in entry.thresholds:
         facts.append(
             f"{_('Seuil')} {w.number(t.value)} : {_inline(t.meaning)} "
-            f"({_('source')} : {_inline(t.source)})"
+            f"({field_label('source')}{_inline(t.source)})"
         )
     for reference in entry.references:
-        facts.append(f"{_('Référence')} : {_inline(reference)}")
+        facts.append(f"{field_label('Référence')}{_inline(reference)}")
     lines += [f"- {fact}" for fact in facts] + [""]
 
     rows = w.value_rows(entry)
@@ -145,7 +145,7 @@ def _variable(
         )
         lines += [f"*{source}* : {proposed}", ""]
     elif source and rows:
-        lines += [f"*{_('Étiquettes de valeurs')} : {source}.*", ""]
+        lines += [f"*{field_label('Étiquettes de valeurs')}{source}.*", ""]
     if rows:
         lines += [
             f"| {_('Code')} | {_('Étiquette')} | {_('Effectif')} | {_('Manquant déclaré')} |",
@@ -175,15 +175,15 @@ def _groups(project: Project, kind: w.ExportKind) -> list[str]:
         members = w.shown(group.members, kind)
         facts = []
         if members:
-            facts.append(f"{_('Variables')} : " + ", ".join(f"`{m}`" for m in members.value))
-        facts.append(f"{_('Indices du regroupement')} : {w.basis_text(group.basis)}")
+            facts.append(f"{field_label('Variables')}" + ", ".join(f"`{m}`" for m in members.value))
+        facts.append(f"{field_label('Indices du regroupement')}{w.basis_text(group.basis)}")
         hypothesis = w.text(group.ai_hypothesis, kind)
         if hypothesis:
             facts.append(_("Hypothèse de l'IA") + f" : {_inline(hypothesis)}")
         if group.instrument_name:
             facts.append(
-                f"{_('Instrument')} : {_inline(group.instrument_name.value)} "
-                f"({_('source')} : {_inline(group.instrument_name.source)})"
+                f"{field_label('Instrument')}{_inline(group.instrument_name.value)} "
+                f"({field_label('source')}{_inline(group.instrument_name.source)})"
             )
         suspects = [
             e.name
@@ -192,11 +192,12 @@ def _groups(project: Project, kind: w.ExportKind) -> list[str]:
         ]
         if suspects:
             facts.append(
-                f"{_('Items probablement inversés')} : " + ", ".join(f"`{s}`" for s in suspects)
+                f"{field_label('Items probablement inversés')}"
+                + ", ".join(f"`{s}`" for s in suspects)
             )
         if group.reverse_items:
             facts.append(
-                f"{_('Items inversés confirmés')} : "
+                f"{field_label('Items inversés confirmés')}"
                 + ", ".join(f"`{s}`" for s in group.reverse_items)
             )
         if group.cronbach_alpha is not None:

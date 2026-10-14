@@ -8,7 +8,7 @@ import pandas as pd
 import streamlit as st
 
 from ddict.export import wording as w
-from ddict.i18n import _
+from ddict.i18n import _, field_label, quoted
 from ddict.project.model import Project
 from ddict.review import logic
 from ddict.review.ui import common as c
@@ -36,13 +36,13 @@ def page(project: Project) -> None:
     columns[2].metric(_("Variables sensibles"), len(sensitive))
     columns[3].metric(_("Avec signalements"), len(flagged))
 
-    facts = [f"{_('Format')} : {FORMATS.get(source.format, source.format)}"]
+    facts = [f"{field_label('Format')}{FORMATS.get(source.format, source.format)}"]
     if source.encoding:
-        facts.append(f"{_('Encodage')} : {source.encoding}")
+        facts.append(f"{field_label('Encodage')}{source.encoding}")
     if source.delimiter:
-        facts.append(f"{_('Séparateur')} : « {source.delimiter} »")
+        facts.append(f"{field_label('Séparateur')}{quoted(source.delimiter)}")
     if source.decimal:
-        facts.append(f"{_('Marque décimale')} : « {source.decimal} »")
+        facts.append(f"{field_label('Marque décimale')}{quoted(source.decimal)}")
     facts.append(_("Groupes de variables repérés : {n}").format(n=len(project.groups)))
     st.markdown("\n".join(f"- {fact}" for fact in facts))
     st.caption(

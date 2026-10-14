@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from ddict import __version__
-from ddict.i18n import N_, Texts, _
+from ddict.i18n import N_, Texts, _, field_label
 from ddict.io import read_database
 from ddict.llm.link import DEFAULT_LINK_BLOCK_SIZE, LINK_PROMPT_VERSION
 from ddict.llm.messages import DEFAULT_BLOCK_SIZE, PROMPT_VERSION
@@ -175,9 +175,9 @@ def render_report(results: list[BaseResult], *, model: str, endpoint: str, date:
     lines = [
         _("# Banc d'essai : {model}").format(model=model),
         "",
-        f"- {_('Date')} : {date}",
-        f"- {_('Serveur local')} : {endpoint}",
-        f"- {_('Outil')} : dictionnaire-donnees {__version__} ; prompts "
+        f"- {field_label('Date')}{date}",
+        f"- {field_label('Serveur local')}{endpoint}",
+        f"- {field_label('Outil')}dictionnaire-donnees {__version__} ; prompts "
         f"{LINK_PROMPT_VERSION} {_('et')} {PROMPT_VERSION}",
         "- "
         + _(

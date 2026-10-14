@@ -15,6 +15,7 @@ from __future__ import annotations
 import re
 import unicodedata
 
+from ddict.i18n import _, quoted
 from ddict.project.model import GlossaryEntry, Project, Questionnaire
 
 # Words that do not give an initial: "Questionnaire fictif du sommeil (QFS)".
@@ -142,7 +143,9 @@ def decide(project: Project, term: str, action: str, *, now: str) -> None:
     """Accept or reject an acronym found in the questionnaire."""
     current = entry(project, term)
     if current is None or current.origin != "questionnaire":
-        raise GlossaryError(f"Aucune proposition du questionnaire pour « {term} ».")
+        raise GlossaryError(
+            _("Aucune proposition du questionnaire pour {term}.").format(term=quoted(term))
+        )
     status = {"accept": "validated", "reject": "rejected"}[action]
     index = project.glossary.index(current)
     project.glossary[index] = current.model_copy(update={"status": status, "updated_at": now})
@@ -153,11 +156,11 @@ def write(project: Project, term: str, meaning: str, *, now: str) -> None:
     entry (an entry from the questionnaire is rejected instead)."""
     term, meaning = term.strip(), meaning.strip()
     if not term:
-        raise GlossaryError("Le sigle est vide.")
+        raise GlossaryError(_("Le sigle est vide."))
     current = entry(project, term)
     if current is None:
         if not meaning:
-            raise GlossaryError("La définition est vide.")
+            raise GlossaryError(_("La définition est vide."))
         project.glossary.append(
             GlossaryEntry(term=term, meaning=meaning, origin="human", updated_at=now)
         )
@@ -172,7 +175,7 @@ def write(project: Project, term: str, meaning: str, *, now: str) -> None:
             del project.glossary[index]
         return
     if not meaning:
-        raise GlossaryError("La définition est vide ; utilisez « Rejeter ».")
+        raise GlossaryError(_("La définition est vide ; utilisez « Rejeter »."))
     original = current.proposed_meaning or current.meaning
     if meaning == original:
         updated = {"meaning": meaning, "status": "validated", "proposed_meaning": None}

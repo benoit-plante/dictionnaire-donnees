@@ -12,21 +12,24 @@ from __future__ import annotations
 import subprocess
 import sys
 
+from ddict import settings
+from ddict.i18n import N_, _
+
 KINDS = {
     "database": (
-        "Choisir la base de données",
+        N_("Choisir la base de données"),
         [
-            ("Bases de données", "*.sav *.zsav *.csv *.dta *.sas7bdat *.xlsx"),
-            ("Tous les fichiers", "*.*"),
+            (N_("Bases de données"), "*.sav *.zsav *.csv *.dta *.sas7bdat *.xlsx"),
+            (N_("Tous les fichiers"), "*.*"),
         ],
     ),
     "project": (
-        "Choisir un fichier projet",
-        [("Fichiers projet", "*.dd.json"), ("Tous les fichiers", "*.*")],
+        N_("Choisir un fichier projet"),
+        [(N_("Fichiers projet"), "*.dd.json"), (N_("Tous les fichiers"), "*.*")],
     ),
     "questionnaire": (
-        "Choisir le questionnaire",
-        [("Questionnaires", "*.pdf *.txt"), ("Tous les fichiers", "*.*")],
+        N_("Choisir le questionnaire"),
+        [(N_("Questionnaires"), "*.pdf *.txt"), (N_("Tous les fichiers"), "*.*")],
     ),
 }
 TIMEOUT = 600  # seconds: a person may take a while to find the file
@@ -54,7 +57,10 @@ def _open_window(kind: str) -> str:
     import tkinter
     from tkinter import filedialog
 
+    settings.apply()  # the language of this computer (v0.5)
     title, types = KINDS[kind]
+    title = _(title)
+    types = [(_(name), pattern) for name, pattern in types]
     root = tkinter.Tk()
     root.withdraw()
     root.attributes("-topmost", True)  # in front of the browser, not behind it

@@ -14,11 +14,12 @@ Otherwise nothing is proposed: the tool does not guess.
 
 from __future__ import annotations
 
+from ddict.i18n import N_
 from ddict.project.decisions import is_accepted
 from ddict.project.model import Project, TrackedValue, ValueLabel, VariableEntry
 from ddict.questionnaire import link
 
-ASSUMED_ORDER = "ordre supposé, à vérifier"
+ASSUMED_ORDER = N_("ordre supposé, à vérifier")
 UNCLEAR_OPTIONS = {"grid_header_unclear", "grid_without_header"}
 
 

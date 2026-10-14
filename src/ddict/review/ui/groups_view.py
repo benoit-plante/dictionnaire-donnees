@@ -5,7 +5,7 @@ from __future__ import annotations
 import streamlit as st
 
 from ddict.export import wording as w
-from ddict.i18n import _
+from ddict.i18n import _, field_label
 from ddict.project.model import Project
 from ddict.review import logic
 from ddict.review.ui import bulk_view
@@ -17,8 +17,8 @@ def page(project: Project, group_id: str) -> None:
     st.header(f"{group.group_id} — {group.descriptive_label.value or ''}")
     bulk_view.labels_panel(project, group_id)
     members = group.members.value or []
-    st.write(f"{_('Variables')} : " + ", ".join(members))
-    st.write(f"{_('Indices du regroupement')} : {w.basis_text(group.basis)}")
+    st.write(f"{field_label('Variables')}" + ", ".join(members))
+    st.write(f"{field_label('Indices du regroupement')}{w.basis_text(group.basis)}")
     if group.cronbach_alpha is not None:
         st.write(_("Alpha de Cronbach observé : {a}").format(a=w.number(group.cronbach_alpha)))
     if group.cronbach_alpha_reversed is not None:

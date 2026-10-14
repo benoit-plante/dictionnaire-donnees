@@ -1,5 +1,6 @@
-"""Keep the English catalog up to date (v0.5, D-033): extract the strings marked with `_`
-and `N_` in src/ddict, update src/ddict/locale/en/LC_MESSAGES/ddict.po (new strings
+"""Keep the English catalog up to date (v0.5, D-033): extract the strings marked with `_`,
+`N_` and `field_label` in src/ddict (read by Python's own parser, which also sees the calls
+inside f-strings), update src/ddict/locale/en/LC_MESSAGES/ddict.po (new strings
 empty, translations kept, strings gone removed), and compile ddict.mo.
 
 Run: uv run python scripts/traductions.py
@@ -8,12 +9,12 @@ Babel is a development dependency only; the tool reads the .mo with gettext.
 
 from __future__ import annotations
 
+import ast
 import io
 from datetime import UTC, datetime
 from pathlib import Path
 
 from babel.messages.catalog import Catalog
-from babel.messages.extract import extract_from_dir
 from babel.messages.mofile import write_mo
 from babel.messages.pofile import read_po, write_po
 
@@ -25,15 +26,30 @@ LANGUAGES = ["en"]
 FIXED = datetime(2026, 1, 1, tzinfo=UTC)
 
 
+KEYWORDS = {"_", "N_", "field_label"}
+
+
+def marked(path: Path) -> list[str]:
+    """The strings given to `_`, `N_` or `field_label` in a source file, in order."""
+    found = []
+    for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id in KEYWORDS
+            and node.args
+            and isinstance(node.args[0], ast.Constant)
+            and isinstance(node.args[0].value, str)
+            and node.args[0].value
+        ):
+            found.append(node.args[0].value)
+    return found
+
+
 def template() -> Catalog:
     catalog = Catalog(project="ddict", creation_date=FIXED, charset="utf-8")
-    found = extract_from_dir(
-        str(SOURCE),
-        method_map=[("**.py", "python")],
-        keywords={"_": None, "N_": None},
-    )
-    for _filename, _lineno, message, _comments, _context in found:
-        if message:
+    for path in sorted(SOURCE.rglob("*.py")):
+        for message in marked(path):
             catalog.add(message)
     return catalog
 

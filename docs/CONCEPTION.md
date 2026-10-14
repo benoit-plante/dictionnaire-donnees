@@ -309,7 +309,8 @@ La logique (changer un statut, valider une source) vit dans `project` et se test
 
 - `ddict.i18n` : `_` traduit au moment de l'affichage, selon la langue en cours (`set_language`) ; les tables de textes (types, statuts, en-têtes du codebook…) gardent leurs phrases marquées par `N_` et les traduisent à la lecture (`Texts`, `TextList`). Un test refuse toute phrase traduite à l'importation d'un module, qui resterait dans sa première langue.
 - `ddict.settings` : la langue de l'interface, choisie sur l'accueil, est gardée sur l'ordinateur (`reglages.json`, à côté des projets récents) ; `DDICT_LANG` la remplace. Elle est relue à chaque affichage d'une page et au lancement d'une commande.
-- Catalogue : `src/ddict/locale/en/LC_MESSAGES/ddict.po`, mis à jour et compilé en `ddict.mo` par `scripts/traductions.py` (Babel, en développement seulement) ; un test vérifie qu'il contient toutes les phrases du code et que le `.mo` correspond au `.po`.
+- Catalogue : `src/ddict/locale/en/LC_MESSAGES/ddict.po`, mis à jour et compilé en `ddict.mo` par `scripts/traductions.py` ; les phrases marquées (`_`, `N_`, `field_label`) sont trouvées par l'analyseur de Python, qui voit aussi celles des f-strings (l'extracteur de Babel les manquait), et Babel écrit le `.po` et le `.mo`. Des tests vérifient que le catalogue contient toutes les phrases, qu'elles sont toutes traduites, et qu'aucune page parcourue en anglais ne montre de français hors des données de l'équipe. Termes fixés dans `docs/glossaire-traduction.md`.
+- `field_label` et `quoted` suivent la typographie de la langue (« Format : », « Format: »). Les commandes et options ont des équivalents anglais (`ddict export --work`, `--replace`…), à côté des noms français.
 
 ## 8. Exports
 
