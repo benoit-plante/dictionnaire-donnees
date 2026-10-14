@@ -299,6 +299,12 @@ La logique (changer un statut, valider une source) vit dans `project` et se test
 - `logic.group_label_proposals` et `logic.accept_group_labels` : les étiquettes de valeurs proposées pour les membres d'un groupe.
 - Interface (`review/ui/bulk_view.py`) : un premier bouton ouvre la liste exacte, toutes les cases cochées ; le bouton « Accepter ces N… » n'existe que dans cette liste. Essai : `docs/essais/2026-10-14-decisions-groupees.md`.
 
+### 7.2 Banc d'essai des modèles (v0.4, étape 6)
+
+- `ddict.bench` : pour chaque base fictive (CSV, puis questionnaire PDF, comme une équipe), les rattachements proposés par le modèle sont comparés au corrigé (`corrige-banc.json`), avec le calcul seul pour comparaison ; puis, après les bons rattachements et les sigles du questionnaire acceptés, les libellés et descriptions proposés sont comptés selon les signaux de l'outil (citation, seuil, instrument, sigle, étendue observée) et selon un sens de code donné pour un code sans étiquette (« 1 = Oui »). Durée de chaque tâche.
+- Les projets restent en mémoire ; seul un rapport Markdown est écrit (`banc-essai-<modèle>-<date>.md`). Les bases fictives et le corrigé sont inclus dans le paquet (`ddict/banc/`).
+- `ddict evaluer --modele … [--dossier …]`, et une section de la page « IA locale ». Testé avec un faux serveur ; le rapport est reproductible à durées fixées.
+
 ## 8. Exports
 
 - **Codebook `.xlsx`** : un onglet « Variables » (une ligne par variable), un onglet « Valeurs » (une ligne par code et étiquette), un onglet « Groupes », un onglet « Provenance » (statut et origine de chaque champ, modèles utilisés). En-têtes figés, filtres activés.

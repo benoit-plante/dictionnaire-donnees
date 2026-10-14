@@ -1,5 +1,5 @@
 """Command line: `ddict profiler`, `exporter`, `documenter`, `questionnaire`, `enrichir`,
-`rattacher`, `reviser`."""
+`rattacher`, `evaluer`, `reviser`."""
 
 from __future__ import annotations
 
@@ -294,6 +294,52 @@ def _run_model(args: argparse.Namespace, project, project_path: Path, task: str)
     return EXIT_ERROR if failed else 0
 
 
+def cmd_bench(args: argparse.Namespace) -> int:
+    """Measure an installed model on the two fictional bases (v0.4, step 6)."""
+    try:
+        from ddict.bench import render_report, run_bench, write_report
+        from ddict.llm.client import EndpointRefused, LocalModelClient
+    except ImportError:
+        print(
+            _(
+                "L'option IA n'est pas installée. Réinstallez l'outil avec ses options : "
+                'uv tool install --reinstall ".[ia,revision]" (voir docs/installation-windows.md).'
+            ),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
+    folder = Path(args.dossier)
+    if not folder.is_dir():
+        print(_("Dossier introuvable : {path}").format(path=folder), file=sys.stderr)
+        return EXIT_ERROR
+    try:
+        client = LocalModelClient(args.modele, endpoint=args.adresse)
+    except EndpointRefused as error:
+        print(
+            _("Adresse refusée : seul un serveur sur cet ordinateur est permis ({detail}).").format(
+                detail=error
+            ),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
+    results = []
+    with client:
+        for item in run_bench(client, now=lambda: datetime.now().isoformat(timespec="seconds")):
+            if isinstance(item, str):
+                print(item, flush=True)
+            else:
+                results.append(item)
+    detail = next((r.failure_detail for r in results if r.failure_detail), None)
+    advice = failure_advice(detail, client.endpoint, args.modele)
+    if advice:
+        print(advice, file=sys.stderr)
+    today = datetime.now().date().isoformat()
+    text = render_report(results, model=args.modele, endpoint=client.endpoint, date=today)
+    path = write_report(text, folder, args.modele, today)
+    print(_("Rapport : {path}").format(path=path))
+    return 0
+
+
 def _preview(project_path: Path, blocks) -> int:
     folder = exchange_dir(project_path) / "apercu"
     folder.mkdir(parents=True, exist_ok=True)
@@ -549,6 +595,32 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _model_arguments(link, _("Renvoyer aussi les blocs déjà traités."), DEFAULT_LINK_BLOCK_SIZE)
     link.set_defaults(handler=cmd_link)
+
+    bench = commands.add_parser(
+        "evaluer",
+        help=_(
+            "Mesurer un modèle installé sur les deux bases fictives : rattachements justes, "
+            "inventions signalées, durée."
+        ),
+    )
+    bench.add_argument(
+        "--modele",
+        required=True,
+        help=_("Nom du modèle dans le serveur local, p. ex. qwen2.5:7b-instruct-q4_K_M."),
+    )
+    bench.add_argument(
+        "--adresse",
+        default=DEFAULT_ENDPOINT,
+        help=_("Adresse du serveur local compatible OpenAI (défaut : Ollama, {default}).").format(
+            default=DEFAULT_ENDPOINT
+        ),
+    )
+    bench.add_argument(
+        "--dossier",
+        default=".",
+        help=_("Dossier où écrire le rapport (défaut : le dossier courant)."),
+    )
+    bench.set_defaults(handler=cmd_bench)
 
     review = commands.add_parser(
         "reviser",

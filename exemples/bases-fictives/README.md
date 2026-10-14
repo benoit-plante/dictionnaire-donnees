@@ -72,6 +72,8 @@ Les identifiants, les courriels et les commentaires contiennent des **chaînes t
 
 `enquete-familles.csv` (150 familles fictives, 30 variables) et son questionnaire `questionnaire-familles.pdf` (et `.txt`), écrits par `scripts/generer_enquete_familles.py` (graine fixe). Elle diffère volontairement de l'étude sur le sommeil, sur laquelle l'outil a été réglé : le banc d'essai des modèles la mesure sur un questionnaire qu'il n'a jamais vu. Le corrigé est dans le script : `answer_key()` (question de chaque variable) et `TRUE_VALUE_LABELS` (sens réel des codes).
 
+**Corrigé du banc d'essai** : `corrige-banc.json`, écrit par `scripts/generer_corrige_banc.py` à partir des corrigés des deux générateurs, donne la question de chaque variable des deux bases (`etude-sommeil.csv` et `enquete-familles.csv`) telle que l'outil la nomme (`Q7.r3`, `Q10.o2`, ou `none`). Ce fichier, les deux CSV et les deux questionnaires PDF sont inclus dans le paquet installé (`ddict/banc/`), pour que `ddict evaluer` fonctionne sans le dépôt.
+
 | Piège | Où |
 |---|---|
 | CSV exporté par R : aucune étiquette, cases manquantes écrites `NA` | toute la base |

@@ -51,6 +51,14 @@ dev = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/ddict"]
 
+# The model bench (v0.4, step 6) runs on the two fictional bases and their answer key.
+[tool.hatch.build.targets.wheel.force-include]
+"exemples/bases-fictives/corrige-banc.json" = "ddict/banc/corrige-banc.json"
+"exemples/bases-fictives/etude-sommeil.csv" = "ddict/banc/etude-sommeil.csv"
+"exemples/bases-fictives/questionnaire-sommeil.pdf" = "ddict/banc/questionnaire-sommeil.pdf"
+"exemples/bases-fictives/enquete-familles.csv" = "ddict/banc/enquete-familles.csv"
+"exemples/bases-fictives/questionnaire-familles.pdf" = "ddict/banc/questionnaire-familles.pdf"
+
 [tool.pytest.ini_options]
 # Network access is forbidden in every test (CONCEPTION.md, principle 5).
 addopts = ["--disable-socket", "--strict-markers"]

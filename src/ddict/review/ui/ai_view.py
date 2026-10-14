@@ -21,6 +21,7 @@ from ddict.llm.messages import DEFAULT_BLOCK_SIZE, build_blocks
 from ddict.project import save_project
 from ddict.project.model import Project
 from ddict.questionnaire.link import candidates
+from ddict.review.ui import bench_view
 from ddict.review.ui import common as c
 from ddict.workflow import exchange_dir, failure_advice
 
@@ -279,3 +280,5 @@ def page(project: Project) -> None:
         if first
         else None,
     )
+    st.divider()
+    bench_view.section(model)

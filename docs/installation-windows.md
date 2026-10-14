@@ -71,6 +71,8 @@ L'IA propose des rattachements aux questions, puis des libellés et des descript
 
 Pendant un travail, **Arrêter** (ou un changement de page) l'interrompt après le bloc en cours. Les blocs terminés sont enregistrés ; relancez pour continuer là où il s'était arrêté. Comptez environ une minute pour la base fictive avec une carte graphique, plusieurs minutes sans.
 
+**Banc d'essai des modèles** (en bas de la même page, ou `ddict evaluer --modele …`) : pour choisir un modèle, **Mesurer ce modèle** l'essaie sur les deux bases fictives de l'outil, dont on connaît les bonnes réponses. Le rapport dit combien de rattachements sont justes (et ceux du calcul seul, pour comparer), combien de libellés ou de descriptions contiennent peut-être une invention (citation, seuil, nom d'instrument, sens d'un sigle, étendue, sens de codes sans étiquette) et la durée. Vos données ne sont pas utilisées. Le rapport est écrit à côté du projet (`banc-essai-<modèle>-<date>.md`) et peut être téléchargé. Environ deux minutes avec une carte graphique.
+
 ## 7. Réviser
 
 - **Variables** : le filtre (« À réviser », « Avec signalements », « Sensibles », « Sans question », « Toutes ») et la liste des variables. Sur chaque fiche : ce que dit le fichier, ce qui a été calculé, la question rattachée, et chaque proposition à **Accepter**, **Rejeter**, ou corriger puis **Enregistrer**. Chaque décision est enregistrée aussitôt dans le fichier projet.
@@ -122,6 +124,9 @@ ddict rattacher etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M
 ddict enrichir etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M
 ddict reviser etude-sommeil.dd.json           # ouvrir directement un projet
 ddict exporter etude-sommeil.dd.json          # codebook Excel et rapport
+ddict exporter etude-sommeil.dd.json --syntaxe   # et les fichiers de commandes SPSS, R, Stata
+ddict documenter etude-sommeil.dd.json        # copie documentée de la base (.sav)
+ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M   # banc d'essai d'un modèle
 ```
 
 `--apercu` (à `rattacher` ou `enrichir`, sans `--modele`) écrit les messages qui seraient envoyés dans le dossier `etude-sommeil.dd-envois\apercu`, sans rien envoyer. `ddict exporter --sans-texte G2` omet le texte des questions d'un groupe pour un seul export.
