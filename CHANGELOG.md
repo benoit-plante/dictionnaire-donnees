@@ -1,5 +1,20 @@
 # Changements
 
+## 0.2.0 — 2026-10-14
+
+Le questionnaire de l'étude devient une source documentée (plan : `docs/plan-v0.2.md`, D-011 à D-018).
+
+- **Questionnaire** : `ddict questionnaire` lit un questionnaire PDF (SurveyMonkey, LimeSurvey, REDCap…) ou texte et le découpe en questions, options et grilles, sans IA ; les grilles douteuses sont marquées « à vérifier » (D-012, D-017 : nouvelle dépendance pypdf).
+- **Glossaire des sigles** : définitions repérées dans le questionnaire (« thérapie cognitivo-comportementale (TCC) ») ou saisies par l'équipe, jamais par l'IA ; sigles probables des noms de variables signalés (D-015). Nouvelle vue « Glossaire » dans l'interface.
+- **Rattachement des variables aux questions** : `ddict rattacher` calcule des questions candidates (mots, sigles, séries numérotées, familles de noms, ordre), le modèle local peut choisir parmi elles par identifiant, une personne décide dans l'interface (D-013). Filtre « Sans question ».
+- **Prompt `variables-v3`** : le modèle reçoit le texte exact des questions dont le rattachement est accepté et le glossaire accepté. Sur la base publique d'essai, « OCF » est compris dans 30 variables sur 46 (aucune avec v2) et aucun sens de code n'est plus inventé. Un libellé qui donne le sens d'un sigle absent du glossaire est signalé. Blocs de 8 variables par défaut.
+- **Étiquettes de valeurs tirées des options de réponse**, sous une règle stricte et avec la mention « ordre supposé, à vérifier » (D-016) ; nouvelle origine « questionnaire » des valeurs suivies (D-018).
+- **Variantes d'écriture** d'une même réponse signalées (« Français », « français », « Francais »), à partir des catégories visibles seulement.
+- **Nouveaux formats** : Stata (`.dta`), SAS (`.sas7bdat`) et Excel (`.xlsx`).
+- **Exports** : texte exact des questions rattachées, onglet « Glossaire », provenance du questionnaire et des étiquettes ; rien de la page de consentement. Texte des items d'un instrument protégé omis à la demande (case à cocher par groupe, ou `ddict exporter --sans-texte G3`, D-014).
+- Guide mis à jour avec l'ordre recommandé : questionnaire, glossaire et rattachements révisés, puis enrichissement.
+- Essais consignés dans `docs/essais/` (découpage d'un questionnaire réel, rattachement, v2 contre v3, étiquettes de valeurs, variantes).
+
 ## 0.1.2 — 2026-10-13
 
 Corrections après un essai sur une base publique réelle (152 variables, exportée par R).
