@@ -51,7 +51,24 @@ def test_committed_examples_match_the_generator(generator, fictional_files):
     for name, path in fictional_files.items():
         committed = committed_dir / name
         assert committed.exists(), f"{name} missing: run scripts/generer_bases_fictives.py"
-        assert _digest(committed) == _digest(path), f"{name} is out of date: regenerate it"
+        assert _digest(committed) == _digest(path), (
+            f"{name} is out of date: regenerate it{_first_difference(committed, path)}"
+        )
+
+
+def _first_difference(committed, produced) -> str:
+    """Where two workbooks' sheets first differ, to see why on another system."""
+    if committed.suffix != ".xlsx":
+        return ""
+    with zipfile.ZipFile(committed) as a, zipfile.ZipFile(produced) as b:
+        first = a.read("xl/worksheets/sheet1.xml").decode("utf-8")
+        second = b.read("xl/worksheets/sheet1.xml").decode("utf-8")
+    at = next((i for i, (x, y) in enumerate(zip(first, second, strict=False)) if x != y), None)
+    if at is None:
+        return f" (lengths {len(first)} and {len(second)})"
+    return (
+        f"\ncommitted: {first[at - 150 : at + 150]!r}\nproduced:  {second[at - 150 : at + 150]!r}"
+    )
 
 
 def test_sav_has_the_planned_shape(generator, sav):
