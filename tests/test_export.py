@@ -83,7 +83,7 @@ def test_xlsx_sheets_and_variables(run):
     assert book.sheetnames == ["Informations", "Variables", "Valeurs", "Groupes", "Provenance"]
     rows = _rows(run["xlsx"], "Variables")
     header, body = rows[0], rows[1:]
-    assert len(body) == 29
+    assert len(body) == 33
     by_name = {row[1]: dict(zip(header, row, strict=True)) for row in body}
     q1 = by_name["sommeil_q1"]
     assert q1["Libellé"] == "Q1 endormissement"

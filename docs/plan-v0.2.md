@@ -1,6 +1,6 @@
-# Plan de la v0.2 — proposition
+# Plan de la v0.2
 
-> Statut : **proposition, à valider par l'auteur** avant tout code. Les décisions à prendre sont rassemblées à la fin (§ 6).
+> Statut : **validé par l'auteur le 2026-10-13**, avec toutes les recommandations du § 6 (D-011 à D-017).
 
 ## 1. Pourquoi cette version
 

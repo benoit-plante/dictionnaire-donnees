@@ -65,7 +65,7 @@ def test_blocks_cover_every_variable_once_in_order(project):
     assert [b.block_id for b in blocks] == ["b-001", "b-002", "b-003"]
     names = [name for b in blocks for name in b.names]
     assert names == [v.name for v in project.variables]
-    assert [len(b.names) for b in build_blocks(project, size=10)] == [10, 10, 9]
+    assert [len(b.names) for b in build_blocks(project, size=10)] == [10, 10, 10, 3]
 
 
 def test_sensitive_variables_send_only_their_description(payloads):
@@ -157,7 +157,7 @@ def test_preview_command_sends_nothing_and_writes_the_messages(fictional_files, 
     assert record["prompt_version"] == PROMPT_VERSION
     assert record["message_sha256"] == message_sha256(record["messages"])
     # A second preview with another block size replaces the first one.
-    assert main(["enrichir", str(project_path), "--apercu", "--taille-bloc", "15"]) == 0
+    assert main(["enrichir", str(project_path), "--apercu", "--taille-bloc", "20"]) == 0
     assert sorted(p.name for p in folder.iterdir()) == ["b-001.json", "b-002.json"]
 
 

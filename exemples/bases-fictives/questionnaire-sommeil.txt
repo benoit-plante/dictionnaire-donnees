@@ -1,0 +1,84 @@
+Étude fictive sur le sommeil et le bien-être
+
+Formulaire d'information et de consentement
+
+Cette étude est entièrement fictive : elle sert à essayer un outil de documentation des données. Elle comprend le Questionnaire fictif du sommeil (QFS) et l'Échelle fictive d'anxiété (EFA).
+
+Équipe de recherche : Dre Zoé ZQXQUEST-Exemple, Laboratoire fictif du sommeil. Pour toute question : zqxquest@exemple.org ou 555-0199.
+
+Acceptez-vous de participer à cette étude ?
+Oui
+Non
+
+Renseignements généraux
+
+Quelle est votre date de naissance ? (JJ/MM/AAAA)
+
+Quel âge avez-vous ?
+
+Quel est votre genre ?
+Femme
+Homme
+Autre identité
+Préfère ne pas répondre
+
+Votre adresse courriel (pour vous envoyer un rappel) :
+
+Quelle est votre taille, en centimètres ?
+
+Votre sommeil
+
+Les énoncés suivants forment le Questionnaire fictif du sommeil (QFS).
+
+Au cours du dernier mois, dans quelle mesure les énoncés suivants s'appliquent-ils à vous ?
+	Pas du tout	Un peu	Moyennement	Beaucoup	Extrêmement
+1. J'ai de la difficulté à m'endormir le soir.					
+2. Mon sommeil est réparateur.					
+3. Je me réveille plusieurs fois pendant la nuit sans pouvoir me rendormir facilement.					
+4. Je suis satisfait.e de la qualité de mon sommeil.					
+5. J'ai de l'énergie dès le réveil.					
+6. Je somnole pendant la journée, même après une bonne nuit.					
+7. J'évite les écrans dans l'heure qui précède le coucher.					
+8. Je suis une routine régulière avant de me coucher.					
+
+En moyenne, combien d'heures dormez-vous par nuit ?
+
+Combien de fois vous réveillez-vous au cours d'une nuit habituelle ?
+
+Qu'utilisez-vous pour vous aider à dormir ? (Cochez toutes les réponses applicables)
+Un médicament prescrit
+Un produit naturel (tisane, mélatonine)
+Une thérapie cognitivo-comportementale (TCC)
+Rien de cela
+
+Dans l'ensemble, quelle est votre satisfaction à l'égard de votre sommeil ? (0 = Pas du tout satisfait, 10 = Tout à fait satisfait)
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+Ne sait pas
+
+Votre humeur
+
+Les énoncés suivants forment l'Échelle fictive d'anxiété (EFA).
+
+Au cours des deux dernières semaines, à quelle fréquence avez-vous ressenti ce qui suit ?
+	Jamais	Parfois	Souvent	Presque toujours
+1. Je me suis senti.e inquiet.e.				
+2. Je me suis senti.e tendu.e.				
+3. J'ai eu du mal à contrôler mes inquiétudes.				
+4. Je me suis senti.e agité.e.				
+5. Je me suis senti.e irritable.				
+6. J'ai eu peur que quelque chose de terrible arrive.				
+7. J'ai eu de la difficulté à me détendre.				
+
+Avez-vous d'autres commentaires sur votre sommeil ?
+
+Merci de votre participation !

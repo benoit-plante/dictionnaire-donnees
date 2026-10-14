@@ -26,14 +26,14 @@ def test_source_identity(loaded, fictional_files):
     assert loaded.source.name == "etude-sommeil.sav"
     assert loaded.source.format == "sav"
     assert loaded.source.sha256 == hashlib.sha256(path.read_bytes()).hexdigest()
-    assert (loaded.source.n_rows, loaded.source.n_columns) == (200, 29)
+    assert (loaded.source.n_rows, loaded.source.n_columns) == (200, 33)
     assert loaded.source.label == "Etude sommeil (fictive)"
     assert loaded.source.encoding == "UTF-8"
 
 
 def test_names_and_positions(loaded, generator):
     assert [v.name for v in loaded.variables] == generator.COLUMN_ORDER
-    assert [v.position for v in loaded.variables] == list(range(1, 30))
+    assert [v.position for v in loaded.variables] == list(range(1, len(generator.COLUMN_ORDER) + 1))
 
 
 def test_variable_labels(loaded, expected):

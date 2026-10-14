@@ -3,9 +3,9 @@
   "source": {
     "name": "etude-sommeil.sav",
     "format": "sav",
-    "sha256": "0ddde91dc21cd5898fef47425258dfe3b5a5b4f856551f51a88b59b66a82b6fb",
+    "sha256": "29d83cf0aebf8f809413d2f5138848cb906d512ec335bfc30ac851d2bf9178c0",
     "n_rows": 200,
-    "n_columns": 29,
+    "n_columns": 33,
     "label": "Etude sommeil (fictive)",
     "encoding": "UTF-8",
     "delimiter": null,
@@ -2697,8 +2697,400 @@
       "ai_signals": []
     },
     {
-      "name": "anx5",
+      "name": "aide_medicament",
       "position": 23,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F1.0",
+        "measure_level": "nominal",
+        "label": "Aide sommeil: medicament",
+        "value_labels": [],
+        "declared_missing": [],
+        "missing_tokens": []
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 34,
+        "n_system_missing": 166,
+        "n_declared_missing": 0,
+        "n_distinct": 1,
+        "min": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "sd": 0.0,
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": 1,
+            "count": 34,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [
+          "checkbox"
+        ],
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Aide sommeil: medicament",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null,
+      "ai_signals": []
+    },
+    {
+      "name": "aide_naturel",
+      "position": 24,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F1.0",
+        "measure_level": "nominal",
+        "label": "Aide sommeil: produit naturel",
+        "value_labels": [],
+        "declared_missing": [],
+        "missing_tokens": []
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 41,
+        "n_system_missing": 159,
+        "n_declared_missing": 0,
+        "n_distinct": 1,
+        "min": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "sd": 0.0,
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": 1,
+            "count": 41,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [
+          "checkbox"
+        ],
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Aide sommeil: produit naturel",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null,
+      "ai_signals": []
+    },
+    {
+      "name": "aide_tcc",
+      "position": 25,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F1.0",
+        "measure_level": "nominal",
+        "label": "Aide sommeil: TCC",
+        "value_labels": [],
+        "declared_missing": [],
+        "missing_tokens": []
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 14,
+        "n_system_missing": 186,
+        "n_declared_missing": 0,
+        "n_distinct": 1,
+        "min": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "sd": 0.0,
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": 1,
+            "count": 14,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [
+          "checkbox"
+        ],
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Aide sommeil: TCC",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null,
+      "ai_signals": []
+    },
+    {
+      "name": "aide_aucune",
+      "position": 26,
+      "file": {
+        "storage_type": "numeric",
+        "storage_width": 8,
+        "display_format": "F1.0",
+        "measure_level": "nominal",
+        "label": "Aide sommeil: aucune",
+        "value_labels": [],
+        "declared_missing": [],
+        "missing_tokens": []
+      },
+      "profile": {
+        "inferred_type": "integer",
+        "n_rows": 200,
+        "n_valid": 130,
+        "n_system_missing": 70,
+        "n_declared_missing": 0,
+        "n_distinct": 1,
+        "min": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "sd": 0.0,
+        "median": 1.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": 1,
+            "count": 130,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 0,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [
+          "checkbox"
+        ],
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "label": {
+        "value": "Aide sommeil: aucune",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null,
+      "ai_signals": []
+    },
+    {
+      "name": "anx5",
+      "position": 27,
       "file": {
         "storage_type": "numeric",
         "storage_width": 8,
@@ -2840,7 +3232,7 @@
     },
     {
       "name": "anx6",
-      "position": 24,
+      "position": 28,
       "file": {
         "storage_type": "numeric",
         "storage_width": 8,
@@ -2982,7 +3374,7 @@
     },
     {
       "name": "anx7",
-      "position": 25,
+      "position": 29,
       "file": {
         "storage_type": "numeric",
         "storage_width": 8,
@@ -3124,7 +3516,7 @@
     },
     {
       "name": "satisfaction_globale",
-      "position": 26,
+      "position": 30,
       "file": {
         "storage_type": "numeric",
         "storage_width": 8,
@@ -3285,7 +3677,7 @@
     },
     {
       "name": "taille_cm",
-      "position": 27,
+      "position": 31,
       "file": {
         "storage_type": "string",
         "storage_width": 8,
@@ -3377,7 +3769,7 @@
     },
     {
       "name": "q_retiree",
-      "position": 28,
+      "position": 32,
       "file": {
         "storage_type": "numeric",
         "storage_width": 8,
@@ -3469,7 +3861,7 @@
     },
     {
       "name": "commentaire",
-      "position": 29,
+      "position": 33,
       "file": {
         "storage_type": "string",
         "storage_width": 72,

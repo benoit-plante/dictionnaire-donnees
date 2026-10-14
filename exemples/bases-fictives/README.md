@@ -18,6 +18,8 @@ Licence : CC0 (domaine public).
 | `etude-sommeil.csv` | CSV ordinaire : UTF-8, virgule comme séparateur, point décimal |
 | `etude-sommeil_excel-fr.csv` | Excel en français, « CSV (séparateur : point-virgule) » : Windows-1252, `;`, virgule décimale, fins de ligne Windows |
 | `etude-sommeil_excel-utf8.csv` | Excel en français, « CSV UTF-8 » : comme le précédent, en UTF-8 avec marque d'ordre des octets |
+| `questionnaire-sommeil.pdf` | Questionnaire de l'étude exporté d'une plateforme d'enquête : questions non numérotées, grilles en tableau dont les lignes longues sont coupées |
+| `questionnaire-sommeil.txt` | Le même questionnaire copié depuis un traitement de texte : un paragraphe par ligne, tabulations entre les cellules des tableaux |
 
 ## Pièges volontaires
 
@@ -39,5 +41,23 @@ Licence : CC0 (domaine public).
 | Variable sans étiquette | `sommeil_q7` |
 | Échelle non contiguë | `anx1` à `anx4`, puis `anx5` à `anx7` plus loin |
 | Nombres décimaux | `heures_sommeil` |
+| Question à cocher : une variable par option (1 ou vide) | `aide_medicament`, `aide_naturel`, `aide_tcc`, `aide_aucune` |
+
+## Pièges du questionnaire
+
+Le rattachement attendu de chaque variable à sa question est donné par `questionnaire_key()` dans le script.
+
+| Piège | Où |
+|---|---|
+| Question à cocher : chaque option correspond à une variable | « Qu'utilisez-vous pour vous aider à dormir ? » → `aide_*` |
+| Grilles (énoncés en lignes, réponses en colonnes) | `sommeil_q1` à `sommeil_q8`, `anx1` à `anx7` |
+| Sigles définis dans le texte | QFS, EFA, TCC (« thérapie cognitivo-comportementale (TCC) ») |
+| Sigle dans un nom de variable | `aide_tcc` |
+| Libellé connu seulement par le questionnaire | `sommeil_q7`, sans étiquette dans le fichier |
+| Question sans variable | « Acceptez-vous de participer à cette étude ? » |
+| Variables sans question | `id_participant`, `date_passation`, `vague`, `q_retiree` |
+| Une question, deux variables | `heures_sommeil`, `heures_sommeil_2` |
+| Ordre différent de celui du fichier | `taille_cm`, demandée en page 2 mais placée vers la fin du fichier |
+| Page de consentement avec les coordonnées de l'équipe | témoin `ZQXQUEST`, qui ne doit apparaître dans aucun export (D-012) |
 
 Les identifiants, les courriels et les commentaires contiennent des **chaînes témoins** (`ZQXID`, `zqxmail`, `ZQXTXT`) : un test de confidentialité échoue si l'une d'elles apparaît dans un message destiné au modèle, dans un fichier projet ou dans un export.

@@ -131,3 +131,90 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   3. Les déclarer comme codes manquants, à la manière de SPSS.
 - **Justification :** essai du 2026-10-13 sur une base publique exportée par R (152 variables) : 130 colonnes contenaient `NA`, et seulement 4 étaient vues comme numériques au lieu de 132 ; plus de statistiques ni d'échelles. L'option 3 présenterait comme une déclaration de l'équipe ce qui n'est qu'une convention du logiciel d'export. Le risque de l'option 2 (une vraie valeur `NA`, comme le code ISO de la Namibie) est faible, et le codebook le rend visible.
 - **Conséquences :** nouveau champ `file.missing_tokens` (liste de `{token, count}`, vide par défaut : les fichiers projet existants restent lisibles). Les décomptes restent exacts, comme tous les décomptes de manquants (D-007). Les fichiers `.sav` ne sont pas concernés.
+
+### D-011 — Périmètre de la v0.2
+
+- **Date :** 2026-10-13
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** la v0.2 comprend le questionnaire comme source documentée, le glossaire des sigles, les étiquettes de valeurs proposées à partir des options de réponse, le signalement des variantes d'écriture et la lecture des fichiers Stata, SAS et Excel. La copie corrigée du `.sav`, l'installateur Windows en un clic et le jeu de référence pour comparer les modèles passent à la v0.3.
+- **Options considérées :**
+  1. Commencer par les formats, l'installateur et la copie corrigée (recommandation d'avant l'essai sur données réelles).
+  2. Commencer par le questionnaire et le glossaire.
+- **Justification :** l'essai de la v0.1.2 sur une base publique réelle montre que les erreurs restantes portent sur le sens des variables (sigles mal compris, codes inventés), auquel seul le questionnaire répond. Plan détaillé : `docs/plan-v0.2.md`.
+- **Conséquences :** étapes 1 à 10 du plan de la v0.2.
+
+### D-012 — Le questionnaire est une source documentée fournie par l'équipe
+
+- **Date :** 2026-10-13
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** le texte du questionnaire découpé en questions est conservé dans le fichier projet et peut être transmis au modèle local, puisque ce n'est pas une donnée de participant. Seules les questions rattachées à une variable sont exportées.
+- **Options considérées :**
+  1. Conserver et exporter tout le questionnaire.
+  2. Conserver tout, n'exporter que les questions rattachées.
+- **Justification :** une page de consentement contient souvent les noms et coordonnées de l'équipe de recherche, qui n'ont pas leur place dans un codebook.
+- **Conséquences :** un test vérifie qu'un témoin placé dans la page de consentement du questionnaire fictif n'apparaît dans aucun export.
+
+### D-013 — Rattachement des variables aux questions : calcul, puis IA par identifiant, puis personne
+
+- **Date :** 2026-10-13
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** l'outil calcule pour chaque variable quelques questions candidates ; le modèle local choisit parmi elles et répond par un identifiant de question ou d'option, jamais par du texte ; une personne accepte, change ou retire chaque rattachement. Sans IA, les candidates calculées sont proposées directement.
+- **Options considérées :**
+  1. Tout confier à l'IA, questionnaire complet dans le message.
+  2. Tout faire à la main.
+  3. Candidates calculées, choix de l'IA par identifiant, décision humaine.
+- **Justification :** l'option 1 dépasse la fenêtre de contexte des petits modèles et permettrait d'inventer du texte ; l'option 2 est longue pour 150 variables. Avec l'option 3, le texte affiché vient toujours du questionnaire.
+- **Conséquences :** la part de rattachements justes est mesurée à l'étape 4 ; en dessous d'un seuil jugé utile, seules les candidates calculées sont proposées.
+
+### D-014 — Items d'instruments protégés par le droit d'auteur
+
+- **Date :** 2026-10-13
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** le texte des questions rattachées est exporté par défaut ; il peut être omis par groupe d'items, dans l'interface et en ligne de commande. Le guide rappelle que la reproduction des items d'un instrument protégé relève de l'équipe.
+- **Options considérées :**
+  1. Toujours exporter le texte.
+  2. Ne jamais l'exporter.
+  3. L'exporter par défaut, avec une omission possible par groupe.
+- **Justification :** le texte des questions est l'apport principal du questionnaire dans un codebook, mais certains instruments (le CBCL, par exemple) ne peuvent pas être reproduits librement.
+- **Conséquences :** réglage par groupe dans le fichier projet ; option d'export.
+
+### D-015 — Sources du glossaire des sigles
+
+- **Date :** 2026-10-13
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** une entrée du glossaire vient de la saisie de l'équipe ou du repérage sans IA du motif « forme longue (SIGLE) » dans le questionnaire, proposé puis validé par une personne. L'IA ne propose jamais de définition de sigle.
+- **Options considérées :**
+  1. Laisser l'IA proposer les définitions.
+  2. Équipe et repérage dans le questionnaire seulement.
+- **Justification :** l'essai sur la base publique montre que c'est précisément sur les sigles que le modèle invente (« OCF » lu comme « offices de contrôle »).
+- **Conséquences :** le schéma de réponse du modèle n'a aucun champ pour un sigle ; un test le vérifie.
+
+### D-016 — Étiquettes de valeurs proposées à partir des options de réponse
+
+- **Date :** 2026-10-13
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** une étiquette de valeur n'est proposée que si le rattachement à la question est validé, que le nombre d'options égale le nombre de codes observés et que ces codes sont consécutifs (1…n ou 0…n−1). La proposition porte la mention « ordre supposé, à vérifier ». Sinon, rien n'est proposé.
+- **Options considérées :**
+  1. Ne rien proposer en v0.2.
+  2. Proposer sous cette règle stricte.
+- **Justification :** l'essai sur la base publique montre que, sans cette information, le modèle invente le sens des codes ; la règle couvre le cas habituel des plateformes d'enquête sans prétendre deviner les autres.
+- **Conséquences :** tests des cas limites (codes non consécutifs, nombre différent, rattachement non validé).
+
+### D-017 — Dépendance pypdf pour lire les questionnaires PDF
+
+- **Date :** 2026-10-13
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** ajouter pypdf (licence BSD-3) pour extraire le texte des questionnaires PDF. Les fichiers Word attendront : un `.txt` copié depuis Word les remplace.
+- **Options considérées :**
+  1. pypdf, en Python pur.
+  2. pdfminer.six (MIT), plus précis sur la mise en page mais plus lourd.
+  3. Pas de PDF, texte seulement.
+- **Justification :** les plateformes d'enquête exportent leurs questionnaires en PDF ; pypdf s'installe sans compilation et a suffi pour extraire le questionnaire réel de l'essai.
+- **Conséquences :** ajoutée à l'étape 2 et notée dans `docs/dependances.md`.

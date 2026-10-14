@@ -147,6 +147,8 @@ def test_flags(sav, csv):
             "heures_sommeil_2": ("duplicate",),
             "taille_cm": ("mixed_types",),
             "q_retiree": ("all_missing",),
+            **{name: ("checkbox",) for name in ("aide_medicament", "aide_naturel")},
+            **{name: ("checkbox",) for name in ("aide_tcc", "aide_aucune")},
         }
         assert profiles["heures_sommeil_2"].duplicate_of == "heures_sommeil"
     assert sav["taille_cm"].n_non_numeric == 7
