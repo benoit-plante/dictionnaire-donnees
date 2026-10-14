@@ -306,3 +306,68 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   2. Pas de liste : choisir le fichier à chaque fois.
 - **Justification :** rouvrir un projet en un clic est le cas le plus fréquent ; les noms de dossiers peuvent dire quelque chose d'une étude, d'où la possibilité de tout effacer.
 - **Conséquences :** le fichier reste sur l'ordinateur ; il n'entre ni dans le projet ni dans les exports.
+
+### D-025 — Périmètre de la v0.4
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** la v0.4 fait passer les décisions du codebook aux données et aide à choisir un modèle : fichiers de commandes (SPSS, R, Stata), codes manquants confirmés, copie documentée du `.sav`, banc d'essai des modèles avec une seconde base fictive, décisions groupées avec aperçu. Pas de recodage des valeurs, même sur une copie. L'installateur macOS et Linux et l'interface en anglais sont reportés.
+- **Options considérées :**
+  1. Ces cinq fonctions (ce choix).
+  2. Seulement les fichiers de commandes.
+  3. Ajouter le recodage (items inversés, variantes d'écriture) sur une copie.
+- **Justification :** reporter à la main les décisions validées dans SPSS, R ou Stata est long et source d'erreurs ; le choix du modèle se faisait à l'aveugle ; la révision des rattachements est longue sur une grande base. Le recodage change les données elles-mêmes : c'est une analyse, que l'équipe fait et documente dans son propre logiciel.
+- **Conséquences :** plan en 8 étapes (`docs/plan-v0.4.md`).
+
+### D-026 — L'outil écrit une copie documentée du `.sav`, jamais l'original
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** sur demande seulement, l'outil écrit une nouvelle copie de la base au format `.sav`, avec les métadonnées acceptées et des données identiques à l'original. Il la relit et la compare cellule par cellule avant de l'annoncer ; au moindre écart, il la supprime et le dit. L'original n'est jamais ouvert en écriture, et une copie existante n'est pas écrasée sans accord. Les fichiers de commandes restent la voie recommandée.
+- **Options considérées :**
+  1. Fichiers de commandes seulement : l'outil n'écrit jamais de données.
+  2. Fichiers de commandes et copie facultative vérifiée (ce choix).
+  3. Modifier la base en place.
+- **Justification :** certaines équipes veulent un fichier prêt à l'emploi ; la vérification cellule par cellule rend une copie fausse impossible à manquer. L'option 3 contredit le principe qu'un fichier original n'est jamais modifié.
+- **Conséquences :** c'est la première fonction qui écrit des données de participants : elles restent sur l'ordinateur, à côté de l'original, et rien n'en entre dans le projet ni ne va au modèle.
+
+### D-027 — PSPP comme outil de développement
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** PSPP (GNU GPL) sert à vérifier la syntaxe SPSS produite par l'outil, sur le poste de développement seulement, comme R et haven pour la base SAS. Ni l'outil ni ses tests ordinaires n'en dépendent : le test qui l'utilise est sauté si PSPP manque.
+- **Options considérées :**
+  1. PSPP sur le poste de développement (ce choix).
+  2. Aucune vérification de la syntaxe SPSS.
+  3. Une licence SPSS.
+- **Justification :** une syntaxe jamais exécutée risque d'échouer chez l'équipe ; PSPP est libre et lit l'essentiel de la syntaxe SPSS. Le fichier Stata sera vérifié par une personne qui a Stata.
+- **Conséquences :** noté dans `docs/dependances.md` à l'étape 3.
+
+### D-028 — Codes manquants confirmés par une personne
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** un code sentinelle repéré par le calcul (999, −9…) devient un code manquant quand une personne le confirme sur la fiche de la variable ; elle peut aussi dire que c'est une vraie valeur. L'IA ne le propose jamais. Les statistiques du profil ne sont pas recalculées : elles décrivent le fichier tel qu'il est ; le codebook et les fichiers de commandes disent que le code est confirmé par l'équipe.
+- **Options considérées :**
+  1. Décision humaine à partir du calcul (ce choix).
+  2. Déclarer automatiquement les codes sentinelles.
+  3. Ne rien changer : les déclarer reste à faire dans le logiciel de l'équipe.
+- **Justification :** un 999 peut être une vraie valeur (un montant, une durée) ; seule l'équipe le sait. Sans cette décision, les fichiers de commandes ne pourraient pas déclarer les codes manquants des CSV.
+- **Conséquences :** une valeur suivie de plus par variable dans le fichier projet.
+
+### D-029 — Décisions groupées, avec aperçu obligatoire
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** l'interface peut accepter plusieurs propositions d'un coup, après avoir montré la liste exacte des variables concernées, dont chacune peut être décochée. C'est permis seulement pour les rattachements où le modèle et le calcul s'accordent, et pour les étiquettes de valeurs d'un même groupe d'items. Chaque décision est enregistrée une par une, avec sa date.
+- **Options considérées :**
+  1. Décisions groupées avec aperçu et décoche (ce choix).
+  2. Une décision à la fois seulement.
+  3. Accepter tout ce que propose le modèle.
+- **Justification :** sur une grande base, la révision une à une est longue, alors que l'accord du modèle et du calcul est un bon indice ; l'aperçu garde chaque décision visible. L'option 3 ferait des propositions des décisions sans regard humain.
+- **Conséquences :** l'essai de l'étape 5 mesure le temps gagné et les erreurs qui passent par ce bouton.
