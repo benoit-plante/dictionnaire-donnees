@@ -17,10 +17,9 @@ from pathlib import Path
 
 from ddict import __version__
 from ddict.export import write_markdown, write_xlsx
-from ddict.export.wording import anomalies
 from ddict.glossary import propose_from_questionnaire, undefined_acronyms
 from ddict.i18n import _
-from ddict.io import ReadError, read_database
+from ddict.io import ReadError
 from ddict.llm import DEFAULT_BLOCK_SIZE, build_blocks
 from ddict.llm.defaults import DEFAULT_ENDPOINT
 from ddict.llm.link import DEFAULT_LINK_BLOCK_SIZE, build_link_blocks
@@ -28,19 +27,15 @@ from ddict.privacy import MIN_CELL_COUNT
 from ddict.project import (
     PROJECT_SUFFIX,
     ProjectError,
-    build_project,
     load_project,
     save_project,
 )
 from ddict.questionnaire import load_questionnaire
 from ddict.questionnaire.labels import propose_value_labels
 from ddict.questionnaire.link import candidates, drop_stale_links
+from ddict.workflow import ProjectExists, profile_database, profile_summary
 
 EXIT_ERROR = 2
-
-
-def _default_project_path(database: Path) -> Path:
-    return database.with_name(database.stem + PROJECT_SUFFIX)
 
 
 def _strip_project_suffix(path: Path) -> str:
@@ -49,37 +44,20 @@ def _strip_project_suffix(path: Path) -> str:
 
 
 def cmd_profile(args: argparse.Namespace) -> int:
-    database = Path(args.base)
-    output = Path(args.sortie) if args.sortie else _default_project_path(database)
-    if output.exists() and not args.remplacer:
+    try:
+        project, output = profile_database(
+            args.base, args.sortie, replace=args.remplacer, min_cell_count=args.seuil
+        )
+    except ProjectExists as error:
         print(
             _("Le projet {path} existe déjà. Utilisez --remplacer pour l'écraser.").format(
-                path=output
+                path=error
             ),
             file=sys.stderr,
         )
         return EXIT_ERROR
-    data = read_database(database)
-    project = build_project(data, min_cell_count=args.seuil)
-    save_project(project, output)
-
-    sensitive = sum(
-        1 for e in project.variables if (e.privacy.privacy_class.value or "ordinary") != "ordinary"
-    )
-    # The same count as the "Avec signalements" filter of the review (notes excluded).
-    flagged = sum(1 for e in project.variables if anomalies(e.profile))
     print(_("Projet créé : {path}").format(path=output))
-    print(
-        _(
-            "{n} variables, {rows} lignes ; {sensitive} variables sensibles ; "
-            "{flagged} avec signalements."
-        ).format(
-            n=len(project.variables),
-            rows=project.source.n_rows,
-            sensitive=sensitive,
-            flagged=flagged,
-        )
-    )
+    print(profile_summary(project))
     return 0
 
 
@@ -363,8 +341,9 @@ def _preview(project_path: Path, blocks) -> int:
 REVIEW_HOST = "127.0.0.1"
 
 
-def review_command(project_path: Path, port: int) -> tuple[list[str], dict[str, str]]:
-    """The Streamlit command and environment: this computer only, no usage statistics."""
+def review_command(project_path: Path | None, port: int) -> tuple[list[str], dict[str, str]]:
+    """The Streamlit command and environment: this computer only, no usage statistics.
+    Without a project, the interface opens on its home page (v0.3)."""
     app = Path(__file__).resolve().parent / "review" / "app.py"
     command = [
         sys.executable,
@@ -391,9 +370,9 @@ def review_command(project_path: Path, port: int) -> tuple[list[str], dict[str, 
         # No "Deploy" button offering to put the interface online.
         "--client.toolbarMode",
         "minimal",
-        "--",
-        str(project_path.resolve()),
     ]
+    if project_path is not None:
+        command += ["--", str(project_path.resolve())]
     env = {
         **os.environ,
         "STREAMLIT_SERVER_ADDRESS": REVIEW_HOST,
@@ -417,6 +396,15 @@ def _wait_for_port(host: str, port: int, process: subprocess.Popen, timeout: flo
 def cmd_review(args: argparse.Namespace) -> int:
     project_path = Path(args.projet)
     load_project(project_path)  # a readable project, before starting anything
+    return _launch(project_path, args.port)
+
+
+def cmd_home(args: argparse.Namespace) -> int:
+    """`ddict` alone: the interface, on its home page (v0.3)."""
+    return _launch(None, args.port)
+
+
+def _launch(project_path: Path | None, port: int) -> int:
     if importlib.util.find_spec("streamlit") is None:
         print(
             _(
@@ -426,16 +414,17 @@ def cmd_review(args: argparse.Namespace) -> int:
             file=sys.stderr,
         )
         return EXIT_ERROR
-    command, env = review_command(project_path, args.port)
+    command, env = review_command(project_path, port)
     print(
         _(
-            "Révision sur http://{host}:{port} (cet ordinateur seulement). Ctrl+C pour arrêter."
-        ).format(host=REVIEW_HOST, port=args.port)
+            "Interface sur http://{host}:{port} (cet ordinateur seulement). "
+            "Laissez cette fenêtre ouverte ; Ctrl+C ou fermer la fenêtre pour arrêter."
+        ).format(host=REVIEW_HOST, port=port)
     )
     process = subprocess.Popen(command, env=env)
     try:
-        if _wait_for_port(REVIEW_HOST, args.port, process):
-            webbrowser.open(f"http://{REVIEW_HOST}:{args.port}")
+        if _wait_for_port(REVIEW_HOST, port, process):
+            webbrowser.open(f"http://{REVIEW_HOST}:{port}")
         return process.wait()
     except KeyboardInterrupt:
         process.terminate()
@@ -445,10 +434,21 @@ def cmd_review(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="ddict",
-        description=_("Création de dictionnaires de données, en local."),
+        description=_(
+            "Création de dictionnaires de données, en local. Lancé seul, ddict ouvre "
+            "l'interface dans le navigateur."
+        ),
     )
     parser.add_argument("--version", action="version", version=f"ddict {__version__}")
-    commands = parser.add_subparsers(dest="command", required=True)
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=8501,
+        help=_("Port local de l'interface, quand ddict est lancé seul (défaut : 8501)."),
+    )
+    parser.set_defaults(handler=cmd_home)
+    # Without a command, `ddict` opens the interface on its home page (v0.3).
+    commands = parser.add_subparsers(dest="command")
 
     profile = commands.add_parser(
         "profiler",

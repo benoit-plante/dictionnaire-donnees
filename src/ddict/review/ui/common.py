@@ -12,6 +12,7 @@ from pathlib import Path
 
 import streamlit as st
 
+from ddict import recents
 from ddict.export import wording as w
 from ddict.i18n import _
 from ddict.project import load_project, save_project
@@ -29,10 +30,29 @@ def project_path() -> Path:
     return Path(st.session_state.project_path)
 
 
+def has_project() -> bool:
+    """Whether a project is open; without one, the home page is shown (v0.3)."""
+    project_path()  # the first time, from the command line
+    return bool(str(st.session_state.project_path).strip())
+
+
 def project() -> Project:
     if "project" not in st.session_state:
         st.session_state.project = load_project(project_path())
+        recents.add(project_path())
     return st.session_state.project
+
+
+def open_project(path: Path | str) -> None:
+    """Open a project in this session: everything of the previous one is forgotten."""
+    st.session_state.clear()
+    st.session_state.project_path = str(path)
+
+
+def close_project() -> None:
+    """Back to the home page."""
+    st.session_state.clear()
+    st.session_state.project_path = ""
 
 
 def state(key: str):

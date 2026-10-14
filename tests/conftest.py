@@ -27,3 +27,9 @@ def fictional_files(generator, tmp_path_factory):
     """The fictional .sav and CSV files, freshly generated, keyed by file name."""
     out_dir = tmp_path_factory.mktemp("bases-fictives")
     return {path.name: path for path in generator.write_all(out_dir)}
+
+
+@pytest.fixture(autouse=True)
+def isolated_config(tmp_path_factory, monkeypatch):
+    """The list of recent projects (v0.3) goes to a temporary folder, never the user's."""
+    monkeypatch.setenv("DDICT_CONFIG_DIR", str(tmp_path_factory.mktemp("config")))

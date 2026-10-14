@@ -280,6 +280,7 @@ La commande `rattacher` envoie un second type de message (prompt `link-v1`), par
 
 ## 7. Révision (Streamlit)
 
+- **Accueil (v0.3)** : `ddict` lancé seul ouvre l'interface sur l'accueil : nouveau projet à partir d'une base (choisie avec la fenêtre « Ouvrir » du système, ouverte dans un processus à part, ou par son chemin collé ; le fichier projet est écrit à côté de la base, D-020), ouverture d'un projet, projets récents (chemins seulement, dans le dossier de l'utilisateur, effaçables, D-024). Le bouton « Accueil » de la barre latérale y ramène.
 - Liste des variables avec filtres : « à réviser », « anomalies », « texte libre / identifiants », par groupe.
 - Fiche d'une variable : ce que dit le fichier, ce qui a été calculé, ce que propose l'IA (en couleur distincte, avec le modèle utilisé), et trois boutons : accepter, corriger, rejeter.
 - Champs sourcés (étendue théorique, seuils, nom d'instrument, références) : la sauvegarde est impossible sans source.
