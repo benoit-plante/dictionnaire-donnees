@@ -1,5 +1,14 @@
 # Changements
 
+## 0.1.1 — 2026-10-13
+
+Corrections du guide d'installation, après un premier essai en conditions réelles.
+
+- Le guide explique comment trouver le dossier de l'outil quand Windows l'extrait dans un dossier du même nom, et comment vérifier qu'on est au bon endroit.
+- La base fictive se copie avec l'Explorateur, sans chemin à taper.
+- Le guide précise que confirmer une inversion documente les items sans recoder les données.
+- Nouveau cas dans « En cas de problème » : installation lancée hors du dossier de l'outil.
+
 ## 0.1.0 — 2026-10-13
 
 Première version utilisable.

@@ -32,15 +32,16 @@ Une ligne comme `uv 0.9.…` doit s'afficher.
 
 ## 3. Installer l'outil
 
-1. Téléchargez l'archive de l'outil (fichier `.zip`) depuis la page des versions du projet sur GitHub, puis décompressez-la : clic droit sur le fichier, **Extraire tout**. Vous obtenez un dossier comme `dictionnaire-donnees-0.1.0`.
-2. Dans PowerShell, placez-vous dans ce dossier. Si vous l'avez extrait dans Téléchargements :
+1. Téléchargez l'archive de l'outil (fichier `.zip`, par exemple `dictionnaire-donnees-0.1.1.zip`) depuis la page des versions du projet sur GitHub, puis décompressez-la : clic droit sur le fichier, **Extraire tout**, puis **Extraire**.
+2. Trouvez **le dossier de l'outil** : c'est celui qui contient le fichier `pyproject.toml` et les dossiers `docs` et `exemples`. Windows le place souvent à l'intérieur d'un autre dossier du même nom, par exemple `Téléchargements\dictionnaire-donnees-0.1.1\dictionnaire-donnees-0.1.1`. Si le dossier extrait ne contient qu'un seul dossier, ouvrez-le : c'est celui-là.
+3. Dans PowerShell, placez-vous dans le dossier de l'outil : tapez `cd "`, glissez le dossier depuis l'Explorateur dans la fenêtre PowerShell (son chemin s'écrit tout seul), tapez `"` puis Entrée. Vérifiez ensuite que vous êtes au bon endroit :
 
    ```
-   cd "$HOME\Downloads\dictionnaire-donnees-0.1.0"
+   dir pyproject.toml
    ```
 
-   Si le dossier est ailleurs, tapez `cd "`, glissez le dossier dans la fenêtre PowerShell (son chemin s'écrit tout seul), tapez `"` puis Entrée.
-3. Installez l'outil avec ses deux options (l'IA locale et l'interface de révision) :
+   Si PowerShell répond qu'il ne trouve pas le chemin, vous êtes un niveau trop haut : tapez `dir`, puis `cd` suivi du nom du dossier affiché, et vérifiez de nouveau.
+4. Installez l'outil avec ses deux options (l'IA locale et l'interface de révision) :
 
    ```
    uv tool install ".[ia,revision]"
@@ -48,25 +49,27 @@ Une ligne comme `uv 0.9.…` doit s'afficher.
    ```
 
    La première commande télécharge Python et les bibliothèques nécessaires ; cela prend une ou deux minutes. La seconde rend la commande `ddict` utilisable partout.
-4. **Fermez PowerShell, puis rouvrez-le**, et vérifiez :
+5. **Fermez PowerShell, puis rouvrez-le**, et vérifiez :
 
    ```
    ddict --version
    ```
 
-   La réponse doit être `ddict 0.1.0`.
+   La réponse doit être `ddict` suivi du numéro de la version téléchargée, par exemple `ddict 0.1.1`.
 
 ## 4. Premier codebook, à partir de la base fictive
 
 La base fictive est une petite étude inventée sur le sommeil (200 participants fictifs). Elle permet d'essayer l'outil sans aucune donnée réelle.
 
-1. Créez un dossier de travail et copiez-y la base :
+1. Créez un dossier de travail et placez-vous dedans :
 
    ```
    mkdir "$HOME\Documents\essai-ddict"
-   copy "$HOME\Downloads\dictionnaire-donnees-0.1.0\exemples\bases-fictives\etude-sommeil.sav" "$HOME\Documents\essai-ddict\"
    cd "$HOME\Documents\essai-ddict"
+   explorer .
    ```
+
+   L'Explorateur s'ouvre sur ce dossier, vide pour l'instant. Dans une autre fenêtre de l'Explorateur, ouvrez le dossier de l'outil (section 3, étape 2), puis `exemples\bases-fictives`. Copiez le fichier `etude-sommeil.sav` dans le dossier `essai-ddict`.
 
 2. Faites lire la base par l'outil :
 
@@ -82,11 +85,7 @@ La base fictive est une petite étude inventée sur le sommeil (200 participants
    ddict exporter etude-sommeil.dd.json
    ```
 
-   Deux fichiers apparaissent : `etude-sommeil.xlsx` (le codebook, à ouvrir avec Excel) et `etude-sommeil.md` (le même contenu en texte, lisible avec le Bloc-notes). Pour ouvrir le dossier dans l'Explorateur :
-
-   ```
-   explorer .
-   ```
+   Deux fichiers apparaissent dans le dossier `essai-ddict` : `etude-sommeil.xlsx` (le codebook, à ouvrir avec Excel) et `etude-sommeil.md` (le même contenu en texte, lisible avec le Bloc-notes).
 
 Votre premier codebook est fait, sans IA : tout ce qu'il contient a été calculé exactement à partir du fichier.
 
@@ -128,7 +127,7 @@ Votre navigateur s'ouvre sur l'interface de révision. Elle n'est accessible que
 - **Pour chaque proposition** : « Accepter », « Rejeter », ou corriger le texte puis « Enregistrer ». Chaque décision est enregistrée aussitôt dans le fichier projet.
 - **Encadré rouge** : la proposition demande une attention particulière, par exemple un libellé deviné pour une variable sans étiquette dans le fichier.
 - **Champs documentés** : étendue théorique, seuils, références et notes. Ils sont réservés aux personnes, et l'étendue comme les seuils exigent une source (manuel, article).
-- **Afficher : Groupes** : les échelles repérées par l'outil, leur alpha de Cronbach et les items probablement inversés.
+- **Afficher : Groupes** : les échelles repérées par l'outil, leur alpha de Cronbach et les items probablement inversés. Confirmer une inversion la **documente** dans le codebook ; l'outil ne recode jamais les données. Le recodage (par exemple 6 − x pour une échelle de 1 à 5) reste à faire dans votre logiciel d'analyse.
 
 Quand vous avez terminé, fermez l'onglet, revenez dans PowerShell et appuyez sur **Ctrl+C**. Produisez ensuite le codebook à jour :
 
@@ -148,7 +147,7 @@ La démarche est la même, avec votre fichier `.sav` ou `.csv` (y compris les CS
 
 ## Mettre à jour ou désinstaller
 
-Pour une nouvelle version, décompressez la nouvelle archive, placez-vous dans son dossier avec `cd`, puis :
+Pour une nouvelle version, décompressez la nouvelle archive, placez-vous dans le dossier de l'outil comme à la section 3 (celui qui contient `pyproject.toml`), puis :
 
 ```
 uv tool install --reinstall ".[ia,revision]"
@@ -164,6 +163,7 @@ uv tool uninstall ddict
 
 | Message | Que faire |
 |---|---|
+| « … does not appear to be a Python project » pendant l'installation | Vous n'êtes pas dans le dossier de l'outil, souvent un niveau trop haut : voir la section 3, étapes 2 et 3. |
 | « ddict n'est pas reconnu… » (ou « uv n'est pas reconnu… ») | Fermez et rouvrez PowerShell. Si le message persiste, refaites `uv tool update-shell`, puis rouvrez PowerShell. |
 | « Le serveur http://127.0.0.1:11434/v1 ne répond pas. Ollama est-il lancé ? » | Lancez Ollama depuis le menu Démarrer, attendez son icône près de l'horloge, puis relancez la commande. |
 | « Le modèle … est introuvable sur le serveur » | Le modèle n'est pas téléchargé, ou son nom est mal tapé : faites `ollama pull` avec exactement le même nom. |
