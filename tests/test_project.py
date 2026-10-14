@@ -25,7 +25,9 @@ from ddict.project import (
 )
 from ddict.project.model import Group, TheoreticalRange, Threshold, VariableEntry
 
-GOLDEN = ROOT / "exemples" / "bases-fictives" / "etude-sommeil.dd.json"
+# The reference project file of the fictional base. It lives with the tests, not in exemples/:
+# there it made "Créer le projet" answer "a project exists already" (0.3.0 trial).
+GOLDEN = ROOT / "tests" / "reference" / "etude-sommeil.dd.json"
 NOW = "2026-10-13T14:00:00"
 
 
