@@ -15,6 +15,7 @@ from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from pathlib import Path
 
+from ddict import glossary
 from ddict.llm.client import LocalModelClient
 from ddict.llm.messages import Block, build_blocks
 from ddict.llm.run import BlockResult, run_block
@@ -56,14 +57,18 @@ def _proposal(value: str, run_id: str) -> TrackedValue[str] | None:
 
 
 def _apply(
-    entry: VariableEntry, proposal: VariableProposal, run_id: str, file_has_labels: bool
+    entry: VariableEntry,
+    proposal: VariableProposal,
+    run_id: str,
+    file_has_labels: bool,
+    known_acronyms: frozenset[str],
 ) -> None:
     signals = [s for s in entry.ai_signals if s.split(":")[0] not in ("label", "description")]
     for field in ("label", "description"):
         new = _proposal(getattr(proposal, field), run_id)
         if new is not None and may_replace(getattr(entry, field)):
             setattr(entry, field, new)
-            signals += [f"{field}:{s}" for s in invention_signals(new.value)]
+            signals += [f"{field}:{s}" for s in invention_signals(new.value, known_acronyms)]
             if field == "label" and not entry.file.label and file_has_labels:
                 # Without a label in the file, models borrow a neighbour's (trial of
                 # 2026-10-13): the label is a guess, to be checked against the questionnaire.
@@ -79,8 +84,10 @@ def _apply(
 
 def apply_proposals(project: Project, result: BlockResult) -> None:
     file_has_labels = any(e.file.label for e in project.variables)
+    known = frozenset(e.term.casefold() for e in project.glossary if glossary.is_accepted(e))
     for proposal in result.proposals:
-        _apply(project.variable(proposal.name), proposal, result.run.run_id, file_has_labels)
+        entry = project.variable(proposal.name)
+        _apply(entry, proposal, result.run.run_id, file_has_labels, known)
 
 
 @dataclass(frozen=True)

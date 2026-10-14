@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 
 from pydantic import ValidationError
 
+from ddict import glossary
 from ddict.llm.messages import Block
 from ddict.llm.schemas import BlockResponse, VariableProposal
 
@@ -76,8 +78,33 @@ _INSTRUMENT = re.compile(
 )
 
 
-def invention_signals(text: str) -> tuple[str, ...]:
-    """Codes for what in the text looks like a citation, a threshold or an instrument name."""
+# "CBCL (Child Behavior Checklist)", "Child Behavior Checklist (CBCL)": an acronym defined.
+_ACRONYM_THEN_MEANING = re.compile(r"\b([A-Z][A-Z0-9]{1,7})\s*\(([^()]+)\)")
+_MEANING_THEN_ACRONYM = re.compile(r"\(([A-Z][A-Z0-9]{1,7})\)")
+
+
+def _plain(letter: str) -> str:
+    return unicodedata.normalize("NFKD", letter)[0].casefold()
+
+
+def _defines_acronym(text: str, known: frozenset[str]) -> bool:
+    """Whether the text gives the meaning of an acronym that is not in the glossary (D-015)."""
+    for match in _ACRONYM_THEN_MEANING.finditer(text):
+        term, inside = match.group(1), match.group(2).split()
+        if term.casefold() in known or any(c.isdigit() for c in match.group(2)):
+            continue
+        if len(inside) >= 2 and _plain(inside[0][0]) == _plain(term[0]):
+            return True
+    for match in _MEANING_THEN_ACRONYM.finditer(text):
+        term = match.group(1)
+        if term.casefold() not in known and glossary.long_form(text[: match.start()], term):
+            return True
+    return False
+
+
+def invention_signals(text: str, known_acronyms: frozenset[str] = frozenset()) -> tuple[str, ...]:
+    """Codes for what in the text looks like a citation, a threshold, an instrument name, or
+    the meaning of an acronym missing from the glossary (`known_acronyms`, case-folded)."""
     found = []
     if _CITATION.search(text):
         found.append("citation")
@@ -85,4 +112,6 @@ def invention_signals(text: str) -> tuple[str, ...]:
         found.append("threshold")
     if _INSTRUMENT.search(text):
         found.append("instrument")
+    if _defines_acronym(text, known_acronyms):
+        found.append("acronym")
     return tuple(found)

@@ -105,7 +105,7 @@ def test_neighbors(payloads):
 
 def test_system_prompt_forbids_invention():
     prompt = system_prompt()
-    assert PROMPT_VERSION == "variables-v2"
+    assert PROMPT_VERSION == "variables-v3"
     assert "N'invente jamais de seuil clinique" in prompt
     assert "nom d'instrument" in prompt
     assert "ne reprends pas le libellé d'une variable voisine" in prompt
@@ -152,7 +152,7 @@ def test_preview_command_sends_nothing_and_writes_the_messages(fictional_files, 
     assert "rien n'a été envoyé" in output
     folder = tmp_path / "etude.dd-envois" / "apercu"
     files = sorted(p.name for p in folder.iterdir())
-    assert files == ["b-001.json", "b-002.json", "b-003.json"]
+    assert files == [f"b-00{i}.json" for i in range(1, 6)]  # 33 variables, 8 per block
     record = json.loads((folder / "b-001.json").read_text(encoding="utf-8"))
     assert record["prompt_version"] == PROMPT_VERSION
     assert record["message_sha256"] == message_sha256(record["messages"])

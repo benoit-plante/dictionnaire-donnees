@@ -7,20 +7,33 @@ counts masked). Messages reduce it further (CONCEPTION.md, § 6.1):
 - date ranges become years;
 - never the data file name or path, nor the team's notes;
 - no computed anomalies: the model is not asked for coding inconsistencies (D-009).
+
+Prompt `variables-v3` (v0.2) adds two documented sources:
+- the exact words of the question a variable comes from, once a person accepted the link
+  (a proposed link is not used: it may be wrong);
+- the accepted glossary entries for the acronyms of the block (D-015), so that the model
+  reads "OCF" as the team defined it instead of guessing.
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import dataclass
 from importlib import resources
 
+from ddict import glossary
 from ddict.export.wording import code_text
+from ddict.project.decisions import is_accepted
 from ddict.project.model import Group, Project, VariableEntry
+from ddict.questionnaire import link
 
-PROMPT_VERSION = "variables-v2"
-DEFAULT_BLOCK_SIZE = 12
+PROMPT_VERSION = "variables-v3"
+PROMPTS_WITH_QUESTIONNAIRE = ("variables-v3",)
+MAX_QUESTION_CHARS = 300
+# With v3, 12 variables left too little room for the answer in Ollama's 4,096 tokens.
+DEFAULT_BLOCK_SIZE = 8
 MASKED = "masqué"
 
 SENSITIVE_NOTES = {
@@ -56,13 +69,57 @@ def _round(value: float | None, digits: int = 2) -> float | None:
     return None if value is None else round(value, digits) + 0.0
 
 
-def variable_payload(entry: VariableEntry, neighbors: list[str], groups: dict[str, Group]) -> dict:
+def _shorten(text: str) -> str:
+    if len(text) <= MAX_QUESTION_CHARS:
+        return text
+    return text[: MAX_QUESTION_CHARS - 1].rsplit(" ", 1)[0] + "…"
+
+
+def question_payload(project: Project, entry: VariableEntry) -> dict | None:
+    """The words of the question the variable comes from, when a person accepted the link."""
+    tracked = entry.question
+    if not is_accepted(tracked) or tracked.value == link.NO_QUESTION:
+        return None
+    found = link.target(project.questionnaire, tracked.value)
+    if found is None:
+        return None
+    payload = {"text": _shorten(found.question.text)}
+    if found.part is not None:
+        payload["item"] = found.part
+    return payload
+
+
+def block_glossary(project: Project, entries: list[VariableEntry]) -> dict[str, str]:
+    """Accepted acronyms found in the names, file labels or questions of the block."""
+    found: set[str] = set()
+    for entry in entries:
+        found.update(glossary.name_parts(entry.name))
+        texts = [entry.file.label or ""]
+        question = question_payload(project, entry)
+        if question:
+            texts += [question["text"], question.get("item", "")]
+        found.update(w.casefold() for text in texts for w in re.findall(r"\w+", text))
+    return {
+        item.term: item.meaning
+        for item in project.glossary
+        if glossary.is_accepted(item) and item.term.casefold() in found
+    }
+
+
+def variable_payload(
+    entry: VariableEntry,
+    neighbors: list[str],
+    groups: dict[str, Group],
+    question: dict | None = None,
+) -> dict:
     p = entry.profile
     payload: dict = {"name": entry.name}
     if neighbors:
         payload["neighbors"] = neighbors
     if entry.file.label:
         payload["file_label"] = entry.file.label
+    if question:
+        payload["question"] = question
     payload["type"] = p.inferred_type
 
     privacy_class = entry.privacy.privacy_class.value or "ordinary"
@@ -104,13 +161,19 @@ def variable_payload(entry: VariableEntry, neighbors: list[str], groups: dict[st
     return payload
 
 
-def build_blocks(project: Project, *, size: int = DEFAULT_BLOCK_SIZE) -> tuple[Block, ...]:
-    """Blocks of consecutive variables, each with its full list of messages."""
+def build_blocks(
+    project: Project, *, size: int = DEFAULT_BLOCK_SIZE, version: str = PROMPT_VERSION
+) -> tuple[Block, ...]:
+    """Blocks of consecutive variables, each with its full list of messages.
+
+    `version` is the prompt; an earlier one is kept for trials (docs/essais).
+    """
     if size < 1:
         raise ValueError("Block size must be at least 1")
     variables = project.variables
     groups = {g.group_id: g for g in project.groups}
-    system = system_prompt()
+    system = system_prompt(version)
+    sources = version in PROMPTS_WITH_QUESTIONNAIRE
     blocks = []
     for start in range(0, len(variables), size):
         block_id = f"b-{start // size + 1:03d}"
@@ -121,8 +184,14 @@ def build_blocks(project: Project, *, size: int = DEFAULT_BLOCK_SIZE) -> tuple[B
             neighbors = [
                 variables[i].name for i in (index - 1, index + 1) if 0 <= i < len(variables)
             ]
-            payloads.append(variable_payload(entry, neighbors, groups))
-        user = json.dumps({"block": block_id, "variables": payloads}, ensure_ascii=False, indent=2)
+            question = question_payload(project, entry) if sources else None
+            payloads.append(variable_payload(entry, neighbors, groups, question))
+        content: dict = {"block": block_id}
+        terms = block_glossary(project, chunk) if sources else {}
+        if terms:
+            content["glossary"] = terms
+        content["variables"] = payloads
+        user = json.dumps(content, ensure_ascii=False, indent=2)
         blocks.append(
             Block(
                 block_id=block_id,
@@ -131,6 +200,7 @@ def build_blocks(project: Project, *, size: int = DEFAULT_BLOCK_SIZE) -> tuple[B
                     {"role": "system", "content": system},
                     {"role": "user", "content": user},
                 ),
+                prompt_version=version,
             )
         )
     return tuple(blocks)

@@ -35,6 +35,7 @@ SIGNALS = {
     "citation": _("ressemble à une citation"),
     "threshold": _("ressemble à un seuil"),
     "instrument": _("ressemble à un nom d'instrument"),
+    "acronym": _("donne le sens d'un sigle absent du glossaire"),
     "no_file_label": _("deviné : la variable n'a pas d'étiquette dans le fichier"),
 }
 FIELD_NAMES = {

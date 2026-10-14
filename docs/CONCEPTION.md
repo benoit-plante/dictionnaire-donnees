@@ -193,6 +193,7 @@ Les variables classées comme quasi-identifiants (code postal, date de naissance
 ### 6.2 Découpage
 
 - **Libellés, descriptions, incohérences** : blocs de 10 à 15 variables consécutives (réglable), pour tenir dans le contexte d'un modèle de 7-8 milliards de paramètres quantifié et limiter les erreurs.
+- **v0.2, prompt `variables-v3`** : blocs de 8 variables par défaut (`--taille-bloc`), pour laisser à la réponse sa place dans les 4 096 jetons d'Ollama. Chaque variable dont le rattachement est accepté par une personne reçoit le texte exact de sa question (`question.text`, et `question.item` pour un énoncé ou une option) ; le bloc reçoit les sigles acceptés du glossaire qui le concernent (`glossary`). Un rattachement seulement proposé n'est pas transmis. Une proposition qui donne le sens d'un sigle absent du glossaire est signalée (essai : `docs/essais/2026-10-14-prompt-v3.md`).
 - **Regroupement** : le module `groups` propose d'abord des candidats déterministes ; l'IA reçoit ensuite, groupe candidat par groupe candidat, la liste compacte des noms et étiquettes, et répond « garder, scinder, fusionner avec le voisin » plus une hypothèse.
 
 ### 6.3 Exemple de message (bloc de variables)

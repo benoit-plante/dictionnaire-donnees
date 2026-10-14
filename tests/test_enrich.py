@@ -172,14 +172,14 @@ def test_command(fictional_files, tmp_path, capsys, fake_ollama):
     main(["profiler", str(fictional_files["etude-sommeil.sav"]), "-o", str(project_path)])
     assert main(["enrichir", str(project_path), "--modele", "qwen-test"]) == 0
     out = capsys.readouterr().out
-    assert "Bloc b-001 (12 variables) : réussi." in out
+    assert "Bloc b-001 (8 variables) : réussi." in out
     project = load_project(project_path)
-    assert len(project.ai_runs) == 3
+    assert len(project.ai_runs) == 5
     assert project.variable("anx1").label.status == "proposed"
-    assert len(list((tmp_path / "etude.dd-envois").glob("run-*.json"))) == 3
+    assert len(list((tmp_path / "etude.dd-envois").glob("run-*.json"))) == 5
     assert main(["enrichir", str(project_path), "--modele", "qwen-test"]) == 0
     assert "déjà fait" in capsys.readouterr().out
-    assert fake_ollama.calls == 3
+    assert fake_ollama.calls == 5
 
 
 def test_command_explains_a_missing_model(fictional_files, tmp_path, capsys, fake_ollama):
