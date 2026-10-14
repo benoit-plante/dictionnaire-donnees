@@ -104,12 +104,12 @@ Le codebook documente ; vos données, elles, n'ont pas changé. Pour y faire ent
 - **R** (avec le paquet haven, installé une fois par `install.packages("haven")`), dans RStudio ou la console R, dans le dossier du projet :
 
   ```r
-  donnees <- haven::read_sav("etude-sommeil.sav")         # ou read.csv(...), haven::read_dta(...)
+  donnees <- haven::read_sav("etude-sommeil.sav", user_na = TRUE)   # ou read.csv(...), haven::read_dta(...)
   source("etude-sommeil-metadonnees.R", encoding = "UTF-8")
   haven::write_sav(donnees, "etude-sommeil-avec-metadonnees.sav")   # facultatif : une copie
   ```
 
-  Les niveaux de mesure ne sont pas appliqués par R : haven ne les écrit pas.
+  `user_na = TRUE` est important pour un fichier SPSS : sans lui, haven remplace par des cases vides les codes manquants déjà déclarés (un 9 « Préfère ne pas répondre » devient une case vide, et la copie perd cette information). Les niveaux de mesure ne sont pas appliqués par R : haven ne les écrit pas.
 - **SPSS** : ouvrez la base, puis **Fichier > Ouvrir > Syntaxe…**, choisissez le `.sps`, et **Exécuter > Tout**. Enregistrez ensuite la base sous un nouveau nom.
 - **Stata** (14 ou plus récent) : `use` votre base, puis `do etude-sommeil-metadonnees.do`. Stata n'a pas de codes manquants déclarés : la commande qui remplacerait ces codes par un point est écrite en commentaire, à exécuter seulement si vous le décidez.
 

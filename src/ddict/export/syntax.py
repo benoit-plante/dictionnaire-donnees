@@ -180,11 +180,31 @@ def _r_code(code: Code, string: bool) -> str:
     return _r_text(str(code)) if string else _number(code)
 
 
+def _r_reader(project: Project) -> str:
+    name = _r_text(project.source.name)
+    return {
+        "sav": f"haven::read_sav({name}, user_na = TRUE)",
+        "dta": f"haven::read_dta({name})",
+        "sas7bdat": f"haven::read_sas({name})",
+        "xlsx": f"readxl::read_excel({name})",
+    }.get(project.source.format, f'read.csv({name}, fileEncoding = "UTF-8")')
+
+
 def r_script(project: Project, today: str) -> str:
     lines = [
         *_header(project, "#", today),
         _("# Avant : chargez vos données dans un objet nommé « donnees », par exemple"),
-        f"#   donnees <- haven::read_sav({_r_text(project.source.name)})",
+        f"#   donnees <- {_r_reader(project)}",
+        *(
+            [
+                _(
+                    "# user_na = TRUE garde les codes manquants déjà déclarés dans le fichier ; "
+                    "sans lui, haven les remplace par NA."
+                )
+            ]
+            if project.source.format == "sav"
+            else []
+        ),
         _('# Après : haven::write_sav(donnees, "copie-documentee.sav") pour une copie.'),
         _("# Les niveaux de mesure ne sont pas appliqués : haven ne les écrit pas."),
         "",

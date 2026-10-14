@@ -11,6 +11,7 @@ Les décisions passent du codebook aux données, et le choix du modèle se fait 
 - **Banc d'essai des modèles** : sur deux bases fictives au corrigé connu, mesure des rattachements justes, des inventions signalées et de la durée d'un modèle installé. Page « IA locale », ou `ddict evaluer`. Une **seconde base fictive** (enquête auprès de familles, CSV sans étiquettes) s'ajoute à l'étude sur le sommeil.
 - **Recommandation de modèle** selon le matériel, d'après l'essai de trois modèles : qwen2.5 7B avec une carte graphique, qwen2.5 3B sans, ou aucun modèle.
 - Guide : nouvelle section « Appliquer vos décisions à vos données » ; scénario manuel prolongé.
+- **Script R** : l'exemple et le guide lisent un fichier SPSS avec `haven::read_sav(…, user_na = TRUE)` ; sans cette option, R effaçait les codes manquants déjà déclarés (trouvé à l'essai du guide, `docs/essais/2026-10-14-essai-guide-0.4.md`).
 - **Installateur** : si l'outil est ouvert pendant une mise à jour, il propose de le fermer d'abord ; auparavant, la mise à jour échouait à moitié et l'outil ne démarrait plus (trouvé à l'essai de 0.4.0).
 
 ## 0.3.0 — 2026-10-14

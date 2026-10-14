@@ -10,6 +10,7 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 from ddict.cli import main
+from ddict.export.documented import differences
 from ddict.export.syntax import decisions, render_syntax, write_syntax
 from ddict.io import read_database
 from ddict.project import build_project, load_project, save_project
@@ -164,6 +165,43 @@ def test_r_script_on_the_csv_gives_back_the_sav_metadata(project, fictional_file
         pytest.skip("haven is not installed in R")
     assert done.returncode == 0, done.stderr
     _same_metadata(fictional_files["etude-sommeil.sav"], out)
+
+
+@pytest.mark.skipif(_rscript() is None, reason="R is not installed")
+def test_r_script_on_the_sav_keeps_every_cell(project, fictional_files, tmp_path):
+    """As the guide says, with user_na = TRUE: without it, haven turned the declared missing
+    codes (genre 9, anx -9) into NA, and the copy lost them (0.4.0 trial)."""
+    logic.decide_sentinel(project, "age", 999, True, now=TODAY)
+    write_syntax(project, {"r": tmp_path / "m.R"}, TODAY)
+    reader = "haven::read_sav(args[1], user_na = TRUE)"
+    assert 'haven::read_sav("etude-sommeil.sav", user_na = TRUE)' in (tmp_path / "m.R").read_text(
+        encoding="utf-8"
+    )
+    runner = tmp_path / "run.R"
+    runner.write_text(
+        "args <- commandArgs(trailingOnly = TRUE)\n"
+        f"donnees <- {reader}\n"
+        'source(args[2], encoding = "UTF-8")\n'
+        "haven::write_sav(donnees, args[3])\n",
+        encoding="utf-8",
+    )
+    out = tmp_path / "out.sav"
+    original = fictional_files["etude-sommeil.sav"]
+    done = subprocess.run(
+        [_rscript(), str(runner), str(original), str(tmp_path / "m.R"), str(out)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    if "there is no package called" in done.stderr:
+        pytest.skip("haven is not installed in R")
+    assert done.returncode == 0, done.stderr
+    raw = {"user_missing": True, "disable_datetime_conversion": True}
+    a, meta_a = pyreadstat.read_sav(str(original), **raw)
+    b, meta_b = pyreadstat.read_sav(str(out), **raw)
+    assert differences(a, b) == 0
+    assert meta_b.missing_ranges == {**meta_a.missing_ranges, "age": [{"lo": 999.0, "hi": 999.0}]}
 
 
 @pytest.mark.skipif(_pspp() is None, reason="PSPP is not installed (D-027)")
