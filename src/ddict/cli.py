@@ -1,4 +1,4 @@
-"""Command line: `ddict profiler`, `ddict exporter`, `ddict enrichir`, `ddict reviser`."""
+"""Command line: `ddict profiler`, `exporter`, `questionnaire`, `enrichir`, `reviser`."""
 
 from __future__ import annotations
 
@@ -29,6 +29,7 @@ from ddict.project import (
     load_project,
     save_project,
 )
+from ddict.questionnaire import load_questionnaire
 
 EXIT_ERROR = 2
 
@@ -88,6 +89,63 @@ def cmd_export(args: argparse.Namespace) -> int:
     write_markdown(project, markdown, kind=kind)
     print(_("Codebook Excel : {path}").format(path=xlsx))
     print(_("Rapport Markdown : {path}").format(path=markdown))
+    return 0
+
+
+TO_CHECK = {
+    "grid_header_unclear": _("titres de colonnes collés"),
+    "grid_without_header": _("grille sans titres de colonnes"),
+    "grid_rows_unnumbered": _("énoncés de grille non numérotés"),
+}
+KINDS = {
+    "open": _("ouvertes"),
+    "single": _("à choix unique"),
+    "checkbox": _("à cocher"),
+    "grid": _("grilles"),
+}
+
+
+def cmd_questionnaire(args: argparse.Namespace) -> int:
+    project_path = Path(args.projet)
+    project = load_project(project_path)
+    if project.questionnaire is not None and not args.remplacer:
+        print(
+            _(
+                "Le projet a déjà un questionnaire ({name}). Utilisez --remplacer pour le "
+                "remplacer."
+            ).format(name=project.questionnaire.file_name),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
+    try:
+        questionnaire = load_questionnaire(args.fichier)
+    except ReadError as error:
+        print(
+            _("Impossible de lire le questionnaire : {detail}").format(detail=error),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
+    project.questionnaire = questionnaire
+    save_project(project, project_path)
+
+    questions = questionnaire.questions
+    pages = _(" ({n} pages)").format(n=questionnaire.n_pages) if questionnaire.n_pages else ""
+    print(_("Questionnaire lu : {name}{pages}").format(name=questionnaire.file_name, pages=pages))
+    counts = ", ".join(
+        f"{sum(1 for q in questions if q.kind == kind)} {label}"
+        for kind, label in KINDS.items()
+        if any(q.kind == kind for q in questions)
+    )
+    rows = sum(len(q.rows) for q in questions)
+    grids = _(" ; {n} énoncés de grille").format(n=rows) if rows else ""
+    summary = _("{n} questions : {counts}{grids}.")
+    print(summary.format(n=len(questions), counts=counts, grids=grids))
+    for question in questions:
+        if question.to_check:
+            reasons = ", ".join(TO_CHECK.get(code, code) for code in question.to_check)
+            check = _("À vérifier : {qid} ({reasons}).")
+            print(check.format(qid=question.question_id, reasons=reasons))
+    print(_("Enregistré dans {path}.").format(path=project_path))
     return 0
 
 
@@ -336,6 +394,17 @@ def build_parser() -> argparse.ArgumentParser:
         help=_("Inclure les propositions de l'IA en attente, marquées comme telles."),
     )
     export.set_defaults(handler=cmd_export)
+
+    questionnaire = commands.add_parser(
+        "questionnaire",
+        help=_("Lire le questionnaire de l'étude (.pdf ou .txt) et l'ajouter au projet."),
+    )
+    questionnaire.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    questionnaire.add_argument("fichier", help=_("Questionnaire (.pdf ou .txt)."))
+    questionnaire.add_argument(
+        "--remplacer", action="store_true", help=_("Remplacer le questionnaire déjà lu.")
+    )
+    questionnaire.set_defaults(handler=cmd_questionnaire)
 
     enrich = commands.add_parser(
         "enrichir",

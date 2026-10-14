@@ -65,7 +65,15 @@ def test_two_builds_are_identical(data):
 
 def test_key_order_follows_the_design(project):
     data = json.loads(dumps(project))
-    assert list(data) == ["schema_version", "source", "settings", "variables", "groups", "ai_runs"]
+    assert list(data) == [
+        "schema_version",
+        "source",
+        "settings",
+        "variables",
+        "groups",
+        "ai_runs",
+        "questionnaire",
+    ]
     assert list(data["variables"][0])[:5] == ["name", "position", "file", "profile", "privacy"]
 
 

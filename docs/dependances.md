@@ -20,6 +20,7 @@ Toute nouvelle dépendance est ajoutée à ce tableau après vérification de sa
 | typing-inspection | Inspection des types (requis par pydantic) | MIT | Oui | 6 |
 | openpyxl | Écriture du codebook Excel | MIT | Oui | 7 |
 | et-xmlfile | Écriture XML en flux (requis par openpyxl) | MIT | Oui | 7 |
+| pypdf | Lecture du texte des questionnaires PDF (D-017) | BSD-3-Clause | Oui | v0.2, 2 |
 
 ### Option « ia » : enrichissement par un modèle local
 

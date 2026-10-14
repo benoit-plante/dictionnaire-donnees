@@ -222,6 +222,47 @@ class Settings(Strict):
     language: str = "fr"
 
 
+class QuestionOption(Strict):
+    option_id: str  # "Q10.o3"
+    text: str
+
+
+class GridRow(Strict):
+    row_id: str  # "Q7.r3"
+    number: int | None = None  # as printed ("3."), when printed
+    text: str
+
+
+class Question(Strict):
+    """A question as read in the questionnaire (D-012): its words, never rewritten."""
+
+    question_id: str  # "Q7", in reading order
+    page: int | None = None  # None for a text file without page breaks
+    text: str
+    kind: Literal["open", "single", "checkbox", "grid"]
+    options: list[QuestionOption] = []  # for a grid: its columns
+    rows: list[GridRow] = []
+    to_check: list[str] = []  # codes: "grid_header_unclear", "grid_without_header"
+
+
+class QuestionnaireText(Strict):
+    """A paragraph that is not a question: instructions, definitions, consent page."""
+
+    page: int | None = None
+    text: str
+
+
+class Questionnaire(Strict):
+    """The study's questionnaire, a documented source given by the team (D-012)."""
+
+    file_name: str
+    sha256: str
+    format: Literal["pdf", "txt"]
+    n_pages: int | None = None
+    questions: list[Question] = []
+    texts: list[QuestionnaireText] = []
+
+
 class Project(Strict):
     schema_version: str = SCHEMA_VERSION
     source: SourceInfo
@@ -229,6 +270,7 @@ class Project(Strict):
     variables: list[VariableEntry]
     groups: list[Group] = []
     ai_runs: list[AiRun] = []
+    questionnaire: Questionnaire | None = None
 
     def variable(self, name: str) -> VariableEntry:
         for entry in self.variables:
