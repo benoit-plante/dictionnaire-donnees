@@ -1,6 +1,7 @@
 """Step 1: the fictional databases are reproducible and contain every planned trap."""
 
 import hashlib
+import zipfile
 
 import numpy as np
 import pandas as pd
@@ -21,7 +22,15 @@ CSV_OPTIONS = {
 
 
 def _digest(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    """The bytes of a file; for a workbook, the content of each part, decompressed: the zip
+    compression may differ from one system to another (macOS run of v0.5)."""
+    if path.suffix != ".xlsx":
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+    with zipfile.ZipFile(path) as archive:
+        return {
+            info.filename: hashlib.sha256(archive.read(info.filename)).hexdigest()
+            for info in archive.infolist()
+        }
 
 
 @pytest.fixture(scope="module")
