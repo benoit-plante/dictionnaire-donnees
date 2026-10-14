@@ -528,7 +528,7 @@ QUESTIONNAIRE = [
 ]
 
 
-def questionnaire_key() -> dict[str, tuple[int, int, int | None]]:
+def questionnaire_key(questionnaire: list | None = None) -> dict[str, tuple[int, int, int | None]]:
     """Where each variable is asked: (page, question rank, option or row rank).
 
     Ranks start at 1; the question rank counts questions, grids and checkbox questions over
@@ -537,7 +537,7 @@ def questionnaire_key() -> dict[str, tuple[int, int, int | None]]:
     """
     key: dict[str, tuple[int, int, int | None]] = {}
     rank = 0
-    for page, elements in enumerate(QUESTIONNAIRE, start=1):
+    for page, elements in enumerate(questionnaire or QUESTIONNAIRE, start=1):
         for kind, *content in elements:
             if kind not in ("question", "grid", "checkbox"):
                 continue
@@ -596,10 +596,10 @@ def _questionnaire_lines(elements: list) -> list[tuple[str, str]]:
     return lines
 
 
-def write_questionnaire_txt(path: Path) -> None:
+def write_questionnaire_txt(path: Path, questionnaire: list | None = None) -> None:
     """As copied from a word processor: one line per paragraph, tabs between table cells."""
     out = []
-    for elements in QUESTIONNAIRE:
+    for elements in questionnaire or QUESTIONNAIRE:
         out += [text for _style, text in _questionnaire_lines(elements)]
     path.write_text("\n".join(out).rstrip("\n") + "\n", encoding="utf-8", newline="\n")
 
@@ -671,8 +671,11 @@ def _page_content(elements: list, page_number: int) -> bytes:
     return stream
 
 
-def write_questionnaire_pdf(path: Path) -> None:
-    pages = [_page_content(elements, n) for n, elements in enumerate(QUESTIONNAIRE, start=1)]
+def write_questionnaire_pdf(path: Path, questionnaire: list | None = None) -> None:
+    pages = [
+        _page_content(elements, n)
+        for n, elements in enumerate(questionnaire or QUESTIONNAIRE, start=1)
+    ]
     first_page = 5
     kids = b" ".join(b"%d 0 R" % (first_page + 2 * i) for i in range(len(pages)))
     objects = [

@@ -34,6 +34,9 @@ MAX_QUESTION_LENGTH = 300
 # Column titles sit far to the right of their question: this many characters at least, in
 # layout mode ("Presque" / "toujours", "La plupart du" / "temps").
 HEADER_INDENT = 10
+# A line at least this long was probably cut by the page width (lines of about 90 characters
+# in the PDF exports seen): what follows in lower case goes on with it, even after ":".
+WRAPPED_LENGTH = 70
 
 _TERMINAL = (".", "?", "!", ":", ";")
 # "(ex." or "etc." at the end of a line does not end the sentence.
@@ -70,6 +73,12 @@ def _merge(first: Line, second: Line, separator: str = " ") -> Line:
     return Line(first.page, first.indent, ((first.cells[0][0], text),), first.after_blank)
 
 
+def _cut_after_colon(before: str, text: str) -> bool:
+    """A line cut by the page width just after a colon: "… Pour nous joindre :" then
+    "adresse@exemple.org". A short line ending with a colon is a question with its options."""
+    return before.endswith(":") and len(before) >= WRAPPED_LENGTH and text[0].islower()
+
+
 def join_lines(lines: tuple[Line, ...] | list[Line]) -> list[Line]:
     """Put back together what the page width cut: a line that goes on in lower case."""
     out: list[Line] = []
@@ -86,7 +95,7 @@ def join_lines(lines: tuple[Line, ...] | list[Line]) -> list[Line]:
         elif (
             len(previous.cells) == 1
             and len(line.cells) == 1
-            and not _ends_sentence(before)
+            and (not _ends_sentence(before) or _cut_after_colon(before, text))
             # Lower case goes on; so does anything inside a parenthesis left open.
             and (text[0].islower() or text[0] == "(" or before.count("(") > before.count(")"))
             and not _is_row(line)
