@@ -13,6 +13,7 @@ import streamlit as st
 from ddict.i18n import _
 from ddict.review import logic
 from ddict.review.ui import (
+    ai_view,
     base_view,
     glossary_view,
     groups_view,
@@ -28,6 +29,7 @@ MODES = {
     "base": _("Base"),
     "questionnaire": _("Questionnaire"),
     "glossary": _("Glossaire"),
+    "ai": _("IA locale"),
     "variables": _("Variables"),
     "groups": _("Groupes"),
 }
@@ -125,6 +127,8 @@ def main() -> None:
         questionnaire_view.page(project)
     elif mode == "glossary":
         glossary_view.page(project)
+    elif mode == "ai":
+        ai_view.page(project)
     elif chosen is not None:
         if mode == "variables":
             variables_view.page(project, project.variable(chosen))

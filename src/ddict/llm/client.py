@@ -112,3 +112,32 @@ class LocalModelClient:
             return response.json()["choices"][0]["message"]["content"] or ""
         except (ValueError, KeyError, IndexError, TypeError) as error:
             raise ModelCallError("bad_server_response", "Unexpected server answer") from error
+
+
+def list_models(
+    endpoint: str = DEFAULT_ENDPOINT,
+    *,
+    timeout: float = 10.0,
+    transport: httpx.BaseTransport | None = None,
+) -> list[str]:
+    """The models the local server offers (`GET /models`, as Ollama, LM Studio and
+    llama.cpp answer it), sorted. Same guards as the client: this computer only, no proxy,
+    no redirection. Raises EndpointRefused or ModelCallError."""
+    endpoint = check_local(endpoint)
+    with httpx.Client(
+        timeout=timeout, trust_env=False, follow_redirects=False, transport=transport
+    ) as http:
+        try:
+            response = http.get(f"{endpoint}/models")
+        except httpx.TimeoutException as error:
+            raise ModelCallError("timeout", f"No answer within the time limit: {error}") from error
+        except httpx.TransportError as error:
+            raise ModelCallError("connection", f"Cannot reach {endpoint}: {error}") from error
+    if response.status_code != 200:
+        raise ModelCallError(
+            f"http_{response.status_code}", f"The server answered {response.status_code}"
+        )
+    try:
+        return sorted(str(item["id"]) for item in response.json()["data"])
+    except (ValueError, KeyError, TypeError) as error:
+        raise ModelCallError("bad_server_response", "Unexpected server answer") from error

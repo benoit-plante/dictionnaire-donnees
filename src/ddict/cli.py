@@ -36,6 +36,8 @@ from ddict.workflow import (
     QuestionnaireExists,
     acronym_summary,
     add_questionnaire,
+    exchange_dir,
+    failure_advice,
     profile_database,
     profile_summary,
     questionnaire_summary,
@@ -124,11 +126,6 @@ def cmd_questionnaire(args: argparse.Namespace) -> int:
         print(line)
     print(_("Enregistré dans {path}.").format(path=project_path))
     return 0
-
-
-def _exchange_dir(project_path: Path) -> Path:
-    """Where what is (or would be) sent to the model is kept, next to the project."""
-    return project_path.with_name(_strip_project_suffix(project_path) + ".dd-envois")
 
 
 def cmd_enrich(args: argparse.Namespace) -> int:
@@ -223,7 +220,7 @@ def _run_model(args: argparse.Namespace, project, project_path: Path, task: str)
             block_size=args.taille_bloc,
             redo=args.refaire,
             save=lambda p: save_project(p, project_path),
-            log_dir=_exchange_dir(project_path),
+            log_dir=exchange_dir(project_path),
         )
         try:
             for event in events:
@@ -252,21 +249,9 @@ def _run_model(args: argparse.Namespace, project, project_path: Path, task: str)
             print(_("Interrompu. Les blocs terminés sont enregistrés ; relancez pour continuer."))
             return EXIT_ERROR
     last = project.ai_runs[-1].detail if failed and project.ai_runs else None
-    if last == "connection":
-        print(
-            _("Le serveur {endpoint} ne répond pas. Ollama est-il lancé ?").format(
-                endpoint=client.endpoint
-            ),
-            file=sys.stderr,
-        )
-    elif last == "http_404":
-        print(
-            _(
-                "Le modèle « {model} » est introuvable sur le serveur. "
-                "Avec Ollama, téléchargez-le d'abord : ollama pull {model}"
-            ).format(model=args.modele),
-            file=sys.stderr,
-        )
+    advice = failure_advice(last, client.endpoint, args.modele)
+    if advice:
+        print(advice, file=sys.stderr)
     if succeeded:
         print(_("Propositions enregistrées dans {path}, à réviser.").format(path=project_path))
     elif failed:
@@ -275,7 +260,7 @@ def _run_model(args: argparse.Namespace, project, project_path: Path, task: str)
 
 
 def _preview(project_path: Path, blocks) -> int:
-    folder = _exchange_dir(project_path) / "apercu"
+    folder = exchange_dir(project_path) / "apercu"
     folder.mkdir(parents=True, exist_ok=True)
     for prefix in {block.block_id.split("-")[0] for block in blocks}:
         for old in folder.glob(f"{prefix}-*.json"):

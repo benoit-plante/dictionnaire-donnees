@@ -200,3 +200,32 @@ def tasks(project: Project) -> list[Task]:
             )
         )
     return found
+
+
+# --- The local model (v0.3: shared by the command line and the interface). ---
+
+
+def exchange_dir(project_path: Path) -> Path:
+    """Where what is (or would be) sent to the model is kept, next to the project."""
+    name = project_path.name
+    stem = name[: -len(PROJECT_SUFFIX)] if name.endswith(PROJECT_SUFFIX) else project_path.stem
+    return project_path.with_name(stem + ".dd-envois")
+
+
+def failure_advice(detail: str | None, endpoint: str, model: str) -> str | None:
+    """What to do when the local server failed, for the reasons a person can act on."""
+    if detail == "connection":
+        return _("Le serveur {endpoint} ne répond pas. Ollama est-il lancé ?").format(
+            endpoint=endpoint
+        )
+    if detail == "http_404":
+        return _(
+            "Le modèle « {model} » est introuvable sur le serveur. "
+            "Avec Ollama, téléchargez-le d'abord : ollama pull {model}"
+        ).format(model=model)
+    if detail == "timeout":
+        return _(
+            "Le modèle n'a pas répondu à temps. Sur un ordinateur sans carte graphique, "
+            "réduisez la taille des blocs."
+        )
+    return None
