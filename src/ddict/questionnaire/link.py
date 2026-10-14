@@ -10,8 +10,10 @@ questionnaire, looked up by identifier: nothing else can write it.
 Candidates are scored from:
 - words: the parts of the variable name and of its file label, the meaning of the accepted
   acronyms of the glossary, against the words of the row or option (full weight), of its
-  question (half) and of the paragraphs of its page (a fifth: "Votre sommeil"). Rare words
-  count more than words found everywhere;
+  question (half), of the question just before (0.4: a repeated question "À quelle
+  fréquence…" is about the person named before it) and of the paragraphs of its page (a
+  fifth: "Votre sommeil"). Words found in few questions count more than words found
+  everywhere;
 - series: variables numbered 1..n under a same stem (sommeil_q1..sommeil_q8, ethnie_0001..)
   are the rows of a grid or the options of a question, the k-th for number k;
 - families: in variables sharing the start of their name (motifs_freq_ocf_repit,
@@ -40,6 +42,7 @@ MIN_SCORE = 1.0  # below, a target is not a candidate
 PART_WEIGHT = 1.0
 QUESTION_WEIGHT = 0.5
 PAGE_WEIGHT = 0.2
+PREVIOUS_WEIGHT = 0.4  # the question just before: what a repeated question is about
 SERIES_BONUS = 3.0  # row or option k, of a question with enough of them, for the k-th of a series
 SERIES_SIZE_BONUS = 1.0  # ... and exactly as many as the series has variables
 SUFFIX_FACTOR = 2.0  # the end of a name in a family, found in the option
@@ -113,6 +116,13 @@ def targets(questionnaire: Questionnaire) -> list[Target]:
     return found
 
 
+def previous_questions(questionnaire: Questionnaire) -> dict[str, Question]:
+    """The question just before each one: what a repeated question is about ("Votre
+    conjoint·e", then "À quelle fréquence cette personne vous apporte du soutien ?")."""
+    questions = questionnaire.questions
+    return {q.question_id: questions[i - 1] for i, q in enumerate(questions) if i > 0}
+
+
 def target(questionnaire: Questionnaire | None, target_id: str) -> Target | None:
     if questionnaire is None:
         return None
@@ -165,9 +175,13 @@ def _target_words(
     page_words: dict[int | None, set[str]] = {}
     for text in questionnaire.texts:
         page_words.setdefault(text.page, set()).update(words(text.text))
+    previous = previous_questions(questionnaire)
     weighted = []
     for found in all_targets:
         weights = dict.fromkeys(page_words.get(found.question.page, ()), PAGE_WEIGHT)
+        before = previous.get(found.question.question_id)
+        if before is not None:
+            weights.update(dict.fromkeys(words(before.text), PREVIOUS_WEIGHT))
         question_weight = PART_WEIGHT if found.part is None else QUESTION_WEIGHT
         weights.update(dict.fromkeys(words(found.question.text), question_weight))
         part = set(words(found.part)) if found.part is not None else set()
@@ -191,7 +205,7 @@ def _word_matches(
             for weights, _part in weighted
         ]
         in_part = [bool(matching & part) for _weights, part in weighted]
-        count = sum(1 for weight in best if weight)
+        count = sum(1 for weight in best if weight >= QUESTION_WEIGHT)  # own words only
         rarity = math.log(1 + len(weighted) / count) if count else 0.0
         found[word] = (best, in_part, rarity)
     return found

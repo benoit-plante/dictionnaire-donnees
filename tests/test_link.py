@@ -151,7 +151,7 @@ def test_choices_enter_as_proposals(project):
     assert (q1.value, q1.origin, q1.status) == ("Q7.r1", "ai", "proposed")
     assert project.variable("id_participant").question.value == "none"
     assert project.variable("age").question.value is None  # unsure: a person chooses
-    assert {run.prompt_version for run in project.ai_runs} == {"link-v1"}
+    assert {run.prompt_version for run in project.ai_runs} == {"link-v2"}
     assert all(run.outcome == "succeeded" for run in project.ai_runs)
     assert "question" in logic.pending(project.variable("sommeil_q1"))
 
@@ -262,12 +262,12 @@ def test_link_command_without_a_model(fictional_files, tmp_path, capsys):
     main(["questionnaire", str(path), str(fictional_files["questionnaire-sommeil.pdf"])])
     capsys.readouterr()
     assert main(["rattacher", str(path)]) == 0
-    assert "33 variables sur 34 ont des questions candidates" in capsys.readouterr().out
+    assert "32 variables sur 34 ont des questions candidates" in capsys.readouterr().out
     assert main(["rattacher", str(path), "--apercu"]) == 0
     folder = tmp_path / "etude.dd-envois" / "apercu"
     assert sorted(p.name for p in folder.iterdir())[:2] == ["l-001.json", "l-002.json"]
     record = json.loads((folder / "l-001.json").read_text(encoding="utf-8"))
-    assert record["prompt_version"] == "link-v1"
+    assert record["prompt_version"] == "link-v2"
 
 
 def test_new_questionnaire_drops_links(fictional_files, tmp_path, capsys):

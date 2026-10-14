@@ -1,5 +1,5 @@
 """The model chooses, among the computed candidates, the question a variable comes from
-(v0.2, D-013). Prompt `link-v1`.
+(v0.2, D-013). Prompt `link-v2` (v0.3: with the question before each candidate).
 
 - The model sees, for each variable, its candidates only, never the whole questionnaire:
   small models have a short context, and a questionnaire of 27 pages does not fit.
@@ -14,6 +14,7 @@
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Callable, Iterator
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -31,11 +32,13 @@ if TYPE_CHECKING:
     from ddict.llm.enrich import BlockEvent
     from ddict.llm.run import BlockResult
 
-LINK_PROMPT_VERSION = "link-v1"
+LINK_PROMPT_VERSION = "link-v2"
 # Ollama keeps 4,096 tokens of context by default: 12 variables with 5 candidates each
 # already took 3,654 tokens on the fictional base (trial of 2026-10-14).
 DEFAULT_LINK_BLOCK_SIZE = 6
 MAX_QUESTION_CHARS = 150  # enough to tell questions apart; the answer is an identifier
+AFTER_CHARS = 80  # the question just before a candidate (link-v2)
+FOLLOW_UP = re.compile(r"\s*(si (oui|non)|if (yes|no))\b", re.IGNORECASE)  # "Si oui, …"
 NONE_ANSWER = "aucune"  # the variable comes from no question
 UNSURE_ANSWER = "incertain"  # no proposal: a person chooses
 
@@ -58,20 +61,40 @@ def link_schema() -> dict:
     return LinkResponse.model_json_schema()
 
 
-def _shorten(text: str) -> str:
-    if len(text) <= MAX_QUESTION_CHARS:
+def _shorten(text: str, limit: int = MAX_QUESTION_CHARS) -> str:
+    if len(text) <= limit:
         return text
-    return text[: MAX_QUESTION_CHARS - 1].rsplit(" ", 1)[0] + "…"
+    return text[: limit - 1].rsplit(" ", 1)[0] + "…"
 
 
-def _candidate(found: link.Target) -> dict:
-    payload = {"id": found.target_id, "question": _shorten(found.question.text)}
+def _candidate(found: link.Target, previous: dict) -> dict:
+    payload = {"id": found.target_id}
+    if found.question.page:
+        payload["page"] = found.question.page
+    payload["question"] = _shorten(found.question.text)
     if found.part is not None:
         payload["item"] = found.part
+    before = previous.get(found.question.question_id)
+    if before is not None:
+        payload["after"] = _shorten(before.text, AFTER_CHARS)
     return payload
 
 
-def _payload(entry: VariableEntry, found: list[link.Target]) -> dict:
+def _needing_context(questionnaire) -> dict:
+    """The question before, for the questions that cannot be told apart without it: a text
+    repeated in the questionnaire ("À quelle fréquence cette personne vous apporte du
+    soutien ?" after "Votre conjoint·e"), or a follow-up ("Si oui, quels professionnels…").
+    Given for every candidate, it led the model astray elsewhere (trial of 2026-10-14)."""
+    texts = [link.words(q.text) for q in questionnaire.questions]
+    previous = link.previous_questions(questionnaire)
+    return {
+        q.question_id: previous[q.question_id]
+        for q, mine in zip(questionnaire.questions, texts, strict=True)
+        if q.question_id in previous and (texts.count(mine) > 1 or FOLLOW_UP.match(q.text))
+    }
+
+
+def _payload(entry: VariableEntry, found: list[link.Target], previous: dict) -> dict:
     payload: dict = {"name": entry.name}
     if entry.file.label:
         payload["file_label"] = entry.file.label
@@ -81,7 +104,7 @@ def _payload(entry: VariableEntry, found: list[link.Target]) -> dict:
         payload["note"] = SENSITIVE_NOTES.get(privacy_class, "variable sensible")
     elif entry.file.value_labels:
         payload["value_labels"] = {code_text(v.code): v.label for v in entry.file.value_labels}
-    payload["candidates"] = [_candidate(t) for t in found]
+    payload["candidates"] = [_candidate(t, previous) for t in found]
     return payload
 
 
@@ -100,6 +123,7 @@ def build_link_blocks(project: Project, *, size: int) -> tuple[Block, ...]:
     if project.questionnaire is None:
         return ()
     by_id = {t.target_id: t for t in link.targets(project.questionnaire)}
+    previous = _needing_context(project.questionnaire)
     found = link.candidates(project)
     waiting = [e for e in project.variables if found.get(e.name) and not is_decided(e)]
     system = system_prompt(LINK_PROMPT_VERSION)
@@ -107,7 +131,7 @@ def build_link_blocks(project: Project, *, size: int) -> tuple[Block, ...]:
     for start in range(0, len(waiting), size):
         block_id = f"l-{start // size + 1:03d}"
         chunk = waiting[start : start + size]
-        payloads = [_payload(e, [by_id[i] for i in found[e.name]]) for e in chunk]
+        payloads = [_payload(e, [by_id[i] for i in found[e.name]], previous) for e in chunk]
         user = json.dumps({"block": block_id, "variables": payloads}, ensure_ascii=False, indent=2)
         blocks.append(
             Block(

@@ -94,8 +94,8 @@ def test_link_then_enrich_then_resume(server, project_path):
     app.button(key="ai-link").click().run()
     assert not app.exception, app.exception
     project = load_project(project_path)
-    assert {r.prompt_version for r in project.ai_runs} == {"link-v1"}
-    assert sum(1 for e in project.variables if e.question.status == "proposed") == 33
+    assert {r.prompt_version for r in project.ai_runs} == {"link-v2"}
+    assert sum(1 for e in project.variables if e.question.status == "proposed") == 32
     assert any("6 blocs réussis, 0 déjà faits, 0 en échec" in s.value for s in app.success)
     assert (project_path.parent / "etude-sommeil.dd-envois").is_dir()  # the exchanges are kept
 

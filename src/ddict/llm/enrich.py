@@ -20,8 +20,13 @@ from ddict.llm.client import LocalModelClient
 from ddict.llm.messages import Block, build_blocks
 from ddict.llm.run import BlockResult, run_block
 from ddict.llm.schemas import VariableProposal
-from ddict.llm.validate import invention_signals, parse_block_response
+from ddict.llm.validate import (
+    invention_signals,
+    parse_block_response,
+    presents_observed_range,
+)
 from ddict.project.model import Project, TrackedValue, VariableEntry
+from ddict.questionnaire.labels import accepted_labels
 
 # Failures that concern the server, not the block: no use going on with other blocks.
 STOPPING_FAILURES = {"connection", "timeout", "http_404"}
@@ -69,6 +74,14 @@ def _apply(
         if new is not None and may_replace(getattr(entry, field)):
             setattr(entry, field, new)
             signals += [f"{field}:{s}" for s in invention_signals(new.value, known_acronyms)]
+            # The observed range presented as the scale's, unless documented: value labels
+            # that define the codes, or a theoretical range entered with its source.
+            if (
+                not accepted_labels(entry)
+                and entry.theoretical_range is None
+                and presents_observed_range(new.value, entry.profile.min, entry.profile.max)
+            ):
+                signals.append(f"{field}:observed_range")
             if field == "label" and not entry.file.label and file_has_labels:
                 # Without a label in the file, models borrow a neighbour's (trial of
                 # 2026-10-13): the label is a guess, to be checked against the questionnaire.

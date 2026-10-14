@@ -37,6 +37,9 @@ SIGNALS = {
     "threshold": _("ressemble à un seuil"),
     "instrument": _("ressemble à un nom d'instrument"),
     "acronym": _("donne le sens d'un sigle absent du glossaire"),
+    "observed_range": _(
+        "présente l'étendue observée comme celle de l'échelle : à vérifier dans le manuel"
+    ),
     "no_file_label": _("deviné : la variable n'a pas d'étiquette dans le fichier"),
 }
 FIELD_NAMES = {

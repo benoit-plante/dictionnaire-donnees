@@ -102,6 +102,25 @@ def _defines_acronym(text: str, known: frozenset[str]) -> bool:
     return False
 
 
+# "sur une échelle de 0 à 21": a range given for a scale (v0.3, step 6).
+_SCALE_RANGE = re.compile(
+    r"(?i:échelle|scale|score)[^.;]*?\b(?i:de|entre|from)\s+(-?\d+(?:[.,]\d+)?)\s+(?i:à|et|to)\s+(-?\d+(?:[.,]\d+)?)"
+)
+
+
+def presents_observed_range(text: str, low: float | None, high: float | None) -> bool:
+    """Whether the text gives the observed minimum and maximum as the range of a scale: the
+    model saw them as statistics, and nothing says the scale stops there (K6, 0 to 24, was
+    described "sur une échelle de 0 à 21" in the trial of the prompt v3)."""
+    if low is None or high is None:
+        return False
+    for match in _SCALE_RANGE.finditer(text):
+        first, second = (float(g.replace(",", ".")) for g in match.groups())
+        if abs(first - low) < 0.01 and abs(second - high) < 0.01:
+            return True
+    return False
+
+
 def invention_signals(text: str, known_acronyms: frozenset[str] = frozenset()) -> tuple[str, ...]:
     """Codes for what in the text looks like a citation, a threshold, an instrument name, or
     the meaning of an acronym missing from the glossary (`known_acronyms`, case-folded)."""
