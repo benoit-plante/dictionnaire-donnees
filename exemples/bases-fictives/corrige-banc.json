@@ -78,6 +78,47 @@
         "type_garde_familial": "Q13.o3",
         "type_garde_privee": "Q13.o2"
       }
+    },
+    {
+      "name": "sleep-study",
+      "data": "sleep-study.csv",
+      "questionnaire": "questionnaire-sleep.pdf",
+      "links": {
+        "age": "Q3",
+        "aid_cbt": "Q10.o3",
+        "aid_medication": "Q10.o1",
+        "aid_natural": "Q10.o2",
+        "aid_none": "Q10.o4",
+        "anx1": "Q12.r1",
+        "anx2": "Q12.r2",
+        "anx3": "Q12.r3",
+        "anx4": "Q12.r4",
+        "anx5": "Q12.r5",
+        "anx6": "Q12.r6",
+        "anx7": "Q12.r7",
+        "birth_date": "Q2",
+        "comment": "Q13",
+        "date_completed": "none",
+        "email": "Q5",
+        "gender": "Q4",
+        "height_cm": "Q6",
+        "home_language": "Q14",
+        "n_awakenings": "Q9",
+        "overall_satisfaction": "Q11",
+        "participant_id": "none",
+        "q_removed": "none",
+        "sleep_hours": "Q8",
+        "sleep_hours_2": "Q8",
+        "sleep_q1": "Q7.r1",
+        "sleep_q2": "Q7.r2",
+        "sleep_q3": "Q7.r3",
+        "sleep_q4": "Q7.r4",
+        "sleep_q5": "Q7.r5",
+        "sleep_q6": "Q7.r6",
+        "sleep_q7": "Q7.r7",
+        "sleep_q8": "Q7.r8",
+        "wave": "none"
+      }
     }
   ]
 }

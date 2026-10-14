@@ -117,3 +117,48 @@ def test_the_language_can_be_changed_on_the_base_page(english_files, tmp_path):
     app.selectbox(key="study-language").set_value("fr").run()
     assert not app.exception, app.exception
     assert load_project(path).settings.language == "fr"
+
+
+def test_the_model_reads_english_for_an_english_study(english_files, fictional_files):
+    import json
+
+    from ddict.llm.link import build_link_blocks
+    from ddict.llm.messages import build_blocks
+
+    project = build_project(read_database(english_files["sleep-study.csv"]))
+    add_questionnaire(project, english_files["questionnaire-sleep.pdf"])
+    blocks = build_blocks(project)
+    assert blocks[0].messages[0]["content"].startswith("You help a research team")
+    assert blocks[0].prompt_version == "variables-v3.en"
+    sent = [v for b in blocks for v in json.loads(b.messages[1]["content"])["variables"]]
+    notes = {v["name"]: v.get("note") for v in sent}
+    assert notes["email"] == "likely identifier: no value sent"
+    assert "masqué" not in json.dumps(sent, ensure_ascii=False)
+    groups = [v["group"]["description"] for v in sent if "group" in v]
+    assert '8 items, codes from 1 to 5, prefix "sleep_q"' in groups
+    links = build_link_blocks(project, size=6)
+    assert links[0].messages[0]["content"].startswith("You help a research team link")
+    assert links[0].prompt_version == "link-v2.en"
+    # A French study is sent exactly as before v0.5.
+    french = build_project(read_database(fictional_files["etude-sommeil.csv"]))
+    assert build_blocks(french)[0].prompt_version == "variables-v3"
+    assert build_blocks(french)[0].messages[0]["content"].startswith("Tu aides une équipe")
+
+
+def test_english_answers_none_and_unsure(english_files):
+    import json
+
+    from ddict.llm.link import build_link_blocks, parse_link_response
+
+    project = build_project(read_database(english_files["sleep-study.csv"]))
+    add_questionnaire(project, english_files["questionnaire-sleep.pdf"])
+    block = build_link_blocks(project, size=40)[0]
+    names = block.names
+    answer = {
+        "block": block.block_id,
+        "variables": [
+            {"name": n, "question": "none" if i == 0 else "unsure"} for i, n in enumerate(names)
+        ],
+    }
+    choices = parse_link_response(json.dumps(answer), block)
+    assert [c.question for c in choices][:2] == ["none", "unsure"]

@@ -70,12 +70,30 @@ def parse_block_response(content: str, block: Block) -> tuple[VariableProposal, 
 # it is flagged, so that the person reviewing sees it.
 _CITATION = re.compile(r"\b[A-ZÉ][\w'-]+(?: et al\.?| & [A-ZÉ][\w'-]+)?,? \(?(?:19|20)\d{2}\)?")
 _THRESHOLD = re.compile(
-    r"(?:[≥≤<>]=?\s*\d)|\b(?:seuil|cut-?off|point de coupure|score critique)\b", re.IGNORECASE
+    r"(?:[≥≤<>]=?\s*\d)|\b(?:seuil|cut-?off|point de coupure|score critique|threshold"
+    r"|clinical cut)",
+    re.IGNORECASE,
 )
 _INSTRUMENT = re.compile(
     r"\b(?i:inventaire|questionnaire|échelle|inventory|scale)\s+(?:de\s+|d')?[A-ZÉ]"
     r"|\b[A-Z]{2,}-(?:\d+[A-Z]?|[IVX]+)\b"  # PHQ-9, GAD-7, BDI-II, EQ-5D
 )
+
+
+# "Beck Depression Inventory", "Perceived Stress Scale": an instrument named in English
+# (v0.5). A name the team accepted in the glossary is not flagged.
+_INSTRUMENT_EN = re.compile(
+    r"\b(?:[A-Z][a-z]+[\s-]+){1,4}(?:Inventory|Scale|Questionnaire|Checklist|Index|Survey)\b"
+)
+
+
+def _names_an_instrument(text: str, known_names: frozenset[str]) -> bool:
+    if _INSTRUMENT.search(text):
+        return True
+    return any(
+        not any(m.group(0).casefold() in name for name in known_names)
+        for m in _INSTRUMENT_EN.finditer(text)
+    )
 
 
 # "CBCL (Child Behavior Checklist)", "Child Behavior Checklist (CBCL)": an acronym defined.
@@ -121,15 +139,20 @@ def presents_observed_range(text: str, low: float | None, high: float | None) ->
     return False
 
 
-def invention_signals(text: str, known_acronyms: frozenset[str] = frozenset()) -> tuple[str, ...]:
+def invention_signals(
+    text: str,
+    known_acronyms: frozenset[str] = frozenset(),
+    known_names: frozenset[str] = frozenset(),
+) -> tuple[str, ...]:
     """Codes for what in the text looks like a citation, a threshold, an instrument name, or
-    the meaning of an acronym missing from the glossary (`known_acronyms`, case-folded)."""
+    the meaning of an acronym missing from the glossary (`known_acronyms`, case-folded;
+    `known_names`: the accepted meanings, case-folded, which are no invention)."""
     found = []
     if _CITATION.search(text):
         found.append("citation")
     if _THRESHOLD.search(text):
         found.append("threshold")
-    if _INSTRUMENT.search(text):
+    if _names_an_instrument(text, known_names):
         found.append("instrument")
     if _defines_acronym(text, known_acronyms):
         found.append("acronym")

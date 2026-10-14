@@ -296,7 +296,7 @@ def _run_model(args: argparse.Namespace, project, project_path: Path, task: str)
 
 
 def cmd_bench(args: argparse.Namespace) -> int:
-    """Measure an installed model on the two fictional bases (v0.4, step 6)."""
+    """Measure an installed model on the fictional bases (v0.4, step 6; English in v0.5)."""
     try:
         from ddict.bench import render_report, run_bench, write_report
         from ddict.llm.client import EndpointRefused, LocalModelClient
@@ -627,7 +627,7 @@ def build_parser() -> argparse.ArgumentParser:
         "evaluer",
         aliases=["evaluate"],
         help=_(
-            "Mesurer un modèle installé sur les deux bases fictives : rattachements justes, "
+            "Mesurer un modèle installé sur les bases fictives de l'outil : rattachements justes, "
             "inventions signalées, durée."
         ),
     )

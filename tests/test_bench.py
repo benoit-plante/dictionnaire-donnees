@@ -37,12 +37,14 @@ class Server:
             for name, target in base["links"].items()
         }
         self.sent: list[str] = []
+        self.systems: list[str] = []
 
     def __call__(self, request):
         if request.url.path.endswith("/models"):
             return httpx.Response(200, json={"data": [{"id": MODEL}]})
         body = json.loads(request.content)
         self.sent.append(body["messages"][1]["content"])
+        self.systems.append(body["messages"][0]["content"])
         content = json.loads(body["messages"][1]["content"])
         if content["block"].startswith("l-"):
             variables = []
@@ -89,8 +91,12 @@ def test_the_answer_key_matches_the_generators():
 def test_measures(fictional_files):
     server = Server()
     progress, results = _run(server)
-    assert len(progress) == 4
-    sleep, families = results
+    assert len(progress) == 6
+    sleep, families, english = results
+    assert english.name == "sleep-study" and english.n_key == 34
+    # The English study gets the English instructions (v0.5).
+    assert any(s.startswith("You help a research team") for s in server.systems)
+    assert any(s.startswith("Tu aides une équipe") for s in server.systems)
     assert (sleep.name, sleep.n_key, families.n_key) == ("etude-sommeil", 34, 30)
     assert "age" in sleep.model_wrong
     assert sleep.model_right <= sleep.n_key - 1

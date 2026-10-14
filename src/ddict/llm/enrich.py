@@ -67,13 +67,15 @@ def _apply(
     run_id: str,
     file_has_labels: bool,
     known_acronyms: frozenset[str],
+    known_names: frozenset[str] = frozenset(),
 ) -> None:
     signals = [s for s in entry.ai_signals if s.split(":")[0] not in ("label", "description")]
     for field in ("label", "description"):
         new = _proposal(getattr(proposal, field), run_id)
         if new is not None and may_replace(getattr(entry, field)):
             setattr(entry, field, new)
-            signals += [f"{field}:{s}" for s in invention_signals(new.value, known_acronyms)]
+            found = invention_signals(new.value, known_acronyms, known_names)
+            signals += [f"{field}:{s}" for s in found]
             # The observed range presented as the scale's, unless documented: value labels
             # that define the codes, or a theoretical range entered with its source.
             if (
@@ -97,10 +99,12 @@ def _apply(
 
 def apply_proposals(project: Project, result: BlockResult) -> None:
     file_has_labels = any(e.file.label for e in project.variables)
-    known = frozenset(e.term.casefold() for e in project.glossary if glossary.is_accepted(e))
+    accepted = [e for e in project.glossary if glossary.is_accepted(e)]
+    known = frozenset(e.term.casefold() for e in accepted)
+    names = frozenset(e.meaning.casefold() for e in accepted)
     for proposal in result.proposals:
         entry = project.variable(proposal.name)
-        _apply(entry, proposal, result.run.run_id, file_has_labels, known)
+        _apply(entry, proposal, result.run.run_id, file_has_labels, known, names)
 
 
 @dataclass(frozen=True)

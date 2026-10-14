@@ -1,7 +1,7 @@
 """The model bench, on the local AI page (v0.4, step 6).
 
-It measures the chosen model on the two fictional bases, never on the project's data; the
-report is written next to the project, and can be downloaded.
+It measures the chosen model on the fictional bases (two French, one English), never on
+the project's data; the report is written next to the project, and can be downloaded.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ def _start() -> None:
 
 
 def _run(endpoint: str, model: str) -> None:
-    from ddict.bench import render_report, run_bench, write_report
+    from ddict.bench import load_key, render_report, run_bench, write_report
     from ddict.llm.client import LocalModelClient
 
     st.caption(
@@ -32,7 +32,7 @@ def _run(endpoint: str, model: str) -> None:
         )
     )
     bar = st.progress(0.0, text=_("Préparation des bases fictives…"))
-    steps = 4  # two bases, two tasks each
+    steps = 2 * len(load_key()["bases"])  # two tasks per base
     done = 0
     results = []
     with LocalModelClient(model, endpoint=endpoint) as client:
@@ -66,7 +66,7 @@ def section(model: tuple[str, str] | None) -> None:
     st.subheader(_("Banc d'essai des modèles"))
     st.write(
         _(
-            "Pour choisir un modèle en connaissance de cause : sur les deux bases fictives de "
+            "Pour choisir un modèle en connaissance de cause : sur les bases fictives de "
             "l'outil, dont on connaît les bonnes réponses, le banc mesure les rattachements "
             "justes, les libellés qui inventent peut-être (citation, seuil, nom d'instrument, "
             "sens d'un sigle, étendue, sens de codes) et la durée. Vos données ne sont pas "

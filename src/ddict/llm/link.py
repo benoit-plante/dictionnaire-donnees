@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from ddict.export.wording import code_text
-from ddict.llm.messages import SENSITIVE_NOTES, Block, system_prompt
+from ddict.llm.messages import Block, recorded_version, sensitive_note, system_prompt
 from ddict.llm.validate import InvalidResponse
 from ddict.project.model import Project, TrackedValue, VariableEntry
 from ddict.questionnaire import link
@@ -41,6 +41,9 @@ AFTER_CHARS = 80  # the question just before a candidate (link-v2)
 FOLLOW_UP = re.compile(r"\s*(si (oui|non)|if (yes|no))\b", re.IGNORECASE)  # "Si oui, …"
 NONE_ANSWER = "aucune"  # the variable comes from no question
 UNSURE_ANSWER = "incertain"  # no proposal: a person chooses
+# The same answers in the English instructions (v0.5).
+NONE_ANSWERS = {NONE_ANSWER, "none"}
+UNSURE_ANSWERS = {UNSURE_ANSWER, "unsure"}
 
 
 class LinkChoice(BaseModel):
@@ -94,14 +97,16 @@ def _needing_context(questionnaire) -> dict:
     }
 
 
-def _payload(entry: VariableEntry, found: list[link.Target], previous: dict) -> dict:
+def _payload(
+    entry: VariableEntry, found: list[link.Target], previous: dict, language: str = "fr"
+) -> dict:
     payload: dict = {"name": entry.name}
     if entry.file.label:
         payload["file_label"] = entry.file.label
     payload["type"] = entry.profile.inferred_type
     privacy_class = entry.privacy.privacy_class.value or "ordinary"
     if privacy_class != "ordinary":
-        payload["note"] = SENSITIVE_NOTES.get(privacy_class, "variable sensible")
+        payload["note"] = sensitive_note(privacy_class, language)
     elif entry.file.value_labels:
         payload["value_labels"] = {code_text(v.code): v.label for v in entry.file.value_labels}
     payload["candidates"] = [_candidate(t, previous) for t in found]
@@ -126,12 +131,15 @@ def build_link_blocks(project: Project, *, size: int) -> tuple[Block, ...]:
     previous = _needing_context(project.questionnaire)
     found = link.candidates(project)
     waiting = [e for e in project.variables if found.get(e.name) and not is_decided(e)]
-    system = system_prompt(LINK_PROMPT_VERSION)
+    language = project.settings.language
+    system = system_prompt(LINK_PROMPT_VERSION, language)
     blocks = []
     for start in range(0, len(waiting), size):
         block_id = f"l-{start // size + 1:03d}"
         chunk = waiting[start : start + size]
-        payloads = [_payload(e, [by_id[i] for i in found[e.name]], previous) for e in chunk]
+        payloads = [
+            _payload(e, [by_id[i] for i in found[e.name]], previous, language) for e in chunk
+        ]
         user = json.dumps({"block": block_id, "variables": payloads}, ensure_ascii=False, indent=2)
         blocks.append(
             Block(
@@ -141,7 +149,7 @@ def build_link_blocks(project: Project, *, size: int) -> tuple[Block, ...]:
                     {"role": "system", "content": system},
                     {"role": "user", "content": user},
                 ),
-                prompt_version=LINK_PROMPT_VERSION,
+                prompt_version=recorded_version(LINK_PROMPT_VERSION, language),
             )
         )
     return tuple(blocks)
@@ -151,7 +159,7 @@ def _allowed(block: Block) -> dict[str, set[str]]:
     """The identifiers each variable of the block may be answered with."""
     content = json.loads(block.messages[-1]["content"])
     return {
-        v["name"]: {c["id"] for c in v["candidates"]} | {NONE_ANSWER, UNSURE_ANSWER}
+        v["name"]: {c["id"] for c in v["candidates"]} | NONE_ANSWERS | UNSURE_ANSWERS
         for v in content["variables"]
     }
 
@@ -187,9 +195,9 @@ def apply_links(project: Project, result: BlockResult) -> None:
     for choice in result.proposals:
         answer = choice.question.strip()
         entry = project.variable(choice.name)
-        if answer == UNSURE_ANSWER or not _may_replace(entry.question):
+        if answer in UNSURE_ANSWERS or not _may_replace(entry.question):
             continue
-        value = link.NO_QUESTION if answer == NONE_ANSWER else answer
+        value = link.NO_QUESTION if answer in NONE_ANSWERS else answer
         entry.question = TrackedValue[str](
             value=value, origin="ai", status="proposed", ai_run=result.run.run_id
         )

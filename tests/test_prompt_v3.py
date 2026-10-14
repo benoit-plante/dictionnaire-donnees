@@ -98,7 +98,8 @@ def test_prompt_v3():
 @pytest.mark.parametrize(
     ("text", "known", "signals"),
     [
-        ("Score CBCL (Child Behavior Checklist)", set(), ("acronym",)),
+        # Also an instrument named in English (v0.5).
+        ("Score CBCL (Child Behavior Checklist)", set(), ("instrument", "acronym")),
         ("Service DPJ (Défenseur des personnes jugées)", set(), ("acronym",)),
         ("Service DPJ (Direction de la protection de la jeunesse)", {"dpj"}, ()),
         ("aide des organismes communautaires Famille (OCF)", set(), ("acronym",)),

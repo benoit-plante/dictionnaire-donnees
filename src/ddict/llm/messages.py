@@ -23,8 +23,8 @@ import re
 from dataclasses import dataclass
 from importlib import resources
 
-from ddict import glossary
-from ddict.export.wording import code_text, confirmed_missing
+from ddict import glossary, i18n
+from ddict.export.wording import code_text, confirmed_missing, group_description
 from ddict.project.decisions import is_accepted
 from ddict.project.model import Group, Project, VariableEntry
 from ddict.questionnaire import link
@@ -35,13 +35,32 @@ PROMPTS_WITH_QUESTIONNAIRE = ("variables-v3",)
 MAX_QUESTION_CHARS = 300
 # With v3, 12 variables left too little room for the answer in Ollama's 4,096 tokens.
 DEFAULT_BLOCK_SIZE = 8
-MASKED = "masqué"
-
+# What the model reads besides the data, in the language of the study (v0.5, D-032).
+MASKED = {"fr": "masqué", "en": "masked"}
 SENSITIVE_NOTES = {
-    "likely_identifier": "identifiant probable : aucune valeur transmise",
-    "free_text": "texte libre : aucune valeur transmise",
-    "quasi_identifier": "quasi-identifiant : aucune valeur transmise",
+    "fr": {
+        "likely_identifier": "identifiant probable : aucune valeur transmise",
+        "free_text": "texte libre : aucune valeur transmise",
+        "quasi_identifier": "quasi-identifiant : aucune valeur transmise",
+        "other": "variable sensible",
+    },
+    "en": {
+        "likely_identifier": "likely identifier: no value sent",
+        "free_text": "free text: no value sent",
+        "quasi_identifier": "quasi-identifier: no value sent",
+        "other": "sensitive variable",
+    },
 }
+
+
+def sensitive_note(privacy_class: str, language: str) -> str:
+    notes = SENSITIVE_NOTES.get(language, SENSITIVE_NOTES["fr"])
+    return notes.get(privacy_class, notes["other"])
+
+
+def recorded_version(version: str, language: str) -> str:
+    """ "variables-v3" in French, as before v0.5; "variables-v3.en" in English."""
+    return version if language == "fr" else f"{version}.{language}"
 
 
 @dataclass(frozen=True)
@@ -56,8 +75,12 @@ class Block:
         return message_sha256(self.messages)
 
 
-def system_prompt(version: str = PROMPT_VERSION) -> str:
-    path = resources.files("ddict.llm") / "prompts" / f"{version}.fr.txt"
+def system_prompt(version: str = PROMPT_VERSION, language: str = "fr") -> str:
+    """The instructions in the language of the study; French when there is no translation."""
+    folder = resources.files("ddict.llm") / "prompts"
+    path = folder / f"{version}.{language}.txt"
+    if not path.is_file():
+        path = folder / f"{version}.fr.txt"
     return path.read_text(encoding="utf-8")
 
 
@@ -112,6 +135,7 @@ def variable_payload(
     neighbors: list[str],
     groups: dict[str, Group],
     question: dict | None = None,
+    language: str = "fr",
 ) -> dict:
     p = entry.profile
     payload: dict = {"name": entry.name}
@@ -125,7 +149,7 @@ def variable_payload(
 
     privacy_class = entry.privacy.privacy_class.value or "ordinary"
     if privacy_class != "ordinary":
-        payload["note"] = SENSITIVE_NOTES.get(privacy_class, "variable sensible")
+        payload["note"] = sensitive_note(privacy_class, language)
         return payload
 
     if entry.file.measure_level:
@@ -136,7 +160,9 @@ def variable_payload(
     if p.observed_values is not None:
         present = p.n_rows - p.n_system_missing
         payload["observed"] = {
-            code_text(o.code): MASKED if o.count is None else _round(o.count / present)
+            code_text(o.code): MASKED.get(language, MASKED["fr"])
+            if o.count is None
+            else _round(o.count / present)
             for o in p.observed_values
         }
     payload["pct_missing"] = _round(
@@ -160,8 +186,10 @@ def variable_payload(
     if group_id and group_id in groups:
         group = groups[group_id]
         payload["group"] = {"id": group_id}
-        if group.descriptive_label.value:
-            payload["group"]["description"] = group.descriptive_label.value
+        with i18n.using(language):  # a computed description, in the study's language
+            description = group_description(group, "work")
+        if description:
+            payload["group"]["description"] = description
     return payload
 
 
@@ -176,7 +204,8 @@ def build_blocks(
         raise ValueError("Block size must be at least 1")
     variables = project.variables
     groups = {g.group_id: g for g in project.groups}
-    system = system_prompt(version)
+    language = project.settings.language
+    system = system_prompt(version, language)
     sources = version in PROMPTS_WITH_QUESTIONNAIRE
     blocks = []
     for start in range(0, len(variables), size):
@@ -189,7 +218,7 @@ def build_blocks(
                 variables[i].name for i in (index - 1, index + 1) if 0 <= i < len(variables)
             ]
             question = question_payload(project, entry) if sources else None
-            payloads.append(variable_payload(entry, neighbors, groups, question))
+            payloads.append(variable_payload(entry, neighbors, groups, question, language))
         content: dict = {"block": block_id}
         terms = block_glossary(project, chunk) if sources else {}
         if terms:
@@ -204,7 +233,7 @@ def build_blocks(
                     {"role": "system", "content": system},
                     {"role": "user", "content": user},
                 ),
-                prompt_version=version,
+                prompt_version=recorded_version(version, language),
             )
         )
     return tuple(blocks)

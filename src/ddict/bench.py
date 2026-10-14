@@ -1,4 +1,5 @@
-"""The model bench (v0.4, step 6): how an installed model does on the two fictional bases.
+"""The model bench (v0.4, step 6): how an installed model does on the fictional bases (two
+in French, and one in English since v0.5).
 
 For each base, built as a team would build it (CSV, then its questionnaire), the bench
 measures the links the model proposes against the answer key, the computed links alone
@@ -42,7 +43,7 @@ SIGNAL_NAMES = Texts(
     }
 )
 # "1 = Oui", "0 : jamais", "2 pour Homme": the meaning of a code.
-CODE_MEANING = re.compile(r"(?<![\w.,])-?\d+\s*(?:=|:|pour)\s*[«\"]?[A-Za-zÀ-ÿ]", re.IGNORECASE)
+CODE_MEANING = re.compile(r"(?<![\w.,])-?\d+\s*(?:=|:|pour|for)\s*[«\"]?[A-Za-zÀ-ÿ]", re.IGNORECASE)
 
 
 @dataclass

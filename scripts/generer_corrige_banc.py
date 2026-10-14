@@ -15,6 +15,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
+import generer_base_anglaise as english  # noqa: E402
 import generer_bases_fictives as sleep  # noqa: E402
 import generer_enquete_familles as families  # noqa: E402
 
@@ -38,6 +39,13 @@ BASES = [
         "questionnaire-familles.pdf",
         families.answer_key,
         families.TRAPS["variables_without_question"],
+    ),
+    (
+        "sleep-study",
+        "sleep-study.csv",
+        "questionnaire-sleep.pdf",
+        english.answer_key,
+        english.TRAPS["variables_without_question"],
     ),
 ]
 
