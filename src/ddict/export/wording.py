@@ -14,7 +14,14 @@ from ddict import glossary
 from ddict.i18n import _
 from ddict.profile.variants import spelling_variants
 from ddict.project.decisions import is_accepted
-from ddict.project.model import Code, Profile, Project, TrackedValue, VariableEntry
+from ddict.project.model import (
+    Code,
+    Profile,
+    Project,
+    SentinelDecision,
+    TrackedValue,
+    VariableEntry,
+)
 from ddict.questionnaire import link
 from ddict.questionnaire.labels import accepted_labels
 
@@ -126,12 +133,15 @@ def codes(values: list[Code]) -> str:
     return ", ".join(code_text(c) for c in values)
 
 
-def anomalies(profile: Profile) -> list[str]:
-    """Deterministic findings, in plain French."""
+def anomalies(profile: Profile, decided: frozenset = frozenset()) -> list[str]:
+    """Deterministic findings, in plain French. `decided`: suspect missing codes the team
+    already settled (D-028), no longer anomalies."""
     found = []
     for code in profile.unlabeled_codes:
         found.append(_("Code {code} observé sans étiquette").format(code=code_text(code)))
     for code in profile.suspect_missing_codes:
+        if code in decided:
+            continue
         found.append(
             _("Valeur {code} probablement manquante, non déclarée").format(code=code_text(code))
         )
@@ -180,10 +190,31 @@ def notes(profile: Profile) -> list[str]:
     return []
 
 
+def confirmed_missing(entry: VariableEntry) -> list[Code]:
+    """Suspect codes the team confirmed as missing codes (D-028)."""
+    return [d.code for d in entry.sentinel_decisions if d.missing]
+
+
+def entry_anomalies(entry: VariableEntry) -> list[str]:
+    """The anomalies of a variable, without the suspect codes the team settled."""
+    return anomalies(entry.profile, frozenset(d.code for d in entry.sentinel_decisions))
+
+
+def sentinel_notes_for(decision: SentinelDecision) -> str:
+    code = code_text(decision.code)
+    if decision.missing:
+        return _("Code {code} confirmé comme manquant par l'équipe").format(code=code)
+    return _("Valeur {code} confirmée comme vraie valeur par l'équipe").format(code=code)
+
+
+def sentinel_notes(entry: VariableEntry) -> list[str]:
+    return [sentinel_notes_for(d) for d in entry.sentinel_decisions]
+
+
 def issues(entry: VariableEntry, kind: ExportKind) -> list[str]:
     """Anomalies and notes computed, then accepted (or, in a work export, pending) AI
     findings."""
-    found = anomalies(entry.profile) + notes(entry.profile)
+    found = entry_anomalies(entry) + notes(entry.profile) + sentinel_notes(entry)
     found.extend(t for t in (text(issue, kind) for issue in entry.issues) if t)
     return found
 
@@ -206,6 +237,8 @@ def missing_codes(entry: VariableEntry) -> str:
             parts.append(code_text(item.low))
         else:
             parts.append(f"{code_text(item.low)} – {code_text(item.high)}")
+    for code in confirmed_missing(entry):
+        parts.append(_("{code} (confirmé par l'équipe)").format(code=code_text(code)))
     for item in entry.file.missing_tokens:
         parts.append(_("« {token} » lu comme vide ({n})").format(token=item.token, n=item.count))
     return ", ".join(parts)
@@ -230,6 +263,7 @@ def value_rows(entry: VariableEntry) -> list[tuple[str, str, str, bool]]:
     labels = {lab.code: lab.label for lab in accepted_labels(entry)}
     observed = {o.code: o for o in entry.profile.observed_values or []}
     declared = {m.low for m in entry.file.declared_missing if m.low == m.high}
+    declared |= set(confirmed_missing(entry))
     rows = []
     for code in sorted(set(labels) | set(observed), key=lambda c: (isinstance(c, str), c)):
         count = ""

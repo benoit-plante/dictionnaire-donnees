@@ -128,6 +128,7 @@ Statuts affichés : `proposed` = « proposé par IA », `validated` = « validé
 | `unlabeled_codes` | Valeurs observées sans étiquette alors que la variable en a | calcul |
 | `unused_labels` | Étiquettes sans aucune observation | calcul |
 | `suspect_missing_codes` | Valeurs sentinelles probables non déclarées (`-9`, `99`, `999`, `-1`…, isolées loin du reste) | calcul |
+| `sentinel_decisions` | Pour chaque code sentinelle : code manquant ou vraie valeur, selon l'équipe (v0.4, D-028) ; jamais proposé par l'IA ; le profil n'est pas recalculé, le codebook et les messages au modèle traitent un code confirmé comme un code manquant déclaré | humain |
 | `flags` | Constante, quasi constante, entièrement manquante, types mélangés, doublon de colonne | calcul |
 | (signal) variantes d'écriture | Catégories visibles d'une variable de texte qui ne diffèrent que par la casse, les accents ou les espaces (v0.2) ; calculées à l'affichage à partir des catégories visibles, jamais des données, donc sans révéler une catégorie masquée | calcul |
 | `privacy_class` | `free_text`, `likely_identifier`, `quasi_identifier`, `date_of_birth_like`, `ordinary`, avec les raisons | calcul, confirmé par un humain |

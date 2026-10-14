@@ -11,12 +11,13 @@ from typing import Literal
 from pydantic import ValidationError
 
 from ddict import glossary
-from ddict.export.wording import anomalies
+from ddict.export.wording import entry_anomalies
 from ddict.i18n import _
 from ddict.project.decisions import DecisionError, correct, enter, reject, validate
 from ddict.project.model import (
     Group,
     Project,
+    SentinelDecision,
     SourcedText,
     TheoreticalRange,
     Threshold,
@@ -28,7 +29,7 @@ from ddict.questionnaire.labels import propose_value_labels
 
 Field = Literal["label", "description", "unit", "question", "value_labels"]
 Action = Literal["accept", "correct", "reject"]
-Filter = Literal["all", "to_review", "flagged", "sensitive", "unlinked"]
+Filter = Literal["all", "to_review", "flagged", "sensitive", "unlinked", "suspects"]
 
 PRIVACY_CLASSES = ("ordinary", "likely_identifier", "free_text", "quasi_identifier")
 
@@ -76,7 +77,13 @@ def pending(entry: VariableEntry) -> list[str]:
 
 
 def is_flagged(entry: VariableEntry) -> bool:
-    return bool(anomalies(entry.profile) or entry.ai_signals)
+    return bool(entry_anomalies(entry) or entry.ai_signals)
+
+
+def has_undecided_suspects(entry: VariableEntry) -> bool:
+    """A suspect missing code the team has not settled yet (D-028)."""
+    decided = {d.code for d in entry.sentinel_decisions}
+    return any(code not in decided for code in entry.profile.suspect_missing_codes)
 
 
 def select(project: Project, which: Filter) -> list[VariableEntry]:
@@ -86,6 +93,7 @@ def select(project: Project, which: Filter) -> list[VariableEntry]:
         "flagged": is_flagged,
         "sensitive": is_sensitive,
         "unlinked": lambda e: project.questionnaire is not None and not link.is_linked(e),
+        "suspects": has_undecided_suspects,
     }
     return [e for e in project.variables if tests[which](e)]
 
@@ -163,6 +171,21 @@ def link_question(project: Project, name: str, target_id: str, *, now: str) -> N
     else:
         entry.question = correct(tracked, target_id, now=now)
     propose_value_labels(project)
+
+
+def decide_sentinel(project: Project, name: str, code, missing: bool | None, *, now: str) -> None:
+    """A suspect missing code is a missing code (True) or a real value (False); None takes
+    the decision back (D-028)."""
+    entry = project.variable(name)
+    if code not in entry.profile.suspect_missing_codes:
+        raise ReviewError(
+            _("{code} n'est pas un code suspect de cette variable.").format(code=code)
+        )
+    kept = [d for d in entry.sentinel_decisions if d.code != code]
+    if missing is not None:
+        kept.append(SentinelDecision(code=code, missing=missing, updated_at=now))
+    order = list(entry.profile.suspect_missing_codes)
+    entry.sentinel_decisions = sorted(kept, key=lambda d: order.index(d.code))
 
 
 def decide_issue(project: Project, name: str, index: int, action: Action, *, now: str) -> None:

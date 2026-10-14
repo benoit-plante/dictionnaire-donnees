@@ -285,6 +285,18 @@ def _provenance(project: Project, kind: w.ExportKind) -> list[list]:
                         None,
                     ]
                 )
+        for decision in e.sentinel_decisions:
+            rows.append(
+                [
+                    e.name,
+                    _("Code suspect {code}").format(code=w.code_text(decision.code)),
+                    _("code manquant") if decision.missing else _("vraie valeur"),
+                    w.ORIGINS["human"],
+                    "",
+                    "",
+                    None,
+                ]
+            )
         add(e.name, _("Libellé"), e.label)
         add(e.name, _("Description"), e.description)
         add(e.name, _("Unité"), e.unit)

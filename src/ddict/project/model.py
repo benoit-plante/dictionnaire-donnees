@@ -97,6 +97,15 @@ class MissingToken(Strict):
     count: int
 
 
+class SentinelDecision(Strict):
+    """A suspect missing code (999, -9) as the team decided it (D-028): a missing code, or a
+    real value. Never proposed by the model; the profile is not computed again."""
+
+    code: Code
+    missing: bool
+    updated_at: str | None = None
+
+
 class FileMetadata(Strict):
     """What the data file says about the variable (origin: file)."""
 
@@ -169,6 +178,8 @@ class VariableEntry(Strict):
     issues: list[TrackedValue[str]] = []
     unit: TrackedValue[str]
     group_id: TrackedValue[str]
+    # The team's decisions on the suspect missing codes (D-028).
+    sentinel_decisions: list[SentinelDecision] = []
     # Human only, each with a documented source (principle 4).
     theoretical_range: TheoreticalRange | None = None
     thresholds: list[Threshold] = []

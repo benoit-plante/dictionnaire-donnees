@@ -23,6 +23,7 @@ FILTERS = {
     "flagged": _("Avec signalements"),
     "sensitive": _("Sensibles"),
     "unlinked": _("Sans question"),
+    "suspects": _("Codes suspects"),
     "all": _("Toutes"),
 }
 
@@ -268,10 +269,60 @@ def _file_and_computed(entry: VariableEntry) -> None:
             columns=[_("Code"), _("Étiquette"), _("Effectif"), _("Manquant déclaré")],
         )
         st.dataframe(table, hide_index=True)
-    for text in w.anomalies(p):
+    # Suspect codes are shown apart, each with its decision (D-028).
+    for text in w.anomalies(p, frozenset(p.suspect_missing_codes)):
         st.warning(text)
+    for code in p.suspect_missing_codes:
+        _sentinel(entry, code)
     for text in w.notes(p):
         st.info(text)
+
+
+def _sentinel(entry: VariableEntry, code) -> None:
+    """A suspect missing code: is it a missing code, or a real value? Only the team knows."""
+    name, shown = entry.name, w.code_text(code)
+    key = f"sentinel-{name}-{shown}"
+    decision = next((d for d in entry.sentinel_decisions if d.code == code), None)
+    if decision is None:
+        st.warning(
+            _(
+                "Valeur {code} probablement manquante, non déclarée : est-ce un code manquant ?"
+            ).format(code=shown)
+        )
+        left, right = st.columns(2)
+        with left:
+            c.button(
+                _("C'est un code manquant"),
+                f"{key}-missing",
+                logic.decide_sentinel,
+                name,
+                code,
+                True,
+                timed=True,
+            )
+        with right:
+            c.button(
+                _("C'est une vraie valeur"),
+                f"{key}-real",
+                logic.decide_sentinel,
+                name,
+                code,
+                False,
+                timed=True,
+            )
+        return
+    st.info(w.sentinel_notes_for(decision))
+    c.button(
+        _("Revenir sur cette décision"),
+        f"{key}-undo",
+        logic.decide_sentinel,
+        name,
+        code,
+        None,
+        timed=True,
+    )
+    c.show_message(f"{key}-missing")
+    c.show_message(f"{key}-real")
 
 
 def _privacy(entry: VariableEntry) -> None:

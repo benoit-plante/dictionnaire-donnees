@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ddict.export import write_markdown, write_xlsx
-from ddict.export.wording import anomalies
+from ddict.export.wording import entry_anomalies
 from ddict.glossary import propose_from_questionnaire, undefined_acronyms
 from ddict.i18n import _
 from ddict.io import read_database
@@ -49,7 +49,7 @@ def profile_summary(project: Project) -> str:
         1 for e in project.variables if (e.privacy.privacy_class.value or "ordinary") != "ordinary"
     )
     # The same count as the "Avec signalements" filter of the review (notes excluded).
-    flagged = sum(1 for e in project.variables if anomalies(e.profile))
+    flagged = sum(1 for e in project.variables if entry_anomalies(e))
     return _(
         "{n} variables, {rows} lignes ; {sensitive} variables sensibles ; "
         "{flagged} avec signalements."
@@ -181,6 +181,16 @@ def tasks(project: Project) -> list[Task]:
             found.append(
                 Task(unlinked, _("Variables sans question : {n}"), "variables", "unlinked")
             )
+    sentinels = sum(
+        1
+        for e in project.variables
+        for code in e.profile.suspect_missing_codes
+        if all(d.code != code for d in e.sentinel_decisions)
+    )
+    if sentinels:
+        found.append(
+            Task(sentinels, _("Codes suspects à confirmer : {n}"), "variables", "suspects")
+        )
     labels = sum(1 for e in project.variables if e.value_labels.status == "proposed")
     if labels:
         found.append(

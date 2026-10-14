@@ -24,7 +24,7 @@ from dataclasses import dataclass
 from importlib import resources
 
 from ddict import glossary
-from ddict.export.wording import code_text
+from ddict.export.wording import code_text, confirmed_missing
 from ddict.project.decisions import is_accepted
 from ddict.project.model import Group, Project, VariableEntry
 from ddict.questionnaire import link
@@ -142,11 +142,13 @@ def variable_payload(
     payload["pct_missing"] = _round(
         100 * (p.n_system_missing + p.n_declared_missing) / p.n_rows if p.n_rows else 0.0, 1
     )
-    if entry.file.declared_missing:
-        payload["declared_missing"] = [
-            code_text(m.low) if m.low == m.high else f"{code_text(m.low)}..{code_text(m.high)}"
-            for m in entry.file.declared_missing
-        ]
+    declared = [
+        code_text(m.low) if m.low == m.high else f"{code_text(m.low)}..{code_text(m.high)}"
+        for m in entry.file.declared_missing
+    ]
+    declared += [code_text(c) for c in confirmed_missing(entry)]  # by the team (D-028)
+    if declared:
+        payload["declared_missing"] = declared
     if p.min is not None:
         payload["min"] = _round(p.min)
         payload["max"] = _round(p.max)

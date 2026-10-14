@@ -29,7 +29,7 @@ def page(project: Project) -> None:
     st.write(profile_summary(project))
 
     sensitive = [e for e in project.variables if logic.is_sensitive(e)]
-    flagged = [e for e in project.variables if w.anomalies(e.profile)]
+    flagged = [e for e in project.variables if w.entry_anomalies(e)]
     columns = st.columns(4)
     columns[0].metric(_("Variables"), len(project.variables))
     columns[1].metric(_("Lignes"), source.n_rows)
