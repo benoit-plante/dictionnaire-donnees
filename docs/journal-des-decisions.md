@@ -384,3 +384,78 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   3. Attendre l'essai d'une personne qui a Stata avant de publier.
 - **Justification :** ni l'auteur ni le poste de développement n'ont Stata ; la syntaxe SPSS est vérifiée avec PSPP et le script R avec R, mais le fichier Stata ne l'était que par sa forme. Un fichier jamais exécuté risquerait d'échouer chez l'équipe. Une équipe qui travaille avec Stata peut utiliser la copie documentée (`.sav`, que Stata lit avec `import spss`).
 - **Conséquences :** code, tests, guide, conception et journal des changements mis à jour ; un fichier Stata pourra revenir si une personne qui a Stata peut l'essayer.
+
+### D-031 — Périmètre de la v0.5
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** la v0.5 rend l'outil utilisable en anglais (interface, codebook, études menées en anglais, guides) et l'installe sous macOS par double-clic. Linux, les exports DDI et Frictionless et le dictionnaire REDCap sont reportés ; seuls le français et l'anglais sont visés.
+- **Options considérées :**
+  1. Anglais et macOS (ce choix).
+  2. Anglais, macOS et Linux.
+  3. Dépôt des données (DDI, Frictionless) et REDCap.
+- **Justification :** beaucoup d'équipes québécoises sont bilingues et beaucoup de chercheurs travaillent sur un Mac ; l'auteur a retenu ces deux pistes et écarté Linux.
+- **Conséquences :** plan en 8 étapes (`docs/plan-v0.5.md`).
+
+### D-032 — Langue de l'interface et langue du projet
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** deux réglages distincts. La langue de l'interface est choisie par chaque personne, sur l'accueil, et gardée dans le dossier de réglages de l'ordinateur (`DDICT_LANG` la remplace). La langue du projet (questionnaire, libellés, consignes au modèle) est choisie par l'équipe et gardée dans le fichier projet (`settings.language`). La langue du codebook se choisit à l'export, par défaut celle de l'interface. Les valeurs écrites par l'équipe ne sont jamais traduites.
+- **Options considérées :**
+  1. Deux langues distinctes (ce choix).
+  2. Une seule langue pour tout.
+- **Justification :** une personne peut préférer l'interface en français pour une étude menée en anglais, ou l'inverse ; traduire les valeurs de l'équipe serait une invention.
+- **Conséquences :** les textes traduits une seule fois au démarrage le seront à l'affichage.
+
+### D-033 — Outils de traduction
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Babel (BSD-3-Clause), dépendance de développement seulement, extrait les phrases à traduire et compile le catalogue `.mo` ; à l'exécution, l'outil n'utilise que `gettext`, de la bibliothèque standard. Le `.mo` compilé est gardé dans le dépôt, avec un test qui vérifie qu'il correspond au `.po`.
+- **Options considérées :**
+  1. Babel en développement (ce choix).
+  2. Un format maison (JSON).
+  3. Babel aussi à l'exécution.
+- **Justification :** gettext est la norme, déjà prévue par D-004 ; Babel fonctionne sous Windows sans outils GNU ; aucune dépendance nouvelle pour les personnes qui installent l'outil.
+- **Conséquences :** noté dans `docs/dependances.md` à l'étape 1.
+
+### D-034 — Relecture de la traduction
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** l'assistant écrit la traduction anglaise ; une personne anglophone la relit avant la version. Sans cette relecture, l'anglais est publié comme « à l'essai ».
+- **Options considérées :**
+  1. Relecture par une personne anglophone (ce choix).
+  2. Publication sans relecture.
+- **Justification :** une interface mal traduite fait plus de tort qu'une interface en français.
+- **Conséquences :** un glossaire des termes anglais (codebook, missing code, value label…) est fixé à l'étape 2.
+
+### D-035 — Essais sous macOS
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** les tests et un essai de l'installateur passent sous macOS dans GitHub Actions, lancés à la demande pour limiter les minutes d'un dépôt privé ; un essai réel sur un Mac, par une personne qui en a un, est demandé avant la version. Sans cet essai, macOS est publié comme « à l'essai ».
+- **Options considérées :**
+  1. Actions à la demande et essai réel (ce choix).
+  2. Actions à chaque envoi.
+  3. Pas d'essai sous macOS.
+- **Justification :** le poste de développement n'a pas de Mac ; Actions vérifie l'installation et le démarrage, pas l'icône ni les avertissements de sécurité de macOS.
+- **Conséquences :** un fichier de workflow GitHub Actions est ajouté à l'étape 6.
+
+### D-036 — Langue de la documentation
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** les guides d'installation et d'utilisation existent en français et en anglais ; la documentation technique (conception, journal des décisions, plans, essais) reste en français.
+- **Options considérées :**
+  1. Guides bilingues, documentation technique en français (ce choix).
+  2. Tout traduire.
+- **Justification :** les guides servent aux personnes qui utilisent l'outil ; la documentation technique sert au développement.
+- **Conséquences :** guides anglais dans `docs/en/` à l'étape 7.
