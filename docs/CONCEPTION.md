@@ -360,7 +360,9 @@ Toutes les dépendances ci-dessus sont sous licences permissives (BSD, MIT, Apac
 
 **v0.2** (publiée) : questionnaire comme source documentée, glossaire des sigles, autres formats ; plan dans [`plan-v0.2.md`](plan-v0.2.md).
 
-**v0.3** : tout le parcours dans l'interface du navigateur et installateur Windows par double-clic ; plan validé dans [`plan-v0.3.md`](plan-v0.3.md).
+**v0.3** (publiée) : tout le parcours dans l'interface du navigateur et installateur Windows par double-clic ; plan dans [`plan-v0.3.md`](plan-v0.3.md).
+
+**v0.4** : fichiers de commandes (SPSS, R, Stata) et copie documentée du `.sav`, codes manquants confirmés, banc d'essai des modèles, décisions groupées ; plan proposé dans [`plan-v0.4.md`](plan-v0.4.md).
 
 **Plus tard** (hors v0.1) :
 - bases SQL ;
