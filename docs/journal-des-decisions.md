@@ -231,3 +231,78 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   3. Une origine propre, `questionnaire`, qui peut être proposée.
 - **Justification :** l'essai de l'étape 6 montre qu'une proposition fondée sur l'ordre des options peut être fausse (codes recodés) ; elle doit attendre une personne, et le codebook doit pouvoir dire d'où elle vient.
 - **Conséquences :** le format du fichier projet accepte cette origine (champ `value_labels` d'une variable) ; les règles de décision (accepter, rejeter, valeur acceptée) traitent `questionnaire` comme `ai`.
+
+### D-019 — Périmètre de la v0.3
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** la v0.3 retire PowerShell de l'usage courant : accueil (nouveau projet, projets récents), parcours guidé en pages avec un tableau de bord, IA lancée depuis l'interface, export depuis l'interface, installateur Windows par double-clic, et deux corrections issues des essais de la v0.2 (questions répétées dans le rattachement, étendue observée présentée comme celle d'une échelle). La copie corrigée du `.sav`, l'aide au nettoyage et le jeu de référence pour comparer les modèles passent à la v0.4.
+- **Options considérées :**
+  1. Interface complète et installateur (ce choix).
+  2. Copie corrigée du `.sav` d'abord.
+  3. Tout à la fois.
+- **Justification :** après la v0.2, six ou sept commandes et deux allers-retours entre PowerShell et le navigateur sont le principal obstacle pour des équipes qui ne programment pas. L'interface change en profondeur : mieux vaut la stabiliser avant d'ajouter des fonctions qui écrivent des données.
+- **Conséquences :** plan en 8 étapes (`docs/plan-v0.3.md`) ; les commandes restent disponibles.
+
+### D-020 — Choix des fichiers dans l'interface
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** les fichiers (base, questionnaire) se choisissent avec la fenêtre « Ouvrir » du système, ouverte par l'outil sur l'ordinateur (`tkinter`, fourni avec Python), avec un champ où coller un chemin en secours. Le fichier n'est jamais envoyé par le navigateur.
+- **Options considérées :**
+  1. Fenêtre « Ouvrir » du système, et champ de chemin en secours.
+  2. Envoi du fichier par le navigateur (glisser-déposer).
+  3. Champ de chemin seulement.
+- **Justification :** l'envoi par le navigateur ferait perdre l'emplacement du fichier, où le projet doit être écrit, et ferait passer une grosse base par la mémoire du navigateur ; taper un chemin est justement ce que la v0.3 veut éviter.
+- **Conséquences :** la fenêtre est placée au premier plan ; le champ de chemin reste visible.
+
+### D-021 — Forme de l'installateur Windows
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** un `installer.bat` dans l'archive installe uv et l'outil dans le dossier de l'utilisateur, sans droits d'administrateur, et crée les icônes ; un `desinstaller.bat` les retire. Internet est nécessaire pendant l'installation seulement.
+- **Options considérées :**
+  1. Script `installer.bat` (ce choix).
+  2. Programme `.exe` empaqueté (PyInstaller, Inno Setup).
+  3. Version « portable » hors ligne.
+- **Justification :** l'option 2 est plus lourde à construire et à maintenir, et elle est bloquée par SmartScreen comme un script tant qu'elle n'est pas signée (certificat payant). L'option 3 pourra suivre si des établissements sans accès Internet le demandent.
+- **Conséquences :** le guide montre comment passer l'avertissement « Windows a protégé votre ordinateur » ; essai sur une session Windows vierge, sans droits d'administrateur.
+
+### D-022 — Tâches longues dans l'interface
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** le rattachement et l'enrichissement par le modèle tournent dans l'onglet, avec une barre de progression bloc par bloc et un bouton « Arrêter » ; les blocs terminés sont enregistrés à mesure et une relance reprend où l'on s'était arrêté.
+- **Options considérées :**
+  1. Dans l'onglet, avec la reprise bloc par bloc qui existe déjà (ce choix).
+  2. Processus en arrière-plan, suivi par la page.
+- **Justification :** l'option 2 est plus complexe et plus difficile à arrêter proprement ; la reprise par bloc existe depuis la v0.1.
+- **Conséquences :** l'écran dit qu'un changement de page arrête le travail en cours, sans rien perdre des blocs terminés.
+
+### D-023 — Téléchargement du modèle
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** l'outil ne télécharge ni n'installe jamais de modèle. Il vérifie qu'Ollama répond sur l'ordinateur, liste les modèles installés et explique la marche à suivre ; le téléchargement reste une action explicite de la personne, ou de l'installateur qui le lui demande.
+- **Options considérées :**
+  1. Détection et explication seulement (ce choix).
+  2. Bouton de téléchargement dans l'interface.
+- **Justification :** l'outil ne communique avec rien d'autre que l'ordinateur (principe 3) ; un téléchargement de plusieurs gigaoctets doit être un choix conscient.
+- **Conséquences :** la détection passe par l'adresse locale d'Ollama, avec le même refus de toute adresse non locale que le client actuel.
+
+### D-024 — Liste des projets récents
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** la liste des derniers projets ouverts est enregistrée dans le dossier de l'utilisateur (`%APPDATA%\ddict` sous Windows), avec les chemins seulement, jamais de données, et peut être effacée depuis l'accueil.
+- **Options considérées :**
+  1. Liste enregistrée, effaçable (ce choix).
+  2. Pas de liste : choisir le fichier à chaque fois.
+- **Justification :** rouvrir un projet en un clic est le cas le plus fréquent ; les noms de dossiers peuvent dire quelque chose d'une étude, d'où la possibilité de tout effacer.
+- **Conséquences :** le fichier reste sur l'ordinateur ; il n'entre ni dans le projet ni dans les exports.

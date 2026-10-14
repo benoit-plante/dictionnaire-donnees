@@ -1,6 +1,6 @@
 # Plan de la v0.3
 
-> Statut : **proposé**, à valider par l'auteur (décisions du § 6).
+> Statut : **validé par l'auteur le 2026-10-14**, avec toutes les recommandations du § 6 (D-019 à D-024).
 
 ## 1. Pourquoi cette version
 
