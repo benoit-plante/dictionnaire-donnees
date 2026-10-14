@@ -56,3 +56,18 @@ def test_busy_port_for_a_project_is_explained(monkeypatch, tmp_path, fictional_f
     monkeypatch.setattr(cli, "_port_open", lambda host, port: True)
     assert cli.main(["reviser", str(path)]) == 2
     assert "--port 8502" in capsys.readouterr().err
+
+
+def test_no_redirected_native_output_under_stop():
+    """Windows PowerShell 5.1 turns a redirected stderr line of a program into a fatal error
+    when $ErrorActionPreference is "Stop": uv's notes stopped the installer (0.3.0 trial)."""
+    for name in SCRIPTS:
+        lines = (ROOT / "windows" / f"{name}.ps1").read_text(encoding="utf-8-sig").splitlines()
+        stop = True
+        for line in lines:
+            if '$ErrorActionPreference = "Continue"' in line:
+                stop = False
+            elif '$ErrorActionPreference = "Stop"' in line:
+                stop = True
+            elif "& $" in line and ("2>" in line or "*>" in line):
+                assert not stop, f"{name}.ps1: {line.strip()}"

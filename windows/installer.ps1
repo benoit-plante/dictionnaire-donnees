@@ -77,7 +77,13 @@ Step "2/4 - L'outil (une ou deux minutes la première fois)"
 if ($LASTEXITCODE -ne 0) {
     Fail "L'installation de l'outil a échoué (code $LASTEXITCODE). Vérifiez la connexion Internet, puis relancez installer.bat."
 }
-if (-not $ShortcutDir) { & $uv tool update-shell *> $null }  # a trial leaves PATH alone
+if (-not $ShortcutDir) {  # a trial leaves PATH alone
+    # uv writes its notes to stderr; under "Stop", Windows PowerShell 5.1 would take a
+    # redirected one for a fatal error (found by the trial of 0.3.0).
+    $ErrorActionPreference = "Continue"
+    & $uv tool update-shell 2>&1 | Out-Null
+    $ErrorActionPreference = "Stop"
+}
 $bin = (& $uv tool dir --bin).Trim()
 $ddict = Join-Path $bin "ddict.exe"
 if (-not (Test-Path $ddict)) { Fail "L'outil est installé, mais ddict.exe est introuvable dans $bin." }
