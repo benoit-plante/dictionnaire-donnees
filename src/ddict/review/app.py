@@ -597,6 +597,31 @@ def _group(project: Project, group_id: str) -> None:
             submit=True,
         )
 
+    if project.questionnaire is not None:
+        st.divider()
+        key = f"omit-text-{group_id}"
+        st.checkbox(
+            _(
+                "Ne pas reproduire le texte des questions de ce groupe dans le codebook "
+                "(instrument protégé par le droit d'auteur)"
+            ),
+            key=_field(key, lambda: logic.group(_project(), group_id).omit_question_text),
+        )
+        st.caption(
+            _(
+                "Reproduire les items d'un instrument protégé relève de l'équipe ; le codebook "
+                "donnera alors la référence de la question (Q12.r3, p. 4) sans son texte."
+            )
+        )
+        _button(
+            _("Enregistrer ce choix"),
+            f"save-{key}",
+            logic.set_omit_question_text,
+            group_id,
+            _state(key),
+            reset=(key,),
+        )
+
 
 def _glossary_entry(project: Project, item) -> None:
     term = item.term

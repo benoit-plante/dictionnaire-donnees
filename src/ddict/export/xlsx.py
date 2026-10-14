@@ -43,7 +43,7 @@ def _sheet(book: Workbook, title: str, header: list[str], rows: list[list]) -> W
     return sheet
 
 
-def _about(project: Project, kind: w.ExportKind) -> list[list]:
+def _about(project: Project, kind: w.ExportKind, omit_groups: tuple[str, ...]) -> list[list]:
     source = project.source
     kind_text = (
         _("finale (valeurs acceptées seulement)")
@@ -66,12 +66,34 @@ def _about(project: Project, kind: w.ExportKind) -> list[list]:
             ).format(n=project.settings.min_cell_count),
         ],
         [_("Format du projet"), project.schema_version],
+        *_questionnaire_rows(project, omit_groups),
     ]
 
 
-def _variables(project: Project, kind: w.ExportKind) -> list[list]:
+def _questionnaire_rows(project: Project, omit_groups: tuple[str, ...]) -> list[list]:
+    rows = [[name, value] for name, value in w.questionnaire_facts(project)]
+    if not rows:
+        return []
+    omitted = sorted(
+        {g.group_id for g in project.groups if g.omit_question_text} | set(omit_groups)
+    )
+    rows.append(
+        [
+            _("Texte des questions"),
+            _("omis pour les groupes {groups} (instrument protégé, D-014)").format(
+                groups=", ".join(omitted)
+            )
+            if omitted
+            else _("exporté pour toutes les variables rattachées"),
+        ]
+    )
+    return rows
+
+
+def _variables(project: Project, kind: w.ExportKind, omitted: set[str]) -> list[list]:
     rows = []
     for e in project.variables:
+        reference = w.question_reference(project, e, kind)
         p = e.profile
         sourced_range = ""
         if e.theoretical_range:
@@ -86,6 +108,10 @@ def _variables(project: Project, kind: w.ExportKind) -> list[list]:
                 e.name,
                 w.label_text(e, kind),
                 w.text(e.description, kind),
+                ""
+                if reference is None
+                else reference.value + (f" [{_('proposé')}]" if reference.pending else ""),
+                w.question_text(project, e, kind, omitted),
                 w.TYPES.get(p.inferred_type, p.inferred_type),
                 w.MEASURES.get(e.file.measure_level or "", ""),
                 e.file.display_format,
@@ -121,6 +147,8 @@ VARIABLE_HEADER = [
     _("Nom"),
     _("Libellé"),
     _("Description"),
+    _("Question"),
+    _("Texte de la question"),
     _("Type"),
     _("Niveau de mesure"),
     _("Format"),
@@ -149,11 +177,24 @@ VARIABLE_HEADER = [
 ]
 
 
-def _values(project: Project) -> list[list]:
+def _values(project: Project, kind: w.ExportKind) -> list[list]:
     rows = []
     for e in project.variables:
+        source = w.value_labels_source(e, kind)
         for code, label, count, is_missing in w.value_rows(e):
-            rows.append([e.name, code, label, count, _("oui") if is_missing else ""])
+            rows.append(
+                [
+                    e.name,
+                    code,
+                    label,
+                    count,
+                    _("oui") if is_missing else "",
+                    source if label else "",
+                ]
+            )
+        if source == w.LABELS_PROPOSED:  # proposals are not mixed with the counts
+            for item in e.value_labels.value or []:
+                rows.append([e.name, w.code_text(item.code), item.label, "", "", source])
     return rows
 
 
@@ -228,6 +269,21 @@ def _provenance(project: Project, kind: w.ExportKind) -> list[list]:
         )
 
     for e in project.variables:
+        add(e.name, _("Question"), e.question)
+        if e.value_labels.value is not None:
+            value = w.shown(e.value_labels, kind)
+            if value is not None:
+                rows.append(
+                    [
+                        e.name,
+                        _("Étiquettes de valeurs"),
+                        "; ".join(f"{w.code_text(v.code)} = {v.label}" for v in value.value),
+                        w.ORIGINS[e.value_labels.origin],
+                        w.STATUSES[e.value_labels.status],
+                        "",
+                        None,
+                    ]
+                )
         add(e.name, _("Libellé"), e.label)
         add(e.name, _("Description"), e.description)
         add(e.name, _("Unité"), e.unit)
@@ -242,18 +298,40 @@ def _provenance(project: Project, kind: w.ExportKind) -> list[list]:
     return rows
 
 
-def write_xlsx(project: Project, path: Path | str, *, kind: w.ExportKind = "final") -> None:
+def write_xlsx(
+    project: Project,
+    path: Path | str,
+    *,
+    kind: w.ExportKind = "final",
+    omit_groups: tuple[str, ...] = (),
+) -> None:
+    """`omit_groups`: groups whose question text is left out of this export (D-014)."""
+    omitted = w.omitted_variables(project, omit_groups)
     book = Workbook()
     book.remove(book.active)
-    _sheet(book, _("Informations"), [_("Élément"), _("Valeur")], _about(project, kind))
-    _sheet(book, _("Variables"), VARIABLE_HEADER, _variables(project, kind))
+    _sheet(book, _("Informations"), [_("Élément"), _("Valeur")], _about(project, kind, omit_groups))
+    _sheet(book, _("Variables"), VARIABLE_HEADER, _variables(project, kind, omitted))
     _sheet(
         book,
         _("Valeurs"),
-        [_("Variable"), _("Code"), _("Étiquette"), _("Effectif"), _("Manquant déclaré")],
-        _values(project),
+        [
+            _("Variable"),
+            _("Code"),
+            _("Étiquette"),
+            _("Effectif"),
+            _("Manquant déclaré"),
+            _("Source de l'étiquette"),
+        ],
+        _values(project, kind),
     )
     _sheet(book, _("Groupes"), GROUP_HEADER, _groups(project, kind))
+    if project.glossary:
+        _sheet(
+            book,
+            _("Glossaire"),
+            [_("Sigle"), _("Définition"), _("Origine"), _("Statut"), _("Source")],
+            [list(row) for row in w.glossary_rows(project, kind)],
+        )
     _sheet(
         book,
         _("Provenance"),

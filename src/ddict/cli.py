@@ -90,8 +90,19 @@ def cmd_export(args: argparse.Namespace) -> int:
     stem = _strip_project_suffix(project_path) + ("-travail" if args.travail else "")
     xlsx = Path(args.xlsx) if args.xlsx else project_path.with_name(stem + ".xlsx")
     markdown = Path(args.md) if args.md else project_path.with_name(stem + ".md")
-    write_xlsx(project, xlsx, kind=kind)
-    write_markdown(project, markdown, kind=kind)
+    omit = tuple(args.sans_texte or ())
+    unknown = sorted(set(omit) - {g.group_id for g in project.groups})
+    if unknown:
+        print(
+            _("Groupe inconnu : {groups}. Groupes du projet : {known}.").format(
+                groups=", ".join(unknown),
+                known=", ".join(g.group_id for g in project.groups) or _("aucun"),
+            ),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
+    write_xlsx(project, xlsx, kind=kind, omit_groups=omit)
+    write_markdown(project, markdown, kind=kind, omit_groups=omit)
     print(_("Codebook Excel : {path}").format(path=xlsx))
     print(_("Rapport Markdown : {path}").format(path=markdown))
     return 0
@@ -474,6 +485,15 @@ def build_parser() -> argparse.ArgumentParser:
         "--travail",
         action="store_true",
         help=_("Inclure les propositions de l'IA en attente, marquées comme telles."),
+    )
+    export.add_argument(
+        "--sans-texte",
+        nargs="+",
+        metavar="GROUPE",
+        help=_(
+            "Ne pas reproduire le texte des questions de ces groupes (p. ex. G3), pour un "
+            "instrument protégé par le droit d'auteur (D-014)."
+        ),
     )
     export.set_defaults(handler=cmd_export)
 

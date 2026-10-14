@@ -4664,6 +4664,7 @@
       "scoring": null,
       "theoretical_range": null,
       "thresholds": [],
+      "omit_question_text": false,
       "n_complete_rows": 150,
       "cronbach_alpha": 0.363,
       "cronbach_alpha_reversed": 0.912
@@ -4711,6 +4712,7 @@
       "scoring": null,
       "theoretical_range": null,
       "thresholds": [],
+      "omit_question_text": false,
       "n_complete_rows": 179,
       "cronbach_alpha": 0.85,
       "cronbach_alpha_reversed": null

@@ -40,6 +40,9 @@ def _overview(project: Project, kind: w.ExportKind) -> list[str]:
             "Effectifs inférieurs à {n} masqués, ainsi qu'un second effectif quand le "
             "premier pourrait être recalculé par soustraction."
         ).format(n=project.settings.min_cell_count),
+    ]
+    lines += [f"- {name} : {_inline(value)}" for name, value in w.questionnaire_facts(project)]
+    lines += [
         "",
         _("## Vue d'ensemble"),
         "",
@@ -57,7 +60,9 @@ def _overview(project: Project, kind: w.ExportKind) -> list[str]:
     return lines
 
 
-def _variable(entry: VariableEntry, kind: w.ExportKind) -> list[str]:
+def _variable(
+    project: Project, entry: VariableEntry, kind: w.ExportKind, omitted: set[str]
+) -> list[str]:
     p = entry.profile
     label = w.label_text(entry, kind)
     title = f"### `{entry.name}`" + (f" — {_inline(label)}" if label else "")
@@ -65,6 +70,13 @@ def _variable(entry: VariableEntry, kind: w.ExportKind) -> list[str]:
     description = w.text(entry.description, kind)
     if description:
         lines += [_inline(description), ""]
+    reference = w.question_reference(project, entry, kind)
+    if reference is not None:
+        question = f"{_('Question')} ({_inline(reference.value)})"
+        text = w.question_text(project, entry, kind, omitted)  # marked when only proposed
+        if reference.pending and not text:
+            question += f" [{_('rattachement proposé')}]"
+        lines += [f"> {question} : {_inline(text)}" if text else f"> {question}", ""]
 
     facts = [
         f"{_('Type')} : {w.TYPES.get(p.inferred_type, p.inferred_type)}",
@@ -126,6 +138,14 @@ def _variable(entry: VariableEntry, kind: w.ExportKind) -> list[str]:
     lines += [f"- {fact}" for fact in facts] + [""]
 
     rows = w.value_rows(entry)
+    source = w.value_labels_source(entry, kind)
+    if source == w.LABELS_PROPOSED:
+        proposed = "; ".join(
+            f"{w.code_text(v.code)} = {_inline(v.label)}" for v in entry.value_labels.value or []
+        )
+        lines += [f"*{source}* : {proposed}", ""]
+    elif source and rows:
+        lines += [f"*{_('Étiquettes de valeurs')} : {source}.*", ""]
     if rows:
         lines += [
             f"| {_('Code')} | {_('Étiquette')} | {_('Effectif')} | {_('Manquant déclaré')} |",
@@ -192,15 +212,40 @@ def _groups(project: Project, kind: w.ExportKind) -> list[str]:
     return lines
 
 
-def render_markdown(project: Project, *, kind: w.ExportKind = "final") -> str:
+def _glossary(project: Project, kind: w.ExportKind) -> list[str]:
+    rows = w.glossary_rows(project, kind)
+    if not rows:
+        return []
+    lines = [
+        _("## Glossaire des sigles"),
+        "",
+        f"| {_('Sigle')} | {_('Définition')} | {_('Origine')} | {_('Statut')} | {_('Source')} |",
+        "|---|---|---|---|---|",
+    ]
+    lines += ["| " + " | ".join(_cell(v) for v in row) + " |" for row in rows]
+    return [*lines, ""]
+
+
+def render_markdown(
+    project: Project, *, kind: w.ExportKind = "final", omit_groups: tuple[str, ...] = ()
+) -> str:
+    """`omit_groups`: groups whose question text is left out of this export (D-014)."""
+    omitted = w.omitted_variables(project, omit_groups)
     lines = _overview(project, kind)
+    lines += _glossary(project, kind)
     lines += _groups(project, kind)
     lines += [_("## Variables"), ""]
     for entry in project.variables:
-        lines += _variable(entry, kind)
+        lines += _variable(project, entry, kind, omitted)
     return "\n".join(lines).rstrip("\n") + "\n"
 
 
-def write_markdown(project: Project, path: Path | str, *, kind: w.ExportKind = "final") -> None:
+def write_markdown(
+    project: Project,
+    path: Path | str,
+    *,
+    kind: w.ExportKind = "final",
+    omit_groups: tuple[str, ...] = (),
+) -> None:
     with Path(path).open("w", encoding="utf-8", newline="\n") as stream:
-        stream.write(render_markdown(project, kind=kind))
+        stream.write(render_markdown(project, kind=kind, omit_groups=omit_groups))

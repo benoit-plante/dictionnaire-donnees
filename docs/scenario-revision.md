@@ -38,6 +38,7 @@ Le navigateur s'ouvre sur `http://127.0.0.1:8501`. La console affiche « cet ord
 | 15 | Choisir `genre` ; dans « Rattacher à », choisir `Q4 — Quel est votre genre ?` puis cliquer « Rattacher » **sans pause** | Le texte exact de la question s'affiche, avec « p. 2 » ; statut « corrigé » si le modèle avait proposé autre chose |
 | 16 | Choisir `sommeil_q1`, accepter son rattachement à `Q7.r1` | Aucune étiquette de valeurs proposée : le `.sav` a les siennes, et les colonnes de la grille sont collées dans le PDF. Pour voir une proposition, refaire la préparation avec `etude-sommeil.csv` et `questionnaire-sommeil.txt` : « Étiquettes de valeurs tirées des options de réponse », 1 = Pas du tout … 5 = Extrêmement, « ordre supposé, à vérifier », boutons pour accepter ou rejeter |
 | 17 | Filtre « Sans question » | Les variables sans rattachement décidé ; `genre` n'y est plus |
-| 18 | `uv run ddict exporter $env:TEMP\ddict-revision\etude-sommeil.dd.json`, ouvrir le rapport | Le libellé accepté de `sommeil_q1` y figure ; les propositions non décidées n'y sont pas |
+| 18 | « Afficher : Groupes », G2 : cocher « Ne pas reproduire le texte des questions de ce groupe », « Enregistrer ce choix » | « Enregistré. » ; la case reste cochée après un rechargement |
+| 19 | `uv run ddict exporter $env:TEMP\ddict-revision\etude-sommeil.dd.json`, ouvrir le codebook et le rapport | Le libellé accepté de `sommeil_q1` y figure ; les propositions non décidées n'y sont pas ; colonnes « Question » et « Texte de la question » remplies pour les rattachements acceptés, « texte omis » pour `anx1` à `anx7` ; onglet « Glossaire » avec TCC et ANX ; aucune trace de la page de consentement (`ZQXQUEST`, « Laboratoire fictif ») |
 
 À la fin, supprimer le dossier `$env:TEMP\ddict-revision`.

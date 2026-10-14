@@ -6,13 +6,16 @@ computation, or accepted by a person; "work" also shows pending AI proposals, ma
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Literal
 
+from ddict import glossary
 from ddict.i18n import _
 from ddict.profile.variants import spelling_variants
 from ddict.project.decisions import is_accepted
-from ddict.project.model import Code, Profile, TrackedValue, VariableEntry
+from ddict.project.model import Code, Profile, Project, TrackedValue, VariableEntry
+from ddict.questionnaire import link
 from ddict.questionnaire.labels import accepted_labels
 
 ExportKind = Literal["final", "work"]
@@ -237,3 +240,99 @@ def value_rows(entry: VariableEntry) -> list[tuple[str, str, str, bool]]:
         is_missing = code in declared or (code in observed and observed[code].declared_missing)
         rows.append((code_text(code), labels.get(code, ""), count, is_missing))
     return rows
+
+
+# --- v0.2: what comes from the questionnaire (step 9). ---
+
+OMITTED_TEXT = _("texte omis : instrument protégé par le droit d'auteur (D-014)")
+NO_QUESTION_TEXT = _("aucune question du questionnaire")
+LABELS_FROM_QUESTIONNAIRE = _(
+    "étiquettes tirées des options de la question, ordre vérifié par l'équipe"
+)
+LABELS_PROPOSED = _("étiquettes proposées à partir des options, ordre supposé, à vérifier")
+
+
+def omitted_variables(project: Project, extra_groups: Iterable[str] = ()) -> set[str]:
+    """Variables whose question text is not exported: members of the groups the team
+    marked (D-014), and of the groups named for this export (`--sans-texte`)."""
+    chosen = set(extra_groups)
+    names: set[str] = set()
+    for group in project.groups:
+        if group.omit_question_text or group.group_id in chosen:
+            names.update(group.members.value or [])
+    return names
+
+
+def question_reference(project: Project, entry: VariableEntry, kind: ExportKind) -> Shown | None:
+    """The link as shown: "Q7.r3, p. 3", or that the variable comes from no question."""
+    value = shown(entry.question, kind)
+    if value is None:
+        return None
+    if value.value == link.NO_QUESTION:
+        return Shown(NO_QUESTION_TEXT, value.pending)
+    found = link.target(project.questionnaire, value.value)
+    if found is None:
+        return None
+    page = f", p. {found.question.page}" if found.question.page else ""
+    return Shown(f"{value.value}{page}", value.pending)
+
+
+def question_text(
+    project: Project, entry: VariableEntry, kind: ExportKind, omitted: set[str]
+) -> str:
+    """The exact words of the linked question, read in the questionnaire; never anything
+    else of it (paragraphs and the consent page are not exported, D-012)."""
+    value = shown(entry.question, kind)
+    if value is None or value.value == link.NO_QUESTION:
+        return ""
+    found = link.target(project.questionnaire, value.value)
+    if found is None:
+        return ""
+    if entry.name in omitted:
+        return OMITTED_TEXT
+    text = link.target_text(found)
+    return f"{text} [{_('rattachement proposé')}]" if value.pending else text
+
+
+def value_labels_source(entry: VariableEntry, kind: ExportKind) -> str:
+    """Where the value labels of a variable come from, when not from the file."""
+    if entry.file.value_labels:
+        return ""
+    if is_accepted(entry.value_labels):
+        return LABELS_FROM_QUESTIONNAIRE
+    if kind == "work" and entry.value_labels.status == "proposed":
+        return LABELS_PROPOSED
+    return ""
+
+
+def glossary_rows(project: Project, kind: ExportKind) -> list[tuple[str, str, str, str, str]]:
+    """Term, meaning, origin, status, source: accepted entries, and in a work export the
+    ones still waiting for a decision."""
+    rows = []
+    for item in project.glossary:
+        if not glossary.is_accepted(item) and not (kind == "work" and item.status == "proposed"):
+            continue
+        rows.append(
+            (
+                item.term,
+                item.meaning,
+                GLOSSARY_ORIGINS[item.origin],
+                GLOSSARY_STATUSES[item.status],
+                item.source or "",
+            )
+        )
+    return rows
+
+
+def questionnaire_facts(project: Project) -> list[tuple[str, str]]:
+    """The questionnaire as a documented source: its name, pages and fingerprint."""
+    questionnaire = project.questionnaire
+    if questionnaire is None:
+        return []
+    pages = f" ({questionnaire.n_pages} pages)" if questionnaire.n_pages else ""
+    linked = sum(1 for e in project.variables if is_accepted(e.question))
+    return [
+        (_("Questionnaire"), f"{questionnaire.file_name}{pages}"),
+        (_("Empreinte SHA-256 du questionnaire"), questionnaire.sha256),
+        (_("Variables rattachées à une question"), str(linked)),
+    ]

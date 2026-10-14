@@ -295,6 +295,7 @@ La logique (changer un statut, valider une source) vit dans `project` et se test
 - **Rapport `.md`** : vue d'ensemble (nombre de variables, manquants, anomalies), puis une section par groupe et par variable.
 - **Export final** (par défaut) : seulement les valeurs de fichier, de calcul, validées ou corrigées. **Export de travail** (option) : inclut les propositions en attente, marquées « proposé par IA ».
 - Les effectifs inférieurs au seuil sont masqués aussi dans les exports, puisqu'un codebook est souvent partagé ou déposé avec les données.
+- **Questionnaire (v0.2)** : pour chaque variable dont le rattachement est accepté, la référence (`Q7.r3, p. 3`) et le texte exact de la question et de l'énoncé ou de l'option, lu dans le questionnaire ; rien d'autre du questionnaire n'est exporté (page de consentement, consignes : D-012). L'onglet « Informations » donne le nom, le nombre de pages et l'empreinte du questionnaire. Un onglet « Glossaire » (et une section du rapport) donne les sigles acceptés, avec leur origine. L'onglet « Valeurs » dit d'où viennent les étiquettes tirées du questionnaire (D-016). **D-014** : le texte des questions d'un groupe peut être omis, par une case à cocher dans la vue « Groupes » (enregistrée dans le projet) ou pour un export seulement (`ddict exporter --sans-texte G3`) ; la référence de la question reste.
 
 ## 9. Stratégie de tests
 

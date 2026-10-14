@@ -101,13 +101,13 @@ def test_xlsx_sheets_and_variables(run):
 def test_xlsx_values_sheet_masks_small_counts(run):
     rows = [r for r in _rows(run["xlsx"], "Valeurs") if r[0] == "genre"]
     assert rows == [
-        ("genre", "1", "Femme", "114", None),
-        ("genre", "2", "Homme", "masqué", None),
-        ("genre", "3", "Autre identité", "masqué", None),
-        ("genre", "9", "Préfère ne pas répondre", "4", "oui"),
+        ("genre", "1", "Femme", "114", None, None),
+        ("genre", "2", "Homme", "masqué", None, None),
+        ("genre", "3", "Autre identité", "masqué", None, None),
+        ("genre", "9", "Préfère ne pas répondre", "4", "oui", None),
     ]
     unused = [r for r in _rows(run["xlsx"], "Valeurs") if r[0] == "satisfaction_globale"]
-    assert ("satisfaction_globale", "99", "Ne sait pas", "0", None) in unused
+    assert ("satisfaction_globale", "99", "Ne sait pas", "0", None, None) in unused
 
 
 def test_markdown_report(run):

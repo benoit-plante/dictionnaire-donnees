@@ -190,6 +190,9 @@ class Group(Strict):
     scoring: SourcedText | None = None
     theoretical_range: TheoreticalRange | None = None
     thresholds: list[Threshold] = []
+    # D-014: the team's choice not to reproduce the items of a copyrighted instrument; the
+    # exports then give the question's reference, not its words.
+    omit_question_text: bool = False
     n_complete_rows: int | None = None
     cronbach_alpha: float | None = None  # as observed, for information
     cronbach_alpha_reversed: float | None = None  # with the suspect items reversed

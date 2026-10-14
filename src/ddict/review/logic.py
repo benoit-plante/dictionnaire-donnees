@@ -253,6 +253,11 @@ def set_instrument(project: Project, group_id: str, value: str, source: str) -> 
     target.instrument_name = _sourced(lambda: SourcedText(value=value, source=source))
 
 
+def set_omit_question_text(project: Project, group_id: str, omit: bool) -> None:
+    """D-014: leave the words of this group's questions out of the exports (copyright)."""
+    group(project, group_id).omit_question_text = bool(omit)
+
+
 def set_reverse_items(project: Project, group_id: str, names: list[str]) -> None:
     target = group(project, group_id)
     members = target.members.value or []
