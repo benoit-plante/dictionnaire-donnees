@@ -14,7 +14,7 @@ import json
 
 import streamlit as st
 
-from ddict.i18n import _
+from ddict.i18n import N_, Texts, _
 from ddict.llm.defaults import DEFAULT_ENDPOINT
 from ddict.llm.link import DEFAULT_LINK_BLOCK_SIZE, build_link_blocks
 from ddict.llm.messages import DEFAULT_BLOCK_SIZE, build_blocks
@@ -29,10 +29,12 @@ ENDPOINT = "ai-endpoint"
 MODEL = "ai-model"
 START = "ai-start"
 RECOMMENDED = "qwen2.5:7b-instruct-q4_K_M"
-JOBS = {
-    "link": (_("Rattachement aux questions"), DEFAULT_LINK_BLOCK_SIZE),
-    "enrich": (_("Libellés et descriptions"), DEFAULT_BLOCK_SIZE),
-}
+JOBS = Texts(
+    {
+        "link": (N_("Rattachement aux questions"), DEFAULT_LINK_BLOCK_SIZE),
+        "enrich": (N_("Libellés et descriptions"), DEFAULT_BLOCK_SIZE),
+    }
+)
 
 
 def _blocks(project: Project, job: str):

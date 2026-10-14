@@ -10,7 +10,8 @@ from __future__ import annotations
 
 import streamlit as st
 
-from ddict.i18n import _
+from ddict import settings
+from ddict.i18n import N_, Texts, _
 from ddict.review import logic
 from ddict.review.ui import (
     ai_view,
@@ -27,15 +28,17 @@ from ddict.review.ui import common as c
 from ddict.workflow import tasks
 
 # In the recommended order (v0.3): the database, the questionnaire and its acronyms first.
-MODES = {
-    "base": _("Base"),
-    "questionnaire": _("Questionnaire"),
-    "glossary": _("Glossaire"),
-    "ai": _("IA locale"),
-    "variables": _("Variables"),
-    "groups": _("Groupes"),
-    "export": _("Export"),
-}
+MODES = Texts(
+    {
+        "base": N_("Base"),
+        "questionnaire": N_("Questionnaire"),
+        "glossary": N_("Glossaire"),
+        "ai": N_("IA locale"),
+        "variables": N_("Variables"),
+        "groups": N_("Groupes"),
+        "export": N_("Export"),
+    }
+)
 
 
 def _messages_start():
@@ -72,6 +75,7 @@ def _dashboard(project) -> None:
 
 
 def main() -> None:
+    settings.apply()  # read at each run: a change on the home page applies at once
     st.set_page_config(page_title=_("Révision du dictionnaire"), layout="wide")
     if not c.has_project():
         top = _messages_start()

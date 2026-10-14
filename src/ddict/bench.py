@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from ddict import __version__
-from ddict.i18n import _
+from ddict.i18n import N_, Texts, _
 from ddict.io import read_database
 from ddict.llm.link import DEFAULT_LINK_BLOCK_SIZE, LINK_PROMPT_VERSION
 from ddict.llm.messages import DEFAULT_BLOCK_SIZE, PROMPT_VERSION
@@ -32,13 +32,15 @@ from ddict.workflow import add_questionnaire
 
 KEY_FILE = "corrige-banc.json"
 SIGNAL_CODES = ("citation", "threshold", "instrument", "acronym", "observed_range")
-SIGNAL_NAMES = {
-    "citation": _("citation"),
-    "threshold": _("seuil"),
-    "instrument": _("nom d'instrument"),
-    "acronym": _("sens d'un sigle"),
-    "observed_range": _("étendue observée"),
-}
+SIGNAL_NAMES = Texts(
+    {
+        "citation": N_("citation"),
+        "threshold": N_("seuil"),
+        "instrument": N_("nom d'instrument"),
+        "acronym": N_("sens d'un sigle"),
+        "observed_range": N_("étendue observée"),
+    }
+)
 # "1 = Oui", "0 : jamais", "2 pour Homme": the meaning of a code.
 CODE_MEANING = re.compile(r"(?<![\w.,])-?\d+\s*(?:=|:|pour)\s*[«\"]?[A-Za-zÀ-ÿ]", re.IGNORECASE)
 

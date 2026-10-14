@@ -12,7 +12,7 @@ from pydantic import ValidationError
 
 from ddict import glossary
 from ddict.export.wording import entry_anomalies
-from ddict.i18n import _
+from ddict.i18n import N_, Texts, _
 from ddict.project.decisions import DecisionError, correct, enter, reject, validate
 from ddict.project.model import (
     Group,
@@ -33,31 +33,37 @@ Filter = Literal["all", "to_review", "flagged", "sensitive", "unlinked", "suspec
 
 PRIVACY_CLASSES = ("ordinary", "likely_identifier", "free_text", "quasi_identifier")
 
-SIGNALS = {
-    "citation": _("ressemble à une citation"),
-    "threshold": _("ressemble à un seuil"),
-    "instrument": _("ressemble à un nom d'instrument"),
-    "acronym": _("donne le sens d'un sigle absent du glossaire"),
-    "observed_range": _(
-        "présente l'étendue observée comme celle de l'échelle : à vérifier dans le manuel"
-    ),
-    "no_file_label": _("deviné : la variable n'a pas d'étiquette dans le fichier"),
-}
-FIELD_NAMES = {
-    "label": _("Libellé"),
-    "description": _("Description"),
-    "issues": _("Signalement"),
-    "question": _("Question"),
-    "value_labels": _("Étiquettes de valeurs"),
-}
+SIGNALS = Texts(
+    {
+        "citation": N_("ressemble à une citation"),
+        "threshold": N_("ressemble à un seuil"),
+        "instrument": N_("ressemble à un nom d'instrument"),
+        "acronym": N_("donne le sens d'un sigle absent du glossaire"),
+        "observed_range": N_(
+            "présente l'étendue observée comme celle de l'échelle : à vérifier dans le manuel"
+        ),
+        "no_file_label": N_("deviné : la variable n'a pas d'étiquette dans le fichier"),
+    }
+)
+FIELD_NAMES = Texts(
+    {
+        "label": N_("Libellé"),
+        "description": N_("Description"),
+        "issues": N_("Signalement"),
+        "question": N_("Question"),
+        "value_labels": N_("Étiquettes de valeurs"),
+    }
+)
 
 # French messages for the fields of the human-only models; "" is a rule on the whole value.
-FIELD_PROBLEMS = {
-    "source": _("Une source documentée est obligatoire."),
-    "meaning": _("La signification du seuil est obligatoire."),
-    "value": _("La valeur est obligatoire."),
-    "": _("Étendue invalide : le minimum doit être inférieur au maximum."),
-}
+FIELD_PROBLEMS = Texts(
+    {
+        "source": N_("Une source documentée est obligatoire."),
+        "meaning": N_("La signification du seuil est obligatoire."),
+        "value": N_("La valeur est obligatoire."),
+        "": N_("Étendue invalide : le minimum doit être inférieur au maximum."),
+    }
+)
 
 
 class ReviewError(ValueError):

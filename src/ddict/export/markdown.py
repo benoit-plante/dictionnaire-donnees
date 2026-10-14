@@ -139,7 +139,7 @@ def _variable(
 
     rows = w.value_rows(entry)
     source = w.value_labels_source(entry, kind)
-    if source == w.LABELS_PROPOSED:
+    if source == _(w.LABELS_PROPOSED):
         proposed = "; ".join(
             f"{w.code_text(v.code)} = {_inline(v.label)}" for v in entry.value_labels.value or []
         )

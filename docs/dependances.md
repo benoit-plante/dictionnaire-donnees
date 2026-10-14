@@ -58,6 +58,7 @@ Installée seulement sur demande (`pip install "ddict[revision]"`, ou `uv sync -
 | pytest | Tests | MIT | 0 |
 | pytest-socket | Blocage du réseau dans les tests | MIT | 0 |
 | ruff | Lint et formatage | MIT | 0 |
+| babel | Extraction des phrases à traduire et compilation du catalogue anglais (`scripts/traductions.py`) ; l'outil lit le catalogue avec `gettext`, de la bibliothèque standard (D-033) | BSD-3-Clause | v0.5, 1 |
 
 | hatchling | Construction du paquet | MIT | 0 |
 | httpx | Faux serveur des tests du client IA (aussi dans l'option « ia ») | BSD-3-Clause | 10 |

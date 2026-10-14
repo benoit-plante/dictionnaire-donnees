@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 from ddict import glossary
-from ddict.i18n import _
+from ddict.i18n import N_, Texts, _
 from ddict.profile.variants import spelling_variants
 from ddict.project.decisions import is_accepted
 from ddict.project.model import (
@@ -27,60 +27,72 @@ from ddict.questionnaire.labels import accepted_labels
 
 ExportKind = Literal["final", "work"]
 
-MASKED = _("masqué")
+MASKED = N_("masqué")
 
-TYPES = {
-    "empty": _("vide"),
-    "boolean": _("binaire"),
-    "integer": _("entier"),
-    "decimal": _("décimal"),
-    "date": _("date"),
-    "datetime": _("date et heure"),
-    "text": _("texte"),
-    "mixed": _("mixte"),
-}
-MEASURES = {"nominal": _("nominal"), "ordinal": _("ordinal"), "scale": _("échelle")}
-PRIVACY = {
-    "ordinary": _("ordinaire"),
-    "likely_identifier": _("identifiant probable"),
-    "free_text": _("texte libre"),
-    "quasi_identifier": _("quasi-identifiant"),
-}
-REASONS = {
-    "identifier_name": _("nom ou étiquette d'identifiant"),
-    "email_values": _("valeurs au format courriel"),
-    "phone_values": _("valeurs au format téléphone"),
-    "unique_text_values": _("textes tous différents"),
-    "free_text_name": _("nom de texte libre"),
-    "long_text_values": _("textes longs"),
-    "birth_date_name": _("nom de date de naissance"),
-    "birth_place_name": _("nom de lieu de naissance"),
-    "postal_code_name": _("nom de code postal"),
-    "postal_code_values": _("valeurs au format code postal"),
-    "wide_date_range": _("dates étalées sur de nombreuses années"),
-}
-ORIGINS = {
-    "file": _("fichier"),
-    "computed": _("calcul"),
-    "ai": _("IA"),
-    "questionnaire": _("questionnaire"),
-    "human": _("humain"),
-}
-GLOSSARY_ORIGINS = {"questionnaire": _("Questionnaire"), "human": _("Équipe")}
-GLOSSARY_STATUSES = {
-    "none": "",
-    "proposed": _("à valider"),
-    "validated": _("validé"),
-    "corrected": _("corrigé"),
-    "rejected": _("rejeté"),
-}
-STATUSES = {
-    "none": "",
-    "proposed": _("proposé par IA"),
-    "validated": _("validé"),
-    "corrected": _("corrigé"),
-    "rejected": _("rejeté"),
-}
+TYPES = Texts(
+    {
+        "empty": N_("vide"),
+        "boolean": N_("binaire"),
+        "integer": N_("entier"),
+        "decimal": N_("décimal"),
+        "date": N_("date"),
+        "datetime": N_("date et heure"),
+        "text": N_("texte"),
+        "mixed": N_("mixte"),
+    }
+)
+MEASURES = Texts({"nominal": N_("nominal"), "ordinal": N_("ordinal"), "scale": N_("échelle")})
+PRIVACY = Texts(
+    {
+        "ordinary": N_("ordinaire"),
+        "likely_identifier": N_("identifiant probable"),
+        "free_text": N_("texte libre"),
+        "quasi_identifier": N_("quasi-identifiant"),
+    }
+)
+REASONS = Texts(
+    {
+        "identifier_name": N_("nom ou étiquette d'identifiant"),
+        "email_values": N_("valeurs au format courriel"),
+        "phone_values": N_("valeurs au format téléphone"),
+        "unique_text_values": N_("textes tous différents"),
+        "free_text_name": N_("nom de texte libre"),
+        "long_text_values": N_("textes longs"),
+        "birth_date_name": N_("nom de date de naissance"),
+        "birth_place_name": N_("nom de lieu de naissance"),
+        "postal_code_name": N_("nom de code postal"),
+        "postal_code_values": N_("valeurs au format code postal"),
+        "wide_date_range": N_("dates étalées sur de nombreuses années"),
+    }
+)
+ORIGINS = Texts(
+    {
+        "file": N_("fichier"),
+        "computed": N_("calcul"),
+        "ai": N_("IA"),
+        "questionnaire": N_("questionnaire"),
+        "human": N_("humain"),
+    }
+)
+GLOSSARY_ORIGINS = Texts({"questionnaire": N_("Questionnaire"), "human": N_("Équipe")})
+GLOSSARY_STATUSES = Texts(
+    {
+        "none": "",
+        "proposed": N_("à valider"),
+        "validated": N_("validé"),
+        "corrected": N_("corrigé"),
+        "rejected": N_("rejeté"),
+    }
+)
+STATUSES = Texts(
+    {
+        "none": "",
+        "proposed": N_("proposé par IA"),
+        "validated": N_("validé"),
+        "corrected": N_("corrigé"),
+        "rejected": N_("rejeté"),
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -219,11 +231,13 @@ def issues(entry: VariableEntry, kind: ExportKind) -> list[str]:
     return found
 
 
-BASIS = {
-    "common_prefix": _("préfixe commun"),
-    "shared_value_labels": _("mêmes étiquettes de valeurs"),
-    "contiguous": _("variables voisines"),
-}
+BASIS = Texts(
+    {
+        "common_prefix": N_("préfixe commun"),
+        "shared_value_labels": N_("mêmes étiquettes de valeurs"),
+        "contiguous": N_("variables voisines"),
+    }
+)
 
 
 def basis_text(basis: list[str]) -> str:
@@ -268,7 +282,7 @@ def value_rows(entry: VariableEntry) -> list[tuple[str, str, str, bool]]:
     for code in sorted(set(labels) | set(observed), key=lambda c: (isinstance(c, str), c)):
         count = ""
         if code in observed:
-            count = MASKED if observed[code].count is None else str(observed[code].count)
+            count = _(MASKED) if observed[code].count is None else str(observed[code].count)
         elif entry.profile.observed_values is not None:
             count = "0"
         is_missing = code in declared or (code in observed and observed[code].declared_missing)
@@ -278,12 +292,12 @@ def value_rows(entry: VariableEntry) -> list[tuple[str, str, str, bool]]:
 
 # --- v0.2: what comes from the questionnaire (step 9). ---
 
-OMITTED_TEXT = _("texte omis : instrument protégé par le droit d'auteur (D-014)")
-NO_QUESTION_TEXT = _("aucune question du questionnaire")
-LABELS_FROM_QUESTIONNAIRE = _(
+OMITTED_TEXT = N_("texte omis : instrument protégé par le droit d'auteur (D-014)")
+NO_QUESTION_TEXT = N_("aucune question du questionnaire")
+LABELS_FROM_QUESTIONNAIRE = N_(
     "étiquettes tirées des options de la question, ordre vérifié par l'équipe"
 )
-LABELS_PROPOSED = _("étiquettes proposées à partir des options, ordre supposé, à vérifier")
+LABELS_PROPOSED = N_("étiquettes proposées à partir des options, ordre supposé, à vérifier")
 
 
 def omitted_variables(project: Project, extra_groups: Iterable[str] = ()) -> set[str]:
@@ -303,7 +317,7 @@ def question_reference(project: Project, entry: VariableEntry, kind: ExportKind)
     if value is None:
         return None
     if value.value == link.NO_QUESTION:
-        return Shown(NO_QUESTION_TEXT, value.pending)
+        return Shown(_(NO_QUESTION_TEXT), value.pending)
     found = link.target(project.questionnaire, value.value)
     if found is None:
         return None
@@ -323,7 +337,7 @@ def question_text(
     if found is None:
         return ""
     if entry.name in omitted:
-        return OMITTED_TEXT
+        return _(OMITTED_TEXT)
     text = link.target_text(found)
     return f"{text} [{_('rattachement proposé')}]" if value.pending else text
 
@@ -333,9 +347,9 @@ def value_labels_source(entry: VariableEntry, kind: ExportKind) -> str:
     if entry.file.value_labels:
         return ""
     if is_accepted(entry.value_labels):
-        return LABELS_FROM_QUESTIONNAIRE
+        return _(LABELS_FROM_QUESTIONNAIRE)
     if kind == "work" and entry.value_labels.status == "proposed":
-        return LABELS_PROPOSED
+        return _(LABELS_PROPOSED)
     return ""
 
 

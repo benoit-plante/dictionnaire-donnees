@@ -1,0 +1,1859 @@
+# English translation of dictionnaire-donnees (v0.5, D-033).
+# Same license as the project.
+msgid ""
+msgstr ""
+"Project-Id-Version: ddict VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-01-01 00:00+0000\n"
+"PO-Revision-Date: 2026-01-01 00:00+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#, python-brace-format
+msgid " ({n} pages)"
+msgstr ""
+
+#, python-brace-format
+msgid " ; {n} énoncés de grille"
+msgstr ""
+
+msgid "# Après : haven::write_sav(donnees, \"copie-documentee.sav\") pour une copie."
+msgstr ""
+
+msgid "# Avant : chargez vos données dans un objet nommé « donnees », par exemple"
+msgstr ""
+
+#, python-brace-format
+msgid "# Banc d'essai : {model}"
+msgstr ""
+
+#, python-brace-format
+msgid "# Dictionnaire de données : {name}"
+msgstr ""
+
+msgid "# Items inversés selon l'équipe : non recodés. Suggestion, à faire vous-même :"
+msgstr ""
+
+msgid "# Les niveaux de mesure ne sont pas appliqués : haven ne les écrit pas."
+msgstr ""
+
+msgid ""
+"# user_na = TRUE garde les codes manquants déjà déclarés dans le fichier ; sans lui, haven les "
+"remplace par NA."
+msgstr ""
+
+msgid "## Glossaire des sigles"
+msgstr ""
+
+msgid "## Groupes de variables"
+msgstr ""
+
+msgid "## Libellés et descriptions"
+msgstr ""
+
+msgid "## Rattachements aux questions"
+msgstr ""
+
+msgid "## Variables"
+msgstr ""
+
+msgid "## Vue d'ensemble"
+msgstr ""
+
+msgid "% manquants"
+msgstr ""
+
+#, python-brace-format
+msgid "(corrélation avec le reste : {r})"
+msgstr ""
+
+#, python-brace-format
+msgid "(corrélation avec le reste du groupe : {r})"
+msgstr ""
+
+msgid "(pas encore rattachée)"
+msgstr ""
+
+msgid "(vide)"
+msgstr ""
+
+msgid "* Items inversés selon l'équipe : non recodés. Suggestion, à faire vous-même."
+msgstr ""
+
+#, python-brace-format
+msgid "* {name} : SPSS accepte au plus {n} codes manquants ; à déclarer à la main : {codes}."
+msgstr ""
+
+#, python-brace-format
+msgid "* {name} : intervalle de codes manquants impossible pour un texte."
+msgstr ""
+
+#, python-brace-format
+msgid "* {name} : nom de variable non valide pour SPSS, omise."
+msgstr ""
+
+#, python-brace-format
+msgid "- Variables avec signalements : {n}"
+msgstr ""
+
+#, python-brace-format
+msgid "- Variables sensibles : {n}"
+msgstr ""
+
+#, python-brace-format
+msgid "- {base}, rattachements manqués : {names}"
+msgstr ""
+
+msgid ""
+"1. Installez Ollama depuis [ollama.com](https://ollama.com) (bouton « Download for Windows »), "
+"puis lancez-le : son icône apparaît près de l'horloge.\n"
+"2. Téléchargez le modèle recommandé, une seule fois (environ 4,7 Go), dans PowerShell :"
+msgstr ""
+
+msgid "Accepter"
+msgstr ""
+
+#, python-brace-format
+msgid "Accepter ces {n} rattachements"
+msgstr ""
+
+#, python-brace-format
+msgid "Accepter ces {n} étiquetages"
+msgstr ""
+
+#, python-brace-format
+msgid "Accepter les rattachements où le modèle et le calcul s'accordent ({n})…"
+msgstr ""
+
+msgid "Accepter les étiquettes"
+msgstr ""
+
+#, python-brace-format
+msgid "Accepter les étiquettes de valeurs de ce groupe ({n})…"
+msgstr ""
+
+msgid "Accueil"
+msgstr "Home"
+
+msgid "Adresse (Ollama par défaut)"
+msgstr ""
+
+msgid "Adresse du serveur local"
+msgstr ""
+
+#, python-brace-format
+msgid "Adresse du serveur local compatible OpenAI (défaut : Ollama, {default})."
+msgstr ""
+
+#, python-brace-format
+msgid "Adresse refusée : seul un serveur sur cet ordinateur est permis ({detail})."
+msgstr ""
+
+msgid "Adresse refusée : seul un serveur sur cet ordinateur est permis."
+msgstr ""
+
+msgid "Afficher"
+msgstr ""
+
+msgid "Ajouter"
+msgstr ""
+
+msgid "Ajouter le questionnaire de l'étude"
+msgstr ""
+
+msgid "Ajouter le seuil"
+msgstr ""
+
+msgid "Ajouter un sigle"
+msgstr ""
+
+msgid "Ajoutez d'abord le questionnaire de l'étude (page « Questionnaire »)."
+msgstr ""
+
+msgid "Alpha de Cronbach observé"
+msgstr ""
+
+#, python-brace-format
+msgid "Alpha de Cronbach observé : {alpha} ({n} lignes complètes)"
+msgstr ""
+
+#, python-brace-format
+msgid "Alpha de Cronbach observé : {a}"
+msgstr ""
+
+msgid "Alpha, items probables inversés"
+msgstr ""
+
+msgid "Annuler"
+msgstr ""
+
+#, python-brace-format
+msgid "Aperçu : {n} blocs de messages, rien n'a été envoyé."
+msgstr ""
+
+msgid "Appel IA"
+msgstr ""
+
+msgid "Arrêter"
+msgstr ""
+
+msgid "Aucun : tout le texte est reproduit"
+msgstr ""
+
+msgid "Aucun fichier choisi. Vous pouvez aussi coller son chemin dans le champ."
+msgstr ""
+
+msgid "Aucun groupe trouvé."
+msgstr ""
+
+msgid "Aucun item inversé"
+msgstr ""
+
+msgid "Aucun projet récent."
+msgstr ""
+
+msgid "Aucun sigle pour l'instant."
+msgstr ""
+
+msgid "Aucune nouvelle proposition."
+msgstr ""
+
+msgid "Aucune question du questionnaire"
+msgstr ""
+
+msgid "Aucune valeur n'est modifiée. Appliquez ce fichier à une copie de vos données."
+msgstr ""
+
+msgid "Aucune variable cochée."
+msgstr ""
+
+msgid "Aucune variable dans ce filtre."
+msgstr ""
+
+msgid "Aucune variable à envoyer."
+msgstr ""
+
+#, python-brace-format
+msgid "Avec les items probables inversés : {a}"
+msgstr ""
+
+msgid "Avec signalements"
+msgstr ""
+
+msgid "Banc d'essai des modèles"
+msgstr ""
+
+msgid "Base"
+msgstr ""
+
+msgid ""
+"Base de données : SPSS (.sav, .zsav), CSV, Stata (.dta), SAS (.sas7bdat) ou Excel (.xlsx, "
+"première feuille)."
+msgstr ""
+
+msgid ""
+"Bases fictives seulement : rien de réel n'a été envoyé au modèle. Les durées dépendent de "
+"l'ordinateur."
+msgstr ""
+
+msgid "Bloc"
+msgstr ""
+
+#, python-brace-format
+msgid "Bloc {block} ({n} variables) : déjà fait."
+msgstr ""
+
+#, python-brace-format
+msgid "Bloc {block} ({n} variables) : {status}."
+msgstr ""
+
+msgid "C'est un code manquant"
+msgstr ""
+
+msgid "C'est une vraie valeur"
+msgstr ""
+
+msgid "Calculé"
+msgstr ""
+
+msgid ""
+"Case à cocher probable : une seule valeur observée, les cases vides veulent sans doute dire « non"
+" coché »"
+msgstr ""
+
+msgid "Cases vides"
+msgstr ""
+
+msgid "Ce fichier projet est introuvable."
+msgstr ""
+
+#, python-brace-format
+msgid "Ces rattachements ne sont plus en accord : {names}."
+msgstr ""
+
+#, python-brace-format
+msgid "Ces étiquettes n'attendent plus de décision dans ce groupe : {names}."
+msgstr ""
+
+msgid "Champ"
+msgstr ""
+
+msgid "Champs documentés : étendue théorique, seuils, références, notes"
+msgstr ""
+
+msgid "Choisir la base…"
+msgstr ""
+
+msgid "Choisir le questionnaire…"
+msgstr ""
+
+msgid "Choisir un fichier projet…"
+msgstr ""
+
+msgid "Choisir une base…"
+msgstr "Choose a database…"
+
+msgid "Choisissez d'abord le fichier du questionnaire (.pdf ou .txt)."
+msgstr ""
+
+msgid "Choisissez d'abord une base de données existante."
+msgstr ""
+
+msgid ""
+"Choisissez la base de données : SPSS (.sav), CSV, Stata (.dta), SAS (.sas7bdat) ou Excel (.xlsx)."
+" Le fichier projet sera créé à côté d'elle ; la base n'est jamais modifiée."
+msgstr ""
+
+msgid ""
+"Choisissez les rattachements dans l'interface (ddict reviser), ou ajoutez --modele pour qu'un "
+"modèle local propose un choix parmi les candidates."
+msgstr ""
+
+msgid "Classe"
+msgstr ""
+
+#, python-brace-format
+msgid "Classe de confidentialité inconnue : {c}"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+#, python-brace-format
+msgid "Code suspect {code}"
+msgstr ""
+
+#, python-brace-format
+msgid "Code {code} confirmé comme manquant par l'équipe"
+msgstr ""
+
+#, python-brace-format
+msgid "Code {code} observé sans étiquette"
+msgstr ""
+
+msgid "Codebook Excel"
+msgstr ""
+
+#, python-brace-format
+msgid "Codebook Excel : {path}"
+msgstr ""
+
+msgid "Codebook Excel à écrire."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Codes confirmés par l'équipe non écrits, SPSS n'acceptant que 3 codes manquants : {names}. Ceux "
+"du fichier sont gardés."
+msgstr ""
+
+msgid "Codes manquants déclarés"
+msgstr ""
+
+msgid "Codes suspects"
+msgstr ""
+
+#, python-brace-format
+msgid "Codes suspects à confirmer : {n}"
+msgstr ""
+
+msgid "Confidentialité"
+msgstr ""
+
+msgid "Confirmer la classe"
+msgstr ""
+
+msgid ""
+"Conseil : validez d'abord le glossaire et révisez les rattachements proposés ; le modèle s'en "
+"sert pour les libellés."
+msgstr ""
+
+msgid "Consigne donnée au modèle"
+msgstr ""
+
+#, python-brace-format
+msgid "Copie : {path}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Copie documentée : {path} ({rows} lignes, {columns} variables), identique à l'original case par "
+"case."
+msgstr ""
+
+msgid "Copie documentée de la base"
+msgstr ""
+
+msgid "Copie à écrire (défaut : à côté de la base, « -documente.sav »)."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Copie écrite à côté de la base : {name}. Relue et comparée à l'original : {rows} lignes et "
+"{columns} variables, identiques case par case."
+msgstr ""
+
+msgid "Corriger ou saisir"
+msgstr ""
+
+msgid "Corrélation avec le reste du groupe"
+msgstr ""
+
+msgid "Cotation (source)"
+msgstr ""
+
+msgid ""
+"Création de dictionnaires de données, en local. Lancé seul, ddict ouvre l'interface dans le "
+"navigateur."
+msgstr ""
+
+msgid "Créer le projet"
+msgstr "Create the project"
+
+msgid "Dans le fichier"
+msgstr ""
+
+#, python-brace-format
+msgid "Dans le questionnaire : {v}"
+msgstr ""
+
+#, python-brace-format
+msgid "Dans {folder} : {xlsx} et {md}."
+msgstr ""
+
+msgid "Date max"
+msgstr ""
+
+msgid "Date min"
+msgstr ""
+
+msgid "De travail : avec les propositions en attente, marquées comme telles"
+msgstr ""
+
+#, python-brace-format
+msgid "Dernier rapport : {name}"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Dictionnaire de données"
+msgstr "Data dictionary"
+
+#, python-brace-format
+msgid "Dossier introuvable : {path}"
+msgstr ""
+
+msgid "Dossier où écrire le rapport (défaut : le dossier courant)."
+msgstr ""
+
+#, python-brace-format
+msgid "Décision impossible : {detail}"
+msgstr ""
+
+msgid "Définition"
+msgstr ""
+
+msgid "Effacer la liste"
+msgstr ""
+
+msgid "Effectif"
+msgstr ""
+
+msgid "Effectif minimal affiché ; en dessous, il est masqué (défaut : 5)."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Effectifs inférieurs à {n} masqués, ainsi qu'un second effectif quand le premier pourrait être "
+"recalculé par soustraction ; variables sensibles décrites sans statistiques."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Effectifs inférieurs à {n} masqués, ainsi qu'un second effectif quand le premier pourrait être "
+"recalculé par soustraction."
+msgstr ""
+
+msgid "Empreinte SHA-256"
+msgstr ""
+
+msgid "Empreinte SHA-256 du questionnaire"
+msgstr ""
+
+msgid "En tête de liste : les questions candidates calculées, puis « aucune »."
+msgstr ""
+
+msgid "Encodage : UTF-8."
+msgstr ""
+
+msgid "Enregistrer"
+msgstr ""
+
+msgid "Enregistrer ce choix"
+msgstr ""
+
+msgid "Enregistrer l'instrument"
+msgstr ""
+
+msgid "Enregistrer l'étendue"
+msgstr ""
+
+msgid "Enregistrer les items inversés"
+msgstr ""
+
+msgid "Enregistrer références et notes"
+msgstr ""
+
+#, python-brace-format
+msgid "Enregistré dans {path}."
+msgstr ""
+
+msgid "Enregistré."
+msgstr ""
+
+msgid ""
+"Environ deux minutes avec un modèle de 7 milliards de paramètres et une carte graphique ; "
+"davantage sans. Changer de page arrête la mesure."
+msgstr ""
+
+#, python-brace-format
+msgid "Erreur de fichier : {detail}"
+msgstr ""
+
+msgid "Export"
+msgstr ""
+
+msgid ""
+"Facultative. Chaque proposition attend votre décision, et l'IA ne définit jamais un sigle. Ordre "
+"recommandé : glossaire, rattachement, révision des rattachements, puis libellés et descriptions."
+msgstr ""
+
+#, python-brace-format
+msgid "Faire proposer : {title}"
+msgstr ""
+
+msgid "Faire proposer libellés et descriptions par un modèle local (facultatif)."
+msgstr ""
+
+#, python-brace-format
+msgid "Fichier de commandes : {path}"
+msgstr ""
+
+msgid "Fichier de données"
+msgstr ""
+
+msgid "Fichier projet (.dd.json)."
+msgstr ""
+
+#, python-brace-format
+msgid "Fichier projet : {path}"
+msgstr ""
+
+msgid "Fichier projet à créer (par défaut : à côté de la base, en .dd.json)."
+msgstr ""
+
+msgid "Fichiers de commandes"
+msgstr ""
+
+#, python-brace-format
+msgid "Fichiers écrits à côté du projet : {names}."
+msgstr ""
+
+#, python-brace-format
+msgid "Fichiers écrits à côté du projet : {xlsx} et {md}."
+msgstr ""
+
+msgid "Filtre"
+msgstr ""
+
+msgid "Finale : seulement ce qui vient du fichier, du calcul ou de vos décisions"
+msgstr ""
+
+msgid "Format"
+msgstr ""
+
+msgid "Format du projet"
+msgstr ""
+
+msgid "Glossaire"
+msgstr ""
+
+msgid "Glossaire des sigles"
+msgstr ""
+
+msgid "Groupe"
+msgstr ""
+
+#, python-brace-format
+msgid "Groupe inconnu : {groups}. Groupes du projet : {known}."
+msgstr ""
+
+msgid "Groupes"
+msgstr ""
+
+#, python-brace-format
+msgid "Groupes de variables repérés : {n}"
+msgstr ""
+
+msgid "Groupes dont le texte des questions n'est pas reproduit"
+msgstr ""
+
+msgid "Hypothèse de l'IA"
+msgstr ""
+
+msgid "IA"
+msgstr ""
+
+msgid "IA locale"
+msgstr ""
+
+#, python-brace-format
+msgid "Identique à {name}"
+msgstr ""
+
+#, python-brace-format
+msgid "Impossible d'écrire le rapport : {detail}."
+msgstr ""
+
+#, python-brace-format
+msgid "Impossible d'écrire les fichiers : {detail}."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Impossible d'écrire les fichiers : {detail}. Le codebook est peut-être ouvert dans Excel : "
+"fermez-le, puis recommencez."
+msgstr ""
+
+#, python-brace-format
+msgid "Impossible de lire la base : {detail}"
+msgstr ""
+
+#, python-brace-format
+msgid "Impossible de lire le projet : {detail}"
+msgstr ""
+
+#, python-brace-format
+msgid "Impossible de lire le questionnaire : {detail}"
+msgstr ""
+
+msgid "Inclure les propositions de l'IA en attente, marquées comme telles."
+msgstr ""
+
+msgid "Indices du regroupement"
+msgstr ""
+
+msgid "Indiquez le modèle avec --modele, ou utilisez --apercu."
+msgstr ""
+
+msgid "Informations"
+msgstr ""
+
+msgid "Instrument"
+msgstr ""
+
+msgid "Instrument (source)"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Interface sur http://{host}:{port} (cet ordinateur seulement). Laissez cette fenêtre ouverte ; "
+"Ctrl+C ou fermer la fenêtre pour arrêter."
+msgstr ""
+
+msgid "Interrompu. Les blocs terminés sont enregistrés ; relancez pour continuer."
+msgstr ""
+
+#, python-brace-format
+msgid "Item probablement inversé (corrélation avec le reste de l'échelle : {r})"
+msgstr ""
+
+msgid "Items inversés confirmés"
+msgstr ""
+
+msgid "Items inversés probables"
+msgstr ""
+
+#, python-brace-format
+msgid "Items probablement inversés : {s}"
+msgstr ""
+
+msgid ""
+"L'interface de révision n'est pas installée. Installez-la avec : uv tool install --reinstall "
+"\".[ia,revision]\" (voir docs/installation-windows.md)."
+msgstr ""
+
+msgid ""
+"L'option IA n'est pas installée. Réinstallez l'outil avec ses options (voir docs/installation-"
+"windows.md)."
+msgstr ""
+
+msgid ""
+"L'option IA n'est pas installée. Réinstallez l'outil avec ses options : uv tool install "
+"--reinstall \".[ia,revision]\" (voir docs/installation-windows.md)."
+msgstr ""
+
+msgid "L'outil est déjà ouvert : affichage dans le navigateur."
+msgstr ""
+
+msgid "L'outil ne télécharge jamais de modèle lui-même : c'est une étape d'installation, faite par vous."
+msgstr ""
+
+msgid "La base d'origine, si elle n'est pas à côté du projet."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"La base {name} est introuvable à côté du projet. Placez-la dans le même dossier que le projet, ou"
+" indiquez où elle se trouve."
+msgstr ""
+
+#, python-brace-format
+msgid "La copie n'a pas pu être écrite : {detail}. Rien n'a été gardé."
+msgstr ""
+
+msgid "La copie ne peut pas porter le nom de la base d'origine."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"La copie relue ne correspondait pas à l'original ({n} cases différentes) : elle a été supprimée. "
+"Utilisez plutôt les fichiers de commandes, et signalez ce problème."
+msgstr ""
+
+msgid "La liste est gardée sur cet ordinateur ; elle ne contient que les chemins des fichiers projet."
+msgstr ""
+
+msgid "La signification du seuil est obligatoire."
+msgstr ""
+
+msgid "La valeur corrigée est vide."
+msgstr ""
+
+msgid "La valeur est obligatoire."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Le fichier de données n'est jamais modifié ; le projet garde seulement ce que l'outil a calculé "
+"et vos décisions, pas les réponses des participants. Fichier projet : {path}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Le modèle choisit, pour chaque variable, sa question parmi les candidates calculées ({n} "
+"variables en ont), et répond par un identifiant."
+msgstr ""
+
+msgid ""
+"Le modèle n'a pas répondu à temps. Sur un ordinateur sans carte graphique, réduisez la taille des"
+" blocs."
+msgstr ""
+
+msgid ""
+"Le modèle propose un libellé et une description pour chaque variable, à partir de ses "
+"métadonnées, du texte exact de sa question quand le rattachement est accepté, et du sens des "
+"sigles acceptés."
+msgstr ""
+
+msgid ""
+"Le modèle tourne sur cet ordinateur. Il ne reçoit jamais les réponses des participants : "
+"seulement des noms, des étiquettes, des proportions et, pour le rattachement, quelques questions "
+"candidates."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Le modèle « {model} » est introuvable sur le serveur. Avec Ollama, téléchargez-le d'abord : "
+"ollama pull {model}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Le navigateur les enregistre dans votre dossier de téléchargements. Un codebook se partage "
+"souvent avec les données : il ne contient que des métadonnées et des effectifs d'au moins {n}."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Le port {port} est déjà utilisé, peut-être par une autre révision ouverte. Fermez-la, ou ajoutez "
+"--port 8502."
+msgstr ""
+
+#, python-brace-format
+msgid "Le projet a déjà un questionnaire ({name}). Utilisez --remplacer pour le remplacer."
+msgstr ""
+
+msgid "Le projet a déjà un questionnaire."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Le projet n'a pas de questionnaire. Lisez-le d'abord : ddict questionnaire {path} "
+"questionnaire.pdf"
+msgstr ""
+
+#, python-brace-format
+msgid "Le projet {path} existe déjà. Utilisez --remplacer pour l'écraser."
+msgstr ""
+
+msgid ""
+"Le questionnaire dit ce que chaque variable veut dire : le texte exact des questions, le sens des"
+" sigles, les options de réponse. Il est lu sur cet ordinateur, sans IA : PDF (SurveyMonkey, "
+"LimeSurvey, REDCap…) ou texte (.txt copié depuis Word). Seules les questions rattachées à des "
+"variables iront dans le codebook, jamais la page de consentement."
+msgstr ""
+
+msgid "Le serveur local ne répond pas comme prévu."
+msgstr ""
+
+#, python-brace-format
+msgid "Le serveur {endpoint} ne répond pas. Ollama est-il lancé ?"
+msgstr ""
+
+msgid ""
+"Le travail s'arrête après le bloc en cours si vous cliquez sur « Arrêter » ou changez de page. "
+"Les blocs terminés sont gardés ; une relance reprend là où il s'était arrêté."
+msgstr ""
+
+msgid ""
+"Les définitions viennent du questionnaire ou de l'équipe ; l'IA n'en propose jamais. Une "
+"définition acceptée aide le modèle et figure dans le codebook."
+msgstr ""
+
+msgid "Les propositions sont à réviser dans « Variables »."
+msgstr ""
+
+msgid "Libellé"
+msgstr ""
+
+msgid "Libellés et descriptions"
+msgstr ""
+
+#, python-brace-format
+msgid "Libellés ou descriptions proposés : {n}"
+msgstr ""
+
+msgid "Lignes"
+msgstr ""
+
+msgid "Lignes complètes"
+msgstr ""
+
+msgid "Lire le questionnaire"
+msgstr ""
+
+msgid "Lire le questionnaire de l'étude (.pdf ou .txt) et l'ajouter au projet."
+msgstr ""
+
+msgid "Lire une base (.sav, .csv, .dta, .sas7bdat ou .xlsx) et créer le fichier projet."
+msgstr ""
+
+msgid ""
+"Lisez chaque ligne : à l'essai sur une vraie base, environ un rattachement sur cinq de cette "
+"liste était faux, surtout pour les scores calculés, les options de listes à cocher voisines et "
+"les variables sans question (identifiant, date de passation). Décochez ceux qui ne conviennent "
+"pas ; chaque rattachement coché sera accepté comme si vous l'aviez accepté à la main."
+msgstr ""
+
+msgid "Liste effacée."
+msgstr ""
+
+msgid "Manquant déclaré"
+msgstr ""
+
+msgid "Manquants déclarés"
+msgstr ""
+
+msgid "Max"
+msgstr ""
+
+#, python-brace-format
+msgid "Message du bloc {block}"
+msgstr ""
+
+#, python-brace-format
+msgid "Messages enregistrés dans : {path}"
+msgstr ""
+
+msgid "Mesurer ce modèle"
+msgstr ""
+
+msgid ""
+"Mesurer un modèle installé sur les deux bases fictives : rattachements justes, inventions "
+"signalées, durée."
+msgstr ""
+
+msgid "Min"
+msgstr ""
+
+msgid "Modèle"
+msgstr ""
+
+msgid "Modèle local"
+msgstr ""
+
+msgid "Moyenne"
+msgstr ""
+
+msgid "Médiane"
+msgstr ""
+
+#, python-brace-format
+msgid "Métadonnées de {name}, produites par dictionnaire-donnees {version} le {date}."
+msgstr ""
+
+msgid ""
+"Ne pas reproduire le texte des questions de ce groupe dans le codebook (instrument protégé par le"
+" droit d'auteur)"
+msgstr ""
+
+msgid ""
+"Ne pas reproduire le texte des questions de ces groupes (p. ex. G3), pour un instrument protégé "
+"par le droit d'auteur (D-014)."
+msgstr ""
+
+msgid "Niveau de mesure"
+msgstr ""
+
+msgid "Nom"
+msgstr ""
+
+msgid "Nom de l'instrument : réservé aux personnes, avec une source documentée."
+msgstr ""
+
+msgid "Nom du modèle dans le serveur local, p. ex. qwen2.5:7b-instruct-q4_K_M."
+msgstr ""
+
+#, python-brace-format
+msgid "Nombre de variables par message (défaut : {n})."
+msgstr ""
+
+msgid "Notes"
+msgstr ""
+
+msgid "Notes de l'équipe"
+msgstr ""
+
+msgid "Nouveau projet"
+msgstr "New project"
+
+msgid "Ollama répond, mais aucun modèle n'est installé."
+msgstr ""
+
+msgid "Options ou énoncés"
+msgstr ""
+
+msgid "Origine"
+msgstr ""
+
+msgid "Ouvrir"
+msgstr ""
+
+msgid "Ouvrir l'interface de révision dans le navigateur (cet ordinateur seulement)."
+msgstr ""
+
+msgid "Ouvrir le dossier"
+msgstr ""
+
+msgid "Ouvrir le projet existant"
+msgstr ""
+
+msgid "Ouvrir un projet"
+msgstr ""
+
+msgid "Page"
+msgstr ""
+
+#, python-brace-format
+msgid "Pas dans le groupe : {names}"
+msgstr ""
+
+msgid "Port local de l'interface (défaut : 8501)."
+msgstr ""
+
+msgid "Port local de l'interface, quand ddict est lancé seul (défaut : 8501)."
+msgstr ""
+
+msgid "Position"
+msgstr ""
+
+msgid ""
+"Pour appliquer vos décisions à vos données dans SPSS ou R : libellés, étiquettes de valeurs, "
+"codes manquants et niveaux de mesure. Seulement ce qui est accepté, quelle que soit la version "
+"choisie plus haut. Aucune valeur n'est modifiée ; appliquez-les à une copie de vos données."
+msgstr ""
+
+msgid ""
+"Pour choisir un modèle en connaissance de cause : sur les deux bases fictives de l'outil, dont on"
+" connaît les bonnes réponses, le banc mesure les rattachements justes, les libellés qui inventent"
+" peut-être (citation, seuil, nom d'instrument, sens d'un sigle, étendue, sens de codes) et la "
+"durée. Vos données ne sont pas utilisées, et aucun modèle n'est téléchargé."
+msgstr ""
+
+msgid ""
+"Pour un instrument protégé par le droit d'auteur : le codebook donne la référence de chaque "
+"question, sans son texte (D-014)."
+msgstr ""
+
+msgid ""
+"Pour une nouvelle version du fichier. Les rattachements qui renvoyaient à l'ancienne version sont"
+" retirés ; les sigles déjà décidés sont gardés."
+msgstr ""
+
+msgid "Produire le codebook Excel et le rapport Markdown d'un projet."
+msgstr ""
+
+#, python-brace-format
+msgid "Projet créé : {path}"
+msgstr ""
+
+msgid "Projets récents"
+msgstr ""
+
+#, python-brace-format
+msgid "Propositions enregistrées dans {path}, à réviser."
+msgstr ""
+
+#, python-brace-format
+msgid "Proposé : {v}"
+msgstr ""
+
+msgid ""
+"Proposés après les bons rattachements et les sigles du questionnaire acceptés. Une variable "
+"signalée contient peut-être une invention, à vérifier par une personne ; moins il y en a, mieux "
+"c'est."
+msgstr ""
+
+msgid "Provenance"
+msgstr ""
+
+msgid "Préparation des bases fictives…"
+msgstr ""
+
+msgid "Question"
+msgstr ""
+
+#, python-brace-format
+msgid "Question inconnue : {id}"
+msgstr ""
+
+msgid "Questionnaire"
+msgstr ""
+
+msgid "Questionnaire (.pdf ou .txt)."
+msgstr ""
+
+msgid "Questionnaire de l'étude"
+msgstr ""
+
+#, python-brace-format
+msgid "Questionnaire lu : {name}{pages}"
+msgstr ""
+
+msgid "Questionnaire lu."
+msgstr ""
+
+msgid "Questions trouvées"
+msgstr ""
+
+#, python-brace-format
+msgid "Rapport : {path}"
+msgstr ""
+
+msgid "Rapport Markdown"
+msgstr ""
+
+#, python-brace-format
+msgid "Rapport Markdown : {path}"
+msgstr ""
+
+msgid "Rapport Markdown à écrire."
+msgstr ""
+
+#, python-brace-format
+msgid "Rapport écrit à côté du projet : {name}."
+msgstr ""
+
+msgid "Rattachement aux questions"
+msgstr ""
+
+#, python-brace-format
+msgid "Rattachement introuvable dans le questionnaire : {id}"
+msgstr ""
+
+#, python-brace-format
+msgid "Rattachements proposés à réviser : {n}"
+msgstr ""
+
+msgid "Rattacher"
+msgstr ""
+
+msgid ""
+"Rattacher les variables aux questions du questionnaire : questions candidates, puis choix proposé"
+" par un modèle local (facultatif)."
+msgstr ""
+
+msgid "Rattacher à"
+msgstr ""
+
+msgid "Rejeter"
+msgstr ""
+
+msgid "Rejeter les étiquettes"
+msgstr ""
+
+msgid "Remplacer le projet"
+msgstr ""
+
+msgid "Remplacer le questionnaire"
+msgstr ""
+
+msgid "Remplacer le questionnaire déjà lu."
+msgstr ""
+
+msgid "Remplacer une copie déjà écrite."
+msgstr ""
+
+msgid "Renvoyer aussi les blocs déjà enrichis."
+msgstr ""
+
+msgid "Renvoyer aussi les blocs déjà traités."
+msgstr ""
+
+msgid ""
+"Reproduire les items d'un instrument protégé relève de l'équipe ; le codebook donnera alors la "
+"référence de la question (Q12.r3, p. 4) sans son texte."
+msgstr ""
+
+msgid "Retirer"
+msgstr ""
+
+msgid "Retirer l'étendue"
+msgstr ""
+
+msgid "Revenir sur cette décision"
+msgstr ""
+
+msgid "Rien en attente."
+msgstr ""
+
+msgid "Rien à envoyer."
+msgstr ""
+
+msgid "Références"
+msgstr ""
+
+msgid "Références (une par ligne)"
+msgstr ""
+
+msgid "Réservés aux personnes ; l'étendue et les seuils exigent une source."
+msgstr ""
+
+msgid "Révision du dictionnaire"
+msgstr "Data dictionary review"
+
+msgid "Sans question"
+msgstr ""
+
+msgid "Script R"
+msgstr ""
+
+msgid "Sensibles"
+msgstr ""
+
+msgid "Seuil"
+msgstr ""
+
+msgid "Seuils (source)"
+msgstr ""
+
+msgid "Seule une adresse de cet ordinateur est acceptée."
+msgstr ""
+
+msgid ""
+"Seulement les décisions acceptées : libellés, étiquettes de valeurs, codes manquants (déclarés ou"
+" confirmés par l'équipe), niveaux de mesure."
+msgstr ""
+
+msgid ""
+"Seules leurs métadonnées sont utilisées : aucune statistique sur leurs valeurs, et rien d'elles "
+"n'est envoyé au modèle."
+msgstr ""
+
+msgid "Sigle"
+msgstr ""
+
+#, python-brace-format
+msgid "Sigles définis dans le questionnaire, à valider : {terms}."
+msgstr ""
+
+#, python-brace-format
+msgid "Sigles probables des noms de variables, sans définition : {terms}."
+msgstr ""
+
+msgid "Sigles probables sans définition"
+msgstr ""
+
+#, python-brace-format
+msgid "Sigles sans définition : {n}"
+msgstr ""
+
+#, python-brace-format
+msgid "Sigles à valider : {n}"
+msgstr ""
+
+msgid "Signalement"
+msgstr ""
+
+msgid "Signalements"
+msgstr ""
+
+msgid "Signification"
+msgstr ""
+
+msgid "Source"
+msgstr ""
+
+msgid "Source de l'instrument"
+msgstr ""
+
+msgid "Source de l'étendue"
+msgstr ""
+
+msgid "Source de l'étiquette"
+msgstr ""
+
+msgid "Source du seuil"
+msgstr ""
+
+msgid "Statut"
+msgstr ""
+
+msgid "Syntaxe SPSS"
+msgstr ""
+
+msgid "Texte"
+msgstr ""
+
+msgid "Texte de la question"
+msgstr ""
+
+msgid "Texte des questions"
+msgstr ""
+
+msgid ""
+"Tirées des options de la question de chaque variable, dans l'ordre supposé des codes. Décochez "
+"celles qui ne conviennent pas."
+msgstr ""
+
+msgid "Tout se passe sur cet ordinateur : les fichiers sont lus ici, et rien n'est envoyé ailleurs."
+msgstr ""
+
+msgid "Toutes"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Types de variables"
+msgstr ""
+
+#, python-brace-format
+msgid "Types mélangés ({n} valeurs non numériques)"
+msgstr ""
+
+msgid "Télécharger"
+msgstr ""
+
+msgid "Télécharger le rapport"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Un projet existe déjà pour cette base : {name}. Ouvrez-le pour reprendre votre travail, ou "
+"remplacez-le (ses décisions seront perdues)."
+msgstr ""
+
+msgid ""
+"Une nouvelle copie de votre base au format SPSS (.sav), avec ce que vous avez accepté. Avant de "
+"l'annoncer, l'outil la relit et la compare à l'original case par case. Votre fichier d'origine "
+"n'est jamais modifié. La copie contient les données des participants : rangez-la comme "
+"l'original. Les fichiers de commandes restent la voie recommandée."
+msgstr ""
+
+msgid ""
+"Une question « à vérifier » a été lue, mais sa mise en page est douteuse : l'outil ne propose pas"
+" d'étiquettes de valeurs à partir de ses colonnes. Un .txt copié depuis Word évite souvent le "
+"problème."
+msgstr ""
+
+msgid "Une source documentée est obligatoire."
+msgstr ""
+
+msgid "Unité"
+msgstr ""
+
+msgid "Utilisez --remplacer."
+msgstr ""
+
+msgid "Valeur"
+msgstr ""
+
+msgid "Valeur d'origine"
+msgstr ""
+
+#, python-brace-format
+msgid "Valeur d'origine : {v}"
+msgstr ""
+
+msgid "Valeur invalide."
+msgstr ""
+
+#, python-brace-format
+msgid "Valeur {code} confirmée comme vraie valeur par l'équipe"
+msgstr ""
+
+#, python-brace-format
+msgid "Valeur {code} probablement manquante, non déclarée"
+msgstr ""
+
+#, python-brace-format
+msgid "Valeur {code} probablement manquante, non déclarée : est-ce un code manquant ?"
+msgstr ""
+
+msgid "Valeurs"
+msgstr ""
+
+msgid "Valeurs distinctes"
+msgstr ""
+
+msgid "Valides"
+msgstr ""
+
+#, python-brace-format
+msgid "Valides : {valid} ; cases vides : {empty} ; manquants déclarés : {declared} ({pct} %)"
+msgstr ""
+
+#, python-brace-format
+msgid "Valides : {v} ; cases vides : {e} ; manquants déclarés : {d}"
+msgstr ""
+
+msgid "Variable"
+msgstr ""
+
+msgid "Variable constante"
+msgstr ""
+
+msgid "Variable entièrement vide"
+msgstr ""
+
+msgid "Variable sensible : aucune statistique sur ses valeurs."
+msgstr ""
+
+msgid "Variables"
+msgstr ""
+
+#, python-brace-format
+msgid "Variables : {names}"
+msgstr ""
+
+msgid "Variables rattachées à une question"
+msgstr ""
+
+#, python-brace-format
+msgid "Variables sans question : {n}"
+msgstr ""
+
+msgid "Variables sensibles"
+msgstr ""
+
+#, python-brace-format
+msgid "Variantes d'écriture d'une même réponse : {spellings}"
+msgstr ""
+
+msgid "Version"
+msgstr ""
+
+msgid "Voir exactement ce qui serait envoyé (rien n'est envoyé)"
+msgstr ""
+
+msgid "Vérifier de nouveau"
+msgstr ""
+
+msgid "aucun"
+msgstr ""
+
+msgid "aucune question du questionnaire"
+msgstr ""
+
+#, python-brace-format
+msgid "avec les items probables inversés : {alpha}"
+msgstr ""
+
+msgid "binaire"
+msgstr ""
+
+msgid "calcul"
+msgstr ""
+
+msgid "choix unique"
+msgstr ""
+
+msgid "citation"
+msgstr ""
+
+msgid "code manquant"
+msgstr ""
+
+#, python-brace-format
+msgid "codes de {low} à {high}"
+msgstr ""
+
+msgid "corrigé"
+msgstr ""
+
+msgid "date"
+msgstr ""
+
+msgid "date et heure"
+msgstr ""
+
+msgid "dates étalées sur de nombreuses années"
+msgstr ""
+
+msgid "de travail (propositions de l'IA en attente incluses)"
+msgstr ""
+
+msgid "de travail (propositions de l'IA incluses)"
+msgstr ""
+
+msgid "deviné : la variable n'a pas d'étiquette dans le fichier"
+msgstr ""
+
+msgid "donne le sens d'un sigle absent du glossaire"
+msgstr ""
+
+msgid "décimal"
+msgstr ""
+
+msgid "entier"
+msgstr ""
+
+msgid "exporté pour toutes les variables rattachées"
+msgstr ""
+
+msgid "fichier"
+msgstr ""
+
+msgid "finale"
+msgstr ""
+
+msgid "finale (valeurs acceptées seulement)"
+msgstr ""
+
+msgid "grille"
+msgstr ""
+
+msgid "grille sans titres de colonnes"
+msgstr ""
+
+msgid "grilles"
+msgstr ""
+
+msgid "humain"
+msgstr ""
+
+msgid "identifiant probable"
+msgstr ""
+
+msgid "masqué"
+msgstr ""
+
+msgid "mixte"
+msgstr ""
+
+msgid "mêmes étiquettes de valeurs"
+msgstr ""
+
+msgid "nom d'instrument"
+msgstr ""
+
+msgid "nom de code postal"
+msgstr ""
+
+msgid "nom de date de naissance"
+msgstr ""
+
+msgid "nom de lieu de naissance"
+msgstr ""
+
+msgid "nom de texte libre"
+msgstr ""
+
+msgid "nom ou étiquette d'identifiant"
+msgstr ""
+
+msgid "nominal"
+msgstr ""
+
+#, python-brace-format
+msgid "omis pour les groupes {groups} (instrument protégé, D-014)"
+msgstr ""
+
+msgid "ordinaire"
+msgstr ""
+
+msgid "ordinal"
+msgstr ""
+
+msgid "ou collez le chemin du fichier"
+msgstr ""
+
+msgid "ou collez le chemin du fichier projet (.dd.json)"
+msgstr ""
+
+msgid "oui"
+msgstr ""
+
+msgid "ouverte"
+msgstr ""
+
+msgid "ouvertes"
+msgstr ""
+
+msgid "proposé par IA"
+msgstr ""
+
+msgid "préfixe commun"
+msgstr ""
+
+#, python-brace-format
+msgid "préfixe « {prefix} »"
+msgstr ""
+
+msgid "présente l'étendue observée comme celle de l'échelle : à vérifier dans le manuel"
+msgstr ""
+
+msgid "quasi-identifiant"
+msgstr ""
+
+msgid "questionnaire"
+msgstr ""
+
+msgid "refusé"
+msgstr ""
+
+msgid "rejeté"
+msgstr ""
+
+msgid "ressemble à un nom d'instrument"
+msgstr ""
+
+msgid "ressemble à un seuil"
+msgstr ""
+
+msgid "ressemble à une citation"
+msgstr ""
+
+msgid "réponse invalide"
+msgstr ""
+
+msgid "réussi"
+msgstr ""
+
+msgid "sens d'un sigle"
+msgstr ""
+
+#, python-brace-format
+msgid "sens de codes ({names})"
+msgstr ""
+
+msgid "seuil"
+msgstr ""
+
+msgid "texte"
+msgstr ""
+
+msgid "texte libre"
+msgstr ""
+
+msgid "texte omis : instrument protégé par le droit d'auteur (D-014)"
+msgstr ""
+
+msgid "textes longs"
+msgstr ""
+
+msgid "textes tous différents"
+msgstr ""
+
+msgid "titres de colonnes collés"
+msgstr ""
+
+msgid "valeurs au format code postal"
+msgstr ""
+
+msgid "valeurs au format courriel"
+msgstr ""
+
+msgid "valeurs au format téléphone"
+msgstr ""
+
+msgid "validé"
+msgstr ""
+
+msgid "variables voisines"
+msgstr ""
+
+msgid "variables voisines aux mêmes étiquettes"
+msgstr ""
+
+msgid "vide"
+msgstr ""
+
+msgid "vraie valeur"
+msgstr ""
+
+#, python-brace-format
+msgid "{base} : libellés et descriptions…"
+msgstr ""
+
+#, python-brace-format
+msgid "{base} : rattachements proposés par le modèle…"
+msgstr ""
+
+#, python-brace-format
+msgid "{code} (confirmé par l'équipe)"
+msgstr ""
+
+#, python-brace-format
+msgid "{code} n'est pas un code suspect de cette variable."
+msgstr ""
+
+#, python-brace-format
+msgid "{c} {name} ({group}) : étendue théorique non renseignée."
+msgstr ""
+
+#, python-brace-format
+msgid "{done} variables sur {total} sans proposition en attente"
+msgstr ""
+
+#, python-brace-format
+msgid "{name} existe déjà : la remplacer"
+msgstr ""
+
+#, python-brace-format
+msgid "{name} existe déjà. Rien n'a été écrit ; confirmez pour le remplacer."
+msgstr ""
+
+#, python-brace-format
+msgid "{name} n'est plus le fichier d'où vient le projet : son contenu a changé. Rien n'a été écrit."
+msgstr ""
+
+#, python-brace-format
+msgid "{n} catégories rares retirées (confidentialité)"
+msgstr ""
+
+#, python-brace-format
+msgid "{n} items"
+msgstr ""
+
+#, python-brace-format
+msgid "{n} questions : {counts}{grids}."
+msgstr ""
+
+#, python-brace-format
+msgid "{n} rattachements acceptés."
+msgstr ""
+
+#, python-brace-format
+msgid "{n} rattachements retirés : ils renvoyaient à l'ancien questionnaire."
+msgstr ""
+
+#, python-brace-format
+msgid "{n} rattachements retirés : ils renvoyaient à l'ancien questionnaire. Relancez ddict rattacher."
+msgstr ""
+
+#, python-brace-format
+msgid "{n} sigles, dont {p} à valider"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"{n} variables ont encore des propositions sans décision : elles ne figurent pas dans la version "
+"finale."
+msgstr ""
+
+#, python-brace-format
+msgid "{n} variables sur {total} ont des questions candidates."
+msgstr ""
+
+#, python-brace-format
+msgid "{n} variables à envoyer, en {b} blocs."
+msgstr ""
+
+#, python-brace-format
+msgid "{n} variables, {rows} lignes ; {sensitive} variables sensibles ; {flagged} avec signalements."
+msgstr ""
+
+#, python-brace-format
+msgid "{old} n'est plus dans ce filtre ; voici la variable suivante : {new}."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"{title} : arrêté. Les blocs terminés sont enregistrés ; relancez pour continuer là où le travail "
+"s'est arrêté."
+msgstr ""
+
+#, python-brace-format
+msgid "{title} : bloc {done} sur {total}"
+msgstr ""
+
+#, python-brace-format
+msgid "{title} : envoi du premier bloc…"
+msgstr ""
+
+#, python-brace-format
+msgid "{title} : {ok} blocs réussis, {skipped} déjà faits, {failed} en échec."
+msgstr ""
+
+#, python-brace-format
+msgid "« {token} » lu comme vide ({n})"
+msgstr ""
+
+msgid "À faire"
+msgstr ""
+
+msgid "À réviser"
+msgstr ""
+
+msgid "À vérifier"
+msgstr ""
+
+#, python-brace-format
+msgid "À vérifier : {qid} ({reasons})."
+msgstr ""
+
+msgid "Écart-type"
+msgstr ""
+
+msgid "Écraser un projet existant."
+msgstr ""
+
+msgid ""
+"Écrire aussi les fichiers de commandes SPSS et R qui appliquent les décisions acceptées à vos "
+"données."
+msgstr ""
+
+msgid "Écrire la copie documentée"
+msgstr ""
+
+msgid "Écrire le codebook et le rapport"
+msgstr ""
+
+msgid "Écrire les fichiers de commandes à côté du projet"
+msgstr ""
+
+msgid "Écrire les messages qui seraient envoyés, sans rien envoyer."
+msgstr ""
+
+msgid ""
+"Écrire une copie de la base au format SPSS (.sav), avec les décisions acceptées. L'original n'est"
+" jamais modifié."
+msgstr ""
+
+msgid "Écrire à côté du projet"
+msgstr ""
+
+msgid "Élément"
+msgstr ""
+
+msgid "Équipe"
+msgstr ""
+
+msgid "Étendue invalide : le minimum doit être inférieur au maximum."
+msgstr ""
+
+msgid "Étendue théorique (source)"
+msgstr ""
+
+msgid "Étiquette"
+msgstr ""
+
+msgid "Étiquette du fichier"
+msgstr ""
+
+#, python-brace-format
+msgid "Étiquette {code} jamais utilisée"
+msgstr ""
+
+msgid "Étiquettes de valeurs"
+msgstr ""
+
+#, python-brace-format
+msgid "Étiquettes de valeurs tirées des options de réponse, à vérifier dans l'interface : {names}."
+msgstr ""
+
+#, python-brace-format
+msgid "Étiquettes de valeurs à vérifier : {n}"
+msgstr ""
+
+#, python-brace-format
+msgid "Étiquettes de {n} variables acceptées."
+msgstr ""
+
+msgid "à choix unique"
+msgstr ""
+
+msgid "à cocher"
+msgstr ""
+
+msgid "à valider"
+msgstr ""
+
+msgid "échec"
+msgstr ""
+
+msgid "échelle"
+msgstr ""
+
+msgid "énoncés de grille non numérotés"
+msgstr ""
+
+msgid "étendue observée"
+msgstr ""
+
+msgid "étiquettes proposées à partir des options, ordre supposé, à vérifier"
+msgstr ""
+
+msgid "étiquettes tirées des options de la question, ordre vérifié par l'équipe"
+msgstr ""
+

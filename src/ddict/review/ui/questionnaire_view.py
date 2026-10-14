@@ -11,7 +11,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from ddict.i18n import _
+from ddict.i18n import N_, Texts, _
 from ddict.io import ReadError
 from ddict.project import save_project
 from ddict.project.model import Project
@@ -27,12 +27,14 @@ from ddict.workflow import (
 )
 
 FIELD = "questionnaire-path"
-KIND_NAMES = {
-    "open": _("ouverte"),
-    "single": _("choix unique"),
-    "checkbox": _("à cocher"),
-    "grid": _("grille"),
-}
+KIND_NAMES = Texts(
+    {
+        "open": N_("ouverte"),
+        "single": N_("choix unique"),
+        "checkbox": N_("à cocher"),
+        "grid": N_("grille"),
+    }
+)
 
 
 def _message(kind: str, text: str, key: str) -> None:

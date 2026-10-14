@@ -10,7 +10,7 @@ from ddict.export.documented import CopyError, CopyResult, find_database, write_
 from ddict.export.syntax import SUFFIXES, write_syntax
 from ddict.export.wording import entry_anomalies
 from ddict.glossary import propose_from_questionnaire, undefined_acronyms
-from ddict.i18n import _
+from ddict.i18n import N_, Texts, _
 from ddict.io import read_database
 from ddict.privacy import MIN_CELL_COUNT
 from ddict.project import PROJECT_SUFFIX, build_project, save_project
@@ -65,17 +65,21 @@ def profile_summary(project: Project) -> str:
 
 # --- The questionnaire (v0.2), from the command line or the interface. ---
 
-TO_CHECK = {
-    "grid_header_unclear": _("titres de colonnes collés"),
-    "grid_without_header": _("grille sans titres de colonnes"),
-    "grid_rows_unnumbered": _("énoncés de grille non numérotés"),
-}
-KINDS = {
-    "open": _("ouvertes"),
-    "single": _("à choix unique"),
-    "checkbox": _("à cocher"),
-    "grid": _("grilles"),
-}
+TO_CHECK = Texts(
+    {
+        "grid_header_unclear": N_("titres de colonnes collés"),
+        "grid_without_header": N_("grille sans titres de colonnes"),
+        "grid_rows_unnumbered": N_("énoncés de grille non numérotés"),
+    }
+)
+KINDS = Texts(
+    {
+        "open": N_("ouvertes"),
+        "single": N_("à choix unique"),
+        "checkbox": N_("à cocher"),
+        "grid": N_("grilles"),
+    }
+)
 
 
 class QuestionnaireExists(ValueError):

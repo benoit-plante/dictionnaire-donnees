@@ -4,6 +4,8 @@ from pathlib import Path
 
 import pytest
 
+from ddict import i18n
+
 ROOT = Path(__file__).resolve().parent.parent
 GENERATOR_PATH = ROOT / "scripts" / "generer_bases_fictives.py"
 
@@ -33,6 +35,11 @@ def fictional_files(generator, tmp_path_factory):
 def isolated_config(tmp_path_factory, monkeypatch):
     """The list of recent projects (v0.3) goes to a temporary folder, never the user's."""
     monkeypatch.setenv("DDICT_CONFIG_DIR", str(tmp_path_factory.mktemp("config")))
+    # The interface language (v0.5): French in every test, whatever this computer chose.
+    monkeypatch.delenv("DDICT_LANG", raising=False)
+    i18n.set_language("fr")
+    yield
+    i18n.set_language("fr")
 
 
 FAMILY_GENERATOR_PATH = ROOT / "scripts" / "generer_enquete_familles.py"

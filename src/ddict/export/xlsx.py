@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
 from typing import BinaryIO
 
@@ -11,7 +12,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.worksheet import Worksheet
 
 from ddict.export import wording as w
-from ddict.i18n import _
+from ddict.i18n import N_, TextList, _
 from ddict.project.model import Project, TrackedValue
 
 MAX_WIDTH = 60
@@ -21,9 +22,9 @@ def _cell_value(value: object) -> object:
     return "" if value is None else value
 
 
-def _sheet(book: Workbook, title: str, header: list[str], rows: list[list]) -> Worksheet:
+def _sheet(book: Workbook, title: str, header: Sequence[str], rows: list[list]) -> Worksheet:
     sheet = book.create_sheet(title)
-    sheet.append(header)
+    sheet.append(list(header))
     for row in rows:
         sheet.append([_cell_value(v) for v in row])
     for cell in sheet[1]:
@@ -143,39 +144,41 @@ def _variables(project: Project, kind: w.ExportKind, omitted: set[str]) -> list[
     return rows
 
 
-VARIABLE_HEADER = [
-    _("Position"),
-    _("Nom"),
-    _("Libellé"),
-    _("Description"),
-    _("Question"),
-    _("Texte de la question"),
-    _("Type"),
-    _("Niveau de mesure"),
-    _("Format"),
-    _("Unité"),
-    _("Valides"),
-    _("Cases vides"),
-    _("Manquants déclarés"),
-    _("% manquants"),
-    _("Valeurs distinctes"),
-    _("Min"),
-    _("Max"),
-    _("Moyenne"),
-    _("Écart-type"),
-    _("Médiane"),
-    _("Date min"),
-    _("Date max"),
-    _("Codes manquants déclarés"),
-    _("Confidentialité"),
-    _("Groupe"),
-    _("Corrélation avec le reste du groupe"),
-    _("Étendue théorique (source)"),
-    _("Seuils (source)"),
-    _("Références"),
-    _("Signalements"),
-    _("Notes"),
-]
+VARIABLE_HEADER = TextList(
+    [
+        N_("Position"),
+        N_("Nom"),
+        N_("Libellé"),
+        N_("Description"),
+        N_("Question"),
+        N_("Texte de la question"),
+        N_("Type"),
+        N_("Niveau de mesure"),
+        N_("Format"),
+        N_("Unité"),
+        N_("Valides"),
+        N_("Cases vides"),
+        N_("Manquants déclarés"),
+        N_("% manquants"),
+        N_("Valeurs distinctes"),
+        N_("Min"),
+        N_("Max"),
+        N_("Moyenne"),
+        N_("Écart-type"),
+        N_("Médiane"),
+        N_("Date min"),
+        N_("Date max"),
+        N_("Codes manquants déclarés"),
+        N_("Confidentialité"),
+        N_("Groupe"),
+        N_("Corrélation avec le reste du groupe"),
+        N_("Étendue théorique (source)"),
+        N_("Seuils (source)"),
+        N_("Références"),
+        N_("Signalements"),
+        N_("Notes"),
+    ]
+)
 
 
 def _values(project: Project, kind: w.ExportKind) -> list[list]:
@@ -193,7 +196,7 @@ def _values(project: Project, kind: w.ExportKind) -> list[list]:
                     source if label else "",
                 ]
             )
-        if source == w.LABELS_PROPOSED:  # proposals are not mixed with the counts
+        if source == _(w.LABELS_PROPOSED):  # proposals are not mixed with the counts
             for item in e.value_labels.value or []:
                 rows.append([e.name, w.code_text(item.code), item.label, "", "", source])
     return rows
@@ -229,20 +232,22 @@ def _groups(project: Project, kind: w.ExportKind) -> list[list]:
     return rows
 
 
-GROUP_HEADER = [
-    _("Groupe"),
-    _("Description"),
-    _("Variables"),
-    _("Indices du regroupement"),
-    _("Items inversés probables"),
-    _("Items inversés confirmés"),
-    _("Hypothèse de l'IA"),
-    _("Instrument (source)"),
-    _("Cotation (source)"),
-    _("Lignes complètes"),
-    _("Alpha de Cronbach observé"),
-    _("Alpha, items probables inversés"),
-]
+GROUP_HEADER = TextList(
+    [
+        N_("Groupe"),
+        N_("Description"),
+        N_("Variables"),
+        N_("Indices du regroupement"),
+        N_("Items inversés probables"),
+        N_("Items inversés confirmés"),
+        N_("Hypothèse de l'IA"),
+        N_("Instrument (source)"),
+        N_("Cotation (source)"),
+        N_("Lignes complètes"),
+        N_("Alpha de Cronbach observé"),
+        N_("Alpha, items probables inversés"),
+    ]
+)
 
 
 def _provenance(project: Project, kind: w.ExportKind) -> list[list]:

@@ -15,7 +15,7 @@ import webbrowser
 from datetime import datetime
 from pathlib import Path
 
-from ddict import __version__
+from ddict import __version__, settings
 from ddict.export.documented import CopyError
 from ddict.i18n import _
 from ddict.io import ReadError
@@ -663,6 +663,7 @@ def _model_arguments(command: argparse.ArgumentParser, redo_help: str, block_siz
 
 
 def main(argv: list[str] | None = None) -> int:
+    settings.apply()  # the language of this computer, or DDICT_LANG (v0.5)
     args = build_parser().parse_args(argv)
     try:
         return args.handler(args)

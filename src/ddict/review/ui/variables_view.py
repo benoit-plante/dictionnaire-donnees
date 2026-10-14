@@ -11,21 +11,23 @@ import pandas as pd
 import streamlit as st
 
 from ddict.export import wording as w
-from ddict.i18n import _
+from ddict.i18n import N_, Texts, _
 from ddict.project.model import Project, TrackedValue, VariableEntry
 from ddict.questionnaire import link
 from ddict.questionnaire.labels import ASSUMED_ORDER
 from ddict.review import logic
 from ddict.review.ui import common as c
 
-FILTERS = {
-    "to_review": _("À réviser"),
-    "flagged": _("Avec signalements"),
-    "sensitive": _("Sensibles"),
-    "unlinked": _("Sans question"),
-    "suspects": _("Codes suspects"),
-    "all": _("Toutes"),
-}
+FILTERS = Texts(
+    {
+        "to_review": N_("À réviser"),
+        "flagged": N_("Avec signalements"),
+        "sensitive": N_("Sensibles"),
+        "unlinked": N_("Sans question"),
+        "suspects": N_("Codes suspects"),
+        "all": N_("Toutes"),
+    }
+)
 
 
 MAX_OPTION_TEXT = 110

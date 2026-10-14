@@ -305,6 +305,12 @@ La logique (changer un statut, valider une source) vit dans `project` et se test
 - Les projets restent en mémoire ; seul un rapport Markdown est écrit (`banc-essai-<modèle>-<date>.md`). Les bases fictives et le corrigé sont inclus dans le paquet (`ddict/banc/`).
 - `ddict evaluer --modele … [--dossier …]`, et une section de la page « IA locale ». Testé avec un faux serveur ; le rapport est reproductible à durées fixées.
 
+### 7.3 Langue de l'interface (v0.5, D-032, D-033)
+
+- `ddict.i18n` : `_` traduit au moment de l'affichage, selon la langue en cours (`set_language`) ; les tables de textes (types, statuts, en-têtes du codebook…) gardent leurs phrases marquées par `N_` et les traduisent à la lecture (`Texts`, `TextList`). Un test refuse toute phrase traduite à l'importation d'un module, qui resterait dans sa première langue.
+- `ddict.settings` : la langue de l'interface, choisie sur l'accueil, est gardée sur l'ordinateur (`reglages.json`, à côté des projets récents) ; `DDICT_LANG` la remplace. Elle est relue à chaque affichage d'une page et au lancement d'une commande.
+- Catalogue : `src/ddict/locale/en/LC_MESSAGES/ddict.po`, mis à jour et compilé en `ddict.mo` par `scripts/traductions.py` (Babel, en développement seulement) ; un test vérifie qu'il contient toutes les phrases du code et que le `.mo` correspond au `.po`.
+
 ## 8. Exports
 
 - **Codebook `.xlsx`** : un onglet « Variables » (une ligne par variable), un onglet « Valeurs » (une ligne par code et étiquette), un onglet « Groupes », un onglet « Provenance » (statut et origine de chaque champ, modèles utilisés). En-têtes figés, filtres activés.

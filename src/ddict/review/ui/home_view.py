@@ -11,7 +11,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from ddict import recents
+from ddict import i18n, recents, settings
 from ddict.i18n import _
 from ddict.io import ReadError
 from ddict.project import ProjectError, load_project
@@ -20,6 +20,7 @@ from ddict.review.ui import dialog
 from ddict.workflow import ProjectExists, default_project_path, profile_database
 
 DATABASE = "home-database"
+LANGUAGE = "interface-language"
 PROJECT = "home-project"
 
 
@@ -86,7 +87,29 @@ def _clear_recents() -> None:
     _message("success", _("Liste effacée."), "home-clear")
 
 
+def _change_language() -> None:
+    chosen = st.session_state[LANGUAGE]
+    if chosen is None:  # the chosen language clicked again: nothing changes
+        return
+    settings.save_interface_language(chosen)
+    i18n.set_language(chosen)
+
+
+def _language() -> None:
+    """French or English, for this computer (v0.5, D-032); shown in both languages."""
+    st.session_state[LANGUAGE] = i18n.language()
+    st.segmented_control(
+        "Langue · Language",
+        list(i18n.LANGUAGES),
+        key=LANGUAGE,
+        format_func=i18n.LANGUAGES.__getitem__,
+        on_change=_change_language,
+        label_visibility="collapsed",
+    )
+
+
 def page() -> None:
+    _language()
     st.title(_("Dictionnaire de données"))
     st.caption(
         _(

@@ -17,7 +17,7 @@ import streamlit as st
 from ddict.export import render_markdown, write_xlsx
 from ddict.export.documented import CopyError, default_copy_path, find_database
 from ddict.export.syntax import render_syntax
-from ddict.i18n import _
+from ddict.i18n import N_, Texts, _
 from ddict.project.model import Project
 from ddict.review import logic
 from ddict.review.ui import common as c
@@ -35,11 +35,13 @@ KIND = "export-kind"
 DATABASE = "copy-database"  # the database chosen by hand, when not next to the project
 REPLACE = "copy-replace"
 OMIT = "export-omit"
-KINDS = {
-    "final": _("Finale : seulement ce qui vient du fichier, du calcul ou de vos décisions"),
-    "work": _("De travail : avec les propositions en attente, marquées comme telles"),
-}
-PROGRAMS = {"spss": _("Syntaxe SPSS"), "r": _("Script R")}
+KINDS = Texts(
+    {
+        "final": N_("Finale : seulement ce qui vient du fichier, du calcul ou de vos décisions"),
+        "work": N_("De travail : avec les propositions en attente, marquées comme telles"),
+    }
+)
+PROGRAMS = Texts({"spss": N_("Syntaxe SPSS"), "r": N_("Script R")})
 XLSX_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 
