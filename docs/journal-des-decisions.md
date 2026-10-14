@@ -459,3 +459,16 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   2. Tout traduire.
 - **Justification :** les guides servent aux personnes qui utilisent l'outil ; la documentation technique sert au développement.
 - **Conséquences :** guides anglais dans `docs/en/` à l'étape 7.
+
+### D-037 — Dépôt public
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** D-003, pour la visibilité du dépôt (le nom reste un nom de travail)
+- **Décision :** le dépôt GitHub devient public. « dictionnaire-donnees » reste un nom de travail ; un changement de nom plus tard reste possible (GitHub redirige l'ancienne adresse).
+- **Options considérées :**
+  1. Rendre le dépôt public (ce choix).
+  2. Garder le dépôt privé et payer les minutes macOS de GitHub Actions.
+  3. Garder le dépôt privé et vérifier macOS seulement sur un vrai Mac.
+- **Justification :** GitHub Actions est gratuit pour un dépôt public, macOS compris, ce qui permet les essais macOS de D-035 ; l'outil est un logiciel libre destiné à être partagé. Avant le changement, l'historique (68 versions) a été vérifié : aucune donnée réelle, aucune base publique d'essai, aucun mot de passe ni clé, seulement des adresses fictives ; un seul chemin personnel (`C:\Users\…`) dans une ancienne version du scénario manuel, sans conséquence. Le nom et l'adresse de l'auteur figurent dans l'historique.
+- **Conséquences :** `CLAUDE.md` mis à jour ; les essais macOS de D-035 tournent sans frais ; tout ce qui entre dans le dépôt est public dès l'envoi.
