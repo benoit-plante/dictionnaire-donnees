@@ -10,7 +10,7 @@ from openpyxl import load_workbook
 
 from ddict.cli import main
 from ddict.export import render_markdown, write_xlsx
-from ddict.io import read_sav
+from ddict.io import read_csv, read_sav
 from ddict.project import build_project, correct, load_project, save_project
 from ddict.project.model import TrackedValue
 
@@ -213,3 +213,11 @@ def test_saved_project_with_ai_round_trips(with_ai, tmp_path):
     path = tmp_path / "p.dd.json"
     save_project(with_ai, path)
     assert load_project(path) == with_ai
+
+
+def test_missing_tokens_are_reported(tmp_path):
+    """D-010: the codebook says which cells were read as empty."""
+    path = tmp_path / "r.csv"
+    path.write_text("score,groupe\n" + "2,a\nNA,b\n" * 6, encoding="utf-8")
+    report = render_markdown(build_project(read_csv(path)), kind="final")
+    assert "Codes manquants déclarés : « NA » lu comme vide (6)" in report

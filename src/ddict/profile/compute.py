@@ -31,6 +31,8 @@ _SPSS_DATETIME_FORMATS = ("DATETIME", "YMDHMS", "MTIME", "DTIME")
 _SPSS_DATE_FORMATS = ("DATE", "ADATE", "EDATE", "SDATE", "JDATE", "MOYR", "QYR", "WKYR")
 _ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
 _ISO_DATETIME = re.compile(r"\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}(:\d{2}(\.\d+)?)?")
+# 31/12/2024 (Quebec and France) or 12/31/2024 (United States): see _slash_format.
+_SLASH_DATE = re.compile(r"(\d{1,2})/(\d{1,2})/(\d{4})")
 _NUMBER = re.compile(r"[+-]?(\d+([.,]\d*)?|[.,]\d+)([eE][+-]?\d+)?")
 
 
@@ -80,7 +82,7 @@ def _infer_type(values: pd.Series, variable: VariableMetadata) -> InferredType:
     if all(isinstance(v, dt.date) for v in items):
         return "date"
     texts = [str(v).strip() for v in items]
-    if all(_ISO_DATE.fullmatch(t) for t in texts):
+    if all(_ISO_DATE.fullmatch(t) for t in texts) or _slash_format(texts):
         return "date"
     if all(_ISO_DATETIME.fullmatch(t) for t in texts):
         return "datetime"
@@ -90,8 +92,29 @@ def _infer_type(values: pd.Series, variable: VariableMetadata) -> InferredType:
     return "text"
 
 
+def _slash_format(texts: list[str]) -> str | None:
+    """The format of dates written with slashes, or None if they are not all such dates.
+
+    Day first, as in Quebec and France, unless a first number above 12 is never seen and a
+    second one is (12/31/2024). Dates that fit neither order are not dates.
+    """
+    parts = [_SLASH_DATE.fullmatch(t) for t in texts]
+    if not parts or not all(parts):
+        return None
+    for fmt in ("%d/%m/%Y", "%m/%d/%Y"):
+        try:
+            for text in texts:
+                dt.datetime.strptime(text, fmt)
+        except ValueError:
+            continue
+        return fmt
+    return None
+
+
 def _as_timestamps(values: pd.Series) -> pd.Series:
-    return pd.to_datetime(values.map(lambda v: str(v).strip() if isinstance(v, str) else v))
+    texts = values.map(lambda v: str(v).strip() if isinstance(v, str) else v)
+    fmt = _slash_format([t for t in texts if isinstance(t, str)])
+    return pd.to_datetime(texts, format=fmt) if fmt else pd.to_datetime(texts)
 
 
 def _number(value: float) -> float:
@@ -201,7 +224,8 @@ def profile_variable(series: pd.Series, variable: VariableMetadata) -> VariableP
     if valid.empty:
         flags.append("all_missing")
     elif n_distinct == 1:
-        flags.append("constant")
+        # One value and empty cells: usually a box ticked (1) or left empty, not a constant.
+        flags.append("checkbox" if system.any() else "constant")
     if inferred == "mixed":
         flags.append("mixed_types")
 

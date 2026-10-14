@@ -17,7 +17,7 @@ InferredType = Literal[
     "text",
     "mixed",
 ]
-Flag = Literal["all_missing", "constant", "mixed_types", "duplicate"]
+Flag = Literal["all_missing", "constant", "checkbox", "mixed_types", "duplicate"]
 
 
 @dataclass(frozen=True)

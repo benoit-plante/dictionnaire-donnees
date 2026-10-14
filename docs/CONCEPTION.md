@@ -117,6 +117,7 @@ Statuts affichés : `proposed` = « proposé par IA », `validated` = « validé
 | `file_label` | Étiquette de variable présente dans le fichier | fichier (.sav) |
 | `value_labels` | Étiquettes de valeurs présentes dans le fichier | fichier (.sav) |
 | `declared_missing` | Valeurs ou plages manquantes déclarées par l'utilisateur dans SPSS | fichier (.sav) |
+| `missing_tokens` | Jetons de valeur manquante d'un CSV (`NA`, `#N/A`…) lus comme vides, avec leur nombre (D-010) | fichier (.csv) |
 | `inferred_type` | Type déduit : entier, décimal, booléen, catégoriel, date, date-heure, texte court, texte libre | calcul |
 | `n_rows`, `n_valid`, `n_system_missing`, `n_declared_missing`, `pct_missing` | Décomptes | calcul |
 | `n_distinct` | Cardinalité | calcul |

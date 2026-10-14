@@ -12,6 +12,7 @@ from ddict.project.model import (
     FileMetadata,
     Group,
     MissingRange,
+    MissingToken,
     ObservedCount,
     Privacy,
     Profile,
@@ -77,6 +78,7 @@ def _entry(safe: SafeVariable, storage_type: str, storage_width: int | None) -> 
             label=safe.label,
             value_labels=[ValueLabel(code=c, label=t) for c, t in safe.value_labels.items()],
             declared_missing=[MissingRange(low=m.low, high=m.high) for m in safe.declared_missing],
+            missing_tokens=[MissingToken(token=t, count=n) for t, n in safe.missing_tokens.items()],
         ),
         profile=_profile(safe),
         privacy=Privacy(

@@ -1,6 +1,6 @@
 # dictionnaire-donnees
 
-> Nom de travail. Version 0.1.1 : première version utilisable, à essayer d'abord sur la base fictive fournie.
+> Nom de travail. Version 0.1.2 : première version utilisable, à essayer d'abord sur la base fictive fournie.
 
 Outil libre et local qui aide les équipes de recherche à produire le **dictionnaire de données** (codebook) d'une base existante (`.sav` de SPSS ou `.csv`).
 

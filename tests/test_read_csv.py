@@ -120,3 +120,21 @@ def test_malformed_files_raise_read_error(tmp_path, content, message):
 def test_unsupported_extension(tmp_path):
     with pytest.raises(ReadError, match="Unsupported"):
         read_database(_write(tmp_path, "a,b\n", name="base.txt"))
+
+
+# --- D-010: missing-value tokens of R, pandas, Excel and SQL exports. ---
+
+
+def test_missing_tokens_are_read_as_empty_and_counted(tmp_path):
+    data = read_csv(_write(tmp_path, "score,pays,note\n2,Canada,NA\nNA,NA,x\n5,#N/A,y\n"))
+    assert data.table["score"].dtype == "float64"
+    assert data.table["score"].isna().tolist() == [False, True, False]
+    assert data.table["pays"].tolist() == ["Canada", "", ""]
+    assert data.variable("score").missing_tokens == {"NA": 1}
+    assert data.variable("pays").missing_tokens == {"NA": 1, "#N/A": 1}
+    assert data.variable("note").missing_tokens == {"NA": 1}
+
+
+def test_only_whole_tokens_are_missing(tmp_path):
+    data = read_csv(_write(tmp_path, "langue,n\nNAhuatl,1\nna,2\nNA ,3\n"))
+    assert data.table["langue"].tolist() == ["NAhuatl", "na", ""]  # spaces around are ignored

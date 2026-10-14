@@ -84,7 +84,7 @@ def _variable(entry: VariableEntry, kind: w.ExportKind) -> list[str]:
             pct=w.number(w.pct_missing(p)),
         )
     )
-    if entry.file.declared_missing:
+    if w.missing_codes(entry):
         facts.append(f"{_('Codes manquants déclarés')} : {w.missing_codes(entry)}")
     if p.min is not None:
         stats = f"{_('Min')} {w.number(p.min)} ; {_('max')} {w.number(p.max)}"

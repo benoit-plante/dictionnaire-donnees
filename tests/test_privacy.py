@@ -191,3 +191,32 @@ def test_birth_date_by_range_only():
     meta = VariableMetadata(name="d1", position=1, storage_type="string")
     profile = profile_variable(dates, meta)
     assert classify_variable(meta, profile, dates).reasons == ("wide_date_range",)
+
+
+def test_names_that_only_look_sensitive():
+    """Found on a public survey: words inside other words, checkboxes, long categories."""
+    long_categories = ["Avec les deux parents"] * 40 + ["En garde partagée la semaine"] * 8
+    classes = _classes(
+        {
+            "motif_reconnaissance": [1.0, float("nan")] * 24,  # "naissance" inside a word
+            "motif_identification": [1.0, float("nan")] * 24,  # a checkbox
+            "modalite_garde": long_categories,
+        }
+    )
+    assert {c.privacy_class for c in classes.values()} == {"ordinary"}
+
+
+def test_sensitive_variables_stay_sensitive():
+    n = 12
+    classes = _classes(
+        {
+            "id": [float(i // 3) for i in range(n)],  # long format: 4 people, 3 rows each
+            "pays_naissance": ["Canada", "France", "Chine"] * 4,
+            "date_naissance_parent": ["1980-01-01", "1985-06-01", "1990-03-03"] * 4,
+            "precisions": [f"Réponse ouverte numéro {i} avec des mots" for i in range(n)],
+        }
+    )
+    assert classes["id"].reasons == ("identifier_name",)
+    assert classes["pays_naissance"].reasons == ("birth_place_name",)
+    assert classes["date_naissance_parent"].reasons[0] == "birth_date_name"
+    assert classes["precisions"].privacy_class == "free_text"

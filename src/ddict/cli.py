@@ -16,6 +16,7 @@ from pathlib import Path
 
 from ddict import __version__
 from ddict.export import write_markdown, write_xlsx
+from ddict.export.wording import anomalies
 from ddict.i18n import _
 from ddict.io import ReadError, read_database
 from ddict.llm import DEFAULT_BLOCK_SIZE, PROMPT_VERSION, build_blocks
@@ -59,14 +60,8 @@ def cmd_profile(args: argparse.Namespace) -> int:
     sensitive = sum(
         1 for e in project.variables if (e.privacy.privacy_class.value or "ordinary") != "ordinary"
     )
-    flagged = sum(
-        1
-        for e in project.variables
-        if e.profile.unlabeled_codes
-        or e.profile.suspect_missing_codes
-        or e.profile.unused_labels
-        or e.profile.flags
-    )
+    # The same count as the "Avec signalements" filter of the review (notes excluded).
+    flagged = sum(1 for e in project.variables if anomalies(e.profile))
     print(_("Projet créé : {path}").format(path=output))
     print(
         _(

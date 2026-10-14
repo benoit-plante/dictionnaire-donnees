@@ -42,6 +42,7 @@ REASONS = {
     "free_text_name": _("nom de texte libre"),
     "long_text_values": _("textes longs"),
     "birth_date_name": _("nom de date de naissance"),
+    "birth_place_name": _("nom de lieu de naissance"),
     "postal_code_name": _("nom de code postal"),
     "postal_code_values": _("valeurs au format code postal"),
     "wide_date_range": _("dates étalées sur de nombreuses années"),
@@ -142,9 +143,22 @@ def anomalies(profile: Profile) -> list[str]:
     return found
 
 
+def notes(profile: Profile) -> list[str]:
+    """Deterministic findings that describe the variable without being anomalies."""
+    if "checkbox" in profile.flags:
+        return [
+            _(
+                "Case à cocher probable : une seule valeur observée, les cases vides "
+                "veulent sans doute dire « non coché »"
+            )
+        ]
+    return []
+
+
 def issues(entry: VariableEntry, kind: ExportKind) -> list[str]:
-    """Anomalies computed, then accepted (or, in a work export, pending) AI findings."""
-    found = anomalies(entry.profile)
+    """Anomalies and notes computed, then accepted (or, in a work export, pending) AI
+    findings."""
+    found = anomalies(entry.profile) + notes(entry.profile)
     found.extend(t for t in (text(issue, kind) for issue in entry.issues) if t)
     return found
 
@@ -167,6 +181,8 @@ def missing_codes(entry: VariableEntry) -> str:
             parts.append(code_text(item.low))
         else:
             parts.append(f"{code_text(item.low)} – {code_text(item.high)}")
+    for item in entry.file.missing_tokens:
+        parts.append(_("« {token} » lu comme vide ({n})").format(token=item.token, n=item.count))
     return ", ".join(parts)
 
 

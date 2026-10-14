@@ -48,6 +48,7 @@ class SafeVariable:
     label: str | None
     value_labels: dict[Code, str]
     declared_missing: tuple[MissingRange, ...]
+    missing_tokens: dict[str, int]  # exact counts, like every missing count (D-007)
     measure_level: str | None
     display_format: str | None
     inferred_type: InferredType
@@ -127,6 +128,7 @@ def safe_variable(
         label=variable.label,
         value_labels=dict(variable.value_labels),
         declared_missing=variable.declared_missing,
+        missing_tokens=variable.missing_tokens,
         measure_level=variable.measure_level,
         display_format=variable.display_format,
         inferred_type=profile.inferred_type,

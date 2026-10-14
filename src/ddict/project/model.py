@@ -87,6 +87,13 @@ class MissingRange(Strict):
     high: Code
 
 
+class MissingToken(Strict):
+    """A missing-value token of a CSV file ("NA", ...) and the cells holding it (D-010)."""
+
+    token: str
+    count: int
+
+
 class FileMetadata(Strict):
     """What the data file says about the variable (origin: file)."""
 
@@ -97,6 +104,7 @@ class FileMetadata(Strict):
     label: str | None = None
     value_labels: list[ValueLabel] = []
     declared_missing: list[MissingRange] = []
+    missing_tokens: list[MissingToken] = []
 
 
 class ObservedCount(Strict):

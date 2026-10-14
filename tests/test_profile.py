@@ -194,3 +194,25 @@ def test_codes_with_leading_zeros_are_text():
     profile = profile_variable(series, _meta(storage_type="string"))
     assert profile.inferred_type == "text"
     assert profile.n_system_missing == 1
+
+
+@pytest.mark.parametrize(
+    ("values", "expected"),
+    [
+        (["13/08/2021", "01/04/2016", ""], ("date", "2016-04-01", "2021-08-13")),  # day first
+        (["08/13/2021", "04/01/2016"], ("date", "2016-04-01", "2021-08-13")),  # month first
+        (["01/04/2016", "03/02/2018"], ("date", "2016-04-01", "2018-02-03")),  # ambiguous
+        (["13/08/2021", "08/13/2021"], ("text", None, None)),  # both orders: not dates
+    ],
+)
+def test_dates_written_with_slashes(values, expected):
+    meta = VariableMetadata(name="date_union", position=1, storage_type="string")
+    profile = profile_variable(pd.Series(values, dtype=object), meta)
+    assert (profile.inferred_type, profile.date_min, profile.date_max) == expected
+
+
+def test_a_single_value_with_blanks_is_a_probable_checkbox():
+    meta = VariableMetadata(name="motif_repit", position=1, storage_type="numeric")
+    ticked = profile_variable(pd.Series([1.0, np.nan, 1.0, np.nan]), meta)
+    constant = profile_variable(pd.Series([1.0, 1.0, 1.0]), meta)
+    assert (ticked.flags, constant.flags) == (("checkbox",), ("constant",))

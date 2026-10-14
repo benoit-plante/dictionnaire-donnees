@@ -27,7 +27,8 @@
         "measure_level": "nominal",
         "label": "Identifiant participant",
         "value_labels": [],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "text",
@@ -118,7 +119,8 @@
         "measure_level": "nominal",
         "label": "Courriel",
         "value_labels": [],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "text",
@@ -210,7 +212,8 @@
         "measure_level": "scale",
         "label": "Date passation",
         "value_labels": [],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "datetime",
@@ -299,7 +302,8 @@
         "measure_level": "scale",
         "label": "DDN",
         "value_labels": [],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "date",
@@ -391,7 +395,8 @@
         "measure_level": "scale",
         "label": "Age",
         "value_labels": [],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -504,7 +509,8 @@
             "low": 9,
             "high": 9
           }
-        ]
+        ],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -619,7 +625,8 @@
             "label": "Vague 1"
           }
         ],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -737,7 +744,8 @@
             "label": "Extrêmement"
           }
         ],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -873,7 +881,8 @@
             "label": "Extrêmement"
           }
         ],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -1009,7 +1018,8 @@
             "label": "Extrêmement"
           }
         ],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -1154,7 +1164,8 @@
             "label": "Extrêmement"
           }
         ],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -1290,7 +1301,8 @@
             "label": "Extrêmement"
           }
         ],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -1426,7 +1438,8 @@
             "label": "Extrêmement"
           }
         ],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -1562,7 +1575,8 @@
             "label": "Extrêmement"
           }
         ],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -1698,7 +1712,8 @@
             "label": "Extrêmement"
           }
         ],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -1839,7 +1854,8 @@
             "low": -9,
             "high": -9
           }
-        ]
+        ],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -1980,7 +1996,8 @@
             "low": -9,
             "high": -9
           }
-        ]
+        ],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -2121,7 +2138,8 @@
             "low": -9,
             "high": -9
           }
-        ]
+        ],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -2262,7 +2280,8 @@
             "low": -9,
             "high": -9
           }
-        ]
+        ],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -2377,7 +2396,8 @@
         "measure_level": "scale",
         "label": "Nb heures sommeil (moy)",
         "value_labels": [],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "decimal",
@@ -2466,7 +2486,8 @@
         "measure_level": "scale",
         "label": "Nb heures sommeil (moy)",
         "value_labels": [],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "decimal",
@@ -2557,7 +2578,8 @@
         "measure_level": "scale",
         "label": "Nb reveils / nuit",
         "value_labels": [],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -2710,7 +2732,8 @@
             "low": -9,
             "high": -9
           }
-        ]
+        ],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -2851,7 +2874,8 @@
             "low": -9,
             "high": -9
           }
-        ]
+        ],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -2992,7 +3016,8 @@
             "low": -9,
             "high": -9
           }
-        ]
+        ],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -3120,7 +3145,8 @@
             "label": "Ne sait pas"
           }
         ],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "integer",
@@ -3267,7 +3293,8 @@
         "measure_level": "nominal",
         "label": "Taille (cm)",
         "value_labels": [],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "mixed",
@@ -3358,7 +3385,8 @@
         "measure_level": "scale",
         "label": "Question retiree v2",
         "value_labels": [],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "empty",
@@ -3449,7 +3477,8 @@
         "measure_level": "nominal",
         "label": "Commentaires",
         "value_labels": [],
-        "declared_missing": []
+        "declared_missing": [],
+        "missing_tokens": []
       },
       "profile": {
         "inferred_type": "text",

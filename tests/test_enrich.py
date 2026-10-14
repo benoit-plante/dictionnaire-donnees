@@ -216,3 +216,11 @@ def test_label_guessed_without_a_file_label_is_flagged(project):
     assert project.variable("sommeil_q7").file.label is None
     assert project.variable("sommeil_q7").ai_signals == ["label:no_file_label"]
     assert project.variable("sommeil_q8").ai_signals == []
+
+
+def test_labels_are_not_flagged_when_the_file_has_none(project):
+    """In a CSV every label is a guess: flagging them all would flag nothing."""
+    for entry in project.variables:
+        entry.file.label = None
+    _run(project, Server())
+    assert all("label:no_file_label" not in e.ai_signals for e in project.variables)

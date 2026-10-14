@@ -276,9 +276,21 @@ def test_parse_accepts_exactly_the_block(block):
         ("Un score ≥ 14 indique une dépression", ("threshold",)),
         ("Seuil clinique de 10", ("threshold",)),
         ("Item du PHQ-9", ("instrument",)),
+        ("Score EQ-5D", ("instrument",)),
         ("Item de l'Inventaire de Beck", ("instrument",)),
         ("Taille en cm ; NSP accepté", ()),
     ],
 )
 def test_invention_signals(text, signals):
     assert invention_signals(text) == signals
+
+
+def test_a_neighbor_answered_with_the_block_is_dropped(block):
+    """The last variable of a block has a neighbor in the next block; the model may answer it."""
+    content = json.loads(block.messages[1]["content"])
+    outside = content["variables"][-1]["neighbors"][-1]
+    assert outside not in block.names
+    answer = _good_answer({"messages": block.messages})
+    answer["variables"].append({"name": outside, "label": "Voisine", "description": ""})
+    proposals = parse_block_response(json.dumps(answer), block)
+    assert tuple(p.name for p in proposals) == block.names

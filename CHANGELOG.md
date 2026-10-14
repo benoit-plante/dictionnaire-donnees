@@ -1,5 +1,16 @@
 # Changements
 
+## 0.1.2 — 2026-10-13
+
+Corrections après un essai sur une base publique réelle (152 variables, exportée par R).
+
+- Les valeurs `NA`, `N/A`, `NaN`, `#N/A` et `NULL` des CSV sont lues comme des cases vides, et le codebook indique combien (D-010). Sur la base d'essai, 129 variables sont maintenant reconnues comme numériques au lieu de 4.
+- Les dates écrites `jj/mm/aaaa` (ou `mm/jj/aaaa` quand les valeurs l'imposent) sont reconnues.
+- Une variable qui n'a qu'une valeur et des cases vides est présentée comme une case à cocher probable, plutôt que comme une variable constante.
+- Confidentialité, moins de fausses alertes : « reconnaissance » n'est plus pris pour une date de naissance ; une case à cocher nommée « identification » n'est plus un identifiant ; des réponses longues réparties en quelques catégories fréquentes ne sont plus du texte libre ; le pays de naissance a sa propre raison (« nom de lieu de naissance »).
+- IA : un bloc n'est plus rejeté quand le modèle répond aussi pour une variable voisine qu'on lui avait montrée ; un nom comme « EQ-5D » est signalé comme nom d'instrument ; l'encadré « libellé deviné » n'apparaît plus quand le fichier n'a aucune étiquette (CSV), où il signalait toutes les variables.
+- Le décompte « avec signalements » affiché par `ddict profiler` est le même que celui du filtre de l'interface.
+
 ## 0.1.1 — 2026-10-13
 
 Corrections du guide d'installation, après un premier essai en conditions réelles.

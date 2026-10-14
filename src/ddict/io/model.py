@@ -39,6 +39,8 @@ class VariableMetadata:
     label: str | None = None
     value_labels: dict[Code, str] = field(default_factory=dict)
     declared_missing: tuple[MissingRange, ...] = ()
+    # CSV only: cells written as a missing-value token ("NA", ...), read as empty (D-010).
+    missing_tokens: dict[str, int] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

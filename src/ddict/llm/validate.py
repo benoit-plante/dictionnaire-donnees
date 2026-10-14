@@ -19,8 +19,26 @@ class InvalidResponse(ValueError):
         self.code = code
 
 
+def _neighbors(block: Block) -> set[str]:
+    """Names given to the model as neighbors only: they may lie outside the block."""
+    names: set[str] = set()
+    for message in block.messages:
+        try:
+            content = json.loads(message["content"])
+        except (json.JSONDecodeError, TypeError):
+            continue
+        if isinstance(content, dict):
+            for variable in content.get("variables", []):
+                names.update(variable.get("neighbors", []))
+    return names - set(block.names)
+
+
 def parse_block_response(content: str, block: Block) -> tuple[VariableProposal, ...]:
-    """Valid JSON, exactly the schema, the same block and exactly the variables sent."""
+    """Valid JSON, exactly the schema, the same block and exactly the variables sent.
+
+    A neighbor answered as if it were in the block is dropped, not held against the block:
+    it is a name the model was shown, not one it invented.
+    """
     if not content.strip():
         raise InvalidResponse("empty_response", "Empty answer")
     try:
@@ -33,7 +51,9 @@ def parse_block_response(content: str, block: Block) -> tuple[VariableProposal, 
         raise InvalidResponse("schema", f"Does not match the schema: {error}") from error
     if response.block != block.block_id:
         raise InvalidResponse("block_mismatch", f"Answer for {response.block!r}")
-    names = tuple(v.name for v in response.variables)
+    neighbors = _neighbors(block)
+    variables = tuple(v for v in response.variables if v.name not in neighbors)
+    names = tuple(v.name for v in variables)
     if names != block.names:
         missing = sorted(set(block.names) - set(names))
         invented = sorted(set(names) - set(block.names))
@@ -41,7 +61,7 @@ def parse_block_response(content: str, block: Block) -> tuple[VariableProposal, 
             "names_mismatch",
             f"Variables differ: missing {missing}, invented {invented}, or order changed",
         )
-    return tuple(response.variables)
+    return variables
 
 
 # Text that looks like what the model must never invent (principle 4). It is not refused:
@@ -52,7 +72,7 @@ _THRESHOLD = re.compile(
 )
 _INSTRUMENT = re.compile(
     r"\b(?i:inventaire|questionnaire|échelle|inventory|scale)\s+(?:de\s+|d')?[A-ZÉ]"
-    r"|\b[A-Z]{2,}-(?:\d+|[IVX]+)\b"  # PHQ-9, GAD-7, BDI-II
+    r"|\b[A-Z]{2,}-(?:\d+[A-Z]?|[IVX]+)\b"  # PHQ-9, GAD-7, BDI-II, EQ-5D
 )
 
 

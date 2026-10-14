@@ -4,6 +4,9 @@ The usual sources are Excel in French (Windows-1252 or UTF-8 with a byte order m
 delimiter, decimal comma), survey platforms and statistics software (UTF-8, ","). A column
 becomes numeric only when every non-empty value is a number; anything else stays text and
 profiling decides what it is (dates, mixed types, ...).
+
+Cells holding a usual missing-value token ("NA" from R, "#N/A" from Excel, ...) are read
+as empty, and counted per column so that the codebook says so (D-010).
 """
 
 from __future__ import annotations
@@ -29,6 +32,8 @@ _NUMBER = {
     ",": re.compile(r"[+-]?(\d+(,\d*)?|,\d+)([eE][+-]?\d+)?"),
 }
 _LEADING_ZERO = re.compile(r"[+-]?0\d")
+# Written by R ("NA"), pandas ("NaN"), Excel ("#N/A") and SQL exports ("NULL"); exact match.
+MISSING_TOKENS = ("NA", "N/A", "NaN", "#N/A", "NULL")
 
 
 def decode(raw: bytes, encoding: str | None = None) -> tuple[str, str]:
@@ -89,6 +94,20 @@ def detect_decimal(columns: list[list[str]], delimiter: str) -> str:
     return "," if comma > dot else "."
 
 
+def _blank_tokens(values: list[str]) -> tuple[list[str], dict[str, int]]:
+    """Replace missing-value tokens with empty cells; count them by token."""
+    counts: dict[str, int] = {}
+    kept = []
+    for value in values:
+        token = value.strip()
+        if token in MISSING_TOKENS:
+            counts[token] = counts.get(token, 0) + 1
+            kept.append("")
+        else:
+            kept.append(value)
+    return kept, {token: counts[token] for token in MISSING_TOKENS if token in counts}
+
+
 def _to_column(values: list[str], decimal: str) -> pd.Series:
     """Numeric if every non-empty value is a number without a meaningful leading zero.
 
@@ -142,7 +161,8 @@ def read_csv(
     if duplicates:
         raise ReadError(f"{path.name}: duplicate column names: {', '.join(duplicates)}")
 
-    columns = [[record[i] for record in records] for i in range(len(names))]
+    blanked = [_blank_tokens([record[i] for record in records]) for i in range(len(names))]
+    columns = [values for values, _counts in blanked]
     decimal = decimal or detect_decimal(columns, delimiter)
     table = pd.DataFrame(
         {name: _to_column(values, decimal) for name, values in zip(names, columns, strict=True)}
@@ -153,8 +173,9 @@ def read_csv(
             name=name,
             position=position,
             storage_type="numeric" if table[name].dtype == "float64" else "string",
+            missing_tokens=counts,
         )
-        for position, name in enumerate(names, start=1)
+        for position, (name, (_values, counts)) in enumerate(zip(names, blanked, strict=True), 1)
     )
     source = SourceFile(
         name=path.name,

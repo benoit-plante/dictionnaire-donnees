@@ -207,7 +207,7 @@ def _file_and_computed(entry: VariableEntry) -> None:
             st.write(f"{_('Niveau de mesure')} : {w.MEASURES[entry.file.measure_level]}")
         if entry.file.display_format:
             st.write(f"{_('Format')} : {entry.file.display_format}")
-        if entry.file.declared_missing:
+        if w.missing_codes(entry):
             st.write(f"{_('Codes manquants déclarés')} : {w.missing_codes(entry)}")
     with right:
         st.subheader(_("Calculé"))
@@ -243,6 +243,8 @@ def _file_and_computed(entry: VariableEntry) -> None:
         st.dataframe(table, hide_index=True)
     for text in w.anomalies(p):
         st.warning(text)
+    for text in w.notes(p):
+        st.info(text)
 
 
 def _privacy(entry: VariableEntry) -> None:

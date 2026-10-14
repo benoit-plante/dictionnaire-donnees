@@ -32,8 +32,8 @@ Une ligne comme `uv 0.9.…` doit s'afficher.
 
 ## 3. Installer l'outil
 
-1. Téléchargez l'archive de l'outil (fichier `.zip`, par exemple `dictionnaire-donnees-0.1.1.zip`) depuis la page des versions du projet sur GitHub, puis décompressez-la : clic droit sur le fichier, **Extraire tout**, puis **Extraire**.
-2. Trouvez **le dossier de l'outil** : c'est celui qui contient le fichier `pyproject.toml` et les dossiers `docs` et `exemples`. Windows le place souvent à l'intérieur d'un autre dossier du même nom, par exemple `Téléchargements\dictionnaire-donnees-0.1.1\dictionnaire-donnees-0.1.1`. Si le dossier extrait ne contient qu'un seul dossier, ouvrez-le : c'est celui-là.
+1. Téléchargez l'archive de l'outil (fichier `.zip`, par exemple `dictionnaire-donnees-0.1.2.zip`) depuis la page des versions du projet sur GitHub, puis décompressez-la : clic droit sur le fichier, **Extraire tout**, puis **Extraire**.
+2. Trouvez **le dossier de l'outil** : c'est celui qui contient le fichier `pyproject.toml` et les dossiers `docs` et `exemples`. Windows le place souvent à l'intérieur d'un autre dossier du même nom, par exemple `Téléchargements\dictionnaire-donnees-0.1.2\dictionnaire-donnees-0.1.2`. Si le dossier extrait ne contient qu'un seul dossier, ouvrez-le : c'est celui-là.
 3. Dans PowerShell, placez-vous dans le dossier de l'outil : tapez `cd "`, glissez le dossier depuis l'Explorateur dans la fenêtre PowerShell (son chemin s'écrit tout seul), tapez `"` puis Entrée. Vérifiez ensuite que vous êtes au bon endroit :
 
    ```
@@ -55,7 +55,7 @@ Une ligne comme `uv 0.9.…` doit s'afficher.
    ddict --version
    ```
 
-   La réponse doit être `ddict` suivi du numéro de la version téléchargée, par exemple `ddict 0.1.1`.
+   La réponse doit être `ddict` suivi du numéro de la version téléchargée, par exemple `ddict 0.1.2`.
 
 ## 4. Premier codebook, à partir de la base fictive
 
