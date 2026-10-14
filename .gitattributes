@@ -6,3 +6,6 @@ exemples/**/*.csv binary
 *.pdf binary
 *.dta binary
 *.sas7bdat binary
+# Windows scripts keep their exact bytes: CRLF, and a UTF-8 signature for PowerShell 5.1.
+*.bat -text
+*.ps1 -text

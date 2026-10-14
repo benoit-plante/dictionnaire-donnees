@@ -319,6 +319,14 @@ def review_command(project_path: Path | None, port: int) -> tuple[list[str], dic
     return command, env
 
 
+def _port_open(host: str, port: int) -> bool:
+    try:
+        with socket.create_connection((host, port), timeout=1):
+            return True
+    except OSError:
+        return False
+
+
 def _wait_for_port(host: str, port: int, process: subprocess.Popen, timeout: float = 60) -> bool:
     """Wait until the local interface accepts connections (or the process ends)."""
     deadline = time.monotonic() + timeout
@@ -349,6 +357,20 @@ def _launch(project_path: Path | None, port: int) -> int:
                 "L'interface de révision n'est pas installée. Installez-la avec : "
                 'uv tool install --reinstall ".[ia,revision]" (voir docs/installation-windows.md).'
             ),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
+    if _port_open(REVIEW_HOST, port):
+        if project_path is None:
+            # Started again from the icon while it runs: show the open interface.
+            print(_("L'outil est déjà ouvert : affichage dans le navigateur."))
+            webbrowser.open(f"http://{REVIEW_HOST}:{port}")
+            return 0
+        print(
+            _(
+                "Le port {port} est déjà utilisé, peut-être par une autre révision ouverte. "
+                "Fermez-la, ou ajoutez --port 8502."
+            ).format(port=port),
             file=sys.stderr,
         )
         return EXIT_ERROR
