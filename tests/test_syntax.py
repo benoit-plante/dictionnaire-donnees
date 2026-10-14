@@ -37,7 +37,7 @@ def _pspp() -> str | None:
     if found:
         return found
     candidates = sorted(
-        Path(os.environ.get("PROGRAMFILES", "C:/Program Files")).glob("PSPP/bin/pspp.exe")
+        Path(os.environ.get("PROGRAMFILES", "C:/Program Files")).glob("PSPP*/bin/pspp.exe")
     )
     return str(candidates[-1]) if candidates else None
 
@@ -171,6 +171,7 @@ def test_spss_syntax_runs_in_pspp(project, fictional_files, tmp_path):
     data, _meta = pyreadstat.read_sav(str(fictional_files["etude-sommeil.sav"]), user_missing=True)
     bare = tmp_path / "bare.sav"
     pyreadstat.write_sav(data, str(bare))  # the same data, without the metadata
+    logic.decide_sentinel(project, "age", 999, True, now=TODAY)
     write_syntax(project, {"spss": tmp_path / "m.sps"}, TODAY)
     out = tmp_path / "out.sav"
     job = tmp_path / "job.sps"
@@ -180,8 +181,17 @@ def test_spss_syntax_runs_in_pspp(project, fictional_files, tmp_path):
         encoding="utf-8",
     )
     done = subprocess.run([_pspp(), str(job)], capture_output=True, text=True, errors="replace")
-    assert done.returncode == 0 and "error" not in done.stdout.lower(), done.stdout + done.stderr
-    _same_metadata(fictional_files["etude-sommeil.sav"], out)
+    said = (done.stdout + done.stderr).lower()
+    assert done.returncode == 0 and "error" not in said and "warning" not in said, said
+    _, a = pyreadstat.read_sav(
+        str(fictional_files["etude-sommeil.sav"]), user_missing=True, metadataonly=True
+    )
+    _, b = pyreadstat.read_sav(str(out), user_missing=True, metadataonly=True)
+    assert b.column_names_to_labels == a.column_names_to_labels
+    assert b.variable_value_labels == a.variable_value_labels
+    assert b.variable_measure == a.variable_measure
+    # The file's missing codes, and the one the team confirmed.
+    assert b.missing_ranges == {**a.missing_ranges, "age": [{"lo": 999.0, "hi": 999.0}]}
 
 
 @pytest.fixture
