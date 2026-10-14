@@ -31,4 +31,4 @@ L'auteur n'est pas développeur de métier : expliquer les choix techniques simp
 - Écrire les tests en même temps que le code ; une étape est terminée quand son critère de réussite passe.
 - Une décision structurante (dépendance, changement de format, écart avec la conception) est proposée à l'auteur et, une fois acceptée, consignée dans `docs/journal-des-decisions.md` selon le gabarit, sans modifier les entrées existantes.
 - Ajouter les fichiers à Git par leur nom (pas de `git add -A`).
-- Ne pas pousser vers GitHub ni publier quoi que ce soit sans demande explicite. Le dépôt reste privé jusqu'à la v0.1 (D-003).
+- Pousser automatiquement vers le dépôt GitHub privé (branche `main`) après chaque commit, une fois les tests et ruff passés : l'auteur l'a autorisé. Les étiquettes de version, les publications de version et tout changement de visibilité du dépôt restent soumis à une demande explicite. Le dépôt reste privé tant que l'auteur n'a pas décidé de le rendre public (D-003).
