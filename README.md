@@ -11,7 +11,9 @@ Outil libre et local qui aide les équipes de recherche à produire le **diction
 
 ## Commencer
 
-Le guide [`docs/installation-windows.md`](docs/installation-windows.md) mène de l'installation à un codebook complet, sans connaissances en programmation. En bref : décompresser l'archive, double-cliquer sur `installer.bat`, puis sur l'icône **Dictionnaire de données** ; le reste se fait dans le navigateur, sur cet ordinateur seulement.
+Le guide [`docs/installation-windows.md`](docs/installation-windows.md) mène de l'installation à un codebook complet, sans connaissances en programmation. En bref : décompresser l'archive, double-cliquer sur `installer.bat`, puis sur l'icône **Dictionnaire de données** ; le reste se fait dans le navigateur, sur cet ordinateur seulement. Sur un Mac : [`docs/installation-macos.md`](docs/installation-macos.md) (`installer.command`).
+
+**In English.** A free, local tool that helps research teams write the data dictionary (codebook) of an existing database, with the help of the study's questionnaire; an optional local AI proposes, a person decides, and nothing leaves the computer. The interface, the codebook and the guides exist in English: [`docs/en/installation-windows.md`](docs/en/installation-windows.md) (Windows) and [`docs/en/installation-macos.md`](docs/en/installation-macos.md) (Mac).
 
 Toutes les étapes existent aussi en ligne de commande (`ddict --help`) :
 
@@ -32,6 +34,8 @@ ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M  # banc d'essai d'un modèle
 | Sujet | Fichier |
 |---|---|
 | Installation et premier codebook, pas à pas | [`docs/installation-windows.md`](docs/installation-windows.md) |
+| Installation sur Mac | [`docs/installation-macos.md`](docs/installation-macos.md) |
+| Guides in English | [`docs/en/`](docs/en/) |
 | Conception, principes, format du fichier projet | [`docs/CONCEPTION.md`](docs/CONCEPTION.md) |
 | Décisions prises | [`docs/journal-des-decisions.md`](docs/journal-des-decisions.md) |
 | Essais de modèles locaux | [`docs/essais/`](docs/essais/) |
