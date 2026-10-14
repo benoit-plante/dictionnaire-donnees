@@ -233,6 +233,9 @@ def review_command(project_path: Path, port: int) -> tuple[list[str], dict[str, 
         # browser opened by Streamlit; cmd_review opens it once the page answers.
         "--server.headless",
         "true",
+        # No "Deploy" button offering to put the interface online.
+        "--client.toolbarMode",
+        "minimal",
         "--",
         str(project_path.resolve()),
     ]

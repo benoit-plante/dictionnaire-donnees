@@ -6,6 +6,10 @@ Every decision is saved to the project file at once.
 
 Buttons read the fields they need when clicked (`_state`), never when the page was drawn:
 otherwise a value typed just before the click would be lost.
+
+The chosen variable is kept in `current`, not only in the list's own state: Streamlit
+resets a list to its first option when its options change, which sent the person back to
+the first variable after a decision.
 """
 
 from __future__ import annotations
@@ -51,28 +55,65 @@ def _state(key: str):
     return lambda: st.session_state[key]
 
 
-def _act(action, *args, timed: bool = False) -> None:
-    """Run a decision with its arguments read now, save, and keep a message to show."""
+def _act(action, *args, key: str, timed: bool, reset: tuple[str, ...]) -> None:
+    """Run a decision with its arguments read now, save, and keep a message to show next to
+    the button `key`. On success, the fields in `reset` are drawn again from the project."""
     values = [a() if callable(a) else a for a in args]
     kwargs = {"now": _now()} if timed else {}
     try:
         action(_project(), *values, **kwargs)
     except logic.ReviewError as error:
-        st.session_state.message = ("error", str(error))
+        st.session_state.message = ("error", str(error), key)
         return
     save_project(_project(), _project_path())
-    st.session_state.message = ("success", _("Enregistré."))
+    st.session_state.message = ("success", _("Enregistré."), key)
+    for field in reset:
+        st.session_state[field] = st.session_state.fresh[field]()
 
 
-def _button(label: str, key: str, action, *args, timed: bool = False, primary=False) -> None:
+def _field(key: str, fresh) -> str:
+    """Key of an input whose starting value `fresh()` comes from the project.
+
+    The value is set through the session state, never with `value=`: after a decision, `_act`
+    sets it again, which the browser shows (it keeps its own copy of a field otherwise).
+    """
+    st.session_state.setdefault("fresh", {})[key] = fresh
+    if key not in st.session_state:
+        st.session_state[key] = fresh()
+    return key
+
+
+def _show_message(key: str) -> None:
+    message = st.session_state.get("shown_message")
+    if message and message[2] == key:
+        (st.error if message[0] == "error" else st.success)(message[1])
+        st.session_state.message_placed = True
+
+
+def _message_for(prefix: str) -> bool:
+    """Whether the message to show answers a button whose key starts with `prefix`."""
+    message = st.session_state.get("shown_message")
+    return bool(message and message[2].startswith(prefix))
+
+
+def _button(
+    label: str,
+    key: str,
+    action,
+    *args,
+    timed: bool = False,
+    primary: bool = False,
+    reset: tuple[str, ...] = (),
+) -> None:
     st.button(
         label,
         key=key,
         on_click=_act,
         args=(action, *args),
-        kwargs={"timed": timed},
+        kwargs={"key": key, "timed": timed, "reset": reset},
         type="primary" if primary else "secondary",
     )
+    _show_message(key)
 
 
 def _origin(project: Project, tracked: TrackedValue) -> str:
@@ -84,6 +125,14 @@ def _origin(project: Project, tracked: TrackedValue) -> str:
         if run is not None:
             text += f" ({run.model}, {run.run_id})"
     return text
+
+
+def _start_text(name: str, field: str) -> str:
+    entry = _project().variable(name)
+    tracked: TrackedValue = getattr(entry, field)
+    # A rejected proposal is not offered again as the starting text.
+    kept = tracked.value if tracked.status != "rejected" else None
+    return kept or (entry.file.label if field == "label" else "") or ""
 
 
 def _tracked_field(project: Project, entry: VariableEntry, field: str, title: str) -> None:
@@ -101,6 +150,7 @@ def _tracked_field(project: Project, entry: VariableEntry, field: str, title: st
     else:
         st.caption(_("(vide)"))
 
+    reset = (f"input-{key}",)
     if tracked.status == "proposed":
         left, right = st.columns(2)
         with left:
@@ -113,14 +163,27 @@ def _tracked_field(project: Project, entry: VariableEntry, field: str, title: st
                 "accept",
                 timed=True,
                 primary=True,
+                reset=reset,
             )
         with right:
             _button(
-                _("Rejeter"), f"reject-{key}", logic.decide, entry.name, field, "reject", timed=True
+                _("Rejeter"),
+                f"reject-{key}",
+                logic.decide,
+                entry.name,
+                field,
+                "reject",
+                timed=True,
+                reset=reset,
             )
-    current = tracked.value or (entry.file.label if field == "label" else "") or ""
+    else:
+        # The buttons are gone once decided: their message goes under the field.
+        _show_message(f"accept-{key}")
+        _show_message(f"reject-{key}")
     st.text_input(
-        _("Corriger ou saisir"), value=current, key=f"input-{key}", label_visibility="collapsed"
+        _("Corriger ou saisir"),
+        key=_field(f"input-{key}", lambda: _start_text(entry.name, field)),
+        label_visibility="collapsed",
     )
     _button(
         _("Enregistrer"),
@@ -130,6 +193,7 @@ def _tracked_field(project: Project, entry: VariableEntry, field: str, title: st
         field,
         _state(f"input-{key}"),
         timed=True,
+        reset=reset,
     )
 
 
@@ -188,13 +252,15 @@ def _privacy(entry: VariableEntry) -> None:
     if tracked.status != "none":
         caption += f" — {w.STATUSES[tracked.status]}"
     st.caption(caption)
-    key = f"privacy-{entry.name}"
+    name = entry.name
+    key = f"privacy-{name}"
     st.selectbox(
         _("Classe"),
         logic.PRIVACY_CLASSES,
-        index=logic.PRIVACY_CLASSES.index(tracked.value or "ordinary"),
         format_func=lambda c: w.PRIVACY[c],
-        key=key,
+        key=_field(
+            key, lambda: _project().variable(name).privacy.privacy_class.value or "ordinary"
+        ),
     )
     _button(
         _("Confirmer la classe"),
@@ -203,12 +269,16 @@ def _privacy(entry: VariableEntry) -> None:
         entry.name,
         _state(key),
         timed=True,
+        reset=(key,),
     )
 
 
 def _sourced(entry: VariableEntry) -> None:
     name = entry.name
-    with st.expander(_("Champs documentés : étendue théorique, seuils, références, notes")):
+    title = _("Champs documentés : étendue théorique, seuils, références, notes")
+    keys = ("clear-range", "save-range", "remove-threshold", "add-threshold", "save-notes")
+    opened = any(_message_for(f"{k}-{name}") for k in keys)
+    with st.expander(title, expanded=opened):
         st.caption(_("Réservés aux personnes ; l'étendue et les seuils exigent une source."))
         r = entry.theoretical_range
         if r:
@@ -219,9 +289,9 @@ def _sourced(entry: VariableEntry) -> None:
                 _("Retirer l'étendue"), f"clear-range-{name}", logic.clear_theoretical_range, name
             )
         c1, c2, c3 = st.columns([1, 1, 3])
-        c1.number_input(_("Min"), key=f"range-min-{name}", value=0.0)
-        c2.number_input(_("Max"), key=f"range-max-{name}", value=1.0)
-        c3.text_input(_("Source de l'étendue"), key=f"range-source-{name}")
+        c1.number_input(_("Min"), key=_field(f"range-min-{name}", lambda: 0.0))
+        c2.number_input(_("Max"), key=_field(f"range-max-{name}", lambda: 1.0))
+        c3.text_input(_("Source de l'étendue"), key=_field(f"range-source-{name}", str))
         _button(
             _("Enregistrer l'étendue"),
             f"save-range-{name}",
@@ -230,6 +300,7 @@ def _sourced(entry: VariableEntry) -> None:
             _state(f"range-min-{name}"),
             _state(f"range-max-{name}"),
             _state(f"range-source-{name}"),
+            reset=(f"range-min-{name}", f"range-max-{name}", f"range-source-{name}"),
         )
 
         for index, t in enumerate(entry.thresholds):
@@ -244,9 +315,9 @@ def _sourced(entry: VariableEntry) -> None:
                     index,
                 )
         c1, c2, c3 = st.columns([1, 2, 3])
-        c1.number_input(_("Seuil"), key=f"threshold-value-{name}", value=0.0)
-        c2.text_input(_("Signification"), key=f"threshold-meaning-{name}")
-        c3.text_input(_("Source du seuil"), key=f"threshold-source-{name}")
+        c1.number_input(_("Seuil"), key=_field(f"threshold-value-{name}", lambda: 0.0))
+        c2.text_input(_("Signification"), key=_field(f"threshold-meaning-{name}", str))
+        c3.text_input(_("Source du seuil"), key=_field(f"threshold-source-{name}", str))
         _button(
             _("Ajouter le seuil"),
             f"add-threshold-{name}",
@@ -255,14 +326,23 @@ def _sourced(entry: VariableEntry) -> None:
             _state(f"threshold-value-{name}"),
             _state(f"threshold-meaning-{name}"),
             _state(f"threshold-source-{name}"),
+            reset=(
+                f"threshold-value-{name}",
+                f"threshold-meaning-{name}",
+                f"threshold-source-{name}",
+            ),
         )
 
         st.text_area(
             _("Références (une par ligne)"),
-            value="\n".join(entry.references),
-            key=f"references-{name}",
+            key=_field(
+                f"references-{name}", lambda: "\n".join(_project().variable(name).references)
+            ),
         )
-        st.text_area(_("Notes de l'équipe"), value=entry.notes or "", key=f"notes-{name}")
+        st.text_area(
+            _("Notes de l'équipe"),
+            key=_field(f"notes-{name}", lambda: _project().variable(name).notes or ""),
+        )
         _button(
             _("Enregistrer références et notes"),
             f"save-notes-{name}",
@@ -270,6 +350,7 @@ def _sourced(entry: VariableEntry) -> None:
             name,
             _state(f"references-{name}"),
             _state(f"notes-{name}"),
+            reset=(f"references-{name}", f"notes-{name}"),
         )
 
 
@@ -316,7 +397,7 @@ def _variable(project: Project, entry: VariableEntry) -> None:
 
 
 def _group(project: Project, group_id: str) -> None:
-    group = next(g for g in project.groups if g.group_id == group_id)
+    group = logic.group(project, group_id)
     st.header(f"{group.group_id} — {group.descriptive_label.value or ''}")
     members = group.members.value or []
     st.write(f"{_('Variables')} : " + ", ".join(members))
@@ -336,7 +417,9 @@ def _group(project: Project, group_id: str) -> None:
         st.warning(_("Items probablement inversés : {s}").format(s=", ".join(suspects)))
     key = f"reverse-{group_id}"
     st.multiselect(
-        _("Items inversés confirmés"), members, default=group.reverse_items or suspects, key=key
+        _("Items inversés confirmés"),
+        members,
+        key=_field(key, lambda: logic.group(_project(), group_id).reverse_items or suspects),
     )
     _button(
         _("Enregistrer les items inversés"),
@@ -344,17 +427,21 @@ def _group(project: Project, group_id: str) -> None:
         logic.set_reverse_items,
         group_id,
         _state(key),
+        reset=(key,),
     )
     st.divider()
     st.caption(_("Nom de l'instrument : réservé aux personnes, avec une source documentée."))
-    current = group.instrument_name
+
+    def instrument(part: str) -> str:
+        current = logic.group(_project(), group_id).instrument_name
+        return getattr(current, part) if current else ""
+
     st.text_input(
-        _("Instrument"), value=current.value if current else "", key=f"instrument-{group_id}"
+        _("Instrument"), key=_field(f"instrument-{group_id}", lambda: instrument("value"))
     )
     st.text_input(
         _("Source de l'instrument"),
-        value=current.source if current else "",
-        key=f"instrument-source-{group_id}",
+        key=_field(f"instrument-source-{group_id}", lambda: instrument("source")),
     )
     _button(
         _("Enregistrer l'instrument"),
@@ -363,7 +450,40 @@ def _group(project: Project, group_id: str) -> None:
         group_id,
         _state(f"instrument-{group_id}"),
         _state(f"instrument-source-{group_id}"),
+        reset=(f"instrument-{group_id}", f"instrument-source-{group_id}"),
     )
+
+
+def _choose_variable(project: Project, names: list[str], which: str) -> None:
+    """Keep the chosen variable; if a decision took it out of the filter, take the next one
+    and say so (not when the person changed the filter)."""
+    current = st.session_state.get("current")
+    same_filter = st.session_state.get("last_filter", which) == which
+    st.session_state.last_filter = which
+    if not names or current in names:
+        chosen = current if names else None
+    else:
+        order = [e.name for e in project.variables]
+        start = order.index(current) + 1 if current in order else 0
+        following = [n for n in order[start:] if n in names]
+        chosen = following[0] if following and same_filter else names[0]
+        if current is not None and same_filter:
+            st.session_state.notice = _(
+                "{old} n'est plus dans ce filtre ; voici la variable suivante : {new}."
+            ).format(old=current, new=chosen)
+    if chosen is not None:
+        st.session_state.current = chosen
+        st.session_state.variable = chosen  # set before the list is drawn
+
+
+def _remember_variable() -> None:
+    st.session_state.current = st.session_state.variable
+
+
+def _option_text(project: Project, name: str) -> str:
+    # The file label only: a text that changed with each decision would reset the list.
+    label = project.variable(name).file.label
+    return f"{name} — {label}" if label else name
 
 
 def main() -> None:
@@ -390,12 +510,14 @@ def main() -> None:
                 _("Filtre"), list(FILTERS), key="filter", format_func=FILTERS.__getitem__
             )
             names = [e.name for e in logic.select(project, which)]
+            _choose_variable(project, names, which)
             if names:
                 chosen = st.selectbox(
                     _("Variable"),
                     names,
                     key="variable",
-                    format_func=lambda n: f"{n} — {w.label_text(project.variable(n), 'work')}",
+                    format_func=lambda n: _option_text(project, n),
+                    on_change=_remember_variable,
                 )
             else:
                 st.info(_("Aucune variable dans ce filtre."))
@@ -403,15 +525,21 @@ def main() -> None:
             chosen = st.selectbox(_("Groupe"), [g.group_id for g in project.groups], key="group")
         else:
             st.info(_("Aucun groupe trouvé."))
-    message = st.session_state.pop("message", None)
-    if message:
-        (st.error if message[0] == "error" else st.success)(message[1])
-    if chosen is None:
-        return
-    if mode == "variables":
-        _variable(project, project.variable(chosen))
-    else:
-        _group(project, chosen)
+    notice = st.session_state.pop("notice", None)
+    if notice:
+        st.info(notice)
+    # A message goes next to its button; at the top only when that button is not shown.
+    st.session_state.shown_message = st.session_state.pop("message", None)
+    st.session_state.message_placed = False
+    top = st.empty()
+    if chosen is not None:
+        if mode == "variables":
+            _variable(project, project.variable(chosen))
+        else:
+            _group(project, chosen)
+    message = st.session_state.pop("shown_message")
+    if message and not st.session_state.message_placed:
+        (top.error if message[0] == "error" else top.success)(message[1])
 
 
 main()

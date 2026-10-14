@@ -137,8 +137,22 @@ def test_reverse_items(project):
 
 def test_signal_texts(project):
     assert logic.signal_texts(project.variable("sommeil_q7")) == [
-        "libellé : deviné : la variable n'a pas d'étiquette dans le fichier"
+        "Libellé deviné : la variable n'a pas d'étiquette dans le fichier"
     ]
+
+
+@pytest.mark.parametrize(
+    ("build", "expected"),
+    [
+        (lambda p: logic.add_threshold(p, "sommeil_q1", 14, "", "Manuel"), "signification"),
+        (lambda p: logic.set_theoretical_range(p, "sommeil_q1", 5, 1, "Manuel"), "minimum"),
+    ],
+)
+def test_invalid_values_are_explained_in_french(project, build, expected):
+    with pytest.raises(logic.ReviewError) as caught:
+        build(project)
+    assert expected in str(caught.value)
+    assert "validation error" not in str(caught.value)
 
 
 # --- The interface, run by Streamlit's test runner: no browser, no network. ---
@@ -175,6 +189,7 @@ def test_accept_in_the_interface_saves_the_project(app):
     assert not test.exception
     assert load_project(path).variable("sommeil_q1").label.status == "validated"
     assert test.success[0].value == "Enregistré."
+    assert test.main.children[0].type != "alert"  # under the field, not at the top
 
 
 @pytest.mark.allow_hosts(["127.0.0.1"])
@@ -194,6 +209,55 @@ def test_threshold_without_source_is_refused_in_the_interface(app):
     test.button(key="add-threshold-sommeil_q1").click().run()
     assert "source documentée" in test.error[0].value
     assert load_project(path).variable("sommeil_q1").thresholds == []
+
+
+@pytest.mark.allow_hosts(["127.0.0.1"])
+def test_message_is_shown_next_to_its_button(app):
+    test, _path = app
+    test.button(key="add-threshold-sommeil_q1").click().run()
+    assert len(test.error) == 1
+    expander = test.expander[0]
+    assert any("signification" in e.value for e in expander.error)
+
+
+@pytest.mark.allow_hosts(["127.0.0.1"])
+def test_the_chosen_variable_stays_after_a_decision(app):
+    test, _path = app
+    test.sidebar.radio(key="filter").set_value("all").run()
+    test.sidebar.selectbox(key="variable").select("sommeil_q2").run()
+    test.text_input(key="input-sommeil_q2-label").input("Sommeil réparateur")
+    test.button(key="save-sommeil_q2-label").click().run()
+    assert test.sidebar.selectbox(key="variable").value == "sommeil_q2"
+    assert test.header[0].value.startswith("sommeil_q2")
+
+
+@pytest.mark.allow_hosts(["127.0.0.1"])
+def test_variable_leaving_the_filter_gives_way_to_the_next(app):
+    test, _path = app
+    test.button(key="accept-sommeil_q1-label").click().run()
+    assert test.sidebar.selectbox(key="variable").value == "sommeil_q1"  # description left
+    test.button(key="accept-sommeil_q1-description").click().run()
+    assert test.sidebar.selectbox(key="variable").value == "sommeil_q7"
+    assert any("suivante : sommeil_q7" in i.value for i in test.info)
+
+
+@pytest.mark.allow_hosts(["127.0.0.1"])
+def test_changing_the_filter_gives_no_notice(app):
+    test, _path = app
+    test.sidebar.radio(key="filter").set_value("sensitive").run()
+    assert test.sidebar.selectbox(key="variable").value == "id_participant"
+    assert not test.info
+
+
+@pytest.mark.allow_hosts(["127.0.0.1"])
+def test_rejected_label_is_not_offered_again(app):
+    test, path = app
+    test.sidebar.selectbox(key="variable").select("sommeil_q7").run()
+    test.sidebar.radio(key="filter").set_value("all").run()
+    test.button(key="reject-sommeil_q7-label").click().run()
+    assert test.text_input(key="input-sommeil_q7-label").value == ""
+    test.button(key="save-sommeil_q7-label").click().run()
+    assert load_project(path).variable("sommeil_q7").label.status == "rejected"
 
 
 @pytest.mark.allow_hosts(["127.0.0.1"])
@@ -225,6 +289,7 @@ def test_review_command_is_local_without_statistics(tmp_path):
     assert "--browser.gatherUsageStats false" in joined
     assert "--server.port 8600" in joined
     assert "--server.headless true" in joined  # no first-run email prompt
+    assert "--client.toolbarMode minimal" in joined  # no "Deploy" button
     assert command[-2:] == ["--", str((tmp_path / "p.dd.json").resolve())]
     assert env["STREAMLIT_BROWSER_GATHER_USAGE_STATS"] == "false"
     assert env["STREAMLIT_SERVER_ADDRESS"] == "127.0.0.1"

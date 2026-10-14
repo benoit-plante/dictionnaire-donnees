@@ -14,6 +14,7 @@ from ddict.export.wording import anomalies
 from ddict.i18n import _
 from ddict.project.decisions import DecisionError, correct, enter, reject, validate
 from ddict.project.model import (
+    Group,
     Project,
     SourcedText,
     TheoreticalRange,
@@ -34,7 +35,15 @@ SIGNALS = {
     "instrument": _("ressemble à un nom d'instrument"),
     "no_file_label": _("deviné : la variable n'a pas d'étiquette dans le fichier"),
 }
-FIELD_NAMES = {"label": _("libellé"), "description": _("description"), "issues": _("signalement")}
+FIELD_NAMES = {"label": _("Libellé"), "description": _("Description"), "issues": _("Signalement")}
+
+# French messages for the fields of the human-only models; "" is a rule on the whole value.
+FIELD_PROBLEMS = {
+    "source": _("Une source documentée est obligatoire."),
+    "meaning": _("La signification du seuil est obligatoire."),
+    "value": _("La valeur est obligatoire."),
+    "": _("Étendue invalide : le minimum doit être inférieur au maximum."),
+}
 
 
 class ReviewError(ValueError):
@@ -76,7 +85,7 @@ def signal_texts(entry: VariableEntry) -> list[str]:
     texts = []
     for signal in entry.ai_signals:
         field, _sep, code = signal.partition(":")
-        texts.append(f"{FIELD_NAMES.get(field, field)} : {SIGNALS.get(code, code)}")
+        texts.append(f"{FIELD_NAMES.get(field, field)} {SIGNALS.get(code, code)}")
     return texts
 
 
@@ -143,10 +152,9 @@ def _sourced(build):
     try:
         return build()
     except ValidationError as error:
-        problems = {e["loc"][-1] if e["loc"] else "" for e in error.errors()}
-        if "source" in problems:
-            raise ReviewError(_("Une source documentée est obligatoire.")) from error
-        raise ReviewError(_("Valeur invalide : {detail}").format(detail=error)) from error
+        problems = {str(e["loc"][-1]) if e["loc"] else "" for e in error.errors()}
+        messages = [text for field, text in FIELD_PROBLEMS.items() if field in problems]
+        raise ReviewError(" ".join(messages) or _("Valeur invalide.")) from error
 
 
 def add_threshold(project: Project, name: str, value: float, meaning: str, source: str) -> None:
@@ -182,25 +190,25 @@ def set_references_and_notes(project: Project, name: str, references: str, notes
     set_notes(project, name, notes)
 
 
-def _group(project: Project, group_id: str):
-    for group in project.groups:
-        if group.group_id == group_id:
-            return group
+def group(project: Project, group_id: str) -> Group:
+    for found in project.groups:
+        if found.group_id == group_id:
+            return found
     raise KeyError(group_id)
 
 
 def set_instrument(project: Project, group_id: str, value: str, source: str) -> None:
-    group = _group(project, group_id)
+    target = group(project, group_id)
     if not value.strip():
-        group.instrument_name = None
+        target.instrument_name = None
         return
-    group.instrument_name = _sourced(lambda: SourcedText(value=value, source=source))
+    target.instrument_name = _sourced(lambda: SourcedText(value=value, source=source))
 
 
 def set_reverse_items(project: Project, group_id: str, names: list[str]) -> None:
-    group = _group(project, group_id)
-    members = group.members.value or []
+    target = group(project, group_id)
+    members = target.members.value or []
     unknown = [n for n in names if n not in members]
     if unknown:
         raise ReviewError(_("Pas dans le groupe : {names}").format(names=", ".join(unknown)))
-    group.reverse_items = [n for n in members if n in names]
+    target.reverse_items = [n for n in members if n in names]
