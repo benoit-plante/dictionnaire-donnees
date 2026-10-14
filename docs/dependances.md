@@ -11,14 +11,14 @@ Toute nouvelle dépendance est ajoutée à ce tableau après vérification de sa
 | python-dateutil | Dates (requis par pandas) | Apache-2.0 ou BSD-3-Clause | Oui | 1 |
 | six | Compatibilité Python (requis par python-dateutil) | MIT | Oui | 1 |
 | tzdata | Fuseaux horaires (requis par pandas) | Apache-2.0 | Oui | 1 |
-| pyreadstat | Lecture et écriture des fichiers SPSS | Apache-2.0 | Oui | 1 |
+| pyreadstat | Lecture des fichiers SPSS, Stata (v0.2) et SAS (v0.2) | Apache-2.0 | Oui | 1 |
 | narwhals | Couche commune entre bibliothèques de tableaux (requis par pyreadstat) | MIT | Oui | 1 |
 | pydantic | Modèle et validation du fichier projet, puis des réponses du modèle | MIT | Oui | 6 |
 | pydantic-core | Noyau compilé (requis par pydantic) | MIT | Oui | 6 |
 | annotated-types | Contraintes de types (requis par pydantic) | MIT | Oui | 6 |
 | typing-extensions | Compléments de typage (requis par pydantic) | PSF-2.0 | Oui | 6 |
 | typing-inspection | Inspection des types (requis par pydantic) | MIT | Oui | 6 |
-| openpyxl | Écriture du codebook Excel | MIT | Oui | 7 |
+| openpyxl | Écriture du codebook Excel ; lecture des bases Excel (v0.2) | MIT | Oui | 7 |
 | et-xmlfile | Écriture XML en flux (requis par openpyxl) | MIT | Oui | 7 |
 | pypdf | Lecture du texte des questionnaires PDF (D-017) | BSD-3-Clause | Oui | v0.2, 2 |
 
@@ -58,6 +58,8 @@ Installée seulement sur demande (`pip install "ddict[revision]"`, ou `uv sync -
 | pytest | Tests | MIT | 0 |
 | pytest-socket | Blocage du réseau dans les tests | MIT | 0 |
 | ruff | Lint et formatage | MIT | 0 |
+
+**Outil facultatif, hors Python : R et son paquet haven** (MIT). Ils servent seulement à écrire la version SAS de la base fictive (`scripts/generer_sas.R`), que Python ne sait pas écrire ; le fichier produit est gardé dans le dépôt. Ni l'outil ni ses tests n'ont besoin de R (v0.2, étape 8).
 | hatchling | Construction du paquet | MIT | 0 |
 | httpx | Faux serveur des tests du client IA (aussi dans l'option « ia ») | BSD-3-Clause | 10 |
 | streamlit | Tests de l'interface de révision (aussi dans l'option « revision ») | Apache-2.0 | 12 |

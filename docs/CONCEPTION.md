@@ -114,8 +114,8 @@ Statuts affichés : `proposed` = « proposé par IA », `validated` = « validé
 | `storage_type` | Type de stockage (numérique, chaîne, largeur) | fichier |
 | `spss_format` | Format d'affichage SPSS (`F8.2`, `A50`, `DATE11`…) | fichier (.sav) |
 | `measure_level` | Niveau de mesure déclaré (nominal, ordinal, échelle) | fichier (.sav) |
-| `file_label` | Étiquette de variable présente dans le fichier | fichier (.sav) |
-| `value_labels` | Étiquettes de valeurs présentes dans le fichier | fichier (.sav) |
+| `file_label` | Étiquette de variable présente dans le fichier | fichier (.sav, .dta, .sas7bdat) |
+| `value_labels` | Étiquettes de valeurs présentes dans le fichier | fichier (.sav, .dta) |
 | `declared_missing` | Valeurs ou plages manquantes déclarées par l'utilisateur dans SPSS | fichier (.sav) |
 | `missing_tokens` | Jetons de valeur manquante d'un CSV (`NA`, `#N/A`…) lus comme vides, avec leur nombre (D-010) | fichier (.csv) |
 | `inferred_type` | Type déduit : entier, décimal, booléen, catégoriel, date, date-heure, texte court, texte libre | calcul |
@@ -348,6 +348,8 @@ dictionnaire-donnees/
 Toutes les dépendances ci-dessus sont sous licences permissives (BSD, MIT, Apache 2.0), compatibles avec Apache 2.0 comme avec AGPL.
 
 ## 12. Feuille de route
+
+**v0.2** ajoute la lecture de Stata (`.dta` : étiquettes et étiquettes de valeurs ; les manquants étendus `.a` à `.z` sont lus comme vides), SAS (`.sas7bdat` : étiquettes seulement, le catalogue de formats n'est pas lu) et Excel (`.xlsx` : première feuille, noms en première ligne ; chaque cellule est lue comme le texte d'un CSV, pour qu'un classeur et son export CSV donnent le même profil).
 
 **v0.1** (§ 13) : `.sav` et `.csv`, profilage complet, regroupement déterministe, enrichissement IA facultatif, révision Streamlit, fichier projet, exports `.xlsx` et `.md`, interface en français.
 

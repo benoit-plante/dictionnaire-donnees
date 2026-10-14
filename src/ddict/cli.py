@@ -441,9 +441,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     profile = commands.add_parser(
         "profiler",
-        help=_("Lire une base (.sav ou .csv) et créer le fichier projet."),
+        help=_("Lire une base (.sav, .csv, .dta, .sas7bdat ou .xlsx) et créer le fichier projet."),
     )
-    profile.add_argument("base", help=_("Base de données (.sav, .zsav ou .csv)."))
+    profile.add_argument(
+        "base",
+        help=_(
+            "Base de données : SPSS (.sav, .zsav), CSV, Stata (.dta), SAS (.sas7bdat) "
+            "ou Excel (.xlsx, première feuille)."
+        ),
+    )
     profile.add_argument(
         "-o",
         "--sortie",

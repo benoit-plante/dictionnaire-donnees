@@ -1,4 +1,10 @@
-"""Read SPSS system files (.sav, .zsav) with their labels and declared missing values."""
+"""Read SPSS (.sav, .zsav), Stata (.dta) and SAS (.sas7bdat) files with pyreadstat.
+
+SPSS files bring labels, value labels, measure levels and declared missing values. Stata
+files bring labels and value labels; their extended missing values (.a to .z) are read as
+empty cells. SAS files bring variable labels only: value labels live in a separate format
+catalog, which is not read.
+"""
 
 from __future__ import annotations
 
@@ -41,16 +47,30 @@ def read_sav(path: Path | str, *, encoding: str | None = None) -> LoadedData:
     missing values apart from empty cells. `encoding` overrides the encoding written in the
     file, for old files that declare it wrongly.
     """
+    return _read(path, "sav", "SPSS", pyreadstat.read_sav, user_missing=True, encoding=encoding)
+
+
+def read_dta(path: Path | str, *, encoding: str | None = None) -> LoadedData:
+    """Read a Stata .dta file (v0.2)."""
+    return _read(path, "dta", "Stata", pyreadstat.read_dta, encoding=encoding)
+
+
+def read_sas7bdat(path: Path | str, *, encoding: str | None = None) -> LoadedData:
+    """Read a SAS .sas7bdat file (v0.2)."""
+    return _read(path, "sas7bdat", "SAS", pyreadstat.read_sas7bdat, encoding=encoding)
+
+
+def _read(path: Path | str, file_format: str, program: str, reader, **options) -> LoadedData:
     path = Path(path)
     try:
-        table, meta = pyreadstat.read_sav(path, user_missing=True, encoding=encoding)
+        table, meta = reader(path, **options)
     except (
         pyreadstat.ReadstatError,
         pyreadstat.PyreadstatError,
         OSError,
         UnicodeError,
     ) as error:
-        raise ReadError(f"Cannot read {path.name} as an SPSS file: {error}") from error
+        raise ReadError(f"Cannot read {path.name} as a {program} file: {error}") from error
 
     labels = dict(zip(meta.column_names, meta.column_labels, strict=True))
     variables = []
@@ -78,7 +98,7 @@ def read_sav(path: Path | str, *, encoding: str | None = None) -> LoadedData:
 
     source = SourceFile(
         name=path.name,
-        format="sav",
+        format=file_format,
         sha256=file_sha256(path),
         n_rows=len(table),
         n_columns=len(table.columns),

@@ -4,3 +4,5 @@
 # Example CSVs keep their exact bytes (CRLF, Windows-1252): they are test references.
 exemples/**/*.csv binary
 *.pdf binary
+*.dta binary
+*.sas7bdat binary

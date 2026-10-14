@@ -3,7 +3,8 @@
 from ddict.io.csv_reader import read_csv
 from ddict.io.load import read_database
 from ddict.io.model import LoadedData, MissingRange, ReadError, SourceFile, VariableMetadata
-from ddict.io.sav import read_sav
+from ddict.io.sav import read_dta, read_sas7bdat, read_sav
+from ddict.io.xlsx_reader import read_xlsx
 
 __all__ = [
     "LoadedData",
@@ -13,5 +14,8 @@ __all__ = [
     "VariableMetadata",
     "read_csv",
     "read_database",
+    "read_dta",
+    "read_sas7bdat",
     "read_sav",
+    "read_xlsx",
 ]

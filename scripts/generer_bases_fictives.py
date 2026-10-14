@@ -15,6 +15,7 @@ import argparse
 import csv
 import datetime as dt
 import re
+import zipfile
 from pathlib import Path
 
 import numpy as np
@@ -310,6 +311,66 @@ def _cell(value: object, decimal: str) -> str:
         text = str(int(value)) if float(value).is_integer() else repr(float(value))
         return text.replace(".", decimal)
     return str(value)
+
+
+DTA_FIXED_TIMESTAMP = b"<timestamp>\x1101 Jan 2026 00:00</timestamp>"
+XLSX_FIXED_TIME = dt.datetime(2026, 1, 1)
+
+
+def write_dta(df: pd.DataFrame, meta: dict, path: Path) -> None:
+    """Write the Stata file (v0.2, step 8), then fix its timestamp so that the bytes are
+    stable. Stata has no user-defined missing values like SPSS: -9 stays a value."""
+    pyreadstat.write_dta(
+        df,
+        path,
+        file_label=meta["file_label"],
+        column_labels=meta["column_labels"],
+        variable_value_labels=meta["variable_value_labels"],
+        version=15,
+    )
+    content = path.read_bytes()
+    stamp = re.search(rb"<timestamp>\x11[^<]{17}</timestamp>", content)
+    if stamp is None:
+        raise ValueError(f"Unexpected .dta header layout in {path}")
+    path.write_bytes(content[: stamp.start()] + DTA_FIXED_TIMESTAMP + content[stamp.end() :])
+
+
+def write_xlsx(df: pd.DataFrame, path: Path) -> None:
+    """Write an Excel workbook as a team would type it: names in the first row, one sheet,
+    no labels. Dates are real date cells; the workbook bytes are made stable."""
+    from openpyxl import Workbook
+
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "donnees"
+    sheet.append(list(df.columns))
+    for record in df.itertuples(index=False):
+        row = []
+        for value in record:
+            if value is None or (isinstance(value, float) and np.isnan(value)) or value == "":
+                row.append(None)
+            elif isinstance(value, float | np.floating):
+                row.append(int(value) if float(value).is_integer() else float(value))
+            elif isinstance(value, pd.Timestamp):
+                row.append(value.to_pydatetime())
+            else:
+                row.append(value)
+        sheet.append(row)
+    workbook.properties.created = XLSX_FIXED_TIME
+    workbook.properties.modified = XLSX_FIXED_TIME
+    workbook.save(path)
+    # Zip entries carry the time of writing: rewrite them with a fixed one.
+    with zipfile.ZipFile(path) as archive:
+        entries = [(info, archive.read(info.filename)) for info in archive.infolist()]
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as archive:
+        for info, data in entries:
+            if info.filename == "docProps/core.xml":  # openpyxl sets "modified" when saving
+                data = re.sub(
+                    rb"(<dcterms:modified[^>]*>)[^<]*", rb"\g<1>2026-01-01T00:00:00Z", data
+                )
+            fixed = zipfile.ZipInfo(info.filename, date_time=XLSX_FIXED_TIME.timetuple()[:6])
+            fixed.compress_type = zipfile.ZIP_DEFLATED
+            archive.writestr(fixed, data)
 
 
 def write_csv(
@@ -643,7 +704,8 @@ def write_questionnaire_pdf(path: Path) -> None:
 
 
 def write_all(out_dir: Path) -> list[Path]:
-    """Write the .sav file, its three CSV variants and the questionnaire; return their paths."""
+    """Write the .sav file, its three CSV variants, the Stata and Excel versions and the
+    questionnaire; return their paths."""
     out_dir.mkdir(parents=True, exist_ok=True)
     df, meta = build_dataset()
     paths = []
@@ -668,6 +730,15 @@ def write_all(out_dir: Path) -> list[Path]:
         path = out_dir / name
         write_csv(df, path, **options)
         paths.append(path)
+
+    dta = out_dir / f"{BASE_NAME}.dta"
+    write_dta(df, meta, dta)
+    paths.append(dta)
+    xlsx = out_dir / f"{BASE_NAME}.xlsx"
+    write_xlsx(df, xlsx)
+    paths.append(xlsx)
+    # The SAS file is written from the Stata one by scripts/generer_sas.R (R and haven), which
+    # Python cannot do; it is kept in the repository and checked by the tests.
 
     for suffix, writer in ((".txt", write_questionnaire_txt), (".pdf", write_questionnaire_pdf)):
         path = out_dir / f"{QUESTIONNAIRE_NAME}{suffix}"

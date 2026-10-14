@@ -6,9 +6,17 @@ from pathlib import Path
 
 from ddict.io.csv_reader import read_csv
 from ddict.io.model import LoadedData, ReadError
-from ddict.io.sav import read_sav
+from ddict.io.sav import read_dta, read_sas7bdat, read_sav
+from ddict.io.xlsx_reader import read_xlsx
 
-READERS = {".sav": read_sav, ".zsav": read_sav, ".csv": read_csv}
+READERS = {
+    ".sav": read_sav,
+    ".zsav": read_sav,
+    ".csv": read_csv,
+    ".dta": read_dta,
+    ".sas7bdat": read_sas7bdat,
+    ".xlsx": read_xlsx,
+}
 
 
 def read_database(path: Path | str) -> LoadedData:

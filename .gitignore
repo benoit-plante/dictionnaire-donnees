@@ -18,6 +18,8 @@
 !exemples/**/*.sav
 !exemples/**/*.csv
 !exemples/**/*.xlsx
+!exemples/**/*.dta
+!exemples/**/*.sas7bdat
 
 # Project files and what was sent to the model
 *.dd.json

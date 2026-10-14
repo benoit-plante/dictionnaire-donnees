@@ -45,6 +45,10 @@ Licence : CC0 (domaine public).
 | Variantes d'écriture d'une même réponse (casse, accents) | `langue_maison` : « Français », « français », « Francais » ; « Anglais », « anglais » |
 | Variantes rares, à ne jamais révéler (< 5 chacune) | `langue_maison` : « Créole » (3), « créole » (2) |
 
+## Autres formats (v0.2)
+
+La même base existe en Stata (`etude-sommeil.dta`, avec étiquettes et étiquettes de valeurs), en Excel (`etude-sommeil.xlsx`, sans étiquettes) et en SAS (`etude-sommeil.sas7bdat`, étiquettes de variables seulement). Les manquants déclarés de SPSS (−9, 9) y sont des valeurs ordinaires, comme dans le CSV. Le fichier SAS est écrit par `scripts/generer_sas.R` (R et le paquet haven), à relancer après `generer_bases_fictives.py` si la base change : un test le signale.
+
 ## Pièges du questionnaire
 
 Le rattachement attendu de chaque variable à sa question est donné par `questionnaire_key()` dans le script.

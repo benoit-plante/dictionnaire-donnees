@@ -139,7 +139,7 @@ Le codebook ne contient que ce qui vient du fichier, ce qui a été calculé et 
 
 ## 7. Avec vos propres données
 
-La démarche est la même, avec votre fichier `.sav` ou `.csv` (y compris les CSV enregistrés par Excel en français, avec point-virgule et virgule décimale).
+La démarche est la même, avec votre fichier `.sav` ou `.csv` (y compris les CSV enregistrés par Excel en français, avec point-virgule et virgule décimale). Depuis la v0.2, l'outil lit aussi les fichiers Stata (`.dta`), SAS (`.sas7bdat`) et Excel (`.xlsx` : la première feuille, avec les noms des variables sur la première ligne).
 
 - Travaillez dans un dossier prévu pour ces données, selon les règles de votre équipe et de votre comité d'éthique. Le fichier projet, les codebooks et le dossier `.dd-envois` (ce qui a été envoyé au modèle) doivent rester avec les données.
 - L'outil ne modifie jamais votre fichier de données.

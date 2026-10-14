@@ -215,7 +215,7 @@ class SourceInfo(Strict):
     """Identity of the data file: its name, never its path nor its content."""
 
     name: str
-    format: Literal["sav", "csv"]
+    format: Literal["sav", "csv", "dta", "sas7bdat", "xlsx"]
     sha256: str
     n_rows: int
     n_columns: int

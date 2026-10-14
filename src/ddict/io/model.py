@@ -34,7 +34,7 @@ class VariableMetadata:
     position: int  # 1-based rank in the file
     storage_type: StorageType
     storage_width: int | None = None
-    display_format: str | None = None  # SPSS format, e.g. "F8.2", "A50", "DATE11"
+    display_format: str | None = None  # as in the file: "F8.2", "A50" (SPSS), "%9.0g" (Stata)
     measure_level: MeasureLevel | None = None
     label: str | None = None
     value_labels: dict[Code, str] = field(default_factory=dict)
@@ -48,7 +48,7 @@ class SourceFile:
     """Identity of the file that was read; never its content."""
 
     name: str
-    format: Literal["sav", "csv"]
+    format: Literal["sav", "csv", "dta", "sas7bdat", "xlsx"]
     sha256: str
     n_rows: int
     n_columns: int
