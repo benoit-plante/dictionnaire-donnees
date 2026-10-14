@@ -166,6 +166,7 @@ Un seul fichier JSON (`mon-projet.dd.json`), écrit de façon déterministe (cl�
 - `variables` (§ 5.2) et `groups` (§ 5.3) ;
 - `ai_runs` : pour chaque passage de l'IA, l'adresse du serveur, le nom exact du modèle, les paramètres (température, graine), la version du prompt, l'empreinte du message envoyé, la date, le résultat (réussi, réponse invalide, refusé) ;
 - `questionnaire` (v0.2, D-012) : nom et empreinte du questionnaire de l'étude, ses questions découpées (identifiant `Q7`, page, texte exact, type, options, lignes de grille, points à vérifier) et ses autres paragraphes ; absent tant qu'aucun questionnaire n'a été lu.
+- `glossary` (v0.2, D-015) : sigles et leur définition, chacun avec son origine (questionnaire ou équipe, jamais l'IA), son statut (à valider, validé, corrigé, rejeté) et l'endroit du questionnaire où il est défini.
 
 Le fichier projet ne contient aucune valeur individuelle : seulement des métadonnées et des agrégats, avec les petits effectifs masqués. Il reste néanmoins à traiter comme un document de recherche (les étiquettes et les étendues peuvent être sensibles).
 

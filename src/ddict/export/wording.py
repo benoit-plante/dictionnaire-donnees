@@ -48,6 +48,14 @@ REASONS = {
     "wide_date_range": _("dates étalées sur de nombreuses années"),
 }
 ORIGINS = {"file": _("fichier"), "computed": _("calcul"), "ai": _("IA"), "human": _("humain")}
+GLOSSARY_ORIGINS = {"questionnaire": _("Questionnaire"), "human": _("Équipe")}
+GLOSSARY_STATUSES = {
+    "none": "",
+    "proposed": _("à valider"),
+    "validated": _("validé"),
+    "corrected": _("corrigé"),
+    "rejected": _("rejeté"),
+}
 STATUSES = {
     "none": "",
     "proposed": _("proposé par IA"),

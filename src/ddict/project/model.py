@@ -263,6 +263,30 @@ class Questionnaire(Strict):
     texts: list[QuestionnaireText] = []
 
 
+class GlossaryEntry(Strict):
+    """An acronym and its meaning (D-015): found in the questionnaire, or written by a person.
+
+    There is no "ai" origin: the model never defines an acronym. An entry found in the
+    questionnaire is proposed until a person validates, corrects or rejects it.
+    """
+
+    term: NonEmptyText  # as written: "OCF"
+    meaning: NonEmptyText
+    origin: Literal["questionnaire", "human"]
+    status: Literal["none", "proposed", "validated", "corrected", "rejected"] = "none"
+    source: str | None = None  # where it was found: "questionnaire.pdf, p. 8"
+    proposed_meaning: str | None = None  # the questionnaire's, when a person corrected it
+    updated_at: str | None = None
+
+    @model_validator(mode="after")
+    def _consistent(self) -> GlossaryEntry:
+        if (self.origin == "human") != (self.status == "none"):
+            raise ValueError("only entries found in the questionnaire wait for a decision")
+        if (self.status == "corrected") != (self.proposed_meaning is not None):
+            raise ValueError("a corrected entry keeps the meaning it replaces, and only it")
+        return self
+
+
 class Project(Strict):
     schema_version: str = SCHEMA_VERSION
     source: SourceInfo
@@ -271,6 +295,7 @@ class Project(Strict):
     groups: list[Group] = []
     ai_runs: list[AiRun] = []
     questionnaire: Questionnaire | None = None
+    glossary: list[GlossaryEntry] = []
 
     def variable(self, name: str) -> VariableEntry:
         for entry in self.variables:

@@ -73,6 +73,7 @@ def test_key_order_follows_the_design(project):
         "groups",
         "ai_runs",
         "questionnaire",
+        "glossary",
     ]
     assert list(data["variables"][0])[:5] == ["name", "position", "file", "profile", "privacy"]
 

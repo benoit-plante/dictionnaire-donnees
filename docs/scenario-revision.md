@@ -9,6 +9,7 @@ cd C:\Users\benoi\Claude\Projects\dictionnaire-donnees
 mkdir $env:TEMP\ddict-revision
 copy exemples\bases-fictives\etude-sommeil.sav $env:TEMP\ddict-revision\
 uv run ddict profiler $env:TEMP\ddict-revision\etude-sommeil.sav
+uv run ddict questionnaire $env:TEMP\ddict-revision\etude-sommeil.dd.json exemples\bases-fictives\questionnaire-sommeil.pdf
 uv run ddict enrichir $env:TEMP\ddict-revision\etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M
 uv run ddict reviser $env:TEMP\ddict-revision\etude-sommeil.dd.json
 ```
@@ -30,6 +31,8 @@ Le navigateur s'ouvre sur `http://127.0.0.1:8501`. La console affiche « cet ord
 | 9 | « Afficher : Groupes », choisir G1 | Alpha observé et alpha avec items inversés ; `sommeil_q3`, `sommeil_q6` signalés et cochés |
 | 10 | Saisir un nom d'instrument sans source, enregistrer | Erreur ; puis avec une source : enregistré |
 | 11 | Fermer l'onglet, Ctrl+C dans la console, relancer `ddict reviser` | Toutes les décisions sont toujours là |
-| 12 | `uv run ddict exporter $env:TEMP\ddict-revision\etude-sommeil.dd.json`, ouvrir le rapport | Le libellé accepté de `sommeil_q1` y figure ; les propositions non décidées n'y sont pas |
+| 12 | « Afficher : Glossaire » | QFS, EFA et TCC « à valider », avec leur page ; ANX parmi les sigles probables sans définition |
+| 13 | Accepter TCC, rejeter EFA ; dans « Ajouter un sigle », taper ANX et sa définition **sans pause** entre les deux champs, puis « Ajouter » | Statuts « validé » et « rejeté » ; ANX ajouté avec l'origine « Équipe », champs vidés, ANX retiré des sigles sans définition |
+| 14 | `uv run ddict exporter $env:TEMP\ddict-revision\etude-sommeil.dd.json`, ouvrir le rapport | Le libellé accepté de `sommeil_q1` y figure ; les propositions non décidées n'y sont pas |
 
 À la fin, supprimer le dossier `$env:TEMP\ddict-revision`.

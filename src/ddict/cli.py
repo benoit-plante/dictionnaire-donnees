@@ -17,6 +17,7 @@ from pathlib import Path
 from ddict import __version__
 from ddict.export import write_markdown, write_xlsx
 from ddict.export.wording import anomalies
+from ddict.glossary import propose_from_questionnaire, undefined_acronyms
 from ddict.i18n import _
 from ddict.io import ReadError, read_database
 from ddict.llm import DEFAULT_BLOCK_SIZE, PROMPT_VERSION, build_blocks
@@ -126,6 +127,7 @@ def cmd_questionnaire(args: argparse.Namespace) -> int:
         )
         return EXIT_ERROR
     project.questionnaire = questionnaire
+    propose_from_questionnaire(project)
     save_project(project, project_path)
 
     questions = questionnaire.questions
@@ -145,6 +147,20 @@ def cmd_questionnaire(args: argparse.Namespace) -> int:
             reasons = ", ".join(TO_CHECK.get(code, code) for code in question.to_check)
             check = _("À vérifier : {qid} ({reasons}).")
             print(check.format(qid=question.question_id, reasons=reasons))
+    pending = [e.term for e in project.glossary if e.status == "proposed"]
+    if pending:
+        print(
+            _("Sigles définis dans le questionnaire, à valider : {terms}.").format(
+                terms=", ".join(pending)
+            )
+        )
+    undefined = undefined_acronyms(project)
+    if undefined:
+        print(
+            _("Sigles probables des noms de variables, sans définition : {terms}.").format(
+                terms=", ".join(undefined)
+            )
+        )
     print(_("Enregistré dans {path}.").format(path=project_path))
     return 0
 

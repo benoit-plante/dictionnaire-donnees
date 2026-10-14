@@ -10,6 +10,7 @@ from typing import Literal
 
 from pydantic import ValidationError
 
+from ddict import glossary
 from ddict.export.wording import anomalies
 from ddict.i18n import _
 from ddict.project.decisions import DecisionError, correct, enter, reject, validate
@@ -195,6 +196,22 @@ def group(project: Project, group_id: str) -> Group:
         if found.group_id == group_id:
             return found
     raise KeyError(group_id)
+
+
+def glossary_decide(project: Project, term: str, action: Action, *, now: str) -> None:
+    """Accept or reject an acronym found in the questionnaire (D-015)."""
+    try:
+        glossary.decide(project, term, action, now=now)
+    except glossary.GlossaryError as error:
+        raise ReviewError(str(error)) from error
+
+
+def glossary_write(project: Project, term: str, meaning: str, *, now: str) -> None:
+    """Define an acronym, or change its meaning."""
+    try:
+        glossary.write(project, term, meaning, now=now)
+    except glossary.GlossaryError as error:
+        raise ReviewError(str(error)) from error
 
 
 def set_instrument(project: Project, group_id: str, value: str, source: str) -> None:

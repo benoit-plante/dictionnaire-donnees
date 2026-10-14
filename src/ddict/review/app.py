@@ -21,6 +21,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+from ddict import glossary
 from ddict.export import wording as w
 from ddict.i18n import _
 from ddict.project import load_project, save_project
@@ -104,8 +105,12 @@ def _button(
     timed: bool = False,
     primary: bool = False,
     reset: tuple[str, ...] = (),
+    submit: bool = False,
 ) -> None:
-    st.button(
+    """A button that runs a decision; `submit` for the button of a form (st.form), whose
+    fields are sent together when it is clicked."""
+    widget = st.form_submit_button if submit else st.button
+    widget(
         label,
         key=key,
         on_click=_act,
@@ -290,20 +295,22 @@ def _sourced(entry: VariableEntry) -> None:
             _button(
                 _("Retirer l'étendue"), f"clear-range-{name}", logic.clear_theoretical_range, name
             )
-        c1, c2, c3 = st.columns([1, 1, 3])
-        c1.number_input(_("Min"), key=_field(f"range-min-{name}", lambda: 0.0))
-        c2.number_input(_("Max"), key=_field(f"range-max-{name}", lambda: 1.0))
-        c3.text_input(_("Source de l'étendue"), key=_field(f"range-source-{name}", str))
-        _button(
-            _("Enregistrer l'étendue"),
-            f"save-range-{name}",
-            logic.set_theoretical_range,
-            name,
-            _state(f"range-min-{name}"),
-            _state(f"range-max-{name}"),
-            _state(f"range-source-{name}"),
-            reset=(f"range-min-{name}", f"range-max-{name}", f"range-source-{name}"),
-        )
+        with st.form(f"form-range-{name}", border=False):
+            c1, c2, c3 = st.columns([1, 1, 3])
+            c1.number_input(_("Min"), key=_field(f"range-min-{name}", lambda: 0.0))
+            c2.number_input(_("Max"), key=_field(f"range-max-{name}", lambda: 1.0))
+            c3.text_input(_("Source de l'étendue"), key=_field(f"range-source-{name}", str))
+            _button(
+                _("Enregistrer l'étendue"),
+                f"save-range-{name}",
+                logic.set_theoretical_range,
+                name,
+                _state(f"range-min-{name}"),
+                _state(f"range-max-{name}"),
+                _state(f"range-source-{name}"),
+                reset=(f"range-min-{name}", f"range-max-{name}", f"range-source-{name}"),
+                submit=True,
+            )
 
         for index, t in enumerate(entry.thresholds):
             c1, c2 = st.columns([5, 1])
@@ -316,24 +323,26 @@ def _sourced(entry: VariableEntry) -> None:
                     name,
                     index,
                 )
-        c1, c2, c3 = st.columns([1, 2, 3])
-        c1.number_input(_("Seuil"), key=_field(f"threshold-value-{name}", lambda: 0.0))
-        c2.text_input(_("Signification"), key=_field(f"threshold-meaning-{name}", str))
-        c3.text_input(_("Source du seuil"), key=_field(f"threshold-source-{name}", str))
-        _button(
-            _("Ajouter le seuil"),
-            f"add-threshold-{name}",
-            logic.add_threshold,
-            name,
-            _state(f"threshold-value-{name}"),
-            _state(f"threshold-meaning-{name}"),
-            _state(f"threshold-source-{name}"),
-            reset=(
-                f"threshold-value-{name}",
-                f"threshold-meaning-{name}",
-                f"threshold-source-{name}",
-            ),
-        )
+        with st.form(f"form-threshold-{name}", border=False):
+            c1, c2, c3 = st.columns([1, 2, 3])
+            c1.number_input(_("Seuil"), key=_field(f"threshold-value-{name}", lambda: 0.0))
+            c2.text_input(_("Signification"), key=_field(f"threshold-meaning-{name}", str))
+            c3.text_input(_("Source du seuil"), key=_field(f"threshold-source-{name}", str))
+            _button(
+                _("Ajouter le seuil"),
+                f"add-threshold-{name}",
+                logic.add_threshold,
+                name,
+                _state(f"threshold-value-{name}"),
+                _state(f"threshold-meaning-{name}"),
+                _state(f"threshold-source-{name}"),
+                reset=(
+                    f"threshold-value-{name}",
+                    f"threshold-meaning-{name}",
+                    f"threshold-source-{name}",
+                ),
+                submit=True,
+            )
 
         st.text_area(
             _("Références (une par ligne)"),
@@ -438,22 +447,127 @@ def _group(project: Project, group_id: str) -> None:
         current = logic.group(_project(), group_id).instrument_name
         return getattr(current, part) if current else ""
 
+    with st.form(f"form-instrument-{group_id}", border=False):
+        st.text_input(
+            _("Instrument"), key=_field(f"instrument-{group_id}", lambda: instrument("value"))
+        )
+        st.text_input(
+            _("Source de l'instrument"),
+            key=_field(f"instrument-source-{group_id}", lambda: instrument("source")),
+        )
+        _button(
+            _("Enregistrer l'instrument"),
+            f"save-instrument-{group_id}",
+            logic.set_instrument,
+            group_id,
+            _state(f"instrument-{group_id}"),
+            _state(f"instrument-source-{group_id}"),
+            reset=(f"instrument-{group_id}", f"instrument-source-{group_id}"),
+            submit=True,
+        )
+
+
+def _glossary_entry(project: Project, item) -> None:
+    term = item.term
+    key = f"glossary-{term}"
+    st.markdown(f"**{term}** — {item.meaning}")
+    caption = w.GLOSSARY_ORIGINS[item.origin]
+    if item.status != "none":
+        caption += f" — {w.GLOSSARY_STATUSES[item.status]}"
+    if item.source:
+        caption += f" ({item.source})"
+    st.caption(caption)
+    if item.proposed_meaning:
+        st.caption(_("Dans le questionnaire : {v}").format(v=item.proposed_meaning))
+    names = glossary.variables_using(project, term)
+    if names:
+        st.caption(_("Variables : {names}").format(names=", ".join(names)))
+    reset = (f"input-{key}",)
+    if item.status == "proposed":
+        left, right = st.columns(2)
+        with left:
+            _button(
+                _("Accepter"),
+                f"accept-{key}",
+                logic.glossary_decide,
+                term,
+                "accept",
+                timed=True,
+                primary=True,
+                reset=reset,
+            )
+        with right:
+            _button(
+                _("Rejeter"),
+                f"reject-{key}",
+                logic.glossary_decide,
+                term,
+                "reject",
+                timed=True,
+                reset=reset,
+            )
+    else:
+        _show_message(f"accept-{key}")
+        _show_message(f"reject-{key}")
+
+    def start() -> str:
+        current = glossary.entry(_project(), term)
+        return "" if current is None or current.status == "rejected" else current.meaning
+
     st.text_input(
-        _("Instrument"), key=_field(f"instrument-{group_id}", lambda: instrument("value"))
-    )
-    st.text_input(
-        _("Source de l'instrument"),
-        key=_field(f"instrument-source-{group_id}", lambda: instrument("source")),
+        _("Définition"),
+        key=_field(f"input-{key}", start),
+        label_visibility="collapsed",
     )
     _button(
-        _("Enregistrer l'instrument"),
-        f"save-instrument-{group_id}",
-        logic.set_instrument,
-        group_id,
-        _state(f"instrument-{group_id}"),
-        _state(f"instrument-source-{group_id}"),
-        reset=(f"instrument-{group_id}", f"instrument-source-{group_id}"),
+        _("Enregistrer"),
+        f"save-{key}",
+        logic.glossary_write,
+        term,
+        _state(f"input-{key}"),
+        timed=True,
+        reset=reset,
     )
+    st.divider()
+
+
+def _glossary(project: Project) -> None:
+    st.header(_("Glossaire des sigles"))
+    st.caption(
+        _(
+            "Les définitions viennent du questionnaire ou de l'équipe ; l'IA n'en propose "
+            "jamais. Une définition acceptée aide le modèle et figure dans le codebook."
+        )
+    )
+    for item in list(project.glossary):
+        _glossary_entry(project, item)
+    if not project.glossary:
+        st.info(_("Aucun sigle pour l'instant."))
+
+    undefined = glossary.undefined_acronyms(project)
+    if undefined:
+        st.subheader(_("Sigles probables sans définition"))
+        for part, names in undefined.items():
+            st.write(f"**{part.upper()}** : {', '.join(names)}")
+
+    st.subheader(_("Ajouter un sigle"))
+    with st.form("form-glossary-add", border=False):
+        c1, c2 = st.columns([1, 3])
+        c1.text_input(_("Sigle"), key=_field("glossary-new-term", str))
+        c2.text_input(_("Définition"), key=_field("glossary-new-meaning", str))
+        _button(
+            _("Ajouter"),
+            "glossary-add",
+            logic.glossary_write,
+            _state("glossary-new-term"),
+            _state("glossary-new-meaning"),
+            timed=True,
+            reset=("glossary-new-term", "glossary-new-meaning"),
+            submit=True,
+        )
+
+
+MODES = {"variables": _("Variables"), "groups": _("Groupes"), "glossary": _("Glossaire")}
 
 
 def _choose_variable(project: Project, names: list[str], which: str) -> None:
@@ -500,12 +614,7 @@ def main() -> None:
                 done=done, total=total
             ),
         )
-        mode = st.radio(
-            _("Afficher"),
-            ["variables", "groups"],
-            key="mode",
-            format_func=lambda m: _("Variables") if m == "variables" else _("Groupes"),
-        )
+        mode = st.radio(_("Afficher"), list(MODES), key="mode", format_func=MODES.__getitem__)
         chosen = None
         if mode == "variables":
             which = st.radio(
@@ -523,6 +632,11 @@ def main() -> None:
                 )
             else:
                 st.info(_("Aucune variable dans ce filtre."))
+        elif mode == "glossary":
+            pending = sum(1 for e in project.glossary if e.status == "proposed")
+            st.caption(
+                _("{n} sigles, dont {p} à valider").format(n=len(project.glossary), p=pending)
+            )
         elif project.groups:
             chosen = st.selectbox(_("Groupe"), [g.group_id for g in project.groups], key="group")
         else:
@@ -534,7 +648,9 @@ def main() -> None:
     st.session_state.shown_message = st.session_state.pop("message", None)
     st.session_state.message_placed = False
     top = st.empty()
-    if chosen is not None:
+    if mode == "glossary":
+        _glossary(project)
+    elif chosen is not None:
         if mode == "variables":
             _variable(project, project.variable(chosen))
         else:
