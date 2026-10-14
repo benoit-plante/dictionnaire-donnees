@@ -16,7 +16,6 @@ from datetime import datetime
 from pathlib import Path
 
 from ddict import __version__
-from ddict.export import write_markdown, write_xlsx
 from ddict.i18n import _
 from ddict.io import ReadError
 from ddict.llm import DEFAULT_BLOCK_SIZE, build_blocks
@@ -24,7 +23,6 @@ from ddict.llm.defaults import DEFAULT_ENDPOINT
 from ddict.llm.link import DEFAULT_LINK_BLOCK_SIZE, build_link_blocks
 from ddict.privacy import MIN_CELL_COUNT
 from ddict.project import (
-    PROJECT_SUFFIX,
     ProjectError,
     load_project,
     save_project,
@@ -34,9 +32,11 @@ from ddict.questionnaire.link import candidates
 from ddict.workflow import (
     ProjectExists,
     QuestionnaireExists,
+    UnknownGroups,
     acronym_summary,
     add_questionnaire,
     exchange_dir,
+    export_codebook,
     failure_advice,
     profile_database,
     profile_summary,
@@ -44,11 +44,6 @@ from ddict.workflow import (
 )
 
 EXIT_ERROR = 2
-
-
-def _strip_project_suffix(path: Path) -> str:
-    name = path.name
-    return name[: -len(PROJECT_SUFFIX)] if name.endswith(PROJECT_SUFFIX) else path.stem
 
 
 def cmd_profile(args: argparse.Namespace) -> int:
@@ -72,23 +67,23 @@ def cmd_profile(args: argparse.Namespace) -> int:
 def cmd_export(args: argparse.Namespace) -> int:
     project_path = Path(args.projet)
     project = load_project(project_path)
-    kind = "work" if args.travail else "final"
-    stem = _strip_project_suffix(project_path) + ("-travail" if args.travail else "")
-    xlsx = Path(args.xlsx) if args.xlsx else project_path.with_name(stem + ".xlsx")
-    markdown = Path(args.md) if args.md else project_path.with_name(stem + ".md")
-    omit = tuple(args.sans_texte or ())
-    unknown = sorted(set(omit) - {g.group_id for g in project.groups})
-    if unknown:
+    try:
+        xlsx, markdown = export_codebook(
+            project,
+            project_path,
+            kind="work" if args.travail else "final",
+            omit_groups=tuple(args.sans_texte or ()),
+            xlsx=Path(args.xlsx) if args.xlsx else None,
+            markdown=Path(args.md) if args.md else None,
+        )
+    except UnknownGroups as error:
         print(
             _("Groupe inconnu : {groups}. Groupes du projet : {known}.").format(
-                groups=", ".join(unknown),
-                known=", ".join(g.group_id for g in project.groups) or _("aucun"),
+                groups=", ".join(error.unknown), known=", ".join(error.known) or _("aucun")
             ),
             file=sys.stderr,
         )
         return EXIT_ERROR
-    write_xlsx(project, xlsx, kind=kind, omit_groups=omit)
-    write_markdown(project, markdown, kind=kind, omit_groups=omit)
     print(_("Codebook Excel : {path}").format(path=xlsx))
     print(_("Rapport Markdown : {path}").format(path=markdown))
     return 0

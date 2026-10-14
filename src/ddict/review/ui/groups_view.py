@@ -36,6 +36,7 @@ def page(project: Project, group_id: str) -> None:
         st.multiselect(
             _("Items inversés confirmés"),
             members,
+            placeholder=_("Aucun item inversé"),
             key=c.field(key, lambda: logic.group(c.project(), group_id).reverse_items or suspects),
         )
         c.button(

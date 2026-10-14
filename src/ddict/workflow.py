@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from ddict.export import write_markdown, write_xlsx
 from ddict.export.wording import anomalies
 from ddict.glossary import propose_from_questionnaire, undefined_acronyms
 from ddict.i18n import _
@@ -205,11 +206,59 @@ def tasks(project: Project) -> list[Task]:
 # --- The local model (v0.3: shared by the command line and the interface). ---
 
 
+def project_stem(project_path: Path) -> str:
+    """ "etude" for "etude.dd.json": the name the files next to the project start with."""
+    name = project_path.name
+    return name[: -len(PROJECT_SUFFIX)] if name.endswith(PROJECT_SUFFIX) else project_path.stem
+
+
 def exchange_dir(project_path: Path) -> Path:
     """Where what is (or would be) sent to the model is kept, next to the project."""
-    name = project_path.name
-    stem = name[: -len(PROJECT_SUFFIX)] if name.endswith(PROJECT_SUFFIX) else project_path.stem
-    return project_path.with_name(stem + ".dd-envois")
+    return project_path.with_name(project_stem(project_path) + ".dd-envois")
+
+
+# --- Exports (v0.3: shared by the command line and the interface). ---
+
+
+class UnknownGroups(ValueError):
+    """Groups named for the omitted question texts that the project does not have."""
+
+    def __init__(self, unknown: list[str], known: list[str]) -> None:
+        super().__init__(", ".join(unknown))
+        self.unknown = unknown
+        self.known = known
+
+
+def export_paths(project_path: Path, kind: str) -> tuple[Path, Path]:
+    """The codebook and the report next to the project; "-travail" for a work export."""
+    stem = project_stem(project_path) + ("-travail" if kind == "work" else "")
+    return project_path.with_name(stem + ".xlsx"), project_path.with_name(stem + ".md")
+
+
+def check_groups(project: Project, omit_groups: tuple[str, ...]) -> None:
+    known = [g.group_id for g in project.groups]
+    unknown = sorted(set(omit_groups) - set(known))
+    if unknown:
+        raise UnknownGroups(unknown, known)
+
+
+def export_codebook(
+    project: Project,
+    project_path: Path,
+    *,
+    kind: str = "final",
+    omit_groups: tuple[str, ...] = (),
+    xlsx: Path | None = None,
+    markdown: Path | None = None,
+) -> tuple[Path, Path]:
+    """Write the Excel codebook and the Markdown report; next to the project by default."""
+    check_groups(project, omit_groups)
+    default_xlsx, default_markdown = export_paths(project_path, kind)
+    xlsx = xlsx or default_xlsx
+    markdown = markdown or default_markdown
+    write_xlsx(project, xlsx, kind=kind, omit_groups=omit_groups)
+    write_markdown(project, markdown, kind=kind, omit_groups=omit_groups)
+    return xlsx, markdown
 
 
 def failure_advice(detail: str | None, endpoint: str, model: str) -> str | None:

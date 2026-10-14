@@ -15,6 +15,7 @@ from ddict.review import logic
 from ddict.review.ui import (
     ai_view,
     base_view,
+    export_view,
     glossary_view,
     groups_view,
     home_view,
@@ -32,6 +33,7 @@ MODES = {
     "ai": _("IA locale"),
     "variables": _("Variables"),
     "groups": _("Groupes"),
+    "export": _("Export"),
 }
 
 
@@ -129,6 +131,8 @@ def main() -> None:
         glossary_view.page(project)
     elif mode == "ai":
         ai_view.page(project)
+    elif mode == "export":
+        export_view.page(project)
     elif chosen is not None:
         if mode == "variables":
             variables_view.page(project, project.variable(chosen))

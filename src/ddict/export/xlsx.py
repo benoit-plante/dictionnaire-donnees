@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import BinaryIO
 
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font
@@ -300,7 +301,7 @@ def _provenance(project: Project, kind: w.ExportKind) -> list[list]:
 
 def write_xlsx(
     project: Project,
-    path: Path | str,
+    path: Path | str | BinaryIO,
     *,
     kind: w.ExportKind = "final",
     omit_groups: tuple[str, ...] = (),
@@ -346,4 +347,4 @@ def write_xlsx(
         ],
         _provenance(project, kind),
     )
-    book.save(Path(path))
+    book.save(path if hasattr(path, "write") else Path(path))  # a file, or bytes in memory
