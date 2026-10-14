@@ -78,6 +78,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Identifiant participant",
         "origin": "file",
@@ -179,6 +187,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Courriel",
         "origin": "file",
@@ -270,6 +286,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "value_labels": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -378,6 +402,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "DDN",
         "origin": "file",
@@ -471,6 +503,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "value_labels": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -619,6 +659,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Genre",
         "origin": "file",
@@ -723,6 +771,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "value_labels": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -875,6 +931,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Q1 endormissement",
         "origin": "file",
@@ -1013,6 +1077,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "value_labels": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -1174,6 +1246,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Q3 reveils nocturnes",
         "origin": "file",
@@ -1312,6 +1392,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "value_labels": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -1464,6 +1552,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Q5 energie matin",
         "origin": "file",
@@ -1602,6 +1698,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "value_labels": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -1754,6 +1858,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": null,
         "origin": "human",
@@ -1892,6 +2004,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "value_labels": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -2049,6 +2169,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "ANX inquiet",
         "origin": "file",
@@ -2192,6 +2320,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "value_labels": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -2349,6 +2485,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "ANX controle inquietude",
         "origin": "file",
@@ -2499,6 +2643,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "ANX agite",
         "origin": "file",
@@ -2590,6 +2742,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "value_labels": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -2690,6 +2850,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "value_labels": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -2833,6 +3001,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Nb reveils / nuit",
         "origin": "file",
@@ -2932,6 +3108,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "value_labels": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -3045,6 +3229,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Aide sommeil: produit naturel",
         "origin": "file",
@@ -3151,6 +3343,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Aide sommeil: TCC",
         "origin": "file",
@@ -3250,6 +3450,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "value_labels": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -3407,6 +3615,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "ANX irritable",
         "origin": "file",
@@ -3557,6 +3773,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "ANX peur",
         "origin": "file",
@@ -3700,6 +3924,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "value_labels": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -3876,6 +4108,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Satisfaction globale 0-10",
         "origin": "file",
@@ -3969,6 +4209,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "value_labels": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -4076,6 +4324,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Question retiree v2",
         "origin": "file",
@@ -4170,6 +4426,14 @@
         ]
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "value_labels": {
         "value": null,
         "origin": "human",
         "status": "none",

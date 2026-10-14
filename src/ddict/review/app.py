@@ -27,6 +27,7 @@ from ddict.i18n import _
 from ddict.project import load_project, save_project
 from ddict.project.model import Project, TrackedValue, VariableEntry
 from ddict.questionnaire import link
+from ddict.questionnaire.labels import ASSUMED_ORDER
 from ddict.review import logic
 
 FILTERS = {
@@ -285,6 +286,48 @@ def _question(project: Project, entry: VariableEntry) -> None:
         timed=True,
         reset=(key,),
     )
+    _value_labels(project, entry)
+
+
+def _value_labels(project: Project, entry: VariableEntry) -> None:
+    """Value labels from the options of the linked question (D-016), to accept or reject."""
+    tracked = entry.value_labels
+    if tracked.origin != "questionnaire":
+        return
+    name = entry.name
+    st.markdown(f"**{_('Étiquettes de valeurs tirées des options de réponse')}**")
+    table = pd.DataFrame(
+        [(w.code_text(v.code), v.label) for v in tracked.value or []],
+        columns=[_("Code"), _("Étiquette")],
+    )
+    st.dataframe(table, hide_index=True)
+    st.caption(f"{_origin(project, tracked)} — {_(ASSUMED_ORDER)}")
+    if tracked.status == "proposed":
+        left, right = st.columns(2)
+        with left:
+            _button(
+                _("Accepter les étiquettes"),
+                f"accept-labels-{name}",
+                logic.decide,
+                name,
+                "value_labels",
+                "accept",
+                timed=True,
+                primary=True,
+            )
+        with right:
+            _button(
+                _("Rejeter les étiquettes"),
+                f"reject-labels-{name}",
+                logic.decide,
+                name,
+                "value_labels",
+                "reject",
+                timed=True,
+            )
+    else:
+        _show_message(f"accept-labels-{name}")
+        _show_message(f"reject-labels-{name}")
 
 
 def _file_and_computed(entry: VariableEntry) -> None:

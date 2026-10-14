@@ -36,7 +36,8 @@ Le navigateur s'ouvre sur `http://127.0.0.1:8501`. La console affiche « cet ord
 | 13 | Accepter TCC, rejeter EFA ; dans « Ajouter un sigle », taper ANX et sa définition **sans pause** entre les deux champs, puis « Ajouter » | Statuts « validé » et « rejeté » ; ANX ajouté avec l'origine « Équipe », champs vidés, ANX retiré des sigles sans définition |
 | 14 | Filtre « À réviser », choisir `id_participant` ; sous « Question du questionnaire », cliquer « Accepter » | « Aucune question du questionnaire », statut « validé » |
 | 15 | Choisir `genre` ; dans « Rattacher à », choisir `Q4 — Quel est votre genre ?` puis cliquer « Rattacher » **sans pause** | Le texte exact de la question s'affiche, avec « p. 2 » ; statut « corrigé » si le modèle avait proposé autre chose |
-| 16 | Filtre « Sans question » | Les variables sans rattachement décidé ; `genre` n'y est plus |
-| 17 | `uv run ddict exporter $env:TEMP\ddict-revision\etude-sommeil.dd.json`, ouvrir le rapport | Le libellé accepté de `sommeil_q1` y figure ; les propositions non décidées n'y sont pas |
+| 16 | Choisir `sommeil_q1`, accepter son rattachement à `Q7.r1` | Aucune étiquette de valeurs proposée : le `.sav` a les siennes, et les colonnes de la grille sont collées dans le PDF. Pour voir une proposition, refaire la préparation avec `etude-sommeil.csv` et `questionnaire-sommeil.txt` : « Étiquettes de valeurs tirées des options de réponse », 1 = Pas du tout … 5 = Extrêmement, « ordre supposé, à vérifier », boutons pour accepter ou rejeter |
+| 17 | Filtre « Sans question » | Les variables sans rattachement décidé ; `genre` n'y est plus |
+| 18 | `uv run ddict exporter $env:TEMP\ddict-revision\etude-sommeil.dd.json`, ouvrir le rapport | Le libellé accepté de `sommeil_q1` y figure ; les propositions non décidées n'y sont pas |
 
 À la fin, supprimer le dossier `$env:TEMP\ddict-revision`.

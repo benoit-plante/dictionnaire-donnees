@@ -97,7 +97,7 @@ Tout champ susceptible d'être modifié est enregistré avec sa provenance :
 }
 ```
 
-- `origin` : `file` (lu dans le fichier), `computed` (calculé), `ai` (proposé par le modèle), `human` (saisi par une personne).
+- `origin` : `file` (lu dans le fichier), `computed` (calculé), `ai` (proposé par le modèle), `questionnaire` (v0.2 : tiré du questionnaire sous une règle stricte, et comme `ai` seulement proposé tant qu'une personne ne l'a pas accepté), `human` (saisi par une personne).
 - `status` : `none` (valeur de fichier ou de calcul, rien à décider), `proposed`, `validated`, `corrected`, `rejected`.
 - `proposed_value` : la valeur d'origine conservée quand une personne la corrige (on peut toujours voir ce que l'IA ou le fichier disait).
 - `ai_run` : renvoie à la trace de l'appel (modèle, paramètres, version du prompt).
@@ -134,6 +134,7 @@ Statuts affichés : `proposed` = « proposé par IA », `validated` = « validé
 | `item_total_r` | Corrélation item-total dans le groupe (arrondie) | calcul |
 | `reverse_suspect` | Item inversé probable, avec la raison (corrélation négative, libellé) | calcul et/ou IA |
 | `question` | Question d'où vient la variable (v0.2, D-013) : identifiant `Q8`, `Q7.r3` (énoncé de grille), `Q10.o2` (option) ou `none` ; le texte affiché est toujours lu dans le questionnaire | IA ou humain (valeur suivie), à partir des candidates calculées |
+| `value_labels` | Étiquettes de valeurs tirées des options de la question rattachée, quand le fichier n'en a pas, sous la règle stricte de D-016 ; mention « ordre supposé, à vérifier » | questionnaire (proposition), validé par un humain |
 | `label` | Libellé lisible final | fichier, IA ou humain (valeur suivie) |
 | `description` | Description en une ou deux phrases | IA ou humain (valeur suivie) |
 | `ai_notes` | Incohérences signalées par l'IA (texte court, statut propre) | IA (valeur suivie) |

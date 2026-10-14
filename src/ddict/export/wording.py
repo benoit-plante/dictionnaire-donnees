@@ -12,6 +12,7 @@ from typing import Literal
 from ddict.i18n import _
 from ddict.project.decisions import is_accepted
 from ddict.project.model import Code, Profile, TrackedValue, VariableEntry
+from ddict.questionnaire.labels import accepted_labels
 
 ExportKind = Literal["final", "work"]
 
@@ -47,7 +48,13 @@ REASONS = {
     "postal_code_values": _("valeurs au format code postal"),
     "wide_date_range": _("dates étalées sur de nombreuses années"),
 }
-ORIGINS = {"file": _("fichier"), "computed": _("calcul"), "ai": _("IA"), "human": _("humain")}
+ORIGINS = {
+    "file": _("fichier"),
+    "computed": _("calcul"),
+    "ai": _("IA"),
+    "questionnaire": _("questionnaire"),
+    "human": _("humain"),
+}
 GLOSSARY_ORIGINS = {"questionnaire": _("Questionnaire"), "human": _("Équipe")}
 GLOSSARY_STATUSES = {
     "none": "",
@@ -210,7 +217,7 @@ def pct_missing(profile: Profile) -> float:
 
 def value_rows(entry: VariableEntry) -> list[tuple[str, str, str, bool]]:
     """Code, label, count ("masqué" when masked, "" when not observed or not listed), missing."""
-    labels = {lab.code: lab.label for lab in entry.file.value_labels}
+    labels = {lab.code: lab.label for lab in accepted_labels(entry)}
     observed = {o.code: o for o in entry.profile.observed_values or []}
     declared = {m.low for m in entry.file.declared_missing if m.low == m.high}
     rows = []

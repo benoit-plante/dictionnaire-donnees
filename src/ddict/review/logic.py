@@ -24,8 +24,9 @@ from ddict.project.model import (
     VariableEntry,
 )
 from ddict.questionnaire import link
+from ddict.questionnaire.labels import propose_value_labels
 
-Field = Literal["label", "description", "unit", "question"]
+Field = Literal["label", "description", "unit", "question", "value_labels"]
 Action = Literal["accept", "correct", "reject"]
 Filter = Literal["all", "to_review", "flagged", "sensitive", "unlinked"]
 
@@ -43,6 +44,7 @@ FIELD_NAMES = {
     "description": _("Description"),
     "issues": _("Signalement"),
     "question": _("Question"),
+    "value_labels": _("Étiquettes de valeurs"),
 }
 
 # French messages for the fields of the human-only models; "" is a rule on the whole value.
@@ -64,9 +66,8 @@ def is_sensitive(entry: VariableEntry) -> bool:
 
 def pending(entry: VariableEntry) -> list[str]:
     """Fields with an AI proposal waiting for a decision."""
-    fields = [
-        f for f in ("question", "label", "description") if getattr(entry, f).status == "proposed"
-    ]
+    names = ("question", "value_labels", "label", "description")
+    fields = [f for f in names if getattr(entry, f).status == "proposed"]
     fields += ["issues"] * sum(1 for i in entry.issues if i.status == "proposed")
     return fields
 
@@ -125,6 +126,8 @@ def decide(
     except DecisionError as error:
         raise ReviewError(_("Décision impossible : {detail}").format(detail=error)) from error
     setattr(entry, field, new)
+    if field == "question":
+        propose_value_labels(project)
     if action in ("accept", "correct", "reject"):
         # A decision on the field settles its signals.
         entry.ai_signals = [s for s in entry.ai_signals if not s.startswith(f"{field}:")]
@@ -156,6 +159,7 @@ def link_question(project: Project, name: str, target_id: str, *, now: str) -> N
         entry.question = enter(tracked, target_id, now=now)
     else:
         entry.question = correct(tracked, target_id, now=now)
+    propose_value_labels(project)
 
 
 def decide_issue(project: Project, name: str, index: int, action: Action, *, now: str) -> None:

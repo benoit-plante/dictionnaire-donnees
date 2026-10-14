@@ -28,6 +28,7 @@ from ddict.export.wording import code_text
 from ddict.project.decisions import is_accepted
 from ddict.project.model import Group, Project, VariableEntry
 from ddict.questionnaire import link
+from ddict.questionnaire.labels import accepted_labels
 
 PROMPT_VERSION = "variables-v3"
 PROMPTS_WITH_QUESTIONNAIRE = ("variables-v3",)
@@ -129,8 +130,9 @@ def variable_payload(
 
     if entry.file.measure_level:
         payload["measure_level"] = entry.file.measure_level
-    if entry.file.value_labels:
-        payload["value_labels"] = {code_text(v.code): v.label for v in entry.file.value_labels}
+    labels = accepted_labels(entry)  # the file's, or those a person accepted (D-016)
+    if labels:
+        payload["value_labels"] = {code_text(v.code): v.label for v in labels}
     if p.observed_values is not None:
         present = p.n_rows - p.n_system_missing
         payload["observed"] = {

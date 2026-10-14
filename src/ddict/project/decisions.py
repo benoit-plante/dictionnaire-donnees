@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import TypeVar
 
-from ddict.project.model import TrackedValue
+from ddict.project.model import PROPOSING_ORIGINS, TrackedValue
 
 T = TypeVar("T")
 
@@ -44,8 +44,8 @@ def correct(tracked: TrackedValue[T], new_value: T, *, now: str) -> TrackedValue
 
 
 def reject(tracked: TrackedValue[T], *, now: str) -> TrackedValue[T]:
-    if tracked.origin != "ai":
-        raise DecisionError("Only AI proposals can be rejected")
+    if tracked.origin not in PROPOSING_ORIGINS:
+        raise DecisionError("Only proposals (AI or questionnaire) can be rejected")
     return tracked.model_copy(update={"status": "rejected", "updated_at": now})
 
 
@@ -60,6 +60,6 @@ def is_accepted(tracked: TrackedValue) -> bool:
     """Whether the value may appear in the final export (principle 3)."""
     if tracked.value is None:
         return False
-    if tracked.origin == "ai":
+    if tracked.origin in PROPOSING_ORIGINS:
         return tracked.status in ("validated", "corrected")
     return tracked.status != "rejected"

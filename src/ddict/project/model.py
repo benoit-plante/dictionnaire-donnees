@@ -14,7 +14,10 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_vali
 SCHEMA_VERSION = "0.1.0"
 
 Code = int | float | str
-Origin = Literal["file", "computed", "ai", "human"]
+# "questionnaire": computed from the questionnaire under a strict rule, and like an AI value
+# only a proposal until a person accepts it (value labels from the options, D-016).
+Origin = Literal["file", "computed", "ai", "questionnaire", "human"]
+PROPOSING_ORIGINS = ("ai", "questionnaire")
 Status = Literal["none", "proposed", "validated", "corrected", "rejected"]
 # A documented source is mandatory for thresholds, theoretical ranges and instrument names
 # (CONCEPTION.md, principle 4): an empty or blank source is refused.
@@ -45,10 +48,10 @@ class TrackedValue(Strict, Generic[T]):
     def _consistent(self) -> TrackedValue:
         if (self.origin == "ai") != (self.ai_run is not None):
             raise ValueError("ai_run is required for, and only for, values proposed by AI")
-        if self.status == "proposed" and self.origin != "ai":
-            raise ValueError("only AI values can be 'proposed'")
-        if self.origin == "ai" and self.status == "none":
-            raise ValueError("an AI value needs a status")
+        if self.status == "proposed" and self.origin not in PROPOSING_ORIGINS:
+            raise ValueError("only AI and questionnaire values can be 'proposed'")
+        if self.origin in PROPOSING_ORIGINS and self.status == "none":
+            raise ValueError("an AI or questionnaire value needs a status")
         if self.status == "corrected" and self.proposed_value is None:
             raise ValueError("a corrected value keeps the value it replaces")
         return self
@@ -158,6 +161,9 @@ class VariableEntry(Strict):
     # The question it comes from (D-013): "Q8", "Q7.r3", "Q10.o2", or "none"; the text is
     # looked up in the questionnaire, never stored here.
     question: TrackedValue[str] = TrackedValue[str](origin="human")
+    # Value labels proposed from the options of the linked question (D-016), when the file
+    # has none: "questionnaire" origin, to be accepted by a person.
+    value_labels: TrackedValue[list[ValueLabel]] = TrackedValue[list[ValueLabel]](origin="human")
     label: TrackedValue[str]
     description: TrackedValue[str]
     issues: list[TrackedValue[str]] = []

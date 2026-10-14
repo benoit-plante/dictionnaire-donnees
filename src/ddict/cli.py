@@ -33,6 +33,7 @@ from ddict.project import (
     save_project,
 )
 from ddict.questionnaire import load_questionnaire
+from ddict.questionnaire.labels import propose_value_labels
 from ddict.questionnaire.link import candidates, drop_stale_links
 
 EXIT_ERROR = 2
@@ -133,6 +134,7 @@ def cmd_questionnaire(args: argparse.Namespace) -> int:
     project.questionnaire = questionnaire
     propose_from_questionnaire(project)
     removed = drop_stale_links(project, previous) if previous is not None else 0
+    propose_value_labels(project)
     save_project(project, project_path)
     if removed:
         print(
@@ -206,6 +208,15 @@ def cmd_link(args: argparse.Namespace) -> int:
         )
         return EXIT_ERROR
     found = candidates(project)
+    waiting = propose_value_labels(project)
+    if waiting:
+        save_project(project, project_path)
+        print(
+            _(
+                "Étiquettes de valeurs tirées des options de réponse, à vérifier dans "
+                "l'interface : {names}."
+            ).format(names=", ".join(waiting))
+        )
     print(
         _("{n} variables sur {total} ont des questions candidates.").format(
             n=sum(1 for ids in found.values() if ids), total=len(found)
