@@ -12,10 +12,25 @@ import streamlit as st
 
 from ddict.i18n import _
 from ddict.review import logic
+from ddict.review.ui import (
+    base_view,
+    glossary_view,
+    groups_view,
+    home_view,
+    questionnaire_view,
+    variables_view,
+)
 from ddict.review.ui import common as c
-from ddict.review.ui import glossary_view, groups_view, home_view, variables_view
+from ddict.workflow import tasks
 
-MODES = {"variables": _("Variables"), "groups": _("Groupes"), "glossary": _("Glossaire")}
+# In the recommended order (v0.3): the database, the questionnaire and its acronyms first.
+MODES = {
+    "base": _("Base"),
+    "questionnaire": _("Questionnaire"),
+    "glossary": _("Glossaire"),
+    "variables": _("Variables"),
+    "groups": _("Groupes"),
+}
 
 
 def _messages_start():
@@ -29,6 +44,26 @@ def _messages_end(top) -> None:
     message = st.session_state.pop("shown_message")
     if message and not st.session_state.message_placed:
         (top.error if message[0] == "error" else top.success)(message[1])
+
+
+def _go(mode: str, which: str | None) -> None:
+    st.session_state.mode = mode
+    if which is not None:
+        st.session_state.filter = which
+
+
+def _dashboard(project) -> None:
+    """What waits for the team, in the recommended order; each line leads to its page."""
+    waiting = tasks(project)
+    st.caption(_("À faire") if waiting else _("Rien en attente."))
+    for index, task in enumerate(waiting):
+        st.button(
+            task.text.format(n=task.count),
+            key=f"task-{index}",
+            on_click=_go,
+            args=(task.mode, task.filter),
+            use_container_width=True,
+        )
 
 
 def main() -> None:
@@ -49,6 +84,7 @@ def main() -> None:
                 done=done, total=total
             ),
         )
+        _dashboard(project)
         mode = st.radio(_("Afficher"), list(MODES), key="mode", format_func=MODES.__getitem__)
         chosen = None
         if mode == "variables":
@@ -75,15 +111,19 @@ def main() -> None:
             st.caption(
                 _("{n} sigles, dont {p} à valider").format(n=len(project.glossary), p=pending)
             )
-        elif project.groups:
+        elif mode == "groups" and project.groups:
             chosen = st.selectbox(_("Groupe"), [g.group_id for g in project.groups], key="group")
-        else:
+        elif mode == "groups":
             st.info(_("Aucun groupe trouvé."))
     notice = st.session_state.pop("notice", None)
     if notice:
         st.info(notice)
     top = _messages_start()
-    if mode == "glossary":
+    if mode == "base":
+        base_view.page(project)
+    elif mode == "questionnaire":
+        questionnaire_view.page(project)
+    elif mode == "glossary":
         glossary_view.page(project)
     elif chosen is not None:
         if mode == "variables":

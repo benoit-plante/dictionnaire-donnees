@@ -293,6 +293,7 @@ def app(project, tmp_path):
     save_project(project, path)
     test = AppTest.from_file(APP, default_timeout=30)
     test.session_state["project_path"] = str(path)
+    test.session_state["mode"] = "variables"  # the page opens on "Base" (v0.3)
     test.run()
     assert not test.exception, test.exception
     return test, path

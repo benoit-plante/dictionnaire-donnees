@@ -17,7 +17,6 @@ from pathlib import Path
 
 from ddict import __version__
 from ddict.export import write_markdown, write_xlsx
-from ddict.glossary import propose_from_questionnaire, undefined_acronyms
 from ddict.i18n import _
 from ddict.io import ReadError
 from ddict.llm import DEFAULT_BLOCK_SIZE, build_blocks
@@ -30,10 +29,17 @@ from ddict.project import (
     load_project,
     save_project,
 )
-from ddict.questionnaire import load_questionnaire
 from ddict.questionnaire.labels import propose_value_labels
-from ddict.questionnaire.link import candidates, drop_stale_links
-from ddict.workflow import ProjectExists, profile_database, profile_summary
+from ddict.questionnaire.link import candidates
+from ddict.workflow import (
+    ProjectExists,
+    QuestionnaireExists,
+    acronym_summary,
+    add_questionnaire,
+    profile_database,
+    profile_summary,
+    questionnaire_summary,
+)
 
 EXIT_ERROR = 2
 
@@ -86,44 +92,26 @@ def cmd_export(args: argparse.Namespace) -> int:
     return 0
 
 
-TO_CHECK = {
-    "grid_header_unclear": _("titres de colonnes collés"),
-    "grid_without_header": _("grille sans titres de colonnes"),
-    "grid_rows_unnumbered": _("énoncés de grille non numérotés"),
-}
-KINDS = {
-    "open": _("ouvertes"),
-    "single": _("à choix unique"),
-    "checkbox": _("à cocher"),
-    "grid": _("grilles"),
-}
-
-
 def cmd_questionnaire(args: argparse.Namespace) -> int:
     project_path = Path(args.projet)
     project = load_project(project_path)
-    if project.questionnaire is not None and not args.remplacer:
+    try:
+        removed = add_questionnaire(project, args.fichier, replace=args.remplacer)
+    except QuestionnaireExists as error:
         print(
             _(
                 "Le projet a déjà un questionnaire ({name}). Utilisez --remplacer pour le "
                 "remplacer."
-            ).format(name=project.questionnaire.file_name),
+            ).format(name=error),
             file=sys.stderr,
         )
         return EXIT_ERROR
-    try:
-        questionnaire = load_questionnaire(args.fichier)
     except ReadError as error:
         print(
             _("Impossible de lire le questionnaire : {detail}").format(detail=error),
             file=sys.stderr,
         )
         return EXIT_ERROR
-    previous = project.questionnaire
-    project.questionnaire = questionnaire
-    propose_from_questionnaire(project)
-    removed = drop_stale_links(project, previous) if previous is not None else 0
-    propose_value_labels(project)
     save_project(project, project_path)
     if removed:
         print(
@@ -132,38 +120,8 @@ def cmd_questionnaire(args: argparse.Namespace) -> int:
                 "Relancez ddict rattacher."
             ).format(n=removed)
         )
-
-    questions = questionnaire.questions
-    pages = _(" ({n} pages)").format(n=questionnaire.n_pages) if questionnaire.n_pages else ""
-    print(_("Questionnaire lu : {name}{pages}").format(name=questionnaire.file_name, pages=pages))
-    counts = ", ".join(
-        f"{sum(1 for q in questions if q.kind == kind)} {label}"
-        for kind, label in KINDS.items()
-        if any(q.kind == kind for q in questions)
-    )
-    rows = sum(len(q.rows) for q in questions)
-    grids = _(" ; {n} énoncés de grille").format(n=rows) if rows else ""
-    summary = _("{n} questions : {counts}{grids}.")
-    print(summary.format(n=len(questions), counts=counts, grids=grids))
-    for question in questions:
-        if question.to_check:
-            reasons = ", ".join(TO_CHECK.get(code, code) for code in question.to_check)
-            check = _("À vérifier : {qid} ({reasons}).")
-            print(check.format(qid=question.question_id, reasons=reasons))
-    pending = [e.term for e in project.glossary if e.status == "proposed"]
-    if pending:
-        print(
-            _("Sigles définis dans le questionnaire, à valider : {terms}.").format(
-                terms=", ".join(pending)
-            )
-        )
-    undefined = undefined_acronyms(project)
-    if undefined:
-        print(
-            _("Sigles probables des noms de variables, sans définition : {terms}.").format(
-                terms=", ".join(undefined)
-            )
-        )
+    for line in questionnaire_summary(project.questionnaire) + acronym_summary(project):
+        print(line)
     print(_("Enregistré dans {path}.").format(path=project_path))
     return 0
 

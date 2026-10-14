@@ -167,6 +167,7 @@ def test_accept_labels_in_the_interface(project, tmp_path):
     save_project(project, path)
     test = AppTest.from_file(APP, default_timeout=30)
     test.session_state["project_path"] = str(path)
+    test.session_state["mode"] = "variables"  # the page opens on "Base" (v0.3)
     test.run()
     test.sidebar.selectbox(key="variable").set_value("sommeil_q1").run()
     assert any("ordre supposé, à vérifier" in c.value for c in test.caption)
