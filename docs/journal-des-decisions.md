@@ -371,3 +371,16 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   3. Accepter tout ce que propose le modèle.
 - **Justification :** sur une grande base, la révision une à une est longue, alors que l'accord du modèle et du calcul est un bon indice ; l'aperçu garde chaque décision visible. L'option 3 ferait des propositions des décisions sans regard humain.
 - **Conséquences :** l'essai de l'étape 5 mesure le temps gagné et les erreurs qui passent par ce bouton.
+
+### D-030 — Pas de fichier de commandes Stata
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** — (restreint D-025 : les fichiers de commandes sont SPSS et R)
+- **Décision :** l'outil n'écrit pas de fichier de commandes Stata (`.do`). Les fichiers de commandes sont une syntaxe SPSS et un script R. La lecture des bases Stata (`.dta`) reste, ainsi que la copie documentée à partir d'une base Stata.
+- **Options considérées :**
+  1. Retirer le fichier Stata (ce choix).
+  2. Le garder, avec la mention « non essayé dans Stata ».
+  3. Attendre l'essai d'une personne qui a Stata avant de publier.
+- **Justification :** ni l'auteur ni le poste de développement n'ont Stata ; la syntaxe SPSS est vérifiée avec PSPP et le script R avec R, mais le fichier Stata ne l'était que par sa forme. Un fichier jamais exécuté risquerait d'échouer chez l'équipe. Une équipe qui travaille avec Stata peut utiliser la copie documentée (`.sav`, que Stata lit avec `import spss`).
+- **Conséquences :** code, tests, guide, conception et journal des changements mis à jour ; un fichier Stata pourra revenir si une personne qui a Stata peut l'essayer.

@@ -1,6 +1,7 @@
 """Command files that apply the accepted decisions to the team's data (v0.4, D-025).
 
-One file per program: SPSS syntax, an R script (haven), a Stata do-file. They hold only
+One file per program: SPSS syntax and an R script (haven); no Stata do-file, which could
+not be tried in Stata (D-030). They hold only
 decisions: variable labels, value labels (from the file or accepted), missing codes
 (declared in the file or confirmed by the team, D-028), measure levels from the file.
 Nothing proposed, no participant value. Values are never recoded; the reversed items the
@@ -21,9 +22,8 @@ from ddict.i18n import _
 from ddict.project.model import Code, Project, VariableEntry
 from ddict.questionnaire.labels import accepted_labels
 
-SUFFIXES = {"spss": ".sps", "r": ".R", "stata": ".do"}
+SUFFIXES = {"spss": ".sps", "r": ".R"}
 SPSS_MAX_DISCRETE = 3
-STATA_MAX_LABEL = 80
 
 
 @dataclass(frozen=True)
@@ -253,86 +253,6 @@ def _r_compute(name: str, total: str) -> str:
     return f"donnees[[{_r_text(name + '_inv')}]] <- {total} - {column}"
 
 
-# --- Stata ----------------------------------------------------------------------------------
-
-STATA_NAME = re.compile(r"^[^\W\d]\w{0,31}$")
-
-
-def _stata_text(text: str) -> str:
-    """A compound-quoted string; macro characters are escaped."""
-    escaped = text.replace("\\", "\\\\").replace("$", "\\$").replace("`", "\\`")
-    return f'`"{escaped}"\''
-
-
-def stata(project: Project, today: str) -> str:
-    lines = [
-        *_header(project, "*", today),
-        _("* Stata 14 ou plus récent (UTF-8)."),
-        _("* Les niveaux de mesure n'existent pas dans Stata."),
-        "",
-    ]
-    for entry in project.variables:
-        d = decisions(entry)
-        if not STATA_NAME.match(d.name):
-            lines.append(
-                _("* {name} : nom de variable non valide pour Stata, omise.").format(name=d.name)
-            )
-            continue
-        block = []
-        if d.label:
-            if len(d.label) > STATA_MAX_LABEL:
-                block.append(
-                    _("* Libellé raccourci à {n} caractères par Stata.").format(n=STATA_MAX_LABEL)
-                )
-            block.append(f"label variable {d.name} {_stata_text(d.label)}")
-        if d.labels:
-            if d.string or not all(_is_integer(code) for code, _label in d.labels):
-                block.append(
-                    _(
-                        "* {name} : Stata n'étiquette que des codes entiers ; étiquettes omises."
-                    ).format(name=d.name)
-                )
-            else:
-                pairs = " ".join(
-                    f"{_number(code)} {_stata_text(label)}" for code, label in d.labels
-                )
-                block.append(f"label define {d.name} {pairs}, replace")
-                block.append(f"label values {d.name} {d.name}")
-        if d.missing or d.missing_range:
-            block.append(_stata_missing(d))
-        if block:
-            lines += [*block, ""]
-    items = _reversed(project)
-    if items:
-        lines.append(
-            _("* Items inversés selon l'équipe : non recodés. Suggestion, à faire vous-même :")
-        )
-        lines += [_reversed_line("*", g, e, _stata_compute) for g, e in items]
-    return "\n".join(lines).rstrip("\n") + "\n"
-
-
-def _is_integer(code: Code) -> bool:
-    return isinstance(code, int | float) and float(code).is_integer()
-
-
-def _stata_missing(d: Decisions) -> str:
-    """Stata has no user-defined missing codes: replacing them would change the data, so
-    the command is only suggested."""
-    codes = [_number(c) for c in d.missing]
-    if d.missing_range:
-        low, high = d.missing_range
-        codes.append(f"{_number(low)}/{_number(high)}")
-    text = _("* {name} : codes manquants {codes}. Pour les remplacer par . (change les données) :")
-    return (
-        text.format(name=d.name, codes=", ".join(codes))
-        + f"\n* mvdecode {d.name}, mv({' '.join(codes)})"
-    )
-
-
-def _stata_compute(name: str, total: str) -> str:
-    return f"generate {name}_inv = {total} - {name}"
-
-
 # --- Shared ---------------------------------------------------------------------------------
 
 
@@ -348,7 +268,7 @@ def _reversed_line(
     return f"{comment} {compute(entry.name, total)}"
 
 
-WRITERS = {"spss": spss, "r": r_script, "stata": stata}
+WRITERS = {"spss": spss, "r": r_script}
 
 
 def render_syntax(project: Project, program: str, today: str | None = None) -> str:

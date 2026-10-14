@@ -30,5 +30,5 @@ Temps de relecture de la liste groupée (31 lignes) : 36 secondes pour l'assista
 
 ## Ce qui reste
 
-- Le fichier Stata n'a été vérifié que par sa forme : un essai par une personne qui a Stata est souhaitable.
+- Le fichier Stata, qui n'avait été vérifié que par sa forme, a été retiré de l'outil par l'auteur (D-030).
 - Le temps de révision d'une personne avec les décisions groupées.

@@ -99,7 +99,7 @@ Le codebook contient les libellés, le texte des questions rattachées, le gloss
 
 Le codebook documente ; vos données, elles, n'ont pas changé. Pour y faire entrer ce que vous avez accepté (libellés, étiquettes de valeurs, codes manquants, y compris ceux confirmés par l'équipe, niveaux de mesure), deux voies, sur la page **Export**.
 
-**Les fichiers de commandes, la voie recommandée.** **Écrire les fichiers de commandes à côté du projet** (ou les télécharger) donne trois fichiers : `etude-sommeil-metadonnees.sps` (SPSS), `.R` (R) et `.do` (Stata). Ils ne contiennent que vos décisions acceptées et ne changent aucune valeur : vous les ouvrez dans votre propre logiciel, vous pouvez les lire avant de les exécuter, et ils restent comme trace de ce qui a été fait. Les items inversés que vous avez indiqués y sont seulement suggérés, en commentaire.
+**Les fichiers de commandes, la voie recommandée.** **Écrire les fichiers de commandes à côté du projet** (ou les télécharger) donne deux fichiers : `etude-sommeil-metadonnees.sps` (SPSS) et `.R` (R). Il n'y a pas de fichier pour Stata, qui n'a pas pu être essayé (D-030) : avec Stata, utilisez la copie documentée ci-dessous. Ils ne contiennent que vos décisions acceptées et ne changent aucune valeur : vous les ouvrez dans votre propre logiciel, vous pouvez les lire avant de les exécuter, et ils restent comme trace de ce qui a été fait. Les items inversés que vous avez indiqués y sont seulement suggérés, en commentaire.
 
 - **R** (avec le paquet haven, installé une fois par `install.packages("haven")`), dans RStudio ou la console R, dans le dossier du projet :
 
@@ -111,7 +111,6 @@ Le codebook documente ; vos données, elles, n'ont pas changé. Pour y faire ent
 
   `user_na = TRUE` est important pour un fichier SPSS : sans lui, haven remplace par des cases vides les codes manquants déjà déclarés (un 9 « Préfère ne pas répondre » devient une case vide, et la copie perd cette information). Les niveaux de mesure ne sont pas appliqués par R : haven ne les écrit pas.
 - **SPSS** : ouvrez la base, puis **Fichier > Ouvrir > Syntaxe…**, choisissez le `.sps`, et **Exécuter > Tout**. Enregistrez ensuite la base sous un nouveau nom.
-- **Stata** (14 ou plus récent) : `use` votre base, puis `do etude-sommeil-metadonnees.do`. Stata n'a pas de codes manquants déclarés : la commande qui remplacerait ces codes par un point est écrite en commentaire, à exécuter seulement si vous le décidez.
 
 **La copie documentée, si vous voulez un fichier prêt à l'emploi.** **Écrire la copie documentée** (ou `ddict documenter etude-sommeil.dd.json`) écrit à côté de la base `etude-sommeil-documente.sav`, au format SPSS, avec vos décisions. Elle fonctionne aussi à partir d'une base CSV, Stata, SAS ou Excel. Avant de l'annoncer, l'outil la relit et la compare à l'original case par case ; au moindre écart, il la supprime et vous le dit. Votre fichier d'origine n'est jamais modifié, et une copie existante n'est remplacée que si vous cochez la case. La base doit se trouver à côté du projet ; sinon, **Choisir la base…** (ou `--base`). La copie contient les données des participants : rangez-la comme l'original.
 
@@ -142,7 +141,7 @@ ddict rattacher etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M
 ddict enrichir etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M
 ddict reviser etude-sommeil.dd.json           # ouvrir directement un projet
 ddict exporter etude-sommeil.dd.json          # codebook Excel et rapport
-ddict exporter etude-sommeil.dd.json --syntaxe   # et les fichiers de commandes SPSS, R, Stata
+ddict exporter etude-sommeil.dd.json --syntaxe   # et les fichiers de commandes SPSS et R
 ddict documenter etude-sommeil.dd.json        # copie documentée de la base (.sav)
 ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M   # banc d'essai d'un modèle
 ```

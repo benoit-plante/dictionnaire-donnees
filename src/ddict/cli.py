@@ -545,7 +545,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--syntaxe",
         action="store_true",
         help=_(
-            "Écrire aussi les fichiers de commandes SPSS, R et Stata qui appliquent les "
+            "Écrire aussi les fichiers de commandes SPSS et R qui appliquent les "
             "décisions acceptées à vos données."
         ),
     )

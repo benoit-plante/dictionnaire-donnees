@@ -39,7 +39,7 @@ KINDS = {
     "final": _("Finale : seulement ce qui vient du fichier, du calcul ou de vos décisions"),
     "work": _("De travail : avec les propositions en attente, marquées comme telles"),
 }
-PROGRAMS = {"spss": _("Syntaxe SPSS"), "r": _("Script R"), "stata": _("Fichier Stata")}
+PROGRAMS = {"spss": _("Syntaxe SPSS"), "r": _("Script R")}
 XLSX_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 
@@ -245,7 +245,7 @@ def page(project: Project) -> None:
     st.subheader(_("Fichiers de commandes"))
     st.caption(
         _(
-            "Pour appliquer vos décisions à vos données dans SPSS, R ou Stata : libellés, "
+            "Pour appliquer vos décisions à vos données dans SPSS ou R : libellés, "
             "étiquettes de valeurs, codes manquants et niveaux de mesure. Seulement ce qui est "
             "accepté, quelle que soit la version choisie plus haut. Aucune valeur n'est "
             "modifiée ; appliquez-les à une copie de vos données."
@@ -258,7 +258,7 @@ def page(project: Project) -> None:
     )
     c.show_message("export-syntax-write")
     paths = syntax_paths(c.project_path())
-    for column, (program, title) in zip(st.columns(3), PROGRAMS.items(), strict=True):
+    for column, (program, title) in zip(st.columns(len(PROGRAMS)), PROGRAMS.items(), strict=True):
         column.download_button(
             title,
             data=render_syntax(project, program).encode("utf-8"),

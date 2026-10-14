@@ -274,13 +274,13 @@ def export_codebook(
 
 
 def syntax_paths(project_path: Path) -> dict[str, Path]:
-    """The command files next to the project: "etude-metadonnees.sps", ".R", ".do"."""
+    """The command files next to the project: "etude-metadonnees.sps" and ".R"."""
     stem = project_stem(project_path) + "-metadonnees"
     return {program: project_path.with_name(stem + suffix) for program, suffix in SUFFIXES.items()}
 
 
 def export_syntax(project: Project, project_path: Path) -> dict[str, Path]:
-    """Write the SPSS, R and Stata command files: accepted decisions only (D-025)."""
+    """Write the SPSS and R command files: accepted decisions only (D-025, D-030)."""
     paths = syntax_paths(project_path)
     write_syntax(project, paths)
     return paths

@@ -1,4 +1,4 @@
-"""v0.4, step 3: command files for SPSS, R and Stata (D-025, D-027)."""
+"""v0.4, step 3: command files for SPSS and R (D-025, D-027); no Stata file (D-030)."""
 
 import os
 import shutil
@@ -59,7 +59,7 @@ def test_only_accepted_decisions(project):
     entry = project.variable("sommeil_q7")  # no label in the file
     entry.label = TrackedValue[str](value="Proposé", origin="ai", status="proposed", ai_run="r1")
     assert decisions(entry).label == ""  # a proposal is not applied
-    for program in ("spss", "r", "stata"):
+    for program in ("spss", "r"):
         assert "Proposé" not in render_syntax(project, program, TODAY)
 
 
@@ -83,17 +83,6 @@ def test_escaping(project):
     assert "VARIABLE LABELS age 'L''heure \"$x\" `y'''." in spss
     r = render_syntax(project, "r", TODAY)
     assert 'attr(donnees[["age"]], "label") <- "L\'heure \\"$x\\" `y\'"' in r
-    stata = render_syntax(project, "stata", TODAY)
-    assert 'label variable age `"L\'heure "\\$x" \\`y\'"\'' in stata
-
-
-def test_stata(project):
-    text = render_syntax(project, "stata", TODAY)
-    assert 'label define genre 1 `"Femme"\' 2 `"Homme"\'' in text
-    assert "label values genre genre\n" in text
-    # No user-defined missing codes in Stata: the replacement is only suggested.
-    assert "\n* mvdecode genre, mv(9)\n" in text
-    assert "\nmvdecode" not in text
 
 
 def test_reversed_items_are_only_suggested(project):
@@ -109,7 +98,6 @@ def test_reversed_items_are_only_suggested(project):
     project.variable("anx2").theoretical_range = TheoreticalRange(min=0, max=3, source="Manuel")
     assert '# donnees[["anx2_inv"]] <- 3 - donnees[["anx2"]]' in render_syntax(project, "r", TODAY)
     assert "* COMPUTE anx2_inv = 3 - anx2." in render_syntax(project, "spss", TODAY)
-    assert "* generate anx2_inv = 3 - anx2" in render_syntax(project, "stata", TODAY)
 
 
 def test_names_a_program_refuses(project):
@@ -117,13 +105,10 @@ def test_names_a_program_refuses(project):
     assert "* 1 identifiant : nom de variable non valide pour SPSS, omise." in render_syntax(
         project, "spss", TODAY
     )
-    assert "* 1 identifiant : nom de variable non valide pour Stata, omise." in render_syntax(
-        project, "stata", TODAY
-    )
 
 
 def test_no_participant_value(project):
-    for program in ("spss", "r", "stata"):
+    for program in ("spss", "r"):
         text = render_syntax(project, program, TODAY)
         assert "ZQX" not in text  # the canaries of the fictional data
 
@@ -248,12 +233,12 @@ def test_command(project_path, capsys):
     names = [
         "etude-sommeil-metadonnees.sps",
         "etude-sommeil-metadonnees.R",
-        "etude-sommeil-metadonnees.do",
     ]
     out = capsys.readouterr().out
     for name in names:
         assert name in out
         assert project_path.with_name(name).exists()
+    assert not project_path.with_name("etude-sommeil-metadonnees.do").exists()  # D-030
     sps = project_path.with_name(names[0]).read_bytes()
     assert b"MISSING VALUES age (999).\n" in sps and b"\r\n" not in sps
     assert main(["exporter", str(project_path)]) == 0  # without --syntaxe: codebook only
