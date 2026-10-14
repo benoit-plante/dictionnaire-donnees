@@ -291,3 +291,59 @@ def set_reverse_items(project: Project, group_id: str, names: list[str]) -> None
     if unknown:
         raise ReviewError(_("Pas dans le groupe : {names}").format(names=", ".join(unknown)))
     target.reverse_items = [n for n in members if n in names]
+
+
+# --- v0.4, step 5: grouped decisions, shown first (D-029). ---
+
+
+def agreeing_links(project: Project) -> list[str]:
+    """Variables whose link proposed by the model is also what the tool computes first."""
+    if project.questionnaire is None:
+        return []
+    computed = link.best_guess(project)
+    return [
+        e.name
+        for e in project.variables
+        if e.question.origin == "ai"
+        and e.question.status == "proposed"
+        and e.question.value is not None
+        and computed.get(e.name) == e.question.value
+    ]
+
+
+def accept_links(project: Project, names: list[str], *, now: str) -> None:
+    """Accept the links of these variables, one decision each; only those that agree."""
+    allowed = set(agreeing_links(project))
+    outside = [n for n in names if n not in allowed]
+    if outside:
+        raise ReviewError(
+            _("Ces rattachements ne sont plus en accord : {names}.").format(
+                names=", ".join(outside)
+            )
+        )
+    if not names:
+        raise ReviewError(_("Aucune variable cochée."))
+    for name in names:
+        decide(project, name, "question", "accept", now=now)
+
+
+def group_label_proposals(project: Project, group_id: str) -> list[str]:
+    """Members of a group whose value labels from the questionnaire wait for a decision."""
+    members = group(project, group_id).members.value or []
+    return [n for n in members if project.variable(n).value_labels.status == "proposed"]
+
+
+def accept_group_labels(project: Project, group_id: str, names: list[str], *, now: str) -> None:
+    """Accept the value labels of these members of the group, one decision each."""
+    allowed = set(group_label_proposals(project, group_id))
+    outside = [n for n in names if n not in allowed]
+    if outside:
+        raise ReviewError(
+            _("Ces étiquettes n'attendent plus de décision dans ce groupe : {names}.").format(
+                names=", ".join(outside)
+            )
+        )
+    if not names:
+        raise ReviewError(_("Aucune variable cochée."))
+    for name in names:
+        decide(project, name, "value_labels", "accept", now=now)

@@ -8,12 +8,14 @@ from ddict.export import wording as w
 from ddict.i18n import _
 from ddict.project.model import Project
 from ddict.review import logic
+from ddict.review.ui import bulk_view
 from ddict.review.ui import common as c
 
 
 def page(project: Project, group_id: str) -> None:
     group = logic.group(project, group_id)
     st.header(f"{group.group_id} — {group.descriptive_label.value or ''}")
+    bulk_view.labels_panel(project, group_id)
     members = group.members.value or []
     st.write(f"{_('Variables')} : " + ", ".join(members))
     st.write(f"{_('Indices du regroupement')} : {w.basis_text(group.basis)}")

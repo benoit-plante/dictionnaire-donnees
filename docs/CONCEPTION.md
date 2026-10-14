@@ -293,6 +293,12 @@ La commande `rattacher` envoie un second type de message (prompt `link-v1`, puis
 
 La logique (changer un statut, valider une source) vit dans `project` et se teste sans Streamlit ; l'interface reste mince, ce qui permettrait de la remplacer plus tard sans tout réécrire.
 
+### 7.1 Décisions groupées (v0.4, D-029)
+
+- `logic.agreeing_links` : les rattachements proposés par le modèle qui sont aussi la première candidate du calcul (`link.best_guess`) ; `logic.accept_links` les accepte un par un, avec leur date, et refuse un nom qui n'est plus en accord.
+- `logic.group_label_proposals` et `logic.accept_group_labels` : les étiquettes de valeurs proposées pour les membres d'un groupe.
+- Interface (`review/ui/bulk_view.py`) : un premier bouton ouvre la liste exacte, toutes les cases cochées ; le bouton « Accepter ces N… » n'existe que dans cette liste. Essai : `docs/essais/2026-10-14-decisions-groupees.md`.
+
 ## 8. Exports
 
 - **Codebook `.xlsx`** : un onglet « Variables » (une ligne par variable), un onglet « Valeurs » (une ligne par code et étiquette), un onglet « Groupes », un onglet « Provenance » (statut et origine de chaque champ, modèles utilisés). En-têtes figés, filtres activés.

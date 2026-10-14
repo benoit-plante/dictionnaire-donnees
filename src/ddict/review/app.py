@@ -15,6 +15,7 @@ from ddict.review import logic
 from ddict.review.ui import (
     ai_view,
     base_view,
+    bulk_view,
     export_view,
     glossary_view,
     groups_view,
@@ -133,8 +134,11 @@ def main() -> None:
         ai_view.page(project)
     elif mode == "export":
         export_view.page(project)
+    elif mode == "variables" and chosen is None:
+        bulk_view.links_panel(project)
     elif chosen is not None:
         if mode == "variables":
+            bulk_view.links_panel(project)
             variables_view.page(project, project.variable(chosen))
         else:
             groups_view.page(project, chosen)
