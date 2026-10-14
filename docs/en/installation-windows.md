@@ -4,7 +4,7 @@ This guide is for people who do not program. It goes from the installation to a 
 
 On a Mac: [`installation-macos.md`](installation-macos.md). En français : [`../installation-windows.md`](../installation-windows.md).
 
-> The tool was written in French first; its English interface is new (version 0.5). The installer window speaks French only: this guide gives what it says.
+> **Trial version of the English.** The tool was written in French first; its English interface is new (version 0.5) and its translation has not yet been reviewed by a native English speaker. If a sentence is unclear or wrong, write it down and pass it on. The installer window speaks French only: this guide gives what it says.
 
 ## What you need
 

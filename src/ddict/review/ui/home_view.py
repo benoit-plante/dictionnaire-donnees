@@ -110,6 +110,11 @@ def _language() -> None:
 
 def page() -> None:
     _language()
+    if i18n.language() == "en":  # v0.5: a trial (D-034)
+        st.caption(
+            "The English interface is a trial version: its translation has not yet been "
+            "reviewed by a native speaker. Please report anything unclear."
+        )
     st.title(_("Dictionnaire de données"))
     st.caption(
         _(

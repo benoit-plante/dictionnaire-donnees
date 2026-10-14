@@ -4,7 +4,7 @@ This guide is for people who do not program. It covers what is specific to the M
 
 En français : [`../installation-macos.md`](../installation-macos.md).
 
-> Installing on a Mac is new (version 0.5). It was checked on a GitHub Mac (macOS 26, Apple silicon), not yet by a person on their own Mac. If something does not happen as described here, write it down and pass it on. The installer window speaks French only: this guide gives what it says.
+> **Trial version on the Mac.** Installing on a Mac is new (version 0.5). It was checked on a GitHub Mac (macOS 26, Apple silicon), not yet by a person on their own Mac; the English translation has not yet been reviewed by a native speaker either. If something does not happen as described here, write it down and pass it on. The installer window speaks French only: this guide gives what it says.
 
 ## What you need
 

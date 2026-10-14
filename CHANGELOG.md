@@ -1,5 +1,17 @@
 # Changements
 
+## 0.5.0 — 2026-10-14
+
+L'outil existe aussi en anglais et s'installe sur un Mac (plan : `docs/plan-v0.5.md`, D-031 à D-037). **L'anglais et macOS sont à l'essai** : la traduction n'a pas encore été relue par une personne anglophone (D-034), et l'installation sur Mac a été vérifiée sur un Mac de GitHub, pas encore par une personne sur son propre Mac (D-035).
+
+- **Interface en anglais** : « Français · English » sur l'accueil, appliqué aussitôt et gardé sur l'ordinateur ; toute l'interface et la ligne de commande traduites, avec des noms anglais pour les commandes et les options (`ddict export --work`, `--replace`…). Glossaire des termes : `docs/glossaire-traduction.md` ; tableur de relecture : `scripts/tableur_relecture.py`.
+- **Codebook en anglais** : la langue du codebook se choisit à l'export (`--langue en`), indépendamment de celle de l'interface ; elle vaut pour les en-têtes, les notes, la provenance, le rapport et les commentaires des fichiers de commandes. Ce que l'équipe a écrit n'est jamais traduit. Les nombres, les deux-points et les guillemets suivent la langue.
+- **Études menées en anglais** : chaque projet a sa langue (D-032), devinée d'après le questionnaire ou les étiquettes et modifiable sur la page « Base » ; les consignes au modèle et ce qui est envoyé avec les données suivent cette langue ; les signaux d'invention reconnaissent l'anglais. Une version anglaise de l'étude fictive sur le sommeil s'ajoute aux exemples et au banc d'essai.
+- **macOS** : `installer.command` et `desinstaller.command`, une icône dans Applications et sur le bureau ; essai automatique sur un Mac de GitHub (`.github/workflows/macos.yml`, lancé à la main).
+- **Mise à jour et désinstallation** : un outil ouvert est fermé d'abord, avec l'accord de la personne (Windows et Mac).
+- **Le dépôt GitHub est public** (D-037).
+- Guides : `docs/installation-macos.md`, et les guides en anglais dans `docs/en/`.
+
 ## 0.4.0 — 2026-10-14
 
 Les décisions passent du codebook aux données, et le choix du modèle se fait en connaissance de cause (plan : `docs/plan-v0.4.md`, D-025 à D-029).

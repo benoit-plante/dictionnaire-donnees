@@ -1,6 +1,6 @@
 # dictionnaire-donnees
 
-> Nom de travail. Version 0.4.0 : les décisions passent du codebook à vos données (fichiers de commandes SPSS et R, copie documentée), et un banc d'essai aide à choisir le modèle. À essayer d'abord sur la base fictive et son questionnaire, fournis.
+> Nom de travail. Version 0.5.0 : l'outil existe aussi en anglais (interface, codebook, études menées en anglais) et s'installe sur un Mac par double-clic. **L'anglais et macOS sont à l'essai** : la traduction n'a pas encore été relue par une personne anglophone, et l'installation sur Mac n'a été vérifiée que sur un Mac de GitHub. À essayer d'abord sur la base fictive et son questionnaire, fournis.
 
 Outil libre et local qui aide les équipes de recherche à produire le **dictionnaire de données** (codebook) d'une base existante (SPSS, CSV, Stata, SAS ou Excel), avec l'aide du questionnaire de l'étude.
 
@@ -13,7 +13,7 @@ Outil libre et local qui aide les équipes de recherche à produire le **diction
 
 Le guide [`docs/installation-windows.md`](docs/installation-windows.md) mène de l'installation à un codebook complet, sans connaissances en programmation. En bref : décompresser l'archive, double-cliquer sur `installer.bat`, puis sur l'icône **Dictionnaire de données** ; le reste se fait dans le navigateur, sur cet ordinateur seulement. Sur un Mac : [`docs/installation-macos.md`](docs/installation-macos.md) (`installer.command`).
 
-**In English.** A free, local tool that helps research teams write the data dictionary (codebook) of an existing database, with the help of the study's questionnaire; an optional local AI proposes, a person decides, and nothing leaves the computer. The interface, the codebook and the guides exist in English: [`docs/en/installation-windows.md`](docs/en/installation-windows.md) (Windows) and [`docs/en/installation-macos.md`](docs/en/installation-macos.md) (Mac).
+**In English.** A free, local tool that helps research teams write the data dictionary (codebook) of an existing database, with the help of the study's questionnaire; an optional local AI proposes, a person decides, and nothing leaves the computer. The interface, the codebook and the guides exist in English (a trial version: the translation has not yet been reviewed by a native speaker): [`docs/en/installation-windows.md`](docs/en/installation-windows.md) (Windows) and [`docs/en/installation-macos.md`](docs/en/installation-macos.md) (Mac).
 
 Toutes les étapes existent aussi en ligne de commande (`ddict --help`) :
 

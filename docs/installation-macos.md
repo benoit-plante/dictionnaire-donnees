@@ -4,7 +4,7 @@ Ce guide s'adresse aux personnes qui ne programment pas. Il couvre ce qui est pr
 
 In English: [`en/installation-macos.md`](en/installation-macos.md).
 
-> L'installation sur Mac est nouvelle (version 0.5). Elle a été vérifiée sur un Mac de GitHub (macOS 26, puce Apple), pas encore par une personne sur son propre Mac. Si quelque chose ne se passe pas comme décrit ici, notez-le et transmettez-le.
+> **Version à l'essai sur Mac.** L'installation sur Mac est nouvelle (version 0.5). Elle a été vérifiée sur un Mac de GitHub (macOS 26, puce Apple), pas encore par une personne sur son propre Mac. Si quelque chose ne se passe pas comme décrit ici, notez-le et transmettez-le.
 
 ## Ce qu'il faut
 
