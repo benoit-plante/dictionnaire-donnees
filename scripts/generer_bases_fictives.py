@@ -368,6 +368,10 @@ def write_xlsx(df: pd.DataFrame, path: Path) -> None:
                 data = re.sub(
                     rb"(<dcterms:modified[^>]*>)[^<]*", rb"\g<1>2026-01-01T00:00:00Z", data
                 )
+            if info.filename.startswith("xl/worksheets/"):
+                # On Windows a line break in a cell is written CR LF; the data has LF, as
+                # macOS writes it (macOS run of v0.5).
+                data = data.replace(b"\r\n", b"\n")
             fixed = zipfile.ZipInfo(info.filename, date_time=XLSX_FIXED_TIME.timetuple()[:6])
             fixed.compress_type = zipfile.ZIP_DEFLATED
             fixed.create_system = 0  # as on Windows: Python marks the system otherwise (v0.5)
