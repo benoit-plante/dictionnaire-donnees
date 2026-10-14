@@ -558,19 +558,22 @@ def _group(project: Project, group_id: str) -> None:
     if suspects:
         st.warning(_("Items probablement inversés : {s}").format(s=", ".join(suspects)))
     key = f"reverse-{group_id}"
-    st.multiselect(
-        _("Items inversés confirmés"),
-        members,
-        key=_field(key, lambda: logic.group(_project(), group_id).reverse_items or suspects),
-    )
-    _button(
-        _("Enregistrer les items inversés"),
-        f"save-{key}",
-        logic.set_reverse_items,
-        group_id,
-        _state(key),
-        reset=(key,),
-    )
+    # A form: a change of the list must not reload the page before the click is seen.
+    with st.form(f"form-{key}", border=False):
+        st.multiselect(
+            _("Items inversés confirmés"),
+            members,
+            key=_field(key, lambda: logic.group(_project(), group_id).reverse_items or suspects),
+        )
+        _button(
+            _("Enregistrer les items inversés"),
+            f"save-{key}",
+            logic.set_reverse_items,
+            group_id,
+            _state(key),
+            reset=(key,),
+            submit=True,
+        )
     st.divider()
     st.caption(_("Nom de l'instrument : réservé aux personnes, avec une source documentée."))
 
@@ -600,27 +603,32 @@ def _group(project: Project, group_id: str) -> None:
     if project.questionnaire is not None:
         st.divider()
         key = f"omit-text-{group_id}"
-        st.checkbox(
-            _(
-                "Ne pas reproduire le texte des questions de ce groupe dans le codebook "
-                "(instrument protégé par le droit d'auteur)"
-            ),
-            key=_field(key, lambda: logic.group(_project(), group_id).omit_question_text),
-        )
-        st.caption(
-            _(
-                "Reproduire les items d'un instrument protégé relève de l'équipe ; le codebook "
-                "donnera alors la référence de la question (Q12.r3, p. 4) sans son texte."
+        # A form: ticking the box must not reload the page before the click is seen (a
+        # quick click on the button saved the old state, found in the browser).
+        with st.form(f"form-{key}", border=False):
+            st.checkbox(
+                _(
+                    "Ne pas reproduire le texte des questions de ce groupe dans le codebook "
+                    "(instrument protégé par le droit d'auteur)"
+                ),
+                key=_field(key, lambda: logic.group(_project(), group_id).omit_question_text),
             )
-        )
-        _button(
-            _("Enregistrer ce choix"),
-            f"save-{key}",
-            logic.set_omit_question_text,
-            group_id,
-            _state(key),
-            reset=(key,),
-        )
+            st.caption(
+                _(
+                    "Reproduire les items d'un instrument protégé relève de l'équipe ; le "
+                    "codebook donnera alors la référence de la question (Q12.r3, p. 4) sans "
+                    "son texte."
+                )
+            )
+            _button(
+                _("Enregistrer ce choix"),
+                f"save-{key}",
+                logic.set_omit_question_text,
+                group_id,
+                _state(key),
+                reset=(key,),
+                submit=True,
+            )
 
 
 def _glossary_entry(project: Project, item) -> None:
