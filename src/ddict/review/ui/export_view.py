@@ -14,11 +14,12 @@ import sys
 import streamlit as st
 
 from ddict.export import render_markdown, write_xlsx
+from ddict.export.syntax import render_syntax
 from ddict.i18n import _
 from ddict.project.model import Project
 from ddict.review import logic
 from ddict.review.ui import common as c
-from ddict.workflow import export_codebook, export_paths
+from ddict.workflow import export_codebook, export_paths, export_syntax, syntax_paths
 
 KIND = "export-kind"
 OMIT = "export-omit"
@@ -26,6 +27,7 @@ KINDS = {
     "final": _("Finale : seulement ce qui vient du fichier, du calcul ou de vos décisions"),
     "work": _("De travail : avec les propositions en attente, marquées comme telles"),
 }
+PROGRAMS = {"spss": _("Syntaxe SPSS"), "r": _("Script R"), "stata": _("Fichier Stata")}
 XLSX_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 
@@ -54,6 +56,25 @@ def _write() -> None:
             xlsx=xlsx.name, md=markdown.name
         ),
         "export-write",
+    )
+
+
+def _write_syntax() -> None:
+    try:
+        paths = export_syntax(c.project(), c.project_path())
+    except OSError as error:
+        st.session_state.message = (
+            "error",
+            _("Impossible d'écrire les fichiers : {detail}.").format(detail=error),
+            "export-syntax-write",
+        )
+        return
+    st.session_state.message = (
+        "success",
+        _("Fichiers écrits à côté du projet : {names}.").format(
+            names=", ".join(p.name for p in paths.values())
+        ),
+        "export-syntax-write",
     )
 
 
@@ -141,3 +162,28 @@ def page(project: Project) -> None:
         mime="text/markdown",
         key="export-download-md",
     )
+
+    st.subheader(_("Fichiers de commandes"))
+    st.caption(
+        _(
+            "Pour appliquer vos décisions à vos données dans SPSS, R ou Stata : libellés, "
+            "étiquettes de valeurs, codes manquants et niveaux de mesure. Seulement ce qui est "
+            "accepté, quelle que soit la version choisie plus haut. Aucune valeur n'est "
+            "modifiée ; appliquez-les à une copie de vos données."
+        )
+    )
+    st.button(
+        _("Écrire les fichiers de commandes à côté du projet"),
+        key="export-syntax-write",
+        on_click=_write_syntax,
+    )
+    c.show_message("export-syntax-write")
+    paths = syntax_paths(c.project_path())
+    for column, (program, title) in zip(st.columns(3), PROGRAMS.items(), strict=True):
+        column.download_button(
+            title,
+            data=render_syntax(project, program).encode("utf-8"),
+            file_name=paths[program].name,
+            mime="text/plain",
+            key=f"export-download-{program}",
+        )

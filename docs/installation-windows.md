@@ -90,6 +90,8 @@ Page **Export** :
 
 Le codebook contient les libellés, le texte des questions rattachées, le glossaire (onglet « Glossaire »), les étiquettes de valeurs acceptées et la provenance de chaque valeur. Les effectifs de moins de 5 y sont masqués.
 
+**Fichiers de commandes** (même page, ou `ddict exporter etude-sommeil.dd.json --syntaxe`) : trois fichiers, `etude-sommeil-metadonnees.sps` (SPSS), `.R` (R, avec le paquet haven) et `.do` (Stata). Ils appliquent à vos données ce que vous avez accepté : libellés, étiquettes de valeurs, codes manquants (y compris ceux confirmés par l'équipe) et niveaux de mesure. Ils ne changent aucune valeur ; appliquez-les à une copie de vos données. Les items inversés que vous avez indiqués y sont seulement suggérés, en commentaire. Stata n'a pas de codes manquants déclarés : la commande qui les remplacerait par un point est donnée en commentaire.
+
 ## 9. Avec vos propres données
 
 La démarche est la même avec votre fichier : SPSS (`.sav`), CSV (y compris ceux d'Excel en français, avec point-virgule et virgule décimale), Stata (`.dta`), SAS (`.sas7bdat`) ou Excel (`.xlsx` : la première feuille, avec les noms des variables sur la première ligne). Et avec votre questionnaire, en PDF ou en texte.

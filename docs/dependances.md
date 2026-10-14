@@ -59,7 +59,11 @@ Installée seulement sur demande (`pip install "ddict[revision]"`, ou `uv sync -
 | pytest-socket | Blocage du réseau dans les tests | MIT | 0 |
 | ruff | Lint et formatage | MIT | 0 |
 
-**Outil facultatif, hors Python : R et son paquet haven** (MIT). Ils servent seulement à écrire la version SAS de la base fictive (`scripts/generer_sas.R`), que Python ne sait pas écrire ; le fichier produit est gardé dans le dépôt. Ni l'outil ni ses tests n'ont besoin de R (v0.2, étape 8).
 | hatchling | Construction du paquet | MIT | 0 |
 | httpx | Faux serveur des tests du client IA (aussi dans l'option « ia ») | BSD-3-Clause | 10 |
 | streamlit | Tests de l'interface de révision (aussi dans l'option « revision ») | Apache-2.0 | 12 |
+
+**Outils facultatifs, hors Python**, sur le poste de développement seulement ; ni l'outil ni ses tests ordinaires n'en dépendent, et chaque test qui les utilise est sauté s'ils manquent :
+
+- **R et son paquet haven** (R : GNU GPL ; haven : MIT). Ils écrivent la version SAS de la base fictive (`scripts/generer_sas.R`), que Python ne sait pas écrire ; le fichier produit est gardé dans le dépôt (v0.2, étape 8). Depuis la v0.4 (étape 3), un test exécute aussi le script R produit par l'outil sur la base fictive CSV.
+- **PSPP** (GNU GPL, D-027). Un test y exécute la syntaxe SPSS produite par l'outil (v0.4, étape 3).

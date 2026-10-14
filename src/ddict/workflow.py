@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ddict.export import write_markdown, write_xlsx
+from ddict.export.syntax import SUFFIXES, write_syntax
 from ddict.export.wording import entry_anomalies
 from ddict.glossary import propose_from_questionnaire, undefined_acronyms
 from ddict.i18n import _
@@ -269,6 +270,19 @@ def export_codebook(
     write_xlsx(project, xlsx, kind=kind, omit_groups=omit_groups)
     write_markdown(project, markdown, kind=kind, omit_groups=omit_groups)
     return xlsx, markdown
+
+
+def syntax_paths(project_path: Path) -> dict[str, Path]:
+    """The command files next to the project: "etude-metadonnees.sps", ".R", ".do"."""
+    stem = project_stem(project_path) + "-metadonnees"
+    return {program: project_path.with_name(stem + suffix) for program, suffix in SUFFIXES.items()}
+
+
+def export_syntax(project: Project, project_path: Path) -> dict[str, Path]:
+    """Write the SPSS, R and Stata command files: accepted decisions only (D-025)."""
+    paths = syntax_paths(project_path)
+    write_syntax(project, paths)
+    return paths
 
 
 def failure_advice(detail: str | None, endpoint: str, model: str) -> str | None:

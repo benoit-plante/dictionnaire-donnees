@@ -37,6 +37,7 @@ from ddict.workflow import (
     add_questionnaire,
     exchange_dir,
     export_codebook,
+    export_syntax,
     failure_advice,
     profile_database,
     profile_summary,
@@ -86,6 +87,9 @@ def cmd_export(args: argparse.Namespace) -> int:
         return EXIT_ERROR
     print(_("Codebook Excel : {path}").format(path=xlsx))
     print(_("Rapport Markdown : {path}").format(path=markdown))
+    if args.syntaxe:
+        for path in export_syntax(project, project_path).values():
+            print(_("Fichier de commandes : {path}").format(path=path))
     return 0
 
 
@@ -453,6 +457,14 @@ def build_parser() -> argparse.ArgumentParser:
         help=_(
             "Ne pas reproduire le texte des questions de ces groupes (p. ex. G3), pour un "
             "instrument protégé par le droit d'auteur (D-014)."
+        ),
+    )
+    export.add_argument(
+        "--syntaxe",
+        action="store_true",
+        help=_(
+            "Écrire aussi les fichiers de commandes SPSS, R et Stata qui appliquent les "
+            "décisions acceptées à vos données."
         ),
     )
     export.set_defaults(handler=cmd_export)
