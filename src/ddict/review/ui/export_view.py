@@ -10,18 +10,30 @@ import io
 import os
 import subprocess
 import sys
+from pathlib import Path
 
 import streamlit as st
 
 from ddict.export import render_markdown, write_xlsx
+from ddict.export.documented import CopyError, default_copy_path, find_database
 from ddict.export.syntax import render_syntax
 from ddict.i18n import _
 from ddict.project.model import Project
 from ddict.review import logic
 from ddict.review.ui import common as c
-from ddict.workflow import export_codebook, export_paths, export_syntax, syntax_paths
+from ddict.review.ui import dialog
+from ddict.workflow import (
+    copy_error_text,
+    documented_copy,
+    export_codebook,
+    export_paths,
+    export_syntax,
+    syntax_paths,
+)
 
 KIND = "export-kind"
+DATABASE = "copy-database"  # the database chosen by hand, when not next to the project
+REPLACE = "copy-replace"
 OMIT = "export-omit"
 KINDS = {
     "final": _("Finale : seulement ce qui vient du fichier, du calcul ou de vos décisions"),
@@ -76,6 +88,73 @@ def _write_syntax() -> None:
         ),
         "export-syntax-write",
     )
+
+
+def _choose_database() -> None:
+    path = dialog.choose("database")
+    if path:
+        st.session_state[DATABASE] = path
+
+
+def _write_copy() -> None:
+    project = c.project()
+    chosen = st.session_state.get(DATABASE)
+    try:
+        result = documented_copy(
+            project,
+            c.project_path(),
+            database=Path(chosen) if chosen else None,
+            replace=bool(st.session_state.get(REPLACE)),
+        )
+    except CopyError as error:
+        st.session_state.message = (
+            "error",
+            copy_error_text(error, project.source.name),
+            "export-copy-write",
+        )
+        return
+    st.session_state[REPLACE] = False
+    text = _(
+        "Copie écrite à côté de la base : {name}. Relue et comparée à l'original : "
+        "{rows} lignes et {columns} variables, identiques case par case."
+    ).format(name=result.path.name, rows=result.n_rows, columns=result.n_columns)
+    if result.missing_not_written:
+        text += " " + _(
+            "Codes confirmés par l'équipe non écrits, SPSS n'acceptant que 3 codes "
+            "manquants : {names}. Ceux du fichier sont gardés."
+        ).format(names=", ".join(result.missing_not_written))
+    st.session_state.message = ("success", text, "export-copy-write")
+
+
+def _copy_section(project: Project) -> None:
+    st.subheader(_("Copie documentée de la base"))
+    st.caption(
+        _(
+            "Une nouvelle copie de votre base au format SPSS (.sav), avec ce que vous avez "
+            "accepté. Avant de l'annoncer, l'outil la relit et la compare à l'original case par "
+            "case. Votre fichier d'origine n'est jamais modifié. La copie contient les données "
+            "des participants : rangez-la comme l'original. Les fichiers de commandes restent "
+            "la voie recommandée."
+        )
+    )
+    chosen = st.session_state.get(DATABASE)
+    try:
+        database = find_database(project, c.project_path(), Path(chosen) if chosen else None)
+    except CopyError as error:
+        st.info(copy_error_text(error, project.source.name))
+        st.button(_("Choisir la base…"), key="export-copy-choose", on_click=_choose_database)
+        return
+    target = default_copy_path(database)
+    st.caption(_("Copie : {path}").format(path=target))
+    if target.exists():
+        st.checkbox(_("{name} existe déjà : la remplacer").format(name=target.name), key=REPLACE)
+    st.button(
+        _("Écrire la copie documentée"),
+        key="export-copy-write",
+        on_click=_write_copy,
+        disabled=target.exists() and not st.session_state.get(REPLACE),
+    )
+    c.show_message("export-copy-write")
 
 
 def _open_folder() -> None:
@@ -187,3 +266,5 @@ def page(project: Project) -> None:
             mime="text/plain",
             key=f"export-download-{program}",
         )
+
+    _copy_section(project)

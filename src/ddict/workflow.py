@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ddict.export import write_markdown, write_xlsx
+from ddict.export.documented import CopyError, CopyResult, find_database, write_documented_copy
 from ddict.export.syntax import SUFFIXES, write_syntax
 from ddict.export.wording import entry_anomalies
 from ddict.glossary import propose_from_questionnaire, undefined_acronyms
@@ -283,6 +284,47 @@ def export_syntax(project: Project, project_path: Path) -> dict[str, Path]:
     paths = syntax_paths(project_path)
     write_syntax(project, paths)
     return paths
+
+
+def documented_copy(
+    project: Project,
+    project_path: Path,
+    *,
+    database: Path | None = None,
+    target: Path | None = None,
+    replace: bool = False,
+) -> CopyResult:
+    """The documented copy of the database, next to it (D-026)."""
+    found = find_database(project, project_path, database)
+    return write_documented_copy(project, found, target, replace=replace)
+
+
+def copy_error_text(error: CopyError, source_name: str) -> str:
+    """Why the documented copy was not written, in plain French."""
+    if error.reason == "exists":
+        return _("{name} existe déjà. Rien n'a été écrit ; confirmez pour le remplacer.").format(
+            name=Path(error.detail).name
+        )
+    if error.reason == "not_found":
+        return _(
+            "La base {name} est introuvable à côté du projet. Placez-la dans le même dossier "
+            "que le projet, ou indiquez où elle se trouve."
+        ).format(name=source_name)
+    if error.reason == "other_file":
+        return _(
+            "{name} n'est plus le fichier d'où vient le projet : son contenu a changé. Rien "
+            "n'a été écrit."
+        ).format(name=Path(error.detail).name)
+    if error.reason == "same_file":
+        return _("La copie ne peut pas porter le nom de la base d'origine.")
+    if error.reason == "not_identical":
+        return _(
+            "La copie relue ne correspondait pas à l'original ({n} cases différentes) : elle a "
+            "été supprimée. Utilisez plutôt les fichiers de commandes, et signalez ce problème."
+        ).format(n=error.detail)
+    return _("La copie n'a pas pu être écrite : {detail}. Rien n'a été gardé.").format(
+        detail=error.detail
+    )
 
 
 def failure_advice(detail: str | None, endpoint: str, model: str) -> str | None:

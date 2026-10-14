@@ -1,5 +1,5 @@
-"""Command line: `ddict profiler`, `exporter`, `questionnaire`, `enrichir`, `rattacher`,
-`reviser`."""
+"""Command line: `ddict profiler`, `exporter`, `documenter`, `questionnaire`, `enrichir`,
+`rattacher`, `reviser`."""
 
 from __future__ import annotations
 
@@ -16,6 +16,7 @@ from datetime import datetime
 from pathlib import Path
 
 from ddict import __version__
+from ddict.export.documented import CopyError
 from ddict.i18n import _
 from ddict.io import ReadError
 from ddict.llm import DEFAULT_BLOCK_SIZE, build_blocks
@@ -35,6 +36,8 @@ from ddict.workflow import (
     UnknownGroups,
     acronym_summary,
     add_questionnaire,
+    copy_error_text,
+    documented_copy,
     exchange_dir,
     export_codebook,
     export_syntax,
@@ -90,6 +93,39 @@ def cmd_export(args: argparse.Namespace) -> int:
     if args.syntaxe:
         for path in export_syntax(project, project_path).values():
             print(_("Fichier de commandes : {path}").format(path=path))
+    return 0
+
+
+def cmd_copy(args: argparse.Namespace) -> int:
+    project_path = Path(args.projet)
+    project = load_project(project_path)
+    try:
+        result = documented_copy(
+            project,
+            project_path,
+            database=Path(args.base) if args.base else None,
+            target=Path(args.sortie) if args.sortie else None,
+            replace=args.remplacer,
+        )
+    except CopyError as error:
+        text = copy_error_text(error, project.source.name)
+        if error.reason == "exists":
+            text += " " + _("Utilisez --remplacer.")
+        print(text, file=sys.stderr)
+        return EXIT_ERROR
+    print(
+        _(
+            "Copie documentée : {path} ({rows} lignes, {columns} variables), identique à "
+            "l'original case par case."
+        ).format(path=result.path, rows=result.n_rows, columns=result.n_columns)
+    )
+    if result.missing_not_written:
+        print(
+            _(
+                "Codes confirmés par l'équipe non écrits, SPSS n'acceptant que 3 codes "
+                "manquants : {names}. Ceux du fichier sont gardés."
+            ).format(names=", ".join(result.missing_not_written))
+        )
     return 0
 
 
@@ -468,6 +504,23 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     export.set_defaults(handler=cmd_export)
+
+    copy = commands.add_parser(
+        "documenter",
+        help=_(
+            "Écrire une copie de la base au format SPSS (.sav), avec les décisions acceptées. "
+            "L'original n'est jamais modifié."
+        ),
+    )
+    copy.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    copy.add_argument("--base", help=_("La base d'origine, si elle n'est pas à côté du projet."))
+    copy.add_argument(
+        "--sortie", help=_("Copie à écrire (défaut : à côté de la base, « -documente.sav »).")
+    )
+    copy.add_argument(
+        "--remplacer", action="store_true", help=_("Remplacer une copie déjà écrite.")
+    )
+    copy.set_defaults(handler=cmd_copy)
 
     questionnaire = commands.add_parser(
         "questionnaire",
