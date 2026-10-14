@@ -10,7 +10,7 @@ from __future__ import annotations
 import streamlit as st
 
 from ddict.export import wording as w
-from ddict.i18n import _
+from ddict.i18n import _, colon, semicolon
 from ddict.project.model import Project
 from ddict.questionnaire import link
 from ddict.review import logic
@@ -76,7 +76,7 @@ def links_panel(project: Project) -> None:
         for name in names:
             target = project.variable(name).question.value
             text = link.describe(project.questionnaire, target) or target
-            st.checkbox(f"**{name}** → {target} : {text}", key=_box("link", name))
+            st.checkbox(f"**{name}** → {target}{colon()}{text}", key=_box("link", name))
         count = _checked_count("link", names)
         left, right = st.columns(2)
         left.button(
@@ -123,8 +123,8 @@ def labels_panel(project: Project, group_id: str) -> None:
         )
         for name in names:
             labels = project.variable(name).value_labels.value or []
-            text = " ; ".join(f"{w.code_text(v.code)} = {v.label}" for v in labels)
-            st.checkbox(f"**{name}** : {text}", key=_box("labels", name))
+            text = semicolon().join(f"{w.code_text(v.code)} = {v.label}" for v in labels)
+            st.checkbox(f"**{name}**{colon()}{text}", key=_box("labels", name))
         count = _checked_count("labels", names)
         left, right = st.columns(2)
         left.button(

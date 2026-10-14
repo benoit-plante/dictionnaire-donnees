@@ -14,7 +14,7 @@ from ddict.review.ui import common as c
 
 def page(project: Project, group_id: str) -> None:
     group = logic.group(project, group_id)
-    st.header(f"{group.group_id} — {group.descriptive_label.value or ''}")
+    st.header(f"{group.group_id} — {w.group_description(group, 'work')}")
     bulk_view.labels_panel(project, group_id)
     members = group.members.value or []
     st.write(f"{field_label('Variables')}" + ", ".join(members))

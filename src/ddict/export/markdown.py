@@ -6,7 +6,7 @@ from collections import Counter
 from pathlib import Path
 
 from ddict.export import wording as w
-from ddict.i18n import _, field_label
+from ddict.i18n import _, colon, field_label, in_language, semicolon
 from ddict.project.model import Project, VariableEntry
 
 
@@ -33,7 +33,8 @@ def _overview(project: Project, kind: w.ExportKind) -> list[str]:
         f"- {field_label('Fichier')}`{_inline(source.name)}`"
         + (f" ({_inline(source.label)})" if source.label else ""),
         f"- {field_label('Empreinte SHA-256')}`{source.sha256}`",
-        f"- {field_label('Lignes')}{source.n_rows} ; {field_label('variables')}{source.n_columns}",
+        f"- {field_label('Lignes')}{source.n_rows}{semicolon()}"
+        f"{field_label('variables')}{source.n_columns}",
         f"- {field_label('Version')}{kind_text}",
         "- "
         + _(
@@ -41,7 +42,9 @@ def _overview(project: Project, kind: w.ExportKind) -> list[str]:
             "premier pourrait être recalculé par soustraction."
         ).format(n=project.settings.min_cell_count),
     ]
-    lines += [f"- {name} : {_inline(value)}" for name, value in w.questionnaire_facts(project)]
+    lines += [
+        f"- {name}{colon()}{_inline(value)}" for name, value in w.questionnaire_facts(project)
+    ]
     lines += [
         "",
         _("## Vue d'ensemble"),
@@ -76,7 +79,7 @@ def _variable(
         text = w.question_text(project, entry, kind, omitted)  # marked when only proposed
         if reference.pending and not text:
             question += f" [{_('rattachement proposé')}]"
-        lines += [f"> {question} : {_inline(text)}" if text else f"> {question}", ""]
+        lines += [f"> {question}{colon()}{_inline(text)}" if text else f"> {question}", ""]
 
     facts = [
         f"{field_label('Type')}{w.TYPES.get(p.inferred_type, p.inferred_type)}",
@@ -99,12 +102,12 @@ def _variable(
     if w.missing_codes(entry):
         facts.append(f"{field_label('Codes manquants déclarés')}{w.missing_codes(entry)}")
     if p.min is not None:
-        stats = f"{_('Min')} {w.number(p.min)} ; {_('max')} {w.number(p.max)}"
+        stats = f"{_('Min')} {w.number(p.min)}{semicolon()}{_('max')} {w.number(p.max)}"
         if p.mean is not None:
-            stats += f" ; {_('moyenne')} {w.number(p.mean)}"
+            stats += f"{semicolon()}{_('moyenne')} {w.number(p.mean)}"
         if p.sd is not None:
-            stats += f" ; {_('écart-type')} {w.number(p.sd)}"
-        stats += f" ; {_('médiane')} {w.number(p.median)}"
+            stats += f"{semicolon()}{_('écart-type')} {w.number(p.sd)}"
+        stats += f"{semicolon()}{_('médiane')} {w.number(p.median)}"
         facts.append(stats)
     if p.date_min:
         facts.append(f"{field_label('Dates')}{p.date_min} – {p.date_max}")
@@ -130,7 +133,7 @@ def _variable(
         )
     for t in entry.thresholds:
         facts.append(
-            f"{_('Seuil')} {w.number(t.value)} : {_inline(t.meaning)} "
+            f"{_('Seuil')} {w.number(t.value)}{colon()}{_inline(t.meaning)} "
             f"({field_label('source')}{_inline(t.source)})"
         )
     for reference in entry.references:
@@ -143,7 +146,7 @@ def _variable(
         proposed = "; ".join(
             f"{w.code_text(v.code)} = {_inline(v.label)}" for v in entry.value_labels.value or []
         )
-        lines += [f"*{source}* : {proposed}", ""]
+        lines += [f"*{source}*{colon()}{proposed}", ""]
     elif source and rows:
         lines += [f"*{field_label('Étiquettes de valeurs')}{source}.*", ""]
     if rows:
@@ -160,7 +163,7 @@ def _variable(
     if found:
         lines += [f"**{_('Signalements')}**", ""] + [f"- {_inline(f)}" for f in found] + [""]
     if entry.notes:
-        lines += [f"**{_('Notes')}** : {_inline(entry.notes)}", ""]
+        lines += [f"**{_('Notes')}**{colon()}{_inline(entry.notes)}", ""]
     return lines
 
 
@@ -169,7 +172,7 @@ def _groups(project: Project, kind: w.ExportKind) -> list[str]:
         return []
     lines = [_("## Groupes de variables"), ""]
     for group in project.groups:
-        description = w.text(group.descriptive_label, kind)
+        description = w.group_description(group, kind)
         lines += [f"### {group.group_id}" + (f" — {_inline(description)}" if description else "")]
         lines.append("")
         members = w.shown(group.members, kind)
@@ -205,7 +208,7 @@ def _groups(project: Project, kind: w.ExportKind) -> list[str]:
                 alpha=w.number(group.cronbach_alpha), n=group.n_complete_rows
             )
             if group.cronbach_alpha_reversed is not None:
-                alpha += " ; " + _("avec les items probables inversés : {alpha}").format(
+                alpha += semicolon() + _("avec les items probables inversés : {alpha}").format(
                     alpha=w.number(group.cronbach_alpha_reversed)
                 )
             facts.append(alpha)
@@ -227,6 +230,7 @@ def _glossary(project: Project, kind: w.ExportKind) -> list[str]:
     return [*lines, ""]
 
 
+@in_language
 def render_markdown(
     project: Project, *, kind: w.ExportKind = "final", omit_groups: tuple[str, ...] = ()
 ) -> str:
@@ -241,6 +245,7 @@ def render_markdown(
     return "\n".join(lines).rstrip("\n") + "\n"
 
 
+@in_language
 def write_markdown(
     project: Project,
     path: Path | str,

@@ -12,7 +12,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.worksheet import Worksheet
 
 from ddict.export import wording as w
-from ddict.i18n import N_, TextList, _
+from ddict.i18n import N_, TextList, _, colon, in_language
 from ddict.project.model import Project, TrackedValue
 
 MAX_WIDTH = 60
@@ -102,7 +102,7 @@ def _variables(project: Project, kind: w.ExportKind, omitted: set[str]) -> list[
             r = e.theoretical_range
             sourced_range = f"{w.number(r.min)} – {w.number(r.max)} ({r.source})"
         thresholds = "\n".join(
-            f"{w.number(t.value)} : {t.meaning} ({t.source})" for t in e.thresholds
+            f"{w.number(t.value)}{colon()}{t.meaning} ({t.source})" for t in e.thresholds
         )
         rows.append(
             [
@@ -214,7 +214,7 @@ def _groups(project: Project, kind: w.ExportKind) -> list[list]:
         rows.append(
             [
                 g.group_id,
-                w.text(g.descriptive_label, kind),
+                w.group_description(g, kind),
                 ", ".join(members.value) if members else "",
                 w.basis_text(g.basis),
                 ", ".join(suspects),
@@ -258,7 +258,8 @@ def _provenance(project: Project, kind: w.ExportKind) -> list[list]:
             return ""
         return ", ".join(value) if isinstance(value, list) else str(value)
 
-    def add(name: str, field: str, tracked: TrackedValue) -> None:
+    def add(name: str, field: str, tracked: TrackedValue, text: str | None = None) -> None:
+        """`text`: the value as this codebook shows it, when it differs from the stored one."""
         value = w.shown(tracked, kind)
         if value is None:
             return
@@ -266,7 +267,7 @@ def _provenance(project: Project, kind: w.ExportKind) -> list[list]:
             [
                 name,
                 field,
-                as_text(value.value),
+                text if text is not None else as_text(value.value),
                 w.ORIGINS[tracked.origin],
                 w.STATUSES[tracked.status],
                 as_text(tracked.proposed_value),
@@ -311,11 +312,12 @@ def _provenance(project: Project, kind: w.ExportKind) -> list[list]:
             add(e.name, _("Signalement"), issue)
     for g in project.groups:
         add(g.group_id, _("Variables"), g.members)
-        add(g.group_id, _("Description"), g.descriptive_label)
+        add(g.group_id, _("Description"), g.descriptive_label, w.group_description(g, kind))
         add(g.group_id, _("Hypothèse de l'IA"), g.ai_hypothesis)
     return rows
 
 
+@in_language
 def write_xlsx(
     project: Project,
     path: Path | str | BinaryIO,

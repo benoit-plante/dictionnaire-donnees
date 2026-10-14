@@ -91,6 +91,7 @@ Page **Export** :
 
 - **Version finale** : seulement ce qui vient du fichier, du calcul, ou de vos décisions. **Version de travail** : avec les propositions en attente, marquées comme telles.
 - **Groupes dont le texte des questions n'est pas reproduit** : par défaut, ceux que vous avez cochés dans « Groupes ».
+- **Langue du codebook** : français ou anglais, par défaut celle de l'interface. Elle vaut pour les en-têtes, les notes, la provenance, le rapport et les commentaires des fichiers de commandes ; ce que l'équipe a écrit (libellés, descriptions, texte des questions) n'est jamais traduit. En ligne de commande : `ddict exporter projet.dd.json --langue en`.
 - **Écrire le codebook et le rapport** (à côté du projet), ou **Télécharger** (dans votre dossier de téléchargements).
 
 Le codebook contient les libellés, le texte des questions rattachées, le glossaire (onglet « Glossaire »), les étiquettes de valeurs acceptées et la provenance de chaque valeur. Les effectifs de moins de 5 y sont masqués.

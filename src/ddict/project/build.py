@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from ddict.groups import GroupCandidate, find_groups
-from ddict.i18n import _
+from ddict.i18n import N_
 from ddict.io.model import LoadedData
 from ddict.privacy import MIN_CELL_COUNT, SafeVariable, classify_database, safe_database
 from ddict.profile import profile_database
@@ -92,19 +92,23 @@ def _entry(safe: SafeVariable, storage_type: str, storage_width: int | None) -> 
     )
 
 
+# The parts of a group's computed description. It is stored in French, the language of
+# the source strings, and shown in the language of the moment (wording.group_description).
+GROUP_PARTS = (
+    N_("{n} items"),
+    N_("codes de {low} à {high}"),
+    N_("préfixe « {prefix} »"),
+    N_("variables voisines aux mêmes étiquettes"),
+)
+
+
 def descriptive_label(group: GroupCandidate) -> str:
     """A neutral description of what the items have in common, never a guess at a name."""
-    parts = [_("{n} items").format(n=len(group.members))]
+    items, codes, prefix, neighbours = GROUP_PARTS
+    parts = [items.format(n=len(group.members))]
     if group.code_min is not None:
-        parts.append(
-            _("codes de {low} à {high}").format(
-                low=f"{group.code_min:g}", high=f"{group.code_max:g}"
-            )
-        )
-    if group.prefix:
-        parts.append(_("préfixe « {prefix} »").format(prefix=group.prefix))
-    else:
-        parts.append(_("variables voisines aux mêmes étiquettes"))
+        parts.append(codes.format(low=f"{group.code_min:g}", high=f"{group.code_max:g}"))
+    parts.append(prefix.format(prefix=group.prefix) if group.prefix else neighbours)
     return ", ".join(parts)
 
 

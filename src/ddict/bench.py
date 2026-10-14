@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from ddict import __version__
-from ddict.i18n import N_, Texts, _, field_label
+from ddict.i18n import N_, Texts, _, colon, field_label, semicolon
 from ddict.io import read_database
 from ddict.llm.link import DEFAULT_LINK_BLOCK_SIZE, LINK_PROMPT_VERSION
 from ddict.llm.messages import DEFAULT_BLOCK_SIZE, PROMPT_VERSION
@@ -245,7 +245,7 @@ def render_report(results: list[BaseResult], *, model: str, endpoint: str, date:
                 )
             )
         if details:
-            lines.append(f"- {r.name} : " + " ; ".join(details))
+            lines.append(f"- {r.name}{colon()}" + semicolon().join(details))
     return "\n".join(lines).rstrip("\n") + "\n"
 
 

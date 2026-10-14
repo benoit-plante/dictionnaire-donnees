@@ -6,16 +6,19 @@ computation, or accepted by a person; "work" also shows pending AI proposals, ma
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Literal
 
 from ddict import glossary
-from ddict.i18n import N_, Texts, _
+from ddict.i18n import N_, Texts, _, decimal, quoted
 from ddict.profile.variants import spelling_variants
+from ddict.project.build import GROUP_PARTS
 from ddict.project.decisions import is_accepted
 from ddict.project.model import (
     Code,
+    Group,
     Profile,
     Project,
     SentinelDecision,
@@ -128,10 +131,10 @@ def label_text(entry: VariableEntry, kind: ExportKind) -> str:
 
 
 def number(value: float | None) -> str:
-    """A statistic written the French way: decimal comma (0,363)."""
+    """A statistic as the language writes it: 0,363 in French, 0.363 in English."""
     if value is None:
         return ""
-    return str(int(value)) if float(value).is_integer() else f"{value:g}".replace(".", ",")
+    return str(int(value)) if float(value).is_integer() else decimal(f"{value:g}")
 
 
 def code_text(code: Code) -> str:
@@ -178,7 +181,7 @@ def anomalies(profile: Profile, decided: frozenset = frozenset()) -> list[str]:
     for group in spelling_variants(profile):
         found.append(
             _("Variantes d'écriture d'une même réponse : {spellings}").format(
-                spellings=", ".join(f"« {code} »" for code in group)
+                spellings=", ".join(quoted(code) for code in group)
             )
         )
     if profile.n_rare_values_hidden:
@@ -238,6 +241,31 @@ BASIS = Texts(
         "contiguous": N_("variables voisines"),
     }
 )
+
+
+def _part_pattern(template: str) -> re.Pattern:
+    pattern = re.escape(template)
+    for name in ("n", "low", "high", "prefix"):
+        pattern = pattern.replace(re.escape("{" + name + "}"), f"(?P<{name}>.+?)")
+    return re.compile(pattern + "$")
+
+
+def group_description(group: Group, kind: ExportKind) -> str:
+    """The description of a group; a computed one, stored in French, in the language of the
+    moment. Any other text (a person's) is shown as written."""
+    stored = text(group.descriptive_label, kind)
+    if group.descriptive_label.origin != "computed" or not stored:
+        return stored
+    parts = []
+    for part in stored.split(", "):
+        for template in GROUP_PARTS:
+            found = _part_pattern(template).match(part)
+            if found:
+                parts.append(_(template).format(**found.groupdict()))
+                break
+        else:
+            return stored  # not written by this version of the tool: as is
+    return ", ".join(parts)
 
 
 def basis_text(basis: list[str]) -> str:

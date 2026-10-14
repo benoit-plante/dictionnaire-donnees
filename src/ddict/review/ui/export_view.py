@@ -14,6 +14,7 @@ from pathlib import Path
 
 import streamlit as st
 
+from ddict import i18n
 from ddict.export import render_markdown, write_xlsx
 from ddict.export.documented import CopyError, default_copy_path, find_database
 from ddict.export.syntax import render_syntax
@@ -32,6 +33,7 @@ from ddict.workflow import (
 )
 
 KIND = "export-kind"
+LANGUAGE = "export-language"
 DATABASE = "copy-database"  # the database chosen by hand, when not next to the project
 REPLACE = "copy-replace"
 OMIT = "export-omit"
@@ -45,6 +47,12 @@ PROGRAMS = Texts({"spss": N_("Syntaxe SPSS"), "r": N_("Script R")})
 XLSX_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 
+def _language() -> str:
+    """The language chosen for the codebook; None when the chosen one was clicked again,
+    which means the interface's."""
+    return st.session_state.get(LANGUAGE) or i18n.language()
+
+
 def _write() -> None:
     path = c.project_path()
     try:
@@ -53,6 +61,7 @@ def _write() -> None:
             path,
             kind=st.session_state[KIND],
             omit_groups=tuple(st.session_state[OMIT]),
+            language=_language(),
         )
     except OSError as error:
         st.session_state.message = (
@@ -75,7 +84,7 @@ def _write() -> None:
 
 def _write_syntax() -> None:
     try:
-        paths = export_syntax(c.project(), c.project_path())
+        paths = export_syntax(c.project(), c.project_path(), language=_language())
     except OSError as error:
         st.session_state.message = (
             "error",
@@ -177,6 +186,17 @@ def page(project: Project) -> None:
         format_func=KINDS.__getitem__,
     )
     kind = st.session_state[KIND]
+    st.segmented_control(
+        _("Langue du codebook"),
+        list(i18n.LANGUAGES),
+        key=c.field(LANGUAGE, i18n.language),
+        format_func=i18n.LANGUAGES.__getitem__,
+        help=_(
+            "Pour les en-têtes, les notes et les commentaires des fichiers de commandes. Ce que "
+            "l'équipe a écrit (libellés, descriptions, questions) n'est jamais traduit."
+        ),
+    )
+    language = _language()
     if project.groups and project.questionnaire is not None:
         st.multiselect(
             _("Groupes dont le texte des questions n'est pas reproduit"),
@@ -227,7 +247,7 @@ def page(project: Project) -> None:
         ).format(n=project.settings.min_cell_count)
     )
     workbook = io.BytesIO()
-    write_xlsx(project, workbook, kind=kind, omit_groups=omit)
+    write_xlsx(project, workbook, kind=kind, omit_groups=omit, language=language)
     left, right = st.columns(2)
     left.download_button(
         _("Codebook Excel"),
@@ -238,7 +258,9 @@ def page(project: Project) -> None:
     )
     right.download_button(
         _("Rapport Markdown"),
-        data=render_markdown(project, kind=kind, omit_groups=omit).encode("utf-8"),
+        data=render_markdown(project, kind=kind, omit_groups=omit, language=language).encode(
+            "utf-8"
+        ),
         file_name=markdown_path.name,
         mime="text/markdown",
         key="export-download-md",
@@ -263,7 +285,7 @@ def page(project: Project) -> None:
     for column, (program, title) in zip(st.columns(len(PROGRAMS)), PROGRAMS.items(), strict=True):
         column.download_button(
             title,
-            data=render_syntax(project, program).encode("utf-8"),
+            data=render_syntax(project, program, language=language).encode("utf-8"),
             file_name=paths[program].name,
             mime="text/plain",
             key=f"export-download-{program}",

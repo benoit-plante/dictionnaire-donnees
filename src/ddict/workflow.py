@@ -266,14 +266,16 @@ def export_codebook(
     omit_groups: tuple[str, ...] = (),
     xlsx: Path | None = None,
     markdown: Path | None = None,
+    language: str | None = None,
 ) -> tuple[Path, Path]:
-    """Write the Excel codebook and the Markdown report; next to the project by default."""
+    """Write the Excel codebook and the Markdown report; next to the project by default.
+    `language`: of the codebook, by default that of the interface (D-032)."""
     check_groups(project, omit_groups)
     default_xlsx, default_markdown = export_paths(project_path, kind)
     xlsx = xlsx or default_xlsx
     markdown = markdown or default_markdown
-    write_xlsx(project, xlsx, kind=kind, omit_groups=omit_groups)
-    write_markdown(project, markdown, kind=kind, omit_groups=omit_groups)
+    write_xlsx(project, xlsx, kind=kind, omit_groups=omit_groups, language=language)
+    write_markdown(project, markdown, kind=kind, omit_groups=omit_groups, language=language)
     return xlsx, markdown
 
 
@@ -283,10 +285,12 @@ def syntax_paths(project_path: Path) -> dict[str, Path]:
     return {program: project_path.with_name(stem + suffix) for program, suffix in SUFFIXES.items()}
 
 
-def export_syntax(project: Project, project_path: Path) -> dict[str, Path]:
+def export_syntax(
+    project: Project, project_path: Path, *, language: str | None = None
+) -> dict[str, Path]:
     """Write the SPSS and R command files: accepted decisions only (D-025, D-030)."""
     paths = syntax_paths(project_path)
-    write_syntax(project, paths)
+    write_syntax(project, paths, language=language)
     return paths
 
 

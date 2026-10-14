@@ -9,8 +9,9 @@ the tool runs: `_` translates now; `N_` only marks a string kept in a table, and
 from __future__ import annotations
 
 import gettext
-from collections.abc import Iterator, Mapping, Sequence
-from functools import cache
+from collections.abc import Callable, Iterator, Mapping, Sequence
+from contextlib import contextmanager
+from functools import cache, wraps
 from pathlib import Path
 
 LOCALE_DIR = Path(__file__).resolve().parent / "locale"
@@ -36,6 +37,33 @@ def language() -> str:
     return _current
 
 
+@contextmanager
+def using(language: str | None) -> Iterator[str]:
+    """Write in this language for a while (a codebook in English from a French interface,
+    D-032), then come back to the language in use. None keeps the language in use."""
+    previous = _current
+    try:
+        yield set_language(language) if language else previous
+    finally:
+        set_language(previous)
+
+
+def in_language(function: Callable) -> Callable:
+    """A writer that takes `language=`: its whole output is in that language."""
+
+    @wraps(function)
+    def wrapper(*args, language: str | None = None, **kwargs):
+        with using(language):
+            return function(*args, **kwargs)
+
+    return wrapper
+
+
+def decimal(text: str) -> str:
+    """ "0,363" in French, "0.363" in English."""
+    return text.replace(".", ",") if _current == "fr" else text
+
+
 def _(text: str) -> str:
     return _catalog(_current).gettext(text)
 
@@ -43,6 +71,11 @@ def _(text: str) -> str:
 def colon() -> str:
     """ " : " in French, ": " in English."""
     return " : " if _current == "fr" else ": "
+
+
+def semicolon() -> str:
+    """ " ; " in French, "; " in English."""
+    return " ; " if _current == "fr" else "; "
 
 
 def field_label(text: str) -> str:

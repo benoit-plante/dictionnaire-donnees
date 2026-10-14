@@ -18,7 +18,7 @@ from pathlib import Path
 
 from ddict import __version__
 from ddict.export import wording as w
-from ddict.i18n import _
+from ddict.i18n import _, in_language
 from ddict.project.model import Code, Project, VariableEntry
 from ddict.questionnaire.labels import accepted_labels
 
@@ -271,10 +271,12 @@ def _reversed_line(
 WRITERS = {"spss": spss, "r": r_script}
 
 
+@in_language
 def render_syntax(project: Project, program: str, today: str | None = None) -> str:
     return WRITERS[program](project, today or date.today().isoformat())
 
 
+@in_language
 def write_syntax(project: Project, paths: dict[str, Path], today: str | None = None) -> None:
     for program, path in paths.items():
         with Path(path).open("w", encoding="utf-8", newline="\n") as handle:

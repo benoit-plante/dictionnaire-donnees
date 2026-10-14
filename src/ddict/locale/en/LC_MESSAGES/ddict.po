@@ -847,6 +847,12 @@ msgstr "The corrected value is empty."
 msgid "La valeur est obligatoire."
 msgstr "The value is required."
 
+msgid "Langue du codebook"
+msgstr "Codebook language"
+
+msgid "Langue du codebook (défaut : celle de l'interface)."
+msgstr "Language of the codebook (default: that of the interface)."
+
 #, python-brace-format
 msgid ""
 "Le fichier de données n'est jamais modifié ; le projet garde seulement ce que l'outil a calculé "
@@ -1150,6 +1156,13 @@ msgstr ""
 "known, the bench measures the correct links, the labels that may invent something (citation, "
 "threshold, instrument name, meaning of an acronym, range, meaning of codes) and the duration. "
 "Your data is not used, and no model is downloaded."
+
+msgid ""
+"Pour les en-têtes, les notes et les commentaires des fichiers de commandes. Ce que l'équipe a "
+"écrit (libellés, descriptions, questions) n'est jamais traduit."
+msgstr ""
+"For the headings, the notes and the comments of the command files. What the team wrote (labels, "
+"descriptions, questions) is never translated."
 
 msgid ""
 "Pour un instrument protégé par le droit d'auteur : le codebook donne la référence de chaque "
@@ -1541,7 +1554,7 @@ msgstr "Valid"
 
 #, python-brace-format
 msgid "Valides : {valid} ; cases vides : {empty} ; manquants déclarés : {declared} ({pct} %)"
-msgstr "Valid: {valid}; empty cells: {empty}; declared missing: {declared} ({pct} %)"
+msgstr "Valid: {valid}; empty cells: {empty}; declared missing: {declared} ({pct}%)"
 
 #, python-brace-format
 msgid "Valides : {v} ; cases vides : {e} ; manquants déclarés : {d}"

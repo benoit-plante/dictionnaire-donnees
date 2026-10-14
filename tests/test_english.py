@@ -68,8 +68,6 @@ def _data(path: Path) -> list[str]:
         found |= {link.target_text(t) for t in link.targets(project.questionnaire)}
     for g in project.glossary:
         found |= {g.term, g.meaning, g.source or ""}
-    for g in project.groups:
-        found |= {g.descriptive_label.value or ""}
     return sorted((s for s in found if s), key=len, reverse=True)
 
 

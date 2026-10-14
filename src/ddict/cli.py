@@ -17,7 +17,7 @@ from pathlib import Path
 
 from ddict import __version__, settings
 from ddict.export.documented import CopyError
-from ddict.i18n import _
+from ddict.i18n import LANGUAGES, _
 from ddict.io import ReadError
 from ddict.llm import DEFAULT_BLOCK_SIZE, build_blocks
 from ddict.llm.defaults import DEFAULT_ENDPOINT
@@ -79,6 +79,7 @@ def cmd_export(args: argparse.Namespace) -> int:
             omit_groups=tuple(args.sans_texte or ()),
             xlsx=Path(args.xlsx) if args.xlsx else None,
             markdown=Path(args.md) if args.md else None,
+            language=args.langue,
         )
     except UnknownGroups as error:
         print(
@@ -91,7 +92,7 @@ def cmd_export(args: argparse.Namespace) -> int:
     print(_("Codebook Excel : {path}").format(path=xlsx))
     print(_("Rapport Markdown : {path}").format(path=markdown))
     if args.syntaxe:
-        for path in export_syntax(project, project_path).values():
+        for path in export_syntax(project, project_path, language=args.langue).values():
             print(_("Fichier de commandes : {path}").format(path=path))
     return 0
 
@@ -558,6 +559,12 @@ def build_parser() -> argparse.ArgumentParser:
             "Écrire aussi les fichiers de commandes SPSS et R qui appliquent les "
             "décisions acceptées à vos données."
         ),
+    )
+    export.add_argument(
+        "--langue",
+        "--language",
+        choices=list(LANGUAGES),
+        help=_("Langue du codebook (défaut : celle de l'interface)."),
     )
     export.set_defaults(handler=cmd_export)
 
