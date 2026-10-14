@@ -71,3 +71,11 @@ def test_no_redirected_native_output_under_stop():
                 stop = True
             elif "& $" in line and ("2>" in line or "*>" in line):
                 assert not stop, f"{name}.ps1: {line.strip()}"
+
+
+def test_an_open_tool_is_closed_only_when_asked():
+    """An open tool locked its files and the update failed half-way (0.4.0 trial)."""
+    text = (ROOT / "windows" / "installer.ps1").read_text(encoding="utf-8-sig")
+    check = text.index("Get-OpenTool")
+    asked = text.index('Ask "Fermer l\'outil maintenant ?"')
+    assert check < asked < text.index("Stop-Process") < text.index("uv tool install")

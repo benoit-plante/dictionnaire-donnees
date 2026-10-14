@@ -127,7 +127,7 @@ La démarche est la même avec votre fichier : SPSS (`.sav`), CSV (y compris ceu
 
 ## Mettre à jour ou désinstaller
 
-- **Mettre à jour** : téléchargez et décompressez la nouvelle archive, puis double-cliquez sur son `installer.bat`. Vos fichiers projet sont conservés.
+- **Mettre à jour** : téléchargez et décompressez la nouvelle archive, puis double-cliquez sur son `installer.bat`. Si l'outil est ouvert, l'installateur propose de le fermer (répondez `o`) : il ne peut pas le remplacer pendant qu'il tourne. Vos fichiers projet sont conservés.
 - **Désinstaller** : double-cliquez sur `desinstaller.bat`, dans le dossier de l'outil. Il retire l'outil et ses icônes, sans toucher à vos projets, codebooks ou données ; il demande avant d'effacer la liste des projets récents. uv et Ollama restent installés.
 
 ## Pour qui préfère la ligne de commande

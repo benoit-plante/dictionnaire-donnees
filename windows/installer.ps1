@@ -73,9 +73,28 @@ if ($uv) {
 
 # --- 2. L'outil ------------------------------------------------------------------------
 Step "2/4 - L'outil (une ou deux minutes la première fois)"
+# An open tool locks its own files: updating it then fails half-way and leaves it broken
+# (found by the trial of 0.4.0). Ask to close it first.
+$toolDir = Join-Path (& $uv tool dir).Trim() "ddict"
+$toolExe = Join-Path (& $uv tool dir --bin).Trim() "ddict.exe"
+function Get-OpenTool {
+    @(Get-Process | Where-Object { $_.Path -and ($_.Path -like "$toolDir\*" -or $_.Path -eq $toolExe) })
+}
+$open = Get-OpenTool
+if ($open.Count -gt 0) {
+    Say "L'outil est ouvert : il faut le fermer pour le mettre à jour. Vos décisions sont déjà enregistrées."
+    if (Ask "Fermer l'outil maintenant ?") {
+        $open | Stop-Process -Force
+        Start-Sleep -Seconds 2
+    }
+    if ((Get-OpenTool).Count -gt 0) {
+        Fail "L'outil est encore ouvert. Fermez sa petite fenêtre noire (dans la barre des tâches), puis relancez installer.bat."
+    }
+    Say "Outil fermé."
+}
 & $uv tool install --reinstall ("{0}[ia,revision]" -f $Root)
 if ($LASTEXITCODE -ne 0) {
-    Fail "L'installation de l'outil a échoué (code $LASTEXITCODE). Vérifiez la connexion Internet, puis relancez installer.bat."
+    Fail "L'installation de l'outil a échoué (code $LASTEXITCODE). Vérifiez la connexion Internet et que l'outil est fermé, puis relancez installer.bat."
 }
 if (-not $ShortcutDir) {  # a trial leaves PATH alone
     # uv writes its notes to stderr; under "Stop", Windows PowerShell 5.1 would take a
