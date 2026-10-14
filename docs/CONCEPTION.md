@@ -320,6 +320,11 @@ La logique (changer un statut, valider une source) vit dans `project` et se test
 - Base fictive anglaise : `exemples/bases-fictives/sleep-study.*` et `questionnaire-sleep.*` (`scripts/generer_base_anglaise.py`).
 - **Consignes au modèle** (étape 5) : `prompts/link-v2.en.txt` et `variables-v3.en.txt`, traduction fidèle des consignes françaises, choisies d'après la langue de l'étude ; les textes envoyés avec les données (« masked », notes des variables sensibles, description des groupes) suivent aussi cette langue. La version enregistrée est `link-v2.en` / `variables-v3.en` ; une étude en français reçoit exactement les mêmes messages qu'avant. Le modèle peut répondre « none » ou « unsure » comme « aucune » ou « incertain ». Les signaux d'invention reconnaissent « threshold » et les noms d'instruments à l'anglaise, sauf ceux du glossaire accepté. Le banc d'essai compte la base anglaise. Essai : `docs/essais/2026-10-14-etude-anglaise.md`.
 
+### 7.5 macOS (v0.5, étape 6)
+
+- `installer.command` et `desinstaller.command` (bash, fins de ligne LF, marqués exécutables dans le dépôt) font sous macOS ce que font `installer.bat` et `desinstaller.bat` : uv, l'outil, l'outil ouvert fermé avec l'accord de la personne, l'icône, Ollama. L'icône est un fichier `.command` dans Applications et sur le bureau : un double-clic ouvre une fenêtre de Terminal qui fait tourner l'outil, et fermer la fenêtre l'arrête. Réglages dans `~/Library/Application Support/ddict`.
+- Vérification (D-035) : `.github/workflows/macos.yml`, lancé à la main. Premier passage réussi le 2026-10-14 sur macOS 26 (Apple Silicon) : tests, installation, interface qui répond, installateur arrêté proprement quand l'outil est ouvert, désinstallation. Ce passage a fait trouver deux écarts du générateur d'exemples entre Windows et macOS (marque de système dans le zip, sauts de ligne dans une cellule), corrigés. Restent à voir sur un vrai Mac : l'icône, la fenêtre « Ouvrir » et les avertissements de sécurité de macOS.
+
 ## 8. Exports
 
 - **Codebook `.xlsx`** : un onglet « Variables » (une ligne par variable), un onglet « Valeurs » (une ligne par code et étiquette), un onglet « Groupes », un onglet « Provenance » (statut et origine de chaque champ, modèles utilisés). En-têtes figés, filtres activés.
