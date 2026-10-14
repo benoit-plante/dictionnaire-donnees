@@ -6,11 +6,11 @@ Ce guide s'adresse aux personnes qui ne programment pas. Il mène de l'installat
 
 - Windows 10 ou 11. Pas besoin de droits d'administrateur.
 - Une connexion Internet **pendant l'installation seulement**. Ensuite, l'outil ne communique plus avec Internet : il lit vos fichiers et écrit ses résultats sur votre ordinateur.
-- Pour l'IA, facultative : environ 5 Go d'espace libre et 16 Go de mémoire vive (8 Go suffisent, en plus lent). Une carte graphique accélère le travail, mais n'est pas nécessaire.
+- Pour l'IA, facultative : environ 5 Go d'espace libre et 16 Go de mémoire vive (8 Go suffisent, en plus lent). Une carte graphique accélère le travail, mais n'est pas nécessaire ; sans elle, un modèle plus petit est conseillé (section 6).
 
 ## 1. Installer
 
-1. Téléchargez l'archive de l'outil depuis la page des versions du projet sur GitHub : le lien **Source code (zip)**, par exemple `dictionnaire-donnees-0.3.0.zip`.
+1. Téléchargez l'archive de l'outil depuis la page des versions du projet sur GitHub : le lien **Source code (zip)**, par exemple `dictionnaire-donnees-0.4.0.zip`.
 2. Dans l'Explorateur, clic droit sur le fichier téléchargé, **Extraire tout**, puis **Extraire**. Ouvrez le dossier extrait ; s'il ne contient qu'un seul dossier du même nom, ouvrez celui-là : c'est **le dossier de l'outil**, avec `installer.bat`, `docs` et `exemples`.
 3. Double-cliquez sur **`installer.bat`**.
    - Si Windows affiche « **Windows a protégé votre ordinateur** », cliquez sur **Informations complémentaires**, puis **Exécuter quand même**. Ce message apparaît pour tout programme téléchargé qui n'est pas signé par un éditeur payant ; l'installateur est un simple script, lisible dans le dossier `windows`.
@@ -95,11 +95,27 @@ Page **Export** :
 
 Le codebook contient les libellés, le texte des questions rattachées, le glossaire (onglet « Glossaire »), les étiquettes de valeurs acceptées et la provenance de chaque valeur. Les effectifs de moins de 5 y sont masqués.
 
-**Fichiers de commandes** (même page, ou `ddict exporter etude-sommeil.dd.json --syntaxe`) : trois fichiers, `etude-sommeil-metadonnees.sps` (SPSS), `.R` (R, avec le paquet haven) et `.do` (Stata). Ils appliquent à vos données ce que vous avez accepté : libellés, étiquettes de valeurs, codes manquants (y compris ceux confirmés par l'équipe) et niveaux de mesure. Ils ne changent aucune valeur ; appliquez-les à une copie de vos données. Les items inversés que vous avez indiqués y sont seulement suggérés, en commentaire. Stata n'a pas de codes manquants déclarés : la commande qui les remplacerait par un point est donnée en commentaire.
+## 9. Appliquer vos décisions à vos données
 
-**Copie documentée de la base** (même page, ou `ddict documenter etude-sommeil.dd.json`) : une nouvelle copie de votre base au format SPSS, `etude-sommeil-documente.sav`, écrite à côté de l'original, avec ce que vous avez accepté. Elle fonctionne aussi pour une base CSV, Stata, SAS ou Excel. Avant de l'annoncer, l'outil la relit et la compare à l'original case par case ; au moindre écart, il la supprime et vous le dit. Votre fichier d'origine n'est jamais modifié, et une copie existante n'est remplacée que si vous cochez la case. La base doit se trouver à côté du projet ; sinon, **Choisir la base…** (ou `--base`). La copie contient les données des participants : rangez-la comme l'original.
+Le codebook documente ; vos données, elles, n'ont pas changé. Pour y faire entrer ce que vous avez accepté (libellés, étiquettes de valeurs, codes manquants, y compris ceux confirmés par l'équipe, niveaux de mesure), deux voies, sur la page **Export**.
 
-## 9. Avec vos propres données
+**Les fichiers de commandes, la voie recommandée.** **Écrire les fichiers de commandes à côté du projet** (ou les télécharger) donne trois fichiers : `etude-sommeil-metadonnees.sps` (SPSS), `.R` (R) et `.do` (Stata). Ils ne contiennent que vos décisions acceptées et ne changent aucune valeur : vous les ouvrez dans votre propre logiciel, vous pouvez les lire avant de les exécuter, et ils restent comme trace de ce qui a été fait. Les items inversés que vous avez indiqués y sont seulement suggérés, en commentaire.
+
+- **R** (avec le paquet haven, installé une fois par `install.packages("haven")`), dans RStudio ou la console R, dans le dossier du projet :
+
+  ```r
+  donnees <- haven::read_sav("etude-sommeil.sav")         # ou read.csv(...), haven::read_dta(...)
+  source("etude-sommeil-metadonnees.R", encoding = "UTF-8")
+  haven::write_sav(donnees, "etude-sommeil-avec-metadonnees.sav")   # facultatif : une copie
+  ```
+
+  Les niveaux de mesure ne sont pas appliqués par R : haven ne les écrit pas.
+- **SPSS** : ouvrez la base, puis **Fichier > Ouvrir > Syntaxe…**, choisissez le `.sps`, et **Exécuter > Tout**. Enregistrez ensuite la base sous un nouveau nom.
+- **Stata** (14 ou plus récent) : `use` votre base, puis `do etude-sommeil-metadonnees.do`. Stata n'a pas de codes manquants déclarés : la commande qui remplacerait ces codes par un point est écrite en commentaire, à exécuter seulement si vous le décidez.
+
+**La copie documentée, si vous voulez un fichier prêt à l'emploi.** **Écrire la copie documentée** (ou `ddict documenter etude-sommeil.dd.json`) écrit à côté de la base `etude-sommeil-documente.sav`, au format SPSS, avec vos décisions. Elle fonctionne aussi à partir d'une base CSV, Stata, SAS ou Excel. Avant de l'annoncer, l'outil la relit et la compare à l'original case par case ; au moindre écart, il la supprime et vous le dit. Votre fichier d'origine n'est jamais modifié, et une copie existante n'est remplacée que si vous cochez la case. La base doit se trouver à côté du projet ; sinon, **Choisir la base…** (ou `--base`). La copie contient les données des participants : rangez-la comme l'original.
+
+## 10. Avec vos propres données
 
 La démarche est la même avec votre fichier : SPSS (`.sav`), CSV (y compris ceux d'Excel en français, avec point-virgule et virgule décimale), Stata (`.dta`), SAS (`.sas7bdat`) ou Excel (`.xlsx` : la première feuille, avec les noms des variables sur la première ligne). Et avec votre questionnaire, en PDF ou en texte.
 
@@ -147,6 +163,9 @@ ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M   # banc d'essai d'un modèle
 | Page IA locale : aucun modèle installé | Relancez `installer.bat` et répondez `o` pour télécharger le modèle, ou suivez les indications de la page. |
 | Une grille du questionnaire est « à vérifier » | Ses titres de colonnes sont collés dans le PDF : l'outil ne propose alors pas d'étiquettes de valeurs pour ses variables. Un `.txt` copié depuis Word évite le problème. |
 | « Impossible d'écrire les fichiers » à l'export | Le codebook est probablement ouvert dans Excel : fermez-le, puis recommencez. |
+| Copie documentée : « La base … est introuvable à côté du projet » | Placez la base dans le dossier du projet, ou **Choisir la base…**. |
+| Copie documentée : « n'est plus le fichier d'où vient le projet » | La base a changé depuis la création du projet (nouvelle exportation, données corrigées). Créez un nouveau projet à partir de la base actuelle. |
+| R : « there is no package called 'haven' » | Dans R, une seule fois : `install.packages("haven")`. |
 | L'outil semble figé | Fermez la petite fenêtre noire de la barre des tâches, puis double-cliquez de nouveau sur l'icône. Les décisions déjà prises sont enregistrées. |
 
 Pour toute autre difficulté, notez ce que vous avez fait et le message obtenu, et transmettez-les à la personne qui vous a fourni l'outil.

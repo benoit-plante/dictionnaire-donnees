@@ -11,7 +11,7 @@ Copier `etude-sommeil.sav` et `questionnaire-sommeil.pdf` (dossier `exemples\bas
 
 Pour ne pas mêler les projets d'essai à la liste des projets récents, lancer l'outil avec la variable `DDICT_CONFIG_DIR` pointant vers un dossier temporaire.
 
-Le navigateur s'ouvre sur `http://127.0.0.1:8501`. Aucun bouton « Deploy » en haut à droite. Ollama doit tourner pour les étapes 8 à 11, avec `qwen2.5:7b-instruct-q4_K_M`.
+Le navigateur s'ouvre sur `http://127.0.0.1:8501`. Aucun bouton « Deploy » en haut à droite. Ollama doit tourner pour les étapes 8 à 11, 19 et 23, avec `qwen2.5:7b-instruct-q4_K_M`.
 
 ## Étapes et résultats attendus
 
@@ -34,5 +34,11 @@ Le navigateur s'ouvre sur `http://127.0.0.1:8501`. Aucun bouton « Deploy » en 
 | 15 | Export : version finale, **Écrire le codebook et le rapport** | « Fichiers écrits à côté du projet » ; codebook avec les colonnes Question et Texte de la question, « texte omis » pour les `anx*` dont le rattachement est accepté, onglet Glossaire (TCC, ANX), rien de la page de consentement (`ZQXQUEST`, « Laboratoire fictif ») |
 | 16 | Export : **Télécharger** le codebook | Le navigateur l'enregistre dans le dossier de téléchargements |
 | 17 | Fermer l'onglet, rouvrir par l'icône (ou `uv run ddict`) | L'outil rouvre l'onglet ; toutes les décisions sont là |
+| 18 | Tableau de bord, « Codes suspects à confirmer : 3 » ; sur `age`, **C'est un code manquant** | La page passe à la variable suspecte suivante, avec un message ; « Codes suspects à confirmer : 2 » |
+| 19 | Variables (rattachements proposés à l'étape 9) : **Accepter les rattachements où le modèle et le calcul s'accordent (N)…** ; décocher une ligne ; **Accepter ces N rattachements** | La liste montre chaque variable avec sa question, toutes cochées ; le compte du bouton baisse d'un à la décoche ; « N rattachements acceptés. » ; la ligne décochée attend toujours |
+| 20 | Avec un projet fait à partir de `etude-sommeil.csv` (sans étiquettes) et de `questionnaire-sommeil.txt` (dans le PDF, la grille Q7 est « à vérifier » : pas d'étiquettes proposées), rattachements acceptés : Groupes, G1, **Accepter les étiquettes de valeurs de ce groupe (N)…**, puis accepter | « Étiquettes de N variables acceptées. » |
+| 21 | Export : **Écrire les fichiers de commandes à côté du projet** | Trois fichiers `-metadonnees.sps`, `.R`, `.do` ; `MISSING VALUES age (999).` dans le `.sps` |
+| 22 | Export : **Écrire la copie documentée** ; puis cocher « la remplacer » et recommencer | « … identiques case par case » ; le bouton se grise tant que la case n'est pas cochée ; `etude-sommeil.sav` inchangé |
+| 23 | IA locale : **Mesurer ce modèle** | Barre de progression ; « Rapport écrit à côté du projet » ; le rapport s'affiche (deux bases, rattachements justes, signalements, durées) |
 
 À la fin, fermer la fenêtre de l'outil et supprimer le dossier de travail.

@@ -1,5 +1,17 @@
 # Changements
 
+## 0.4.0 — 2026-10-14
+
+Les décisions passent du codebook aux données, et le choix du modèle se fait en connaissance de cause (plan : `docs/plan-v0.4.md`, D-025 à D-029).
+
+- **Codes suspects confirmés** : une valeur comme 999 ou −9, isolée loin des autres, se confirme comme code manquant ou comme vraie valeur, par une personne seulement (D-028). Le codebook, les fichiers de commandes, la copie documentée et les messages au modèle en tiennent compte ; filtre « Codes suspects » et ligne du tableau de bord.
+- **Fichiers de commandes** SPSS (`.sps`), R (`.R`, haven) et Stata (`.do`) qui appliquent à vos données les décisions acceptées : libellés, étiquettes de valeurs, codes manquants, niveaux de mesure. Aucune valeur n'est recodée ; les items inversés sont suggérés en commentaire. Le script R appliqué au CSV fictif redonne les métadonnées du `.sav` ; la syntaxe SPSS est vérifiée avec PSPP (D-027). Page « Export », ou `ddict exporter --syntaxe`.
+- **Copie documentée de la base** (`.sav`), à côté de l'original, vérifiée case par case avant d'être annoncée, jamais écrite par-dessus sans accord ; aussi à partir d'un CSV, d'un fichier Stata, SAS ou Excel (D-026). Page « Export », ou `ddict documenter`.
+- **Décisions groupées** avec aperçu obligatoire : accepter d'un coup les rattachements où le modèle et le calcul s'accordent, ou les étiquettes de valeurs d'un groupe, après avoir vu la liste exacte et décoché ce qui ne convient pas (D-029). À l'essai, environ un rattachement sur cinq de la liste était faux sur une vraie base : l'aperçu le dit.
+- **Banc d'essai des modèles** : sur deux bases fictives au corrigé connu, mesure des rattachements justes, des inventions signalées et de la durée d'un modèle installé. Page « IA locale », ou `ddict evaluer`. Une **seconde base fictive** (enquête auprès de familles, CSV sans étiquettes) s'ajoute à l'étude sur le sommeil.
+- **Recommandation de modèle** selon le matériel, d'après l'essai de trois modèles : qwen2.5 7B avec une carte graphique, qwen2.5 3B sans, ou aucun modèle.
+- Guide : nouvelle section « Appliquer vos décisions à vos données » ; scénario manuel prolongé.
+
 ## 0.3.0 — 2026-10-14
 
 Tout le parcours se fait dans le navigateur, et l'outil s'installe par un double-clic (plan : `docs/plan-v0.3.md`, D-019 à D-024).

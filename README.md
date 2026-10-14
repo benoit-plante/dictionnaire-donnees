@@ -1,6 +1,6 @@
 # dictionnaire-donnees
 
-> Nom de travail. Version 0.3.0 : installation par double-clic, et tout le parcours dans le navigateur. À essayer d'abord sur la base fictive et son questionnaire, fournis.
+> Nom de travail. Version 0.4.0 : les décisions passent du codebook à vos données (fichiers de commandes SPSS, R et Stata, copie documentée), et un banc d'essai aide à choisir le modèle. À essayer d'abord sur la base fictive et son questionnaire, fournis.
 
 Outil libre et local qui aide les équipes de recherche à produire le **dictionnaire de données** (codebook) d'une base existante (SPSS, CSV, Stata, SAS ou Excel), avec l'aide du questionnaire de l'étude.
 
@@ -22,6 +22,9 @@ ddict questionnaire etude-sommeil.dd.json questionnaire-sommeil.pdf
 ddict rattacher etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M  # IA facultative
 ddict enrichir etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M   # facultatif
 ddict exporter etude-sommeil.dd.json      # codebook Excel et rapport Markdown
+ddict exporter etude-sommeil.dd.json --syntaxe   # et fichiers de commandes SPSS, R, Stata
+ddict documenter etude-sommeil.dd.json    # copie documentée de la base (.sav)
+ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M  # banc d'essai d'un modèle
 ```
 
 ## Documentation
