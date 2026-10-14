@@ -1,44 +1,38 @@
-# Scénario manuel : révision d'un projet
+# Scénario manuel : l'interface, de l'accueil au codebook
 
-À faire dans un vrai navigateur, sur la base fictive, après chaque changement important de l'interface de révision. La logique est couverte par les tests automatiques (`tests/test_review.py`) ; ce scénario vérifie ce que les tests ne voient pas : l'affichage, la lisibilité, le confort.
+À faire dans un vrai navigateur, sur la base fictive, après chaque changement important de l'interface. La logique est couverte par les tests automatiques ; ce scénario vérifie ce que les tests ne voient pas : l'affichage, la lisibilité, les clics rapides, la vraie fenêtre « Ouvrir » et le vrai modèle.
 
-## Préparation (PowerShell)
+## Préparation
 
-```
-cd C:\Users\benoi\Claude\Projects\dictionnaire-donnees
-mkdir $env:TEMP\ddict-revision
-copy exemples\bases-fictives\etude-sommeil.sav $env:TEMP\ddict-revision\
-uv run ddict profiler $env:TEMP\ddict-revision\etude-sommeil.sav
-uv run ddict questionnaire $env:TEMP\ddict-revision\etude-sommeil.dd.json exemples\bases-fictives\questionnaire-sommeil.pdf
-uv run ddict rattacher $env:TEMP\ddict-revision\etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M
-uv run ddict enrichir $env:TEMP\ddict-revision\etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M
-uv run ddict reviser $env:TEMP\ddict-revision\etude-sommeil.dd.json
-```
+Copier `etude-sommeil.sav` et `questionnaire-sommeil.pdf` (dossier `exemples\bases-fictives`) dans un dossier de travail vide, par exemple `%TEMP%\ddict-scenario`. Puis, au choix :
 
-Le navigateur s'ouvre sur `http://127.0.0.1:8501`. La console affiche « cet ordinateur seulement ». Aucun bouton « Deploy » en haut à droite.
+- double-cliquer sur l'icône **Dictionnaire de données** (outil installé) ;
+- ou, depuis le dépôt : `uv run ddict`.
+
+Pour ne pas mêler les projets d'essai à la liste des projets récents, lancer l'outil avec la variable `DDICT_CONFIG_DIR` pointant vers un dossier temporaire.
+
+Le navigateur s'ouvre sur `http://127.0.0.1:8501`. Aucun bouton « Deploy » en haut à droite. Ollama doit tourner pour les étapes 8 à 11, avec `qwen2.5:7b-instruct-q4_K_M`.
 
 ## Étapes et résultats attendus
 
 | # | Action | Attendu |
 |---|---|---|
-| 1 | Regarder la barre latérale | Nom du fichier, barre de progression, filtre « À réviser » choisi, première variable proposée |
-| 2 | Sur `sommeil_q1`, cliquer « Accepter » sous le libellé | « Enregistré. » sous le libellé ; statut « IA — validé (modèle, run-…) » ; on reste sur `sommeil_q1`, dont la description attend encore |
-| 3 | Sur la description, taper un autre texte puis cliquer « Enregistrer » (sans appuyer sur Entrée) | Le texte tapé est enregistré (statut « corrigé », valeur d'origine gardée) ; `sommeil_q1` n'a plus rien à réviser : l'interface passe à la variable suivante et le dit |
-| 4 | Choisir `sommeil_q7` | Encadré rouge : libellé deviné, la variable n'a pas d'étiquette dans le fichier |
-| 5 | Cliquer « Rejeter » sous ce libellé | Statut « rejeté » ; l'encadré rouge disparaît ; le champ de saisie se vide |
-| 6 | Dans « Champs documentés », saisir un seuil et sa signification **sans source**, cliquer « Ajouter le seuil » | Message en français sous le bouton : une source documentée est obligatoire ; rien n'est ajouté ; la section reste ouverte et garde la saisie |
-| 7 | Recommencer avec une source | Le seuil apparaît avec sa source ; les champs du seuil se vident |
-| 8 | Filtre « Sensibles », choisir `courriel`, cliquer « Confirmer la classe » | Classe « identifiant probable », statut « validé » ; aucune statistique ni valeur affichée |
-| 9 | « Afficher : Groupes », choisir G1 | Alpha observé et alpha avec items inversés ; `sommeil_q3`, `sommeil_q6` signalés et cochés |
-| 10 | Saisir un nom d'instrument sans source, enregistrer | Erreur ; puis avec une source : enregistré |
-| 11 | Fermer l'onglet, Ctrl+C dans la console, relancer `ddict reviser` | Toutes les décisions sont toujours là |
-| 12 | « Afficher : Glossaire » | QFS, EFA et TCC « à valider », avec leur page ; ANX parmi les sigles probables sans définition |
-| 13 | Accepter TCC, rejeter EFA ; dans « Ajouter un sigle », taper ANX et sa définition **sans pause** entre les deux champs, puis « Ajouter » | Statuts « validé » et « rejeté » ; ANX ajouté avec l'origine « Équipe », champs vidés, ANX retiré des sigles sans définition |
-| 14 | Filtre « À réviser », choisir `id_participant` ; sous « Question du questionnaire », cliquer « Accepter » | « Aucune question du questionnaire », statut « validé » |
-| 15 | Choisir `genre` ; dans « Rattacher à », choisir `Q4 — Quel est votre genre ?` puis cliquer « Rattacher » **sans pause** | Le texte exact de la question s'affiche, avec « p. 2 » ; statut « corrigé » si le modèle avait proposé autre chose |
-| 16 | Choisir `sommeil_q1`, accepter son rattachement à `Q7.r1` | Aucune étiquette de valeurs proposée : le `.sav` a les siennes, et les colonnes de la grille sont collées dans le PDF. Pour voir une proposition, refaire la préparation avec `etude-sommeil.csv` et `questionnaire-sommeil.txt` : « Étiquettes de valeurs tirées des options de réponse », 1 = Pas du tout … 5 = Extrêmement, « ordre supposé, à vérifier », boutons pour accepter ou rejeter |
-| 17 | Filtre « Sans question » | Les variables sans rattachement décidé ; `genre` n'y est plus |
-| 18 | « Afficher : Groupes », G2 : cocher « Ne pas reproduire le texte des questions de ce groupe », « Enregistrer ce choix » | « Enregistré. » ; la case reste cochée après un rechargement |
-| 19 | `uv run ddict exporter $env:TEMP\ddict-revision\etude-sommeil.dd.json`, ouvrir le codebook et le rapport | Le libellé accepté de `sommeil_q1` y figure ; les propositions non décidées n'y sont pas ; colonnes « Question » et « Texte de la question » remplies pour les rattachements acceptés, « texte omis » pour `anx1` à `anx7` ; onglet « Glossaire » avec TCC et ANX ; aucune trace de la page de consentement (`ZQXQUEST`, « Laboratoire fictif ») |
+| 1 | Regarder l'accueil | « Dictionnaire de données » ; sections Nouveau projet, Ouvrir un projet, Projets récents |
+| 2 | **Choisir une base…** | La fenêtre « Ouvrir » de Windows s'affiche devant le navigateur ; y choisir `etude-sommeil.sav` : son chemin remplit le champ |
+| 3 | **Créer le projet** | Page « Base » : 34 variables, 200 lignes, 4 sensibles, 10 avec signalements ; tableau de bord : « Ajouter le questionnaire de l'étude », « Sigles sans définition : 2 » |
+| 4 | Tableau de bord, « Ajouter le questionnaire » ; coller le chemin de `questionnaire-sommeil.pdf` puis cliquer **Lire le questionnaire** **sans pause** | « Questionnaire lu. » ; 14 questions ; « À vérifier : Q7 » ; QFS, EFA et TCC à valider ; tableau de bord à jour |
+| 5 | « Sigles à valider : 3 » ; accepter TCC, rejeter EFA ; ajouter ANX (« anxiété ») en tapant les deux champs **sans pause** | Statuts validé, rejeté ; ANX « Équipe » ; « Sigles à valider : 1 » |
+| 6 | **Accueil**, puis le projet dans « Projets récents » | Le projet se rouvre sur « Base » |
+| 7 | Accueil, recréer le même projet | « Un projet existe déjà » ; « Ouvrir le projet existant » l'ouvre sans rien perdre |
+| 8 | Page « IA locale » | Modèle recommandé choisi ; « Voir exactement ce qui serait envoyé » montre le bloc `l-001` |
+| 9 | **Faire proposer : rattachement aux questions** | Barre de progression bloc par bloc ; « 6 blocs réussis » ; tableau de bord : « Rattachements proposés à réviser : 32 » |
+| 10 | Tableau de bord, rattachements ; sur `id_participant`, choisir « Aucune question » puis **Rattacher** ; sur une autre variable, **Accepter** | Enregistré ; passage à la variable suivante, avec un message |
+| 11 | « IA locale », **Faire proposer : libellés et descriptions**, puis **Arrêter** pendant le premier bloc | Message « arrêté » ; les blocs terminés sont gardés ; une relance dit « … déjà faits » |
+| 12 | Variables : accepter un libellé ; corriger une description et cliquer **Enregistrer** sans appuyer sur Entrée | Texte enregistré, valeur d'origine gardée |
+| 13 | Champs documentés : seuil sans source, puis avec | Refus en français, puis seuil enregistré avec sa source |
+| 14 | Groupes, G2 : cocher « Ne pas reproduire le texte… », **Enregistrer ce choix** | Enregistré ; la case reste cochée |
+| 15 | Export : version finale, **Écrire le codebook et le rapport** | « Fichiers écrits à côté du projet » ; codebook avec les colonnes Question et Texte de la question, « texte omis » pour les `anx*` dont le rattachement est accepté, onglet Glossaire (TCC, ANX), rien de la page de consentement (`ZQXQUEST`, « Laboratoire fictif ») |
+| 16 | Export : **Télécharger** le codebook | Le navigateur l'enregistre dans le dossier de téléchargements |
+| 17 | Fermer l'onglet, rouvrir par l'icône (ou `uv run ddict`) | L'outil rouvre l'onglet ; toutes les décisions sont là |
 
-À la fin, supprimer le dossier `$env:TEMP\ddict-revision`.
+À la fin, fermer la fenêtre de l'outil et supprimer le dossier de travail.

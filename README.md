@@ -1,6 +1,6 @@
 # dictionnaire-donnees
 
-> Nom de travail. Version 0.2.0 : le questionnaire de l'étude devient une source documentée. À essayer d'abord sur la base fictive et son questionnaire, fournis.
+> Nom de travail. Version 0.3.0 : installation par double-clic, et tout le parcours dans le navigateur. À essayer d'abord sur la base fictive et son questionnaire, fournis.
 
 Outil libre et local qui aide les équipes de recherche à produire le **dictionnaire de données** (codebook) d'une base existante (SPSS, CSV, Stata, SAS ou Excel), avec l'aide du questionnaire de l'étude.
 
@@ -11,16 +11,16 @@ Outil libre et local qui aide les équipes de recherche à produire le **diction
 
 ## Commencer
 
-Le guide [`docs/installation-windows.md`](docs/installation-windows.md) mène de l'installation à un premier codebook, sans connaissances en programmation. En bref :
+Le guide [`docs/installation-windows.md`](docs/installation-windows.md) mène de l'installation à un codebook complet, sans connaissances en programmation. En bref : décompresser l'archive, double-cliquer sur `installer.bat`, puis sur l'icône **Dictionnaire de données** ; le reste se fait dans le navigateur, sur cet ordinateur seulement.
+
+Toutes les étapes existent aussi en ligne de commande (`ddict --help`) :
 
 ```
-uv tool install ".[ia,revision]"          # depuis le dossier de l'outil
+ddict                                     # l'interface, sur l'accueil
 ddict profiler etude-sommeil.sav          # lire la base, créer le fichier projet
 ddict questionnaire etude-sommeil.dd.json questionnaire-sommeil.pdf
 ddict rattacher etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M  # IA facultative
-ddict reviser etude-sommeil.dd.json       # glossaire, rattachements, dans le navigateur
 ddict enrichir etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M   # facultatif
-ddict reviser etude-sommeil.dd.json       # libellés et descriptions
 ddict exporter etude-sommeil.dd.json      # codebook Excel et rapport Markdown
 ```
 

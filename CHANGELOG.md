@@ -1,5 +1,18 @@
 # Changements
 
+## 0.3.0 — 2026-10-14
+
+Tout le parcours se fait dans le navigateur, et l'outil s'installe par un double-clic (plan : `docs/plan-v0.3.md`, D-019 à D-024).
+
+- **Installateur Windows** : `installer.bat` installe uv et l'outil dans le dossier de l'utilisateur, sans droits d'administrateur, crée l'icône « Dictionnaire de données » (menu Démarrer et bureau), vérifie Ollama et ne télécharge le modèle que si la personne le demande ; `desinstaller.bat` retire l'outil sans toucher aux projets (D-021).
+- **Accueil** : `ddict` seul, ou l'icône, ouvre l'interface. Nouveau projet à partir d'une base choisie avec la fenêtre « Ouvrir » de Windows (D-020), ouverture d'un projet, projets récents effaçables (D-024). Un nouveau double-clic sur l'icône rouvre l'onglet au lieu d'échouer.
+- **Pages** : Base (résumé du profil), Questionnaire (lecture, questions trouvées, remplacement), Glossaire, IA locale, Variables, Groupes, Export ; un **tableau de bord** dit ce qui attend, dans l'ordre recommandé, et mène à la bonne page.
+- **IA depuis l'interface** : détection d'Ollama et des modèles (adresse de l'ordinateur seulement), aperçu exact de ce qui serait envoyé, rattachement et libellés lancés bloc par bloc avec une barre de progression, bouton « Arrêter » et reprise (D-022, D-023).
+- **Export depuis l'interface** : version finale ou de travail, texte omis par groupe, fichiers écrits à côté du projet ou téléchargés ; même codebook que `ddict exporter`.
+- **Rattachement** (prompt `link-v2`) : les questions répétées à l'identique et les questions de suivi se distinguent par la question qui les précède. Sur la base publique d'essai, 14 des 27 cas difficiles sont justes au lieu de 9.
+- **Nouveau signal** : une description qui présente l'étendue observée comme celle de l'échelle.
+- Guide réécrit sans ligne de commande ; scénario manuel refait depuis l'accueil.
+
 ## 0.2.0 — 2026-10-14
 
 Le questionnaire de l'étude devient une source documentée (plan : `docs/plan-v0.2.md`, D-011 à D-018).

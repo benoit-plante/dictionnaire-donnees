@@ -1,204 +1,139 @@
 # Installer et utiliser l'outil sous Windows
 
-Ce guide s'adresse aux personnes qui ne programment pas. Il mène de l'installation jusqu'à un codebook complet, produit à partir de la base fictive et de son questionnaire, fournis avec l'outil. Comptez une heure, plus le téléchargement du modèle d'IA si vous choisissez de l'utiliser.
-
-Toutes les commandes se tapent dans **PowerShell**, la fenêtre de commandes de Windows. Copiez-les telles quelles, puis appuyez sur Entrée.
+Ce guide s'adresse aux personnes qui ne programment pas. Il mène de l'installation jusqu'à un codebook complet, produit à partir de la base fictive et de son questionnaire, fournis avec l'outil. Tout se fait par des doubles-clics et dans votre navigateur ; aucune commande n'est à taper. Comptez une heure, plus le téléchargement du modèle d'IA si vous choisissez de l'utiliser.
 
 ## Ce qu'il faut
 
-- Windows 10 ou 11.
+- Windows 10 ou 11. Pas besoin de droits d'administrateur.
 - Une connexion Internet **pendant l'installation seulement**. Ensuite, l'outil ne communique plus avec Internet : il lit vos fichiers et écrit ses résultats sur votre ordinateur.
 - Pour l'IA, facultative : environ 5 Go d'espace libre et 16 Go de mémoire vive (8 Go suffisent, en plus lent). Une carte graphique accélère le travail, mais n'est pas nécessaire.
 
-## 1. Ouvrir PowerShell
+## 1. Installer
 
-Cliquez sur **Démarrer**, tapez `PowerShell`, puis cliquez sur **Windows PowerShell**. Une fenêtre bleue ou noire s'ouvre : c'est là que vous taperez les commandes.
+1. Téléchargez l'archive de l'outil depuis la page des versions du projet sur GitHub : le lien **Source code (zip)**, par exemple `dictionnaire-donnees-0.3.0.zip`.
+2. Dans l'Explorateur, clic droit sur le fichier téléchargé, **Extraire tout**, puis **Extraire**. Ouvrez le dossier extrait ; s'il ne contient qu'un seul dossier du même nom, ouvrez celui-là : c'est **le dossier de l'outil**, avec `installer.bat`, `docs` et `exemples`.
+3. Double-cliquez sur **`installer.bat`**.
+   - Si Windows affiche « **Windows a protégé votre ordinateur** », cliquez sur **Informations complémentaires**, puis **Exécuter quand même**. Ce message apparaît pour tout programme téléchargé qui n'est pas signé par un éditeur payant ; l'installateur est un simple script, lisible dans le dossier `windows`.
+4. Une fenêtre s'ouvre et suit quatre étapes : uv (le gestionnaire de Python, installé dans votre dossier d'utilisateur), l'outil (une ou deux minutes la première fois), les icônes, puis l'IA locale. Un avertissement en anglais sur le « PATH » peut s'afficher : c'est normal, l'installateur s'en occupe.
+5. À l'étape de l'IA, répondez par `o` (oui) ou `n` (non) :
+   - si Ollama n'est pas installé, l'installateur propose d'ouvrir sa page de téléchargement ; installez-le, puis relancez `installer.bat` ;
+   - si Ollama est installé mais pas le modèle recommandé, il propose de le télécharger (environ 4,7 Go, une seule fois).
 
-## 2. Installer uv
+   Vous pouvez répondre non et y revenir plus tard : l'outil fonctionne sans IA.
+6. « Installation terminée » : appuyez sur Entrée pour fermer la fenêtre. Une icône **Dictionnaire de données** est sur votre bureau et dans le menu Démarrer.
 
-uv est un petit outil libre qui installe Python et l'outil à votre place, sans réglage. Tapez :
+## 2. Ouvrir l'outil
 
-```
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-```
+Double-cliquez sur l'icône **Dictionnaire de données**. Votre navigateur s'ouvre sur l'**accueil** de l'outil, à une adresse qui commence par `http://127.0.0.1` : elle n'est accessible que depuis votre ordinateur.
 
-**Fermez PowerShell, puis rouvrez-le** : Windows doit relire la liste des programmes installés. Vérifiez ensuite :
+Une petite fenêtre noire, réduite dans la barre des tâches, fait tourner l'outil. **Pour arrêter l'outil, fermez cette fenêtre.** Fermer l'onglet du navigateur ne l'arrête pas : un nouveau double-clic sur l'icône rouvre simplement l'onglet.
 
-```
-uv --version
-```
-
-Une ligne comme `uv 0.9.…` doit s'afficher.
-
-## 3. Installer l'outil
-
-1. Téléchargez l'archive de l'outil (fichier `.zip`, par exemple `dictionnaire-donnees-0.2.0.zip`) depuis la page des versions du projet sur GitHub, puis décompressez-la : clic droit sur le fichier, **Extraire tout**, puis **Extraire**.
-2. Trouvez **le dossier de l'outil** : c'est celui qui contient le fichier `pyproject.toml` et les dossiers `docs` et `exemples`. Windows le place souvent à l'intérieur d'un autre dossier du même nom, par exemple `Téléchargements\dictionnaire-donnees-0.2.0\dictionnaire-donnees-0.2.0`. Si le dossier extrait ne contient qu'un seul dossier, ouvrez-le : c'est celui-là.
-3. Dans PowerShell, placez-vous dans le dossier de l'outil : tapez `cd "`, glissez le dossier depuis l'Explorateur dans la fenêtre PowerShell (son chemin s'écrit tout seul), tapez `"` puis Entrée. Vérifiez ensuite que vous êtes au bon endroit :
-
-   ```
-   dir pyproject.toml
-   ```
-
-   Si PowerShell répond qu'il ne trouve pas le chemin, vous êtes un niveau trop haut : tapez `dir`, puis `cd` suivi du nom du dossier affiché, et vérifiez de nouveau.
-4. Installez l'outil avec ses deux options (l'IA locale et l'interface de révision) :
-
-   ```
-   uv tool install ".[ia,revision]"
-   uv tool update-shell
-   ```
-
-   La première commande télécharge Python et les bibliothèques nécessaires ; cela prend une ou deux minutes. La seconde rend la commande `ddict` utilisable partout.
-5. **Fermez PowerShell, puis rouvrez-le**, et vérifiez :
-
-   ```
-   ddict --version
-   ```
-
-   La réponse doit être `ddict` suivi du numéro de la version téléchargée, par exemple `ddict 0.2.0`.
-
-## 4. Premier codebook, à partir de la base fictive
+## 3. Premier codebook, à partir de la base fictive
 
 La base fictive est une petite étude inventée sur le sommeil (200 participants fictifs), avec son questionnaire. Elle permet d'essayer l'outil sans aucune donnée réelle.
 
-1. Créez un dossier de travail et placez-vous dedans :
-
-   ```
-   mkdir "$HOME\Documents\essai-ddict"
-   cd "$HOME\Documents\essai-ddict"
-   explorer .
-   ```
-
-   L'Explorateur s'ouvre sur ce dossier, vide pour l'instant. Dans une autre fenêtre de l'Explorateur, ouvrez le dossier de l'outil (section 3, étape 2), puis `exemples\bases-fictives`. Copiez les fichiers `etude-sommeil.sav` et `questionnaire-sommeil.pdf` dans le dossier `essai-ddict`.
-
-2. Faites lire la base par l'outil :
-
-   ```
-   ddict profiler etude-sommeil.sav
-   ```
-
-   L'outil crée `etude-sommeil.dd.json`, le **fichier projet**. Il contient tout ce que l'outil a calculé (types, manquants, modalités, étiquettes) et, plus tard, vos décisions. Il ne contient pas les réponses individuelles des participants.
-
-3. Produisez le codebook :
-
-   ```
-   ddict exporter etude-sommeil.dd.json
-   ```
-
-   Deux fichiers apparaissent dans le dossier `essai-ddict` : `etude-sommeil.xlsx` (le codebook, à ouvrir avec Excel) et `etude-sommeil.md` (le même contenu en texte, lisible avec le Bloc-notes).
+1. Sur l'accueil, sous **Nouveau projet**, cliquez sur **Choisir une base…**. La fenêtre « Ouvrir » de Windows apparaît (si vous ne la voyez pas, regardez derrière le navigateur). Allez dans le dossier de l'outil, puis `exemples\bases-fictives`, et choisissez `etude-sommeil.sav`.
+2. Cliquez sur **Créer le projet**. L'outil lit la base et crée à côté d'elle le **fichier projet**, `etude-sommeil.dd.json`. Il contient tout ce que l'outil a calculé (types, manquants, modalités, étiquettes) et, plus tard, vos décisions ; il ne contient pas les réponses individuelles des participants. Le fichier de données n'est jamais modifié.
+3. La page **Base** résume ce qui a été lu : nombre de variables et de lignes, variables sensibles, signalements.
+4. Dans la barre latérale, choisissez **Export**, puis **Écrire le codebook et le rapport**. Deux fichiers apparaissent à côté du projet : `etude-sommeil.xlsx` (le codebook, à ouvrir avec Excel) et `etude-sommeil.md` (le même contenu en texte). Le bouton **Ouvrir le dossier** les montre dans l'Explorateur.
 
 Votre premier codebook est fait, sans IA : tout ce qu'il contient a été calculé exactement à partir du fichier. Les sections suivantes l'enrichissent ; on peut s'arrêter à n'importe laquelle et exporter.
 
-## 5. Ajouter le questionnaire
+En haut de la barre latérale, le **tableau de bord** dit ce qui attend, dans l'ordre recommandé (« Ajouter le questionnaire de l'étude », « Sigles à valider : 3 »…). Chaque ligne est un bouton qui mène à la bonne page. Le bouton **Accueil** ramène à l'accueil, où vos **projets récents** se rouvrent en un clic.
+
+## 4. Ajouter le questionnaire
 
 Le questionnaire de l'étude dit ce que chaque variable veut dire : le texte exact des questions, le sens des sigles, les options de réponse. L'outil le lit sans IA, en PDF (export de SurveyMonkey, LimeSurvey, REDCap…) ou en texte (`.txt` copié depuis Word).
 
-```
-ddict questionnaire etude-sommeil.dd.json questionnaire-sommeil.pdf
-```
+1. Page **Questionnaire** (ou « Ajouter le questionnaire » dans le tableau de bord) : **Choisir le questionnaire…**, puis `questionnaire-sommeil.pdf` dans `exemples\bases-fictives`, et **Lire le questionnaire**.
+2. L'outil affiche le nombre de questions trouvées, les questions à vérifier (par exemple une grille dont les titres de colonnes sont collés), les **sigles définis dans le questionnaire** (« thérapie cognitivo-comportementale (TCC) ») et les sigles des noms de variables qui n'ont pas de définition. **Questions trouvées** les montre toutes.
+3. Page **Glossaire** : acceptez, corrigez ou rejetez chaque sigle trouvé, et ajoutez ceux qui manquent (ici, ANX : « anxiété »). **L'IA ne définit jamais un sigle** : c'est là qu'elle se trompe le plus, et le glossaire vient seulement du questionnaire et de vous.
 
-L'outil affiche le nombre de questions trouvées, les questions à vérifier (par exemple une grille dont les titres de colonnes sont collés), les **sigles définis dans le questionnaire** (« thérapie cognitivo-comportementale (TCC) ») et les sigles des noms de variables qui n'ont pas de définition. Le texte du questionnaire reste dans le fichier projet ; seules les questions rattachées à des variables iront dans le codebook, jamais la page de consentement.
+Le texte du questionnaire reste dans le fichier projet ; seules les questions rattachées à des variables iront dans le codebook, jamais la page de consentement.
 
-Il faut ensuite relier chaque variable à sa question :
+## 5. Relier les variables aux questions
 
-```
-ddict rattacher etude-sommeil.dd.json
-```
+Chaque variable vient d'une question, d'un énoncé de grille ou d'une option d'une question à cocher ; ou d'aucune (un identifiant, une date de passation, un score calculé).
 
-Sans IA, l'outil calcule pour chaque variable quelques questions candidates, que vous choisirez dans l'interface (section 7). Avec l'IA (section 6), ajoutez `--modele qwen2.5:7b-instruct-q4_K_M` : le modèle choisit parmi ces candidates, et vous acceptez ou corrigez chaque choix.
+- **Sans IA** : page **Variables**, filtre **Sans question**. Sur la fiche de chaque variable, la section **Question du questionnaire** propose une liste où les questions candidates calculées par l'outil sont en tête ; choisissez, puis **Rattacher**.
+- **Avec l'IA** (section 6) : le modèle choisit parmi les candidates, puis vous acceptez, corrigez ou rejetez chaque choix, de la même façon.
+
+Quand le fichier n'a pas d'étiquettes de valeurs (un CSV, par exemple), l'outil propose « 1 = Pas du tout … 5 = Extrêmement » d'après les options de la question rattachée, seulement dans les cas sûrs. La mention « **ordre supposé, à vérifier** » est sérieuse : vérifiez l'ordre des codes dans votre plateforme d'enquête ou votre script de recodage avant d'accepter. Une base recodée peut avoir 0 = « Autre » là où le questionnaire place « Autre » en dernier.
 
 ## 6. Facultatif : l'IA locale
 
-L'IA propose des rattachements aux questions, puis des libellés et des descriptions plus lisibles que les noms de variables. Elle tourne sur votre ordinateur, avec le logiciel libre **Ollama**. Le modèle ne reçoit jamais les réponses des participants, seulement des informations résumées (noms, étiquettes, proportions, questions). Chaque proposition attend votre décision. **Elle ne définit jamais un sigle** : c'est là qu'elle se trompe le plus, et le glossaire vient seulement du questionnaire et de vous.
+L'IA propose des rattachements aux questions, puis des libellés et des descriptions plus lisibles que les noms de variables. Elle tourne sur votre ordinateur, avec le logiciel libre **Ollama**. Le modèle ne reçoit jamais les réponses des participants, seulement des informations résumées (noms, étiquettes, proportions, questions). Chaque proposition attend votre décision.
 
-1. Installez Ollama depuis [ollama.com](https://ollama.com) (bouton **Download for Windows**), puis lancez-le : son icône apparaît près de l'horloge.
-2. Téléchargez le modèle recommandé (environ 4,7 Go, une seule fois) :
+1. Page **IA locale** : l'outil vérifie qu'Ollama répond et montre le modèle choisi. S'il manque quelque chose, la page explique quoi faire ; l'outil ne télécharge jamais de modèle lui-même.
+2. **Rattachement aux questions** : **Voir exactement ce qui serait envoyé** montre les messages, sans rien envoyer. Puis **Faire proposer : rattachement aux questions**. Une barre de progression avance bloc par bloc.
+3. **Révisez les rattachements** (page Variables, filtre « À réviser » ; ou le tableau de bord) avant d'aller plus loin. L'ordre compte : pour les libellés, le modèle reçoit le texte des questions dont vous avez accepté le rattachement, et le sens des sigles que vous avez acceptés. Un rattachement faux lui donnerait une fausse question.
+4. **Libellés et descriptions** : **Faire proposer : libellés et descriptions**, puis révisez-les.
 
-   ```
-   ollama pull qwen2.5:7b-instruct-q4_K_M
-   ```
+Pendant un travail, **Arrêter** (ou un changement de page) l'interrompt après le bloc en cours. Les blocs terminés sont enregistrés ; relancez pour continuer là où il s'était arrêté. Comptez environ une minute pour la base fictive avec une carte graphique, plusieurs minutes sans.
 
-3. Faites proposer les rattachements aux questions :
+## 7. Réviser
 
-   ```
-   ddict rattacher etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M
-   ```
-
-4. **Révisez d'abord le glossaire et les rattachements** dans l'interface (section 7), puis revenez ici. L'ordre compte : pour les libellés, le modèle reçoit le texte des questions dont vous avez accepté le rattachement, et le sens des sigles que vous avez acceptés. Un rattachement faux lui donnerait une fausse question.
-5. Faites proposer les libellés et les descriptions :
-
-   ```
-   ddict enrichir etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M
-   ```
-
-   Les variables sont traitées par blocs de 8 ; chaque bloc affiche « réussi ». Comptez environ une minute pour la base fictive avec une carte graphique, plusieurs minutes sans. Si vous interrompez (Ctrl+C), relancez la même commande : les blocs terminés ne sont pas refaits.
-
-Pour voir **exactement** ce qui serait envoyé au modèle, sans rien envoyer, ajoutez `--apercu` à `rattacher` ou à `enrichir` (sans `--modele`) : les messages sont écrits dans le dossier `etude-sommeil.dd-envois\apercu`.
-
-## 7. Réviser dans le navigateur
-
-```
-ddict reviser etude-sommeil.dd.json
-```
-
-Votre navigateur s'ouvre sur l'interface de révision. Elle n'est accessible que depuis votre ordinateur. PowerShell affiche quelques lignes, dont certaines en anglais ; c'est normal. Laissez cette fenêtre ouverte pendant la révision.
-
-- **À gauche** : ce qu'on affiche (« Variables », « Groupes » ou « Glossaire »), le filtre (« À réviser » montre les variables qui ont des propositions en attente ; « Sans question » celles qui ne sont pas encore rattachées) et la liste des variables.
-- **Glossaire** : accepter, corriger ou rejeter chaque sigle trouvé dans le questionnaire, et ajouter ceux qui manquent (l'outil liste les sigles probables des noms de variables sans définition). À faire en premier.
-- **Question du questionnaire**, sur la fiche de chaque variable : le texte exact de la question rattachée, à accepter ou rejeter ; une liste permet d'en choisir une autre, les questions candidates en tête, ou « Aucune question » (identifiant, date de passation, score calculé).
-- **Étiquettes de valeurs tirées des options de réponse** : quand le fichier n'a pas d'étiquettes (un CSV, par exemple), l'outil propose « 1 = Pas du tout … 5 = Extrêmement » d'après les options de la question, seulement dans les cas sûrs. La mention « ordre supposé, à vérifier » est sérieuse : **vérifiez l'ordre des codes dans votre plateforme d'enquête ou votre script de recodage avant d'accepter**. Une base recodée peut avoir 0 = « Autre » là où le questionnaire place « Autre » en dernier.
-- **Pour chaque proposition de l'IA** : « Accepter », « Rejeter », ou corriger le texte puis « Enregistrer ». Chaque décision est enregistrée aussitôt dans le fichier projet.
-- **Encadré rouge** : la proposition demande une attention particulière, par exemple un libellé deviné pour une variable sans étiquette, ou le sens d'un sigle que personne n'a donné à l'IA.
+- **Variables** : le filtre (« À réviser », « Avec signalements », « Sensibles », « Sans question », « Toutes ») et la liste des variables. Sur chaque fiche : ce que dit le fichier, ce qui a été calculé, la question rattachée, et chaque proposition à **Accepter**, **Rejeter**, ou corriger puis **Enregistrer**. Chaque décision est enregistrée aussitôt dans le fichier projet.
+- **Encadré rouge** : la proposition demande une attention particulière : un libellé deviné pour une variable sans étiquette, le sens d'un sigle que personne n'a donné à l'IA, ou l'étendue observée présentée comme celle d'une échelle.
 - **Signalements** : anomalies calculées, dont les **variantes d'écriture** d'une même réponse (« Français », « français », « Francais »), à corriger dans vos données si vous le souhaitez.
 - **Champs documentés** : étendue théorique, seuils, références et notes. Ils sont réservés aux personnes, et l'étendue comme les seuils exigent une source (manuel, article).
-- **Afficher : Groupes** : les échelles repérées par l'outil, leur alpha de Cronbach et les items probablement inversés. Confirmer une inversion la **documente** dans le codebook ; l'outil ne recode jamais les données. Le recodage (par exemple 6 − x pour une échelle de 1 à 5) reste à faire dans votre logiciel d'analyse. Pour un **instrument protégé par le droit d'auteur** (CBCL, BDI…), cochez « Ne pas reproduire le texte des questions de ce groupe » : le codebook donnera la référence de chaque question (`Q12.r3, p. 4`), sans son texte. Reproduire les items d'un instrument protégé relève de votre équipe.
+- **Groupes** : les échelles repérées par l'outil, leur alpha de Cronbach et les items probablement inversés. Confirmer une inversion la **documente** dans le codebook ; l'outil ne recode jamais les données. Pour un **instrument protégé par le droit d'auteur** (CBCL, BDI…), cochez « Ne pas reproduire le texte des questions de ce groupe » : le codebook donnera la référence de chaque question (`Q12.r3, p. 4`), sans son texte. Reproduire les items d'un instrument protégé relève de votre équipe.
 
-Quand vous avez terminé, fermez l'onglet, revenez dans PowerShell et appuyez sur **Ctrl+C**. Produisez ensuite le codebook à jour :
+## 8. Exporter
 
-```
-ddict exporter etude-sommeil.dd.json
-```
+Page **Export** :
 
-Le codebook ne contient que ce qui vient du fichier, ce qui a été calculé et ce que vous avez accepté ou saisi : libellés, texte des questions rattachées, glossaire (onglet « Glossaire »), étiquettes de valeurs acceptées. Les propositions sans décision n'y figurent pas. Pour omettre le texte des questions d'un groupe dans un seul export, sans changer le projet : `ddict exporter etude-sommeil.dd.json --sans-texte G2`.
+- **Version finale** : seulement ce qui vient du fichier, du calcul, ou de vos décisions. **Version de travail** : avec les propositions en attente, marquées comme telles.
+- **Groupes dont le texte des questions n'est pas reproduit** : par défaut, ceux que vous avez cochés dans « Groupes ».
+- **Écrire le codebook et le rapport** (à côté du projet), ou **Télécharger** (dans votre dossier de téléchargements).
 
-## 8. Avec vos propres données
+Le codebook contient les libellés, le texte des questions rattachées, le glossaire (onglet « Glossaire »), les étiquettes de valeurs acceptées et la provenance de chaque valeur. Les effectifs de moins de 5 y sont masqués.
 
-La démarche est la même avec votre fichier : SPSS (`.sav`), CSV (y compris les CSV enregistrés par Excel en français, avec point-virgule et virgule décimale), Stata (`.dta`), SAS (`.sas7bdat`) ou Excel (`.xlsx` : la première feuille, avec les noms des variables sur la première ligne). Et avec votre questionnaire, en PDF ou en texte.
+## 9. Avec vos propres données
 
-- Travaillez dans un dossier prévu pour ces données, selon les règles de votre équipe et de votre comité d'éthique. Le fichier projet, les codebooks et le dossier `.dd-envois` (ce qui a été envoyé au modèle) doivent rester avec les données.
+La démarche est la même avec votre fichier : SPSS (`.sav`), CSV (y compris ceux d'Excel en français, avec point-virgule et virgule décimale), Stata (`.dta`), SAS (`.sas7bdat`) ou Excel (`.xlsx` : la première feuille, avec les noms des variables sur la première ligne). Et avec votre questionnaire, en PDF ou en texte.
+
+- Travaillez dans un dossier prévu pour ces données, selon les règles de votre équipe et de votre comité d'éthique. Le fichier projet, les codebooks et le dossier `.dd-envois` (ce qui a été envoyé au modèle) restent à côté des données.
 - L'outil ne modifie jamais votre fichier de données.
 - Les variables qui ressemblent à des identifiants, à du texte libre ou à des dates de naissance sont repérées automatiquement : seules leurs métadonnées sont utilisées, et les effectifs de moins de 5 sont masqués.
-- Sur une grande base, les rattachements proposés par l'IA sont souvent justes, mais pas toujours : les questions répétées à l'identique (« À quelle fréquence cette personne vous apporte du soutien ? », une fois par personne) sont le cas le plus difficile. Vérifiez-les avant d'enrichir.
+- Sur une grande base, les rattachements proposés par l'IA sont souvent justes, mais pas toujours : les questions répétées à l'identique (« À quelle fréquence cette personne vous apporte du soutien ? », une fois par personne) sont le cas le plus difficile. Vérifiez-les avant les libellés.
+- La liste des projets récents est gardée sur votre ordinateur (dossier `%APPDATA%\ddict`) et ne contient que des chemins de fichiers ; **Effacer la liste**, sur l'accueil, la vide.
 
 ## Mettre à jour ou désinstaller
 
-Pour une nouvelle version, décompressez la nouvelle archive, placez-vous dans le dossier de l'outil comme à la section 3 (celui qui contient `pyproject.toml`), puis :
+- **Mettre à jour** : téléchargez et décompressez la nouvelle archive, puis double-cliquez sur son `installer.bat`. Vos fichiers projet sont conservés.
+- **Désinstaller** : double-cliquez sur `desinstaller.bat`, dans le dossier de l'outil. Il retire l'outil et ses icônes, sans toucher à vos projets, codebooks ou données ; il demande avant d'effacer la liste des projets récents. uv et Ollama restent installés.
+
+## Pour qui préfère la ligne de commande
+
+Toutes les étapes existent aussi en commandes, dans PowerShell (`ddict --help` les liste) :
 
 ```
-uv tool install --reinstall ".[ia,revision]"
+ddict                                         # ouvrir l'interface sur l'accueil
+ddict profiler etude-sommeil.sav              # lire la base, créer le fichier projet
+ddict questionnaire etude-sommeil.dd.json questionnaire-sommeil.pdf
+ddict rattacher etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M
+ddict enrichir etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M
+ddict reviser etude-sommeil.dd.json           # ouvrir directement un projet
+ddict exporter etude-sommeil.dd.json          # codebook Excel et rapport
 ```
 
-Vos fichiers projet sont conservés. Pour désinstaller l'outil :
-
-```
-uv tool uninstall ddict
-```
+`--apercu` (à `rattacher` ou `enrichir`, sans `--modele`) écrit les messages qui seraient envoyés dans le dossier `etude-sommeil.dd-envois\apercu`, sans rien envoyer. `ddict exporter --sans-texte G2` omet le texte des questions d'un groupe pour un seul export.
 
 ## En cas de problème
 
-| Message | Que faire |
+| Ce qui arrive | Que faire |
 |---|---|
-| « … does not appear to be a Python project » pendant l'installation | Vous n'êtes pas dans le dossier de l'outil, souvent un niveau trop haut : voir la section 3, étapes 2 et 3. |
-| « ddict n'est pas reconnu… » (ou « uv n'est pas reconnu… ») | Fermez et rouvrez PowerShell. Si le message persiste, refaites `uv tool update-shell`, puis rouvrez PowerShell. |
-| « Le serveur http://127.0.0.1:11434/v1 ne répond pas. Ollama est-il lancé ? » | Lancez Ollama depuis le menu Démarrer, attendez son icône près de l'horloge, puis relancez la commande. |
-| « Le modèle … est introuvable sur le serveur » | Le modèle n'est pas téléchargé, ou son nom est mal tapé : faites `ollama pull` avec exactement le même nom. |
-| « L'option IA n'est pas installée » | Refaites l'étape 3 en gardant `".[ia,revision]"` dans la commande. |
-| Le navigateur ne s'ouvre pas pendant la révision | Ouvrez-le vous-même à l'adresse `http://127.0.0.1:8501`. |
-| « Port 8501 is already in use », ou l'interface affichée est celle d'un autre projet | Une révision est déjà ouverte dans une autre fenêtre PowerShell : arrêtez-la (Ctrl+C), ou utilisez un autre port avec `--port 8502`. |
-| « Le projet n'a pas de questionnaire » | Lisez-le d'abord : `ddict questionnaire projet.dd.json questionnaire.pdf` (section 5). |
-| « Le projet a déjà un questionnaire » | Pour en lire une nouvelle version, ajoutez `--remplacer`. Les rattachements qui renvoyaient à l'ancienne version sont retirés, et l'outil le dit. |
-| « Groupe inconnu » avec `--sans-texte` | Les groupes s'appellent G1, G2… : voir « Afficher : Groupes » dans l'interface, ou l'onglet « Groupes » du codebook. |
+| « Windows a protégé votre ordinateur » au double-clic sur `installer.bat` | **Informations complémentaires**, puis **Exécuter quand même** (section 1). |
+| `installer.bat` s'arrête sur un message rouge | Vérifiez la connexion Internet, puis relancez-le. Si le message persiste, notez-le et transmettez-le. Certains postes d'établissement interdisent les scripts : adressez-vous au soutien informatique. |
+| « Ce dossier ne contient pas l'outil » | `installer.bat` a été copié hors de l'archive : lancez celui du dossier de l'outil décompressé (section 1, étape 2). |
+| La fenêtre « Ouvrir » ne s'affiche pas | Elle est peut-être derrière le navigateur : regardez dans la barre des tâches. Sinon, collez le chemin du fichier dans le champ sous le bouton (clic droit sur le fichier dans l'Explorateur, **Copier en tant que chemin d'accès**). |
+| Le navigateur ne s'ouvre pas au double-clic sur l'icône | Ouvrez-le vous-même à l'adresse `http://127.0.0.1:8501`. |
+| « Un projet existe déjà pour cette base » | L'outil n'écrase pas votre travail : **Ouvrir le projet existant**, ou **Remplacer le projet** si vous voulez vraiment repartir de zéro (vos décisions seront perdues). |
+| Page IA locale : « Ollama ne répond pas » | Lancez Ollama depuis le menu Démarrer, attendez son icône près de l'horloge, puis **Vérifier de nouveau**. |
+| Page IA locale : aucun modèle installé | Relancez `installer.bat` et répondez `o` pour télécharger le modèle, ou suivez les indications de la page. |
 | Une grille du questionnaire est « à vérifier » | Ses titres de colonnes sont collés dans le PDF : l'outil ne propose alors pas d'étiquettes de valeurs pour ses variables. Un `.txt` copié depuis Word évite le problème. |
-| « Le projet … existe déjà » | `ddict profiler` refuse d'écraser votre travail. Pour repartir de zéro, ajoutez `--remplacer` (vos décisions seront perdues). |
+| « Impossible d'écrire les fichiers » à l'export | Le codebook est probablement ouvert dans Excel : fermez-le, puis recommencez. |
+| L'outil semble figé | Fermez la petite fenêtre noire de la barre des tâches, puis double-cliquez de nouveau sur l'icône. Les décisions déjà prises sont enregistrées. |
 
-Pour toute autre difficulté, notez la commande tapée et le message obtenu, et transmettez-les à la personne qui vous a fourni l'outil.
+Pour toute autre difficulté, notez ce que vous avez fait et le message obtenu, et transmettez-les à la personne qui vous a fourni l'outil.
