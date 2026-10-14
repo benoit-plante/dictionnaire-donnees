@@ -354,7 +354,9 @@ Toutes les dépendances ci-dessus sont sous licences permissives (BSD, MIT, Apac
 
 **v0.1** (§ 13) : `.sav` et `.csv`, profilage complet, regroupement déterministe, enrichissement IA facultatif, révision Streamlit, fichier projet, exports `.xlsx` et `.md`, interface en français.
 
-**v0.2** : questionnaire comme source documentée, glossaire des sigles, autres formats ; plan proposé dans [`plan-v0.2.md`](plan-v0.2.md).
+**v0.2** (publiée) : questionnaire comme source documentée, glossaire des sigles, autres formats ; plan dans [`plan-v0.2.md`](plan-v0.2.md).
+
+**v0.3** : tout le parcours dans l'interface du navigateur et installateur Windows par double-clic ; plan proposé dans [`plan-v0.3.md`](plan-v0.3.md).
 
 **Plus tard** (hors v0.1) :
 - bases SQL ;
