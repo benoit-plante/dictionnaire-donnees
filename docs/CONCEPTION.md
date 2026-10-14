@@ -313,6 +313,12 @@ La logique (changer un statut, valider une source) vit dans `project` et se test
 - **Langue du codebook** (étape 3) : les écrivains d'exports (`render_markdown`, `write_markdown`, `write_xlsx`, `render_syntax`, `write_syntax`) prennent `language=` (`i18n.in_language`) ; ils écrivent dans cette langue le temps de l'export, puis l'interface revient à la sienne (`i18n.using`). Les nombres suivent la langue (0,363 / 0.363). La description calculée d'un groupe est enregistrée en français (les phrases sources) et recomposée dans la langue de l'affichage (`wording.group_description`) ; une description écrite par une personne reste telle quelle. Rapports de référence : `tests/reference/etude-sommeil.fr.md` et `.en.md`.
 - `field_label`, `colon`, `semicolon` et `quoted` suivent la typographie de la langue (« Format : », « Format: »). Les commandes et options ont des équivalents anglais (`ddict export --work`, `--replace`…), à côté des noms français.
 
+### 7.4 Études menées en anglais (v0.5, étape 4)
+
+- **Langue de l'étude** (`settings.language`, `fr` ou `en`) : devinée par `ddict.questionnaire.language` d'après les mots du questionnaire (ou, sans questionnaire, des étiquettes du fichier), à la création du projet et à la lecture du questionnaire ; modifiable sur la page « Base ». Elle choisit la langue des consignes au modèle (étape 5) ; elle est distincte de la langue de l'interface (D-032).
+- Le découpage du questionnaire et le glossaire reconnaissent déjà les formes anglaises (« Check all that apply », « If yes », définitions « Cognitive behavioural therapy (CBT) ») ; le calcul des candidates ignore aussi les petits mots anglais.
+- Base fictive anglaise : `exemples/bases-fictives/sleep-study.*` et `questionnaire-sleep.*` (`scripts/generer_base_anglaise.py`).
+
 ## 8. Exports
 
 - **Codebook `.xlsx`** : un onglet « Variables » (une ligne par variable), un onglet « Valeurs » (une ligne par code et étiquette), un onglet « Groupes », un onglet « Provenance » (statut et origine de chaque champ, modèles utilisés). En-têtes figés, filtres activés.

@@ -7,6 +7,7 @@ from collections import Counter
 import pandas as pd
 import streamlit as st
 
+from ddict import i18n
 from ddict.export import wording as w
 from ddict.i18n import _, field_label, quoted
 from ddict.project.model import Project
@@ -23,10 +24,33 @@ FORMATS = {
 }
 
 
+STUDY_LANGUAGE = "study-language"
+
+
+def _study_language(project: Project) -> None:
+    """The language of the study (v0.5, D-032), guessed from its questionnaire or labels."""
+    st.session_state[STUDY_LANGUAGE] = project.settings.language
+    st.selectbox(
+        _("Langue de l'étude"),
+        list(i18n.LANGUAGES),
+        key=STUDY_LANGUAGE,
+        format_func=i18n.LANGUAGES.__getitem__,
+        on_change=c.act,
+        args=(logic.set_project_language, c.state(STUDY_LANGUAGE)),
+        kwargs={"key": STUDY_LANGUAGE, "timed": False, "reset": ()},
+        help=_(
+            "La langue du questionnaire et des libellés : le modèle écrit ses propositions dans "
+            "cette langue. Devinée d'après le questionnaire ou les étiquettes du fichier."
+        ),
+    )
+    c.show_message(STUDY_LANGUAGE)
+
+
 def page(project: Project) -> None:
     source = project.source
     st.header(source.name + (f" — {source.label}" if source.label else ""))
     st.write(profile_summary(project))
+    _study_language(project)
 
     sensitive = [e for e in project.variables if logic.is_sensitive(e)]
     flagged = [e for e in project.variables if w.entry_anomalies(e)]

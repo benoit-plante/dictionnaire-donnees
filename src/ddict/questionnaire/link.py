@@ -62,6 +62,11 @@ STOP_WORDS = glossary.STOP_WORDS | {
     "ce", "ces", "cette", "dans", "est", "il", "ils", "je", "j", "m", "me", "mon", "ma",
     "mes", "ne", "pas", "plus", "qu", "que", "quel", "quelle", "qui", "s", "se", "son",
     "un", "une", "vos", "votre", "vous", "avez", "etes", "y", "ou", "si", "ex", "q",
+    # English (v0.5): a questionnaire in English.
+    "i", "my", "you", "your", "we", "our", "it", "its", "is", "are", "was", "were",
+    "be", "been", "do", "does", "did", "have", "has", "had", "how", "what", "which", "who",
+    "this", "that", "these", "those", "an", "or", "if", "as", "at", "by", "with", "from",
+    "any", "all", "not", "no", "so", "e", "g",
 }  # fmt: skip
 
 _WORD = re.compile(r"[a-z]+")

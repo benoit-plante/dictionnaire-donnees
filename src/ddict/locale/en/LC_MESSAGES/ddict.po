@@ -835,6 +835,13 @@ msgstr "The definition is empty; use \"Reject\"."
 msgid "La définition est vide."
 msgstr "The definition is empty."
 
+msgid ""
+"La langue du questionnaire et des libellés : le modèle écrit ses propositions dans cette langue. "
+"Devinée d'après le questionnaire ou les étiquettes du fichier."
+msgstr ""
+"The language of the questionnaire and the labels: the model writes its proposals in this "
+"language. Guessed from the questionnaire or the file's labels."
+
 msgid "La liste est gardée sur cet ordinateur ; elle ne contient que les chemins des fichiers projet."
 msgstr "The list is kept on this computer; it holds only the paths of the project files."
 
@@ -847,11 +854,18 @@ msgstr "The corrected value is empty."
 msgid "La valeur est obligatoire."
 msgstr "The value is required."
 
+msgid "Langue de l'étude"
+msgstr "Language of the study"
+
 msgid "Langue du codebook"
 msgstr "Codebook language"
 
 msgid "Langue du codebook (défaut : celle de l'interface)."
 msgstr "Language of the codebook (default: that of the interface)."
+
+#, python-brace-format
+msgid "Langue inconnue : {language}"
+msgstr "Unknown language: {language}"
 
 #, python-brace-format
 msgid ""

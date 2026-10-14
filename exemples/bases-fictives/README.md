@@ -86,3 +86,16 @@ Les identifiants, les courriels et les commentaires contiennent des **chaînes t
 | Variables sans question (identifiant, date, score calculé) | `id_famille`, `date_reponse`, `stress_total` |
 | Identifiant et texte libre | `id_famille` (témoin `ZQXFAMID`), `commentaire` (témoin `ZQXFAMTXT`) |
 | Page de consentement avec les coordonnées de l'équipe, coupée après un deux-points dans le PDF | témoin `ZQXFAMQUEST` |
+
+## Version anglaise de l'étude sur le sommeil (v0.5)
+
+`sleep-study.sav`, `sleep-study.csv` et `questionnaire-sleep.pdf` (et `.txt`), écrits par `scripts/generer_base_anglaise.py` : les mêmes 200 participants fictifs que `etude-sommeil` (même graine, mêmes valeurs), pour une étude menée en anglais. Noms de variables, libellés, étiquettes de valeurs, réponses en texte libre et questionnaire sont en anglais ; le questionnaire a la structure du questionnaire français, question pour question. Le corrigé est `answer_key()` dans le script.
+
+| Différence avec la version française | Où |
+|---|---|
+| Sigles définis en anglais | FSQ, FAS, CBT (« Cognitive behavioural therapy (CBT) ») |
+| Variantes d'écriture par la casse seulement | `home_language` : « French », « french », « FRENCH » |
+| Questions sans les mots des noms de variables | `age` (« How old are you? »), `height_cm` (« How tall are you… »), `n_awakenings` (« wake up ») : le calcul seul ne les trouve pas |
+| Grille du PDF lisible | les options de Q7, plus courtes, ne se collent pas comme en français |
+| Témoin de la page de consentement | `ZQXQUESTEN` |
+

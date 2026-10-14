@@ -15,6 +15,7 @@ from ddict.io import read_database
 from ddict.privacy import MIN_CELL_COUNT
 from ddict.project import PROJECT_SUFFIX, build_project, save_project
 from ddict.project.model import Project, Questionnaire
+from ddict.questionnaire import language as study_language
 from ddict.questionnaire import load_questionnaire
 from ddict.questionnaire.labels import propose_value_labels
 from ddict.questionnaire.link import drop_stale_links
@@ -41,6 +42,7 @@ def profile_database(
     if output.exists() and not replace:
         raise ProjectExists(output)
     project = build_project(read_database(database), min_cell_count=min_cell_count)
+    study_language.update(project)  # from the file's labels, when they say (v0.5)
     save_project(project, output)
     return project, output
 
@@ -98,6 +100,7 @@ def add_questionnaire(project: Project, path: Path | str, *, replace: bool = Fal
     propose_from_questionnaire(project)
     removed = drop_stale_links(project, previous) if previous is not None else 0
     propose_value_labels(project)
+    study_language.update(project)  # the questionnaire's language (v0.5)
     return removed
 
 

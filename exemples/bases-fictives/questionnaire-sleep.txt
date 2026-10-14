@@ -1,0 +1,86 @@
+Fictional study of sleep and well-being
+
+Information and consent form
+
+This study is entirely fictional: it is used to try out a data documentation tool. It includes the Fictional Sleep Questionnaire (FSQ) and the Fictional Anxiety Scale (FAS).
+
+Research team: Dr Zoe ZQXQUESTEN-Example, Fictional Sleep Laboratory. For any question: zqxquesten@example.org or 555-0199.
+
+Do you agree to take part in this study?
+Yes
+No
+
+General information
+
+What is your date of birth? (DD/MM/YYYY)
+
+How old are you?
+
+What is your gender?
+Woman
+Man
+Other identity
+Prefer not to answer
+
+Your email address (to send you a reminder):
+
+How tall are you, in centimetres?
+
+Your sleep
+
+The following statements make up the Fictional Sleep Questionnaire (FSQ).
+
+Over the past month, how much do the following statements apply to you?
+	Not at all	A little	Moderately	A lot	Extremely
+1. I have difficulty falling asleep at night.					
+2. My sleep is restful.					
+3. I wake up several times during the night without being able to fall back asleep easily.					
+4. I am satisfied with the quality of my sleep.					
+5. I have energy as soon as I wake up.					
+6. I feel drowsy during the day, even after a good night.					
+7. I avoid screens in the hour before going to bed.					
+8. I follow a regular routine before going to bed.					
+
+On average, how many hours do you sleep per night?
+
+How many times do you wake up during a typical night?
+
+What do you use to help you sleep? (Check all that apply)
+A prescribed medication
+A natural product (herbal tea, melatonin)
+Cognitive behavioural therapy (CBT)
+None of these
+
+Overall, how satisfied are you with your sleep? (0 = Not at all satisfied, 10 = Completely satisfied)
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+Don't know
+
+Your mood
+
+The following statements make up the Fictional Anxiety Scale (FAS).
+
+Over the past two weeks, how often have you felt the following?
+	Never	Sometimes	Often	Almost always
+1. I felt worried.				
+2. I felt tense.				
+3. I had trouble controlling my worries.				
+4. I felt restless.				
+5. I felt irritable.				
+6. I was afraid that something terrible might happen.				
+7. I had difficulty relaxing.				
+
+Do you have any other comments about your sleep?
+
+Which language do you speak most often at home?
+
+Thank you for taking part!

@@ -10,7 +10,7 @@ from typing import Literal
 
 from pydantic import ValidationError
 
-from ddict import glossary
+from ddict import glossary, i18n
 from ddict.export.wording import entry_anomalies
 from ddict.i18n import N_, Texts, _
 from ddict.project.decisions import DecisionError, correct, enter, reject, validate
@@ -198,6 +198,13 @@ def decide_issue(project: Project, name: str, index: int, action: Action, *, now
     entry = project.variable(name)
     issue = entry.issues[index]
     entry.issues[index] = validate(issue, now=now) if action == "accept" else reject(issue, now=now)
+
+
+def set_project_language(project: Project, language: str) -> None:
+    """The language of the study: its questionnaire and labels (v0.5, D-032)."""
+    if language not in i18n.LANGUAGES:
+        raise ReviewError(_("Langue inconnue : {language}").format(language=language))
+    project.settings.language = language
 
 
 def set_privacy(project: Project, name: str, privacy_class: str, *, now: str) -> None:

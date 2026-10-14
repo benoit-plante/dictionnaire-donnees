@@ -59,3 +59,22 @@ def family_generator():
 def family_files(family_generator, tmp_path_factory):
     out_dir = tmp_path_factory.mktemp("enquete-familles")
     return {path.name: path for path in family_generator.write_all(out_dir)}
+
+
+ENGLISH_GENERATOR_PATH = ROOT / "scripts" / "generer_base_anglaise.py"
+
+
+@pytest.fixture(scope="session")
+def english_generator():
+    """The English version of the sleep study (v0.5)."""
+    spec = importlib.util.spec_from_file_location("generer_base_anglaise", ENGLISH_GENERATOR_PATH)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.fixture(scope="session")
+def english_files(english_generator, tmp_path_factory):
+    out_dir = tmp_path_factory.mktemp("sleep-study")
+    return {path.name: path for path in english_generator.write_all(out_dir)}

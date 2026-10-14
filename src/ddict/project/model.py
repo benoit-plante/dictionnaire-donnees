@@ -242,7 +242,8 @@ class SourceInfo(Strict):
 class Settings(Strict):
     min_cell_count: int = Field(default=5, ge=1)
     max_observed_values: int = Field(default=20, ge=1)
-    language: str = "fr"
+    # The language of the study: its questionnaire and labels (v0.5, D-032).
+    language: Literal["fr", "en"] = "fr"
 
 
 class QuestionOption(Strict):
