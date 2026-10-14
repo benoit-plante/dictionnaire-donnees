@@ -64,6 +64,8 @@ Quand le fichier n'a pas d'étiquettes de valeurs (un CSV, par exemple), l'outil
 
 L'IA propose des rattachements aux questions, puis des libellés et des descriptions plus lisibles que les noms de variables. Elle tourne sur votre ordinateur, avec le logiciel libre **Ollama**. Le modèle ne reçoit jamais les réponses des participants, seulement des informations résumées (noms, étiquettes, proportions, questions). Chaque proposition attend votre décision.
 
+**Quel modèle ?** (essai du 2026-10-14, `docs/essais/2026-10-14-trois-modeles.md`) : avec une carte graphique d'au moins 6 Go, **qwen2.5 7B** (`ollama pull qwen2.5:7b-instruct-q4_K_M`, 4,7 Go). Sans carte graphique, **qwen2.5 3B** (`ollama pull qwen2.5:3b-instruct`, 1,9 Go) est plus rapide mais se trompe plus souvent : révisez chaque proposition ; sa licence restreint l'usage commercial. On peut aussi se passer de modèle : le calcul seul propose déjà les questions candidates.
+
 1. Page **IA locale** : l'outil vérifie qu'Ollama répond et montre le modèle choisi. S'il manque quelque chose, la page explique quoi faire ; l'outil ne télécharge jamais de modèle lui-même.
 2. **Rattachement aux questions** : **Voir exactement ce qui serait envoyé** montre les messages, sans rien envoyer. Puis **Faire proposer : rattachement aux questions**. Une barre de progression avance bloc par bloc.
 3. **Révisez les rattachements** (page Variables, filtre « À réviser » ; ou le tableau de bord) avant d'aller plus loin. L'ordre compte : pour les libellés, le modèle reçoit le texte des questions dont vous avez accepté le rattachement, et le sens des sigles que vous avez acceptés. Un rattachement faux lui donnerait une fausse question.
