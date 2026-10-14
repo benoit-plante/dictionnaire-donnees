@@ -1,0 +1,64 @@
+# The tests and a trial of the installer on macOS (v0.5, D-035).
+# Started by hand only (Actions > macOS > Run workflow, or `gh workflow run macos.yml`):
+# on a private repository, macOS minutes count ten times.
+name: macOS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  macos:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Tests
+        run: |
+          uv sync --all-extras
+          uv run ruff check src tests scripts
+          uv run pytest -q
+
+      - name: Installer
+        env:
+          DDICT_NO_PROMPT: "1"
+          DDICT_APP_DIR: ${{ runner.temp }}/apps
+        run: |
+          ./installer.command
+          "$HOME/.local/bin/ddict" --version
+          test -x "$DDICT_APP_DIR/Dictionnaire de données.command"
+
+      - name: The interface answers
+        run: |
+          "$HOME/.local/bin/ddict" --port 8599 > "$RUNNER_TEMP/ddict.log" 2>&1 &
+          for i in $(seq 1 60); do
+            if curl -sf http://127.0.0.1:8599/_stcore/health; then echo; exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/ddict.log"
+          exit 1
+
+      - name: Installer again, with the tool open
+        env:
+          DDICT_NO_PROMPT: "1"
+          DDICT_APP_DIR: ${{ runner.temp }}/apps
+        run: |
+          # Without prompts, an open tool is not closed: the installer must stop cleanly.
+          if ./installer.command; then echo "should have stopped"; exit 1; fi
+          pkill -f "/uv/tools/ddict/" || true
+          sleep 2
+          ./installer.command
+
+      - name: Uninstaller
+        env:
+          DDICT_NO_PROMPT: "1"
+          DDICT_APP_DIR: ${{ runner.temp }}/apps
+        run: |
+          ./desinstaller.command
+          test ! -e "$HOME/.local/bin/ddict"
+          test ! -e "$DDICT_APP_DIR/Dictionnaire de données.command"

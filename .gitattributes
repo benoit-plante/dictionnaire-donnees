@@ -9,3 +9,6 @@ exemples/**/*.csv binary
 # Windows scripts keep their exact bytes: CRLF, and a UTF-8 signature for PowerShell 5.1.
 *.bat -text
 *.ps1 -text
+# macOS scripts: LF, run by bash.
+*.command text eol=lf
+*.mo binary

@@ -1,7 +1,8 @@
 """The projects opened lately, for the home page (v0.3, D-024).
 
-Kept on this computer, in the user's folder (%APPDATA%\\ddict on Windows, ~/.config/ddict
-elsewhere): paths of project files only, never data. The list can be emptied from the home
+Kept on this computer, in the user's folder (%APPDATA%\\ddict on Windows,
+~/Library/Application Support/ddict on macOS, ~/.config/ddict elsewhere): paths of project
+files only, never data. The list can be emptied from the home
 page. DDICT_CONFIG_DIR sets another folder (the tests use it).
 """
 
@@ -23,6 +24,8 @@ def config_dir() -> Path:
         return Path(override)
     if sys.platform == "win32" and os.environ.get("APPDATA"):
         return Path(os.environ["APPDATA"]) / "ddict"
+    if sys.platform == "darwin":  # v0.5
+        return Path.home() / "Library" / "Application Support" / "ddict"
     base = os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config"
     return Path(base) / "ddict"
 

@@ -36,6 +36,19 @@ if ($found) { $uv = $found.Source }
 $local = Join-Path $env:USERPROFILE ".local\bin\uv.exe"
 if (-not $uv -and (Test-Path $local)) { $uv = $local }
 if ($uv) {
+    # An open tool locks its files (found by the trial of 0.4.0): close it first.
+    $toolDir = Join-Path (& $uv tool dir).Trim() "ddict"
+    $toolExe = Join-Path (& $uv tool dir --bin).Trim() "ddict.exe"
+    $open = @(Get-Process | Where-Object { $_.Path -and ($_.Path -like "$toolDir\*" -or $_.Path -eq $toolExe) })
+    if ($open.Count -gt 0) {
+        if ($NoPrompt -or (Ask "L'outil est ouvert. Le fermer maintenant ? Vos décisions sont déjà enregistrées.")) {
+            $open | Stop-Process -Force
+            Start-Sleep -Seconds 2
+        } else {
+            Say "Fermez la petite fenêtre noire de l'outil, puis relancez desinstaller.bat."
+            Finish 1
+        }
+    }
     & $uv tool uninstall ddict
     if ($LASTEXITCODE -eq 0) { Say "Outil retiré." } else { Say "L'outil n'était pas installé." }
 } else {
