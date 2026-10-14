@@ -36,8 +36,8 @@ def test_filters(project):
     assert names("sensitive") == ["id_participant", "courriel", "date_naissance", "commentaire"]
     assert "sommeil_q7" in names("flagged") and "age" in names("flagged")
     assert "sommeil_q2" not in names("flagged")
-    assert len(names("all")) == 33
-    assert logic.progress(project) == (31, 33)
+    assert len(names("all")) == 34
+    assert logic.progress(project) == (32, 34)
 
 
 def test_accept_reject_correct(project):
@@ -52,7 +52,7 @@ def test_accept_reject_correct(project):
     logic.decide(project, "sommeil_q7", "label", "reject", now=NOW)
     assert not is_accepted(project.variable("sommeil_q7").label)
     assert project.variable("sommeil_q7").ai_signals == []  # settled by the decision
-    assert logic.progress(project) == (33, 33)
+    assert logic.progress(project) == (34, 34)
 
 
 def test_empty_correction_is_refused(project):

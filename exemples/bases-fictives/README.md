@@ -42,6 +42,8 @@ Licence : CC0 (domaine public).
 | Échelle non contiguë | `anx1` à `anx4`, puis `anx5` à `anx7` plus loin |
 | Nombres décimaux | `heures_sommeil` |
 | Question à cocher : une variable par option (1 ou vide) | `aide_medicament`, `aide_naturel`, `aide_tcc`, `aide_aucune` |
+| Variantes d'écriture d'une même réponse (casse, accents) | `langue_maison` : « Français », « français », « Francais » ; « Anglais », « anglais » |
+| Variantes rares, à ne jamais révéler (< 5 chacune) | `langue_maison` : « Créole » (3), « créole » (2) |
 
 ## Pièges du questionnaire
 

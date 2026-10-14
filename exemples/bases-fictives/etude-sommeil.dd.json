@@ -3,9 +3,9 @@
   "source": {
     "name": "etude-sommeil.sav",
     "format": "sav",
-    "sha256": "29d83cf0aebf8f809413d2f5138848cb906d512ec335bfc30ac851d2bf9178c0",
+    "sha256": "a189e6bd7c313c8d06d56881042e0db32d66b9ecc1e48c3e06d36b0af7570f25",
     "n_rows": 200,
-    "n_columns": 33,
+    "n_columns": 34,
     "label": "Etude sommeil (fictive)",
     "encoding": "UTF-8",
     "delimiter": null,
@@ -4372,8 +4372,145 @@
       "ai_signals": []
     },
     {
-      "name": "commentaire",
+      "name": "langue_maison",
       "position": 33,
+      "file": {
+        "storage_type": "string",
+        "storage_width": 16,
+        "display_format": "A9",
+        "measure_level": "scale",
+        "label": "Langue maison",
+        "value_labels": [],
+        "declared_missing": [],
+        "missing_tokens": []
+      },
+      "profile": {
+        "inferred_type": "text",
+        "n_rows": 200,
+        "n_valid": 198,
+        "n_system_missing": 2,
+        "n_declared_missing": 0,
+        "n_distinct": 8,
+        "min": null,
+        "max": null,
+        "mean": null,
+        "sd": null,
+        "median": null,
+        "q1": null,
+        "q3": null,
+        "date_min": null,
+        "date_max": null,
+        "n_non_numeric": null,
+        "observed_values": [
+          {
+            "code": "Anglais",
+            "count": 30,
+            "declared_missing": false
+          },
+          {
+            "code": "Espagnol",
+            "count": 7,
+            "declared_missing": false
+          },
+          {
+            "code": "Francais",
+            "count": 12,
+            "declared_missing": false
+          },
+          {
+            "code": "Français",
+            "count": 110,
+            "declared_missing": false
+          },
+          {
+            "code": "anglais",
+            "count": 9,
+            "declared_missing": false
+          },
+          {
+            "code": "français",
+            "count": 25,
+            "declared_missing": false
+          }
+        ],
+        "n_rare_values_hidden": 2,
+        "unlabeled_codes": [],
+        "unused_labels": [],
+        "suspect_missing_codes": [],
+        "flags": [],
+        "duplicate_of": null,
+        "item_rest_r": null,
+        "reverse_suspect": false
+      },
+      "privacy": {
+        "privacy_class": {
+          "value": "ordinary",
+          "origin": "computed",
+          "status": "none",
+          "proposed_value": null,
+          "ai_run": null,
+          "updated_at": null
+        },
+        "reasons": []
+      },
+      "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "label": {
+        "value": "Langue maison",
+        "origin": "file",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "description": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "issues": [],
+      "unit": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "group_id": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "theoretical_range": null,
+      "thresholds": [],
+      "references": [],
+      "notes": null,
+      "ai_signals": []
+    },
+    {
+      "name": "commentaire",
+      "position": 34,
       "file": {
         "storage_type": "string",
         "storage_width": 72,

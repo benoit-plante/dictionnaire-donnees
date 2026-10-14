@@ -262,7 +262,7 @@ def test_link_command_without_a_model(fictional_files, tmp_path, capsys):
     main(["questionnaire", str(path), str(fictional_files["questionnaire-sommeil.pdf"])])
     capsys.readouterr()
     assert main(["rattacher", str(path)]) == 0
-    assert "32 variables sur 33 ont des questions candidates" in capsys.readouterr().out
+    assert "33 variables sur 34 ont des questions candidates" in capsys.readouterr().out
     assert main(["rattacher", str(path), "--apercu"]) == 0
     folder = tmp_path / "etude.dd-envois" / "apercu"
     assert sorted(p.name for p in folder.iterdir())[:2] == ["l-001.json", "l-002.json"]

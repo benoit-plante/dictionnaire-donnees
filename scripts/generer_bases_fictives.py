@@ -43,6 +43,19 @@ SLEEP_ITEMS = [f"sommeil_q{i}" for i in range(1, 9)]
 ANXIETY_ITEMS = [f"anx{i}" for i in range(1, 8)]
 # One variable per option of a "tick all that apply" question: 1 when ticked, empty if not.
 AID_ITEMS = ["aide_medicament", "aide_naturel", "aide_tcc", "aide_aucune"]
+# A language typed by hand (v0.2, step 7): the same answer written in several ways. The two
+# rare spellings of "Créole" are fewer than 5 each: hidden, and never to be revealed.
+HOME_LANGUAGE = {
+    "Français": 110,
+    "français": 25,
+    "Francais": 12,
+    "Anglais": 30,
+    "anglais": 9,
+    "Espagnol": 7,
+    "Créole": 3,
+    "créole": 2,
+    "": 2,
+}
 
 COLUMN_ORDER = [
     "id_participant",
@@ -67,6 +80,7 @@ COLUMN_ORDER = [
     "satisfaction_globale",
     "taille_cm",
     "q_retiree",
+    "langue_maison",
     "commentaire",
 ]
 
@@ -90,6 +104,10 @@ TRAPS = {
     "non_contiguous_scale": ANXIETY_ITEMS,
     "decimal": ["heures_sommeil"],
     "checkbox": AID_ITEMS,
+    "spelling_variants": {
+        "langue_maison": [["Français", "français", "Francais"], ["Anglais", "anglais"]],
+    },
+    "hidden_variants": {"langue_maison": ["Créole", "créole"]},
 }
 
 LIKERT_5 = {1: "Pas du tout", 2: "Un peu", 3: "Moyennement", 4: "Beaucoup", 5: "Extrêmement"}
@@ -128,6 +146,7 @@ COLUMN_LABELS = {
     "satisfaction_globale": "Satisfaction globale 0-10",
     "taille_cm": "Taille (cm)",
     "q_retiree": "Question retiree v2",
+    "langue_maison": "Langue maison",
     "commentaire": "Commentaires",
 }
 
@@ -215,6 +234,9 @@ def build_dataset() -> tuple[pd.DataFrame, dict]:
     for item in AID_ITEMS[:-1]:
         ticked |= data[item] == 1
     data["aide_aucune"] = np.where(~ticked, 1.0, np.nan)
+
+    languages = [text for text, count in HOME_LANGUAGE.items() for _ in range(count)]
+    data["langue_maison"] = list(rng.permutation(np.array(languages, dtype=object)))
 
     df = pd.DataFrame({name: data[name] for name in COLUMN_ORDER})
 
@@ -433,6 +455,12 @@ QUESTIONNAIRE = [
             "Avez-vous d'autres commentaires sur votre sommeil ?",
             [],
             ["commentaire"],
+        ),
+        (
+            "question",
+            "Quelle langue parlez-vous le plus souvent à la maison ?",
+            [],
+            ["langue_maison"],
         ),
         ("text", "Merci de votre participation !"),
     ],

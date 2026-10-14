@@ -129,6 +129,7 @@ Statuts affichés : `proposed` = « proposé par IA », `validated` = « validé
 | `unused_labels` | Étiquettes sans aucune observation | calcul |
 | `suspect_missing_codes` | Valeurs sentinelles probables non déclarées (`-9`, `99`, `999`, `-1`…, isolées loin du reste) | calcul |
 | `flags` | Constante, quasi constante, entièrement manquante, types mélangés, doublon de colonne | calcul |
+| (signal) variantes d'écriture | Catégories visibles d'une variable de texte qui ne diffèrent que par la casse, les accents ou les espaces (v0.2) ; calculées à l'affichage à partir des catégories visibles, jamais des données, donc sans révéler une catégorie masquée | calcul |
 | `privacy_class` | `free_text`, `likely_identifier`, `quasi_identifier`, `date_of_birth_like`, `ordinary`, avec les raisons | calcul, confirmé par un humain |
 | `group_id` | Groupe (échelle ou instrument probable) | calcul ou IA, validé par un humain |
 | `item_total_r` | Corrélation item-total dans le groupe (arrondie) | calcul |

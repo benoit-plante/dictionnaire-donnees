@@ -108,7 +108,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 12 0 R >>
 endobj
 12 0 obj
-<< /Length 1296 >>
+<< /Length 1387 >>
 stream
 BT /F2 13 Tf 50.0 792.0 Td (Votre humeur) Tj ET
 BT /F1 10 Tf 50.0 766.0 Td (Les énoncés suivants forment l'Échelle fictive d'anxiété \(EFA\).) Tj ET
@@ -129,7 +129,8 @@ BT /F1 9 Tf 50.0 627.0 Td (6. J'ai eu peur que quelque chose de) Tj ET
 BT /F1 9 Tf 50.0 615.0 Td (terrible arrive.) Tj ET
 BT /F1 9 Tf 50.0 603.0 Td (7. J'ai eu de la difficulté à me détendre.) Tj ET
 BT /F2 10 Tf 50.0 583.0 Td (Avez-vous d'autres commentaires sur votre sommeil ?) Tj ET
-BT /F1 10 Tf 50.0 562.0 Td (Merci de votre participation !) Tj ET
+BT /F2 10 Tf 50.0 562.0 Td (Quelle langue parlez-vous le plus souvent à la maison ?) Tj ET
+BT /F1 10 Tf 50.0 541.0 Td (Merci de votre participation !) Tj ET
 BT /F1 8 Tf 287.5 30.0 Td (Page 4) Tj ET
 endstream
 endobj
@@ -151,5 +152,5 @@ xref
 trailer
 << /Size 13 /Root 1 0 R >>
 startxref
-6670
+6761
 %%EOF

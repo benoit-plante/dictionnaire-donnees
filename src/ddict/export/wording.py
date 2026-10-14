@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 from ddict.i18n import _
+from ddict.profile.variants import spelling_variants
 from ddict.project.decisions import is_accepted
 from ddict.project.model import Code, Profile, TrackedValue, VariableEntry
 from ddict.questionnaire.labels import accepted_labels
@@ -149,6 +150,12 @@ def anomalies(profile: Profile) -> list[str]:
         )
     if profile.duplicate_of:
         found.append(_("Identique à {name}").format(name=profile.duplicate_of))
+    for group in spelling_variants(profile):
+        found.append(
+            _("Variantes d'écriture d'une même réponse : {spellings}").format(
+                spellings=", ".join(f"« {code} »" for code in group)
+            )
+        )
     if profile.n_rare_values_hidden:
         found.append(
             _("{n} catégories rares retirées (confidentialité)").format(

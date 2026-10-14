@@ -38,7 +38,7 @@ def read(request, fictional_files):
 def test_every_question_of_the_fictional_questionnaire(read, generator):
     name, questionnaire = read
     expected = _expected(generator)
-    assert len(questionnaire.questions) == len(expected) == 13
+    assert len(questionnaire.questions) == len(expected) == 14
     for number, (question, (page, text, kind, options, rows)) in enumerate(
         zip(questionnaire.questions, expected, strict=True), start=1
     ):
@@ -279,10 +279,10 @@ def test_command_adds_the_questionnaire(project_path, fictional_files, capsys):
     capsys.readouterr()
     assert main(["questionnaire", str(project_path), str(fictional_files[FORMATS[0]])]) == 0
     out = capsys.readouterr().out
-    assert "13 questions" in out and "À vérifier : Q7" in out
+    assert "14 questions" in out and "À vérifier : Q7" in out
     project = load_project(project_path)
     assert project.questionnaire.file_name == FORMATS[0]
-    assert len(project.questionnaire.questions) == 13
+    assert len(project.questionnaire.questions) == 14
     assert json.loads(project_path.read_text(encoding="utf-8"))["questionnaire"]["format"] == "pdf"
 
 

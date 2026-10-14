@@ -22,7 +22,7 @@ def loaded(fictional_files):
 def test_guesses_encoding_delimiter_and_decimal(loaded, name):
     source = loaded[name].source
     assert (source.encoding, source.delimiter, source.decimal) == VARIANTS[name]
-    assert (source.format, source.n_rows, source.n_columns) == ("csv", 200, 33)
+    assert (source.format, source.n_rows, source.n_columns) == ("csv", 200, 34)
 
 
 @pytest.mark.parametrize("name", list(VARIANTS))

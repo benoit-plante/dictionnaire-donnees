@@ -26,7 +26,7 @@ def test_source_identity(loaded, fictional_files):
     assert loaded.source.name == "etude-sommeil.sav"
     assert loaded.source.format == "sav"
     assert loaded.source.sha256 == hashlib.sha256(path.read_bytes()).hexdigest()
-    assert (loaded.source.n_rows, loaded.source.n_columns) == (200, 33)
+    assert (loaded.source.n_rows, loaded.source.n_columns) == (200, 34)
     assert loaded.source.label == "Etude sommeil (fictive)"
     assert loaded.source.encoding == "UTF-8"
 

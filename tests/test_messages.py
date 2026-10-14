@@ -65,7 +65,7 @@ def test_blocks_cover_every_variable_once_in_order(project):
     assert [b.block_id for b in blocks] == ["b-001", "b-002", "b-003"]
     names = [name for b in blocks for name in b.names]
     assert names == [v.name for v in project.variables]
-    assert [len(b.names) for b in build_blocks(project, size=10)] == [10, 10, 10, 3]
+    assert [len(b.names) for b in build_blocks(project, size=10)] == [10, 10, 10, 4]
 
 
 def test_sensitive_variables_send_only_their_description(payloads):
@@ -152,7 +152,7 @@ def test_preview_command_sends_nothing_and_writes_the_messages(fictional_files, 
     assert "rien n'a été envoyé" in output
     folder = tmp_path / "etude.dd-envois" / "apercu"
     files = sorted(p.name for p in folder.iterdir())
-    assert files == [f"b-00{i}.json" for i in range(1, 6)]  # 33 variables, 8 per block
+    assert files == [f"b-00{i}.json" for i in range(1, 6)]  # 34 variables, 8 per block
     record = json.loads((folder / "b-001.json").read_text(encoding="utf-8"))
     assert record["prompt_version"] == PROMPT_VERSION
     assert record["message_sha256"] == message_sha256(record["messages"])
