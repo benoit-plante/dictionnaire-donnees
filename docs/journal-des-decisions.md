@@ -218,3 +218,16 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   3. Pas de PDF, texte seulement.
 - **Justification :** les plateformes d'enquête exportent leurs questionnaires en PDF ; pypdf s'installe sans compilation et a suffi pour extraire le questionnaire réel de l'essai.
 - **Conséquences :** ajoutée à l'étape 2 et notée dans `docs/dependances.md`.
+
+### D-018 — Origine « questionnaire » pour les valeurs suivies
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** les valeurs suivies du fichier projet ont une cinquième origine, `questionnaire` : une valeur calculée à partir du questionnaire sous une règle stricte, comme les étiquettes de valeurs tirées des options de réponse (D-016). Comme une valeur de l'IA, elle entre avec le statut « proposé » et n'est reprise dans le codebook et dans les messages au modèle qu'une fois acceptée par une personne.
+- **Options considérées :**
+  1. Origine `computed` : mais une valeur calculée est tenue pour acquise, et serait exportée sans décision.
+  2. Origine `ai` : fausse, aucun modèle n'intervient, et la trace renverrait à un appel qui n'existe pas.
+  3. Une origine propre, `questionnaire`, qui peut être proposée.
+- **Justification :** l'essai de l'étape 6 montre qu'une proposition fondée sur l'ordre des options peut être fausse (codes recodés) ; elle doit attendre une personne, et le codebook doit pouvoir dire d'où elle vient.
+- **Conséquences :** le format du fichier projet accepte cette origine (champ `value_labels` d'une variable) ; les règles de décision (accepter, rejeter, valeur acceptée) traitent `questionnaire` comme `ai`.
