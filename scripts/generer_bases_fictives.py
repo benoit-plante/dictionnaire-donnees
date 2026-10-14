@@ -370,6 +370,7 @@ def write_xlsx(df: pd.DataFrame, path: Path) -> None:
                 )
             fixed = zipfile.ZipInfo(info.filename, date_time=XLSX_FIXED_TIME.timetuple()[:6])
             fixed.compress_type = zipfile.ZIP_DEFLATED
+            fixed.create_system = 0  # as on Windows: Python marks the system otherwise (v0.5)
             archive.writestr(fixed, data)
 
 
