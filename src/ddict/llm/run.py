@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from ddict.llm.client import LocalModelClient, ModelCallError
-from ddict.llm.messages import PROMPT_VERSION, Block
-from ddict.llm.schemas import VariableProposal, response_schema
+from ddict.llm.messages import Block
+from ddict.llm.schemas import response_schema
 from ddict.llm.validate import InvalidResponse, parse_block_response
 from ddict.project.model import AiRun
 
@@ -16,13 +17,24 @@ MAX_ATTEMPTS = 2
 @dataclass(frozen=True)
 class BlockResult:
     run: AiRun
-    proposals: tuple[VariableProposal, ...] | None  # None unless the run succeeded
+    proposals: tuple | None  # None unless the run succeeded
     answers: tuple[str, ...] = ()  # raw answers, for the exchange log only
 
 
-def run_block(client: LocalModelClient, block: Block, *, run_id: str, now: str) -> BlockResult:
-    """Never a partial answer: either every variable of the block, or nothing."""
-    schema = response_schema()
+def run_block(
+    client: LocalModelClient,
+    block: Block,
+    *,
+    run_id: str,
+    now: str,
+    schema: dict | None = None,
+    parse: Callable[[str, Block], tuple] = parse_block_response,
+) -> BlockResult:
+    """Never a partial answer: either every variable of the block, or nothing.
+
+    `schema` and `parse` are those of labels and descriptions unless given (links).
+    """
+    schema = schema or response_schema()
     outcome, detail, proposals = "failed", None, None
     attempts = 0
     answers: list[str] = []
@@ -36,7 +48,7 @@ def run_block(client: LocalModelClient, block: Block, *, run_id: str, now: str) 
             outcome, detail = "failed", error.code
             break
         try:
-            proposals = parse_block_response(content, block)
+            proposals = parse(content, block)
         except InvalidResponse as error:
             outcome, detail = "invalid_response", error.code
             continue
@@ -48,7 +60,7 @@ def run_block(client: LocalModelClient, block: Block, *, run_id: str, now: str) 
         endpoint=client.endpoint,
         model=client.model,
         parameters=client.parameters,
-        prompt_version=PROMPT_VERSION,
+        prompt_version=block.prompt_version,
         message_sha256=block.sha256,
         started_at=now,
         attempts=attempts,

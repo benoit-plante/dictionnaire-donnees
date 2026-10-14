@@ -133,6 +133,7 @@ Statuts affichés : `proposed` = « proposé par IA », `validated` = « validé
 | `group_id` | Groupe (échelle ou instrument probable) | calcul ou IA, validé par un humain |
 | `item_total_r` | Corrélation item-total dans le groupe (arrondie) | calcul |
 | `reverse_suspect` | Item inversé probable, avec la raison (corrélation négative, libellé) | calcul et/ou IA |
+| `question` | Question d'où vient la variable (v0.2, D-013) : identifiant `Q8`, `Q7.r3` (énoncé de grille), `Q10.o2` (option) ou `none` ; le texte affiché est toujours lu dans le questionnaire | IA ou humain (valeur suivie), à partir des candidates calculées |
 | `label` | Libellé lisible final | fichier, IA ou humain (valeur suivie) |
 | `description` | Description en une ou deux phrases | IA ou humain (valeur suivie) |
 | `ai_notes` | Incohérences signalées par l'IA (texte court, statut propre) | IA (valeur suivie) |
@@ -270,11 +271,16 @@ Paramètres par défaut : température 0, graine fixe. Même ainsi, un modèle l
 
 Avant tout envoi, la commande `enrichir --apercu` affiche les messages qui partiraient, sans rien envoyer.
 
+### 6.5 Rattachement aux questions (v0.2, D-013)
+
+La commande `rattacher` envoie un second type de message (prompt `link-v1`), par blocs de 6 variables : pour chaque variable, son nom, son étiquette, ses étiquettes de valeurs et **ses 5 questions candidates au plus**, calculées sans IA (mots du nom et de l'étiquette, sens des sigles acceptés du glossaire, séries numérotées, familles de noms, ordre du questionnaire). Jamais le questionnaire entier ni ses paragraphes (page de consentement). Le modèle répond pour chaque variable par un identifiant de sa liste, « aucune » ou « incertain » ; tout autre identifiant, ou tout champ de texte, fait refuser le bloc entier. Sans `--modele`, la commande indique seulement combien de variables ont des candidates : le choix se fait dans l'interface.
+
 ## 7. Révision (Streamlit)
 
 - Liste des variables avec filtres : « à réviser », « anomalies », « texte libre / identifiants », par groupe.
 - Fiche d'une variable : ce que dit le fichier, ce qui a été calculé, ce que propose l'IA (en couleur distincte, avec le modèle utilisé), et trois boutons : accepter, corriger, rejeter.
 - Champs sourcés (étendue théorique, seuils, nom d'instrument, références) : la sauvegarde est impossible sans source.
+- Question du questionnaire (v0.2) : le rattachement proposé s'accepte ou se rejette ; une liste, candidates en tête, permet d'en choisir un autre ou « aucune question ». Filtre « Sans question ».
 - Sauvegarde automatique du fichier projet à chaque décision.
 - Configuration imposée au lancement : écoute sur `127.0.0.1` seulement (par défaut, Streamlit écoute sur toutes les interfaces, donc serait visible sur le réseau local) et **télémétrie de Streamlit désactivée** (`browser.gatherUsageStats = false`, activée par défaut sinon).
 

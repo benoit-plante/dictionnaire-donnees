@@ -23,10 +23,11 @@ from ddict.project.model import (
     TrackedValue,
     VariableEntry,
 )
+from ddict.questionnaire import link
 
-Field = Literal["label", "description", "unit"]
+Field = Literal["label", "description", "unit", "question"]
 Action = Literal["accept", "correct", "reject"]
-Filter = Literal["all", "to_review", "flagged", "sensitive"]
+Filter = Literal["all", "to_review", "flagged", "sensitive", "unlinked"]
 
 PRIVACY_CLASSES = ("ordinary", "likely_identifier", "free_text", "quasi_identifier")
 
@@ -36,7 +37,12 @@ SIGNALS = {
     "instrument": _("ressemble à un nom d'instrument"),
     "no_file_label": _("deviné : la variable n'a pas d'étiquette dans le fichier"),
 }
-FIELD_NAMES = {"label": _("Libellé"), "description": _("Description"), "issues": _("Signalement")}
+FIELD_NAMES = {
+    "label": _("Libellé"),
+    "description": _("Description"),
+    "issues": _("Signalement"),
+    "question": _("Question"),
+}
 
 # French messages for the fields of the human-only models; "" is a rule on the whole value.
 FIELD_PROBLEMS = {
@@ -57,7 +63,9 @@ def is_sensitive(entry: VariableEntry) -> bool:
 
 def pending(entry: VariableEntry) -> list[str]:
     """Fields with an AI proposal waiting for a decision."""
-    fields = [f for f in ("label", "description") if getattr(entry, f).status == "proposed"]
+    fields = [
+        f for f in ("question", "label", "description") if getattr(entry, f).status == "proposed"
+    ]
     fields += ["issues"] * sum(1 for i in entry.issues if i.status == "proposed")
     return fields
 
@@ -72,6 +80,7 @@ def select(project: Project, which: Filter) -> list[VariableEntry]:
         "to_review": lambda e: bool(pending(e)),
         "flagged": is_flagged,
         "sensitive": is_sensitive,
+        "unlinked": lambda e: project.questionnaire is not None and not link.is_linked(e),
     }
     return [e for e in project.variables if tests[which](e)]
 
@@ -129,6 +138,23 @@ def write(project: Project, name: str, field: Field, value: str, *, now: str) ->
         setattr(entry, field, enter(tracked, text, now=now))
     elif text is not None and text != tracked.value:
         decide(project, name, field, "correct", now=now, value=text)
+
+
+def link_question(project: Project, name: str, target_id: str, *, now: str) -> None:
+    """Link a variable to a question, a row or an option, or to none (link.NO_QUESTION).
+
+    Choosing what the model proposed accepts it; choosing something else corrects it.
+    """
+    if target_id != link.NO_QUESTION and link.target(project.questionnaire, target_id) is None:
+        raise ReviewError(_("Question inconnue : {id}").format(id=target_id))
+    entry = project.variable(name)
+    tracked: TrackedValue[str] = entry.question
+    if tracked.origin == "ai" and tracked.value == target_id and tracked.status != "corrected":
+        entry.question = validate(tracked, now=now)
+    elif tracked.origin == "human":
+        entry.question = enter(tracked, target_id, now=now)
+    else:
+        entry.question = correct(tracked, target_id, now=now)
 
 
 def decide_issue(project: Project, name: str, index: int, action: Action, *, now: str) -> None:

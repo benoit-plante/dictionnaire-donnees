@@ -16,10 +16,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ddict.llm.client import LocalModelClient
-from ddict.llm.messages import PROMPT_VERSION, Block, build_blocks
+from ddict.llm.messages import Block, build_blocks
 from ddict.llm.run import BlockResult, run_block
 from ddict.llm.schemas import VariableProposal
-from ddict.llm.validate import invention_signals
+from ddict.llm.validate import invention_signals, parse_block_response
 from ddict.project.model import Project, TrackedValue, VariableEntry
 
 # Failures that concern the server, not the block: no use going on with other blocks.
@@ -35,12 +35,12 @@ def is_done(project: Project, block: Block, model: str) -> bool:
         run.outcome == "succeeded"
         and run.message_sha256 == block.sha256
         and run.model == model
-        and run.prompt_version == PROMPT_VERSION
+        and run.prompt_version == block.prompt_version
         for run in project.ai_runs
     )
 
 
-def _may_replace(tracked: TrackedValue) -> bool:
+def may_replace(tracked: TrackedValue) -> bool:
     if tracked.origin == "ai":
         return tracked.status in ("proposed", "rejected")
     if tracked.origin == "human":
@@ -61,7 +61,7 @@ def _apply(
     signals = [s for s in entry.ai_signals if s.split(":")[0] not in ("label", "description")]
     for field in ("label", "description"):
         new = _proposal(getattr(proposal, field), run_id)
-        if new is not None and _may_replace(getattr(entry, field)):
+        if new is not None and may_replace(getattr(entry, field)):
             setattr(entry, field, new)
             signals += [f"{field}:{s}" for s in invention_signals(new.value)]
             if field == "label" and not entry.file.label and file_has_labels:
@@ -77,11 +77,7 @@ def _apply(
     entry.ai_signals = sorted(set(signals))
 
 
-def apply_result(project: Project, result: BlockResult) -> None:
-    """Record the run, and the proposals when it succeeded."""
-    project.ai_runs.append(result.run)
-    if result.proposals is None:
-        return
+def apply_proposals(project: Project, result: BlockResult) -> None:
     file_has_labels = any(e.file.label for e in project.variables)
     for proposal in result.proposals:
         _apply(project.variable(proposal.name), proposal, result.run.run_id, file_has_labels)
@@ -104,12 +100,45 @@ def enrich(
     log_dir: Path | None = None,
 ) -> Iterator[BlockEvent]:
     """Enrich block by block, yielding after each one; the project is saved each time."""
-    for block in build_blocks(project, size=block_size):
+    yield from run_blocks(
+        project,
+        client,
+        build_blocks(project, size=block_size),
+        apply=apply_proposals,
+        schema=None,
+        parse=parse_block_response,
+        now=now,
+        redo=redo,
+        save=save,
+        log_dir=log_dir,
+    )
+
+
+def run_blocks(
+    project: Project,
+    client: LocalModelClient,
+    blocks: tuple[Block, ...],
+    *,
+    apply: Callable[[Project, BlockResult], None],
+    schema: dict | None,
+    parse: Callable[[str, Block], tuple],
+    now: Callable[[], str],
+    redo: bool,
+    save: Callable[[Project], None] | None,
+    log_dir: Path | None,
+) -> Iterator[BlockEvent]:
+    """Send the blocks one by one: record each run, apply its proposals when it succeeded,
+    save, and yield. A block already done with the same messages is skipped."""
+    for block in blocks:
         if not redo and is_done(project, block, client.model):
             yield BlockEvent(block, None)
             continue
-        result = run_block(client, block, run_id=next_run_id(project), now=now())
-        apply_result(project, result)
+        result = run_block(
+            client, block, run_id=next_run_id(project), now=now(), schema=schema, parse=parse
+        )
+        project.ai_runs.append(result.run)
+        if result.proposals is not None:
+            apply(project, result)
         if log_dir is not None:
             _log(log_dir, block, result)
         if save is not None:

@@ -35,14 +35,15 @@ class Block:
     block_id: str
     names: tuple[str, ...]
     messages: tuple[dict, ...]
+    prompt_version: str = PROMPT_VERSION
 
     @property
     def sha256(self) -> str:
         return message_sha256(self.messages)
 
 
-def system_prompt() -> str:
-    path = resources.files("ddict.llm") / "prompts" / f"{PROMPT_VERSION}.fr.txt"
+def system_prompt(version: str = PROMPT_VERSION) -> str:
+    path = resources.files("ddict.llm") / "prompts" / f"{version}.fr.txt"
     return path.read_text(encoding="utf-8")
 
 

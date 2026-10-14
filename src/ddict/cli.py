@@ -1,4 +1,5 @@
-"""Command line: `ddict profiler`, `exporter`, `questionnaire`, `enrichir`, `reviser`."""
+"""Command line: `ddict profiler`, `exporter`, `questionnaire`, `enrichir`, `rattacher`,
+`reviser`."""
 
 from __future__ import annotations
 
@@ -20,8 +21,9 @@ from ddict.export.wording import anomalies
 from ddict.glossary import propose_from_questionnaire, undefined_acronyms
 from ddict.i18n import _
 from ddict.io import ReadError, read_database
-from ddict.llm import DEFAULT_BLOCK_SIZE, PROMPT_VERSION, build_blocks
+from ddict.llm import DEFAULT_BLOCK_SIZE, build_blocks
 from ddict.llm.defaults import DEFAULT_ENDPOINT
+from ddict.llm.link import DEFAULT_LINK_BLOCK_SIZE, build_link_blocks
 from ddict.privacy import MIN_CELL_COUNT
 from ddict.project import (
     PROJECT_SUFFIX,
@@ -31,6 +33,7 @@ from ddict.project import (
     save_project,
 )
 from ddict.questionnaire import load_questionnaire
+from ddict.questionnaire.link import candidates, drop_stale_links
 
 EXIT_ERROR = 2
 
@@ -126,9 +129,18 @@ def cmd_questionnaire(args: argparse.Namespace) -> int:
             file=sys.stderr,
         )
         return EXIT_ERROR
+    previous = project.questionnaire
     project.questionnaire = questionnaire
     propose_from_questionnaire(project)
+    removed = drop_stale_links(project, previous) if previous is not None else 0
     save_project(project, project_path)
+    if removed:
+        print(
+            _(
+                "{n} rattachements retirés : ils renvoyaient à l'ancien questionnaire. "
+                "Relancez ddict rattacher."
+            ).format(n=removed)
+        )
 
     questions = questionnaire.questions
     pages = _(" ({n} pages)").format(n=questionnaire.n_pages) if questionnaire.n_pages else ""
@@ -174,13 +186,50 @@ def cmd_enrich(args: argparse.Namespace) -> int:
     project_path = Path(args.projet)
     project = load_project(project_path)
     if args.apercu:
-        return _preview(project, project_path, args.taille_bloc)
+        return _preview(project_path, build_blocks(project, size=args.taille_bloc))
     if not args.modele:
         print(_("Indiquez le modèle avec --modele, ou utilisez --apercu."), file=sys.stderr)
         return EXIT_ERROR
+    return _run_model(args, project, project_path, "enrich")
+
+
+def cmd_link(args: argparse.Namespace) -> int:
+    project_path = Path(args.projet)
+    project = load_project(project_path)
+    if project.questionnaire is None:
+        print(
+            _(
+                "Le projet n'a pas de questionnaire. Lisez-le d'abord : "
+                "ddict questionnaire {path} questionnaire.pdf"
+            ).format(path=project_path),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
+    found = candidates(project)
+    print(
+        _("{n} variables sur {total} ont des questions candidates.").format(
+            n=sum(1 for ids in found.values() if ids), total=len(found)
+        )
+    )
+    if args.apercu:
+        return _preview(project_path, build_link_blocks(project, size=args.taille_bloc))
+    if not args.modele:
+        print(
+            _(
+                "Choisissez les rattachements dans l'interface (ddict reviser), ou ajoutez "
+                "--modele pour qu'un modèle local propose un choix parmi les candidates."
+            )
+        )
+        return 0
+    return _run_model(args, project, project_path, "link")
+
+
+def _run_model(args: argparse.Namespace, project, project_path: Path, task: str) -> int:
+    """Send the blocks of `task` ("enrich" or "link") to the local model, with progress."""
     try:
         from ddict.llm.client import EndpointRefused, LocalModelClient
         from ddict.llm.enrich import enrich
+        from ddict.llm.link import propose_links
     except ImportError:
         print(
             _(
@@ -209,7 +258,7 @@ def cmd_enrich(args: argparse.Namespace) -> int:
     }
     failed = succeeded = 0
     with client:
-        events = enrich(
+        events = {"enrich": enrich, "link": propose_links}[task](
             project,
             client,
             now=lambda: datetime.now().isoformat(timespec="seconds"),
@@ -267,15 +316,15 @@ def cmd_enrich(args: argparse.Namespace) -> int:
     return EXIT_ERROR if failed else 0
 
 
-def _preview(project, project_path: Path, block_size: int) -> int:
-    blocks = build_blocks(project, size=block_size)
+def _preview(project_path: Path, blocks) -> int:
     folder = _exchange_dir(project_path) / "apercu"
     folder.mkdir(parents=True, exist_ok=True)
-    for old in folder.glob("b-*.json"):
-        old.unlink()
+    for prefix in {block.block_id.split("-")[0] for block in blocks}:
+        for old in folder.glob(f"{prefix}-*.json"):
+            old.unlink()
     for block in blocks:
         record = {
-            "prompt_version": PROMPT_VERSION,
+            "prompt_version": block.prompt_version,
             "block": block.block_id,
             "variables": list(block.names),
             "message_sha256": block.sha256,
@@ -426,35 +475,18 @@ def build_parser() -> argparse.ArgumentParser:
         "enrichir",
         help=_("Faire proposer libellés et descriptions par un modèle local (facultatif)."),
     )
-    enrich.add_argument("projet", help=_("Fichier projet (.dd.json)."))
-    enrich.add_argument(
-        "--apercu",
-        action="store_true",
-        help=_("Écrire les messages qui seraient envoyés, sans rien envoyer."),
-    )
-    enrich.add_argument(
-        "--taille-bloc",
-        type=int,
-        default=DEFAULT_BLOCK_SIZE,
-        help=_("Nombre de variables par message (défaut : 12)."),
-    )
-    enrich.add_argument(
-        "--modele",
-        help=_("Nom du modèle dans le serveur local, p. ex. qwen2.5:7b-instruct-q4_K_M."),
-    )
-    enrich.add_argument(
-        "--adresse",
-        default=DEFAULT_ENDPOINT,
-        help=_("Adresse du serveur local compatible OpenAI (défaut : Ollama, {default}).").format(
-            default=DEFAULT_ENDPOINT
+    _model_arguments(enrich, _("Renvoyer aussi les blocs déjà enrichis."), DEFAULT_BLOCK_SIZE)
+    enrich.set_defaults(handler=cmd_enrich)
+
+    link = commands.add_parser(
+        "rattacher",
+        help=_(
+            "Rattacher les variables aux questions du questionnaire : questions candidates, "
+            "puis choix proposé par un modèle local (facultatif)."
         ),
     )
-    enrich.add_argument(
-        "--refaire",
-        action="store_true",
-        help=_("Renvoyer aussi les blocs déjà enrichis."),
-    )
-    enrich.set_defaults(handler=cmd_enrich)
+    _model_arguments(link, _("Renvoyer aussi les blocs déjà traités."), DEFAULT_LINK_BLOCK_SIZE)
+    link.set_defaults(handler=cmd_link)
 
     review = commands.add_parser(
         "reviser",
@@ -466,6 +498,34 @@ def build_parser() -> argparse.ArgumentParser:
     )
     review.set_defaults(handler=cmd_review)
     return parser
+
+
+def _model_arguments(command: argparse.ArgumentParser, redo_help: str, block_size: int) -> None:
+    """Options shared by the commands that call the local model."""
+    command.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    command.add_argument(
+        "--apercu",
+        action="store_true",
+        help=_("Écrire les messages qui seraient envoyés, sans rien envoyer."),
+    )
+    command.add_argument(
+        "--taille-bloc",
+        type=int,
+        default=block_size,
+        help=_("Nombre de variables par message (défaut : {n}).").format(n=block_size),
+    )
+    command.add_argument(
+        "--modele",
+        help=_("Nom du modèle dans le serveur local, p. ex. qwen2.5:7b-instruct-q4_K_M."),
+    )
+    command.add_argument(
+        "--adresse",
+        default=DEFAULT_ENDPOINT,
+        help=_("Adresse du serveur local compatible OpenAI (défaut : Ollama, {default}).").format(
+            default=DEFAULT_ENDPOINT
+        ),
+    )
+    command.add_argument("--refaire", action="store_true", help=redo_help)
 
 
 def main(argv: list[str] | None = None) -> int:

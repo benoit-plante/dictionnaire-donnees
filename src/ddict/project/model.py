@@ -155,6 +155,9 @@ class VariableEntry(Strict):
     file: FileMetadata
     profile: Profile
     privacy: Privacy
+    # The question it comes from (D-013): "Q8", "Q7.r3", "Q10.o2", or "none"; the text is
+    # looked up in the questionnaire, never stored here.
+    question: TrackedValue[str] = TrackedValue[str](origin="human")
     label: TrackedValue[str]
     description: TrackedValue[str]
     issues: list[TrackedValue[str]] = []

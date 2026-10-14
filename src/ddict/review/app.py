@@ -26,14 +26,17 @@ from ddict.export import wording as w
 from ddict.i18n import _
 from ddict.project import load_project, save_project
 from ddict.project.model import Project, TrackedValue, VariableEntry
+from ddict.questionnaire import link
 from ddict.review import logic
 
 FILTERS = {
     "to_review": _("À réviser"),
     "flagged": _("Avec signalements"),
     "sensitive": _("Sensibles"),
+    "unlinked": _("Sans question"),
     "all": _("Toutes"),
 }
+MAX_OPTION_TEXT = 110
 
 
 def _now() -> str:
@@ -199,6 +202,88 @@ def _tracked_field(project: Project, entry: VariableEntry, field: str, title: st
         _state(f"input-{key}"),
         timed=True,
         reset=reset,
+    )
+
+
+def _question(project: Project, entry: VariableEntry) -> None:
+    """The question the variable comes from. Its text is always read in the questionnaire,
+    by identifier: neither the model nor this page can write it."""
+    tracked = entry.question
+    name = entry.name
+    by_id = {t.target_id: t for t in link.targets(project.questionnaire)}
+
+    def option_text(target_id: str) -> str:
+        if target_id == link.NO_QUESTION:
+            return _("Aucune question du questionnaire")
+        text = link.target_text(by_id[target_id])
+        if len(text) > MAX_OPTION_TEXT:
+            text = text[: MAX_OPTION_TEXT - 1] + "…"
+        return f"{target_id} — {text}"
+
+    st.markdown(f"**{_('Question du questionnaire')}**")
+    if tracked.value is not None:
+        text = link.describe(project.questionnaire, tracked.value)
+        if text is None:
+            st.warning(
+                _("Rattachement introuvable dans le questionnaire : {id}").format(id=tracked.value)
+            )
+        else:
+            st.write(text)
+        st.caption(_origin(project, tracked))
+        if tracked.proposed_value is not None:
+            st.caption(_("Proposé : {v}").format(v=tracked.proposed_value))
+    else:
+        st.caption(_("(pas encore rattachée)"))
+
+    key = f"question-{name}"
+    if tracked.status == "proposed":
+        left, right = st.columns(2)
+        with left:
+            _button(
+                _("Accepter"),
+                f"accept-{key}",
+                logic.decide,
+                name,
+                "question",
+                "accept",
+                timed=True,
+                primary=True,
+                reset=(key,),
+            )
+        with right:
+            _button(
+                _("Rejeter"),
+                f"reject-{key}",
+                logic.decide,
+                name,
+                "question",
+                "reject",
+                timed=True,
+                reset=(key,),
+            )
+    else:
+        _show_message(f"accept-{key}")
+        _show_message(f"reject-{key}")
+
+    found = link.candidates(project).get(name, [])
+    choices = [*found, link.NO_QUESTION, *(i for i in by_id if i not in found)]
+
+    def start() -> str:
+        current = _project().variable(name).question
+        if current.value in choices and current.status != "rejected":
+            return current.value
+        return found[0] if found else link.NO_QUESTION
+
+    st.selectbox(_("Rattacher à"), choices, format_func=option_text, key=_field(key, start))
+    st.caption(_("En tête de liste : les questions candidates calculées, puis « aucune »."))
+    _button(
+        _("Rattacher"),
+        f"save-{key}",
+        logic.link_question,
+        name,
+        _state(key),
+        timed=True,
+        reset=(key,),
     )
 
 
@@ -371,6 +456,9 @@ def _variable(project: Project, entry: VariableEntry) -> None:
     for text in logic.signal_texts(entry):
         st.error(text)
     _file_and_computed(entry)
+    if project.questionnaire is not None:
+        st.divider()
+        _question(project, entry)
     st.divider()
     left, right = st.columns(2)
     with left:
@@ -617,9 +705,8 @@ def main() -> None:
         mode = st.radio(_("Afficher"), list(MODES), key="mode", format_func=MODES.__getitem__)
         chosen = None
         if mode == "variables":
-            which = st.radio(
-                _("Filtre"), list(FILTERS), key="filter", format_func=FILTERS.__getitem__
-            )
+            filters = [f for f in FILTERS if f != "unlinked" or project.questionnaire]
+            which = st.radio(_("Filtre"), filters, key="filter", format_func=FILTERS.__getitem__)
             names = [e.name for e in logic.select(project, which)]
             _choose_variable(project, names, which)
             if names:
