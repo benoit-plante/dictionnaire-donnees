@@ -1,6 +1,11 @@
 """Find probable scales without any model, and compute their item statistics.
 
-Two clues make a group:
+In the export of a survey platform (v0.7, D-044), the structure of the names makes the
+groups of the variables it covers: a grid (`q0003_0001` ... `q0003_0006`) is a scale, a set
+of checkboxes (`q0008_0001` ... with `q0008_other`) a group of multiple responses, without
+item statistics, its "other" text attached outside the members.
+
+Elsewhere, two clues make a group:
 - a common prefix followed by a number (sommeil_q1 ... sommeil_q8), wherever the items are
   in the file;
 - a run of neighbouring variables with the same value labels, when they share no prefix.
@@ -20,6 +25,7 @@ from typing import Literal
 import numpy as np
 import pandas as pd
 
+from ddict import platforms
 from ddict.io.model import LoadedData, VariableMetadata
 from ddict.privacy.classify import PrivacyClassification
 from ddict.profile.model import VariableProfile
@@ -29,7 +35,10 @@ MIN_ITEMS = 3
 MIN_COMPLETE_ROWS = 10
 DECIMALS = 3
 
-Basis = Literal["common_prefix", "shared_value_labels", "contiguous"]
+Basis = Literal["common_prefix", "shared_value_labels", "contiguous", "platform_structure"]
+GroupKind = Literal["scale", "multiple_response"]
+# A set of checkboxes is a group from this many options.
+MIN_OPTIONS = 2
 
 # Letters in the stem of a numbered item without a separator (see item_prefix).
 MIN_STEM_LETTERS = 3
@@ -56,6 +65,8 @@ class GroupCandidate:
     cronbach_alpha: float | None
     cronbach_alpha_reversed: float | None  # with the suspect items reversed
     items: tuple[ItemStatistics, ...]
+    kind: GroupKind = "scale"
+    attached: tuple[str, ...] = ()  # the "other" text of a set of checkboxes
 
 
 def item_prefix(name: str) -> str | None:
@@ -214,24 +225,74 @@ def _statistics(
     return _alpha(matrix), reversed_alpha, tuple(items)
 
 
+def _platform_sets(
+    data: LoadedData, profiles: dict[str, VariableProfile]
+) -> tuple[list[tuple], set[str]]:
+    """The groups given by the structure of a platform's export, and every variable the
+    structure covers (questions alone too: they are no items of a scale)."""
+    platform = platforms.by_name(data.source.platform)
+    if platform is None:
+        return [], set()
+    ticked = {
+        v.name
+        for v in data.variables
+        if len(v.value_labels) <= 1 and (profiles[v.name].n_distinct or 0) <= 1
+    }
+    names = [v.name for v in data.variables]
+    found: list[tuple] = []
+    covered: set[str] = set()
+    for question in platforms.survey_questions(platform, names, ticked):
+        covered.update(question.variables)
+        prefix = platform.item_format.format(question=question.rank, item=0)[:-4]
+        if question.kind == "grid" and len(question.items) >= MIN_ITEMS:
+            found.append((list(question.items), ("platform_structure",), prefix, "scale", ()))
+        elif question.kind == "checkbox" and len(question.items) >= MIN_OPTIONS:
+            attached = (question.other,) if question.other else ()
+            found.append(
+                (list(question.items), ("platform_structure",), prefix, "multiple_response",
+                 attached)
+            )  # fmt: skip
+    return found, covered
+
+
 def find_groups(
     data: LoadedData,
     profiles: tuple[VariableProfile, ...],
     classifications: tuple[PrivacyClassification, ...],
 ) -> tuple[GroupCandidate, ...]:
-    """Probable scales, in the order of their first item in the file."""
+    """Probable scales and sets of checkboxes, in the order of their first item in the file."""
     by_name = {p.name: p for p in profiles}
+    structured, covered = _platform_sets(data, by_name)
     eligible = {
         v.name
         for v, p, c in zip(data.variables, profiles, classifications, strict=True)
-        if _eligible(p, c)
+        if _eligible(p, c) and v.name not in covered
     }
     found = sorted(
-        _member_sets(list(data.variables), eligible),
+        [(m, b, p, "scale", ()) for m, b, p in _member_sets(list(data.variables), eligible)]
+        + structured,
         key=lambda g: data.variable(g[0][0]).position,
     )
     candidates = []
-    for number, (members, basis, prefix) in enumerate(found, start=1):
+    for number, (members, basis, prefix, kind, attached) in enumerate(found, start=1):
+        if kind == "multiple_response":
+            candidates.append(
+                GroupCandidate(
+                    group_id=f"G{number}",
+                    members=tuple(members),
+                    basis=basis,
+                    prefix=prefix,
+                    code_min=None,
+                    code_max=None,
+                    n_complete_rows=0,
+                    cronbach_alpha=None,
+                    cronbach_alpha_reversed=None,
+                    items=tuple(ItemStatistics(m, None, False) for m in members),
+                    kind=kind,
+                    attached=attached,
+                )
+            )
+            continue
         matrix = _item_matrix(data, members, by_name)
         alpha, reversed_alpha, items = _statistics(matrix)
         codes = matrix.to_numpy().ravel()

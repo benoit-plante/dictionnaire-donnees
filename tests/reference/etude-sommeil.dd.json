@@ -4712,6 +4712,8 @@
         "shared_value_labels",
         "contiguous"
       ],
+      "kind": "scale",
+      "attached": [],
       "descriptive_label": {
         "value": "8 items, codes de 1 à 5, préfixe « sommeil_q »",
         "origin": "computed",
@@ -4760,6 +4762,8 @@
         "common_prefix",
         "shared_value_labels"
       ],
+      "kind": "scale",
+      "attached": [],
       "descriptive_label": {
         "value": "7 items, codes de 0 à 3, préfixe « anx »",
         "origin": "computed",

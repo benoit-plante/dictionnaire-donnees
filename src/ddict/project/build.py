@@ -98,6 +98,7 @@ def _entry(safe: SafeVariable, storage_type: str, storage_width: int | None) -> 
 # the source strings, and shown in the language of the moment (wording.group_description).
 GROUP_PARTS = (
     N_("{n} items"),
+    N_("{n} options à cocher"),
     N_("codes de {low} à {high}"),
     N_("préfixe « {prefix} »"),
     N_("variables voisines aux mêmes étiquettes"),
@@ -106,8 +107,9 @@ GROUP_PARTS = (
 
 def descriptive_label(group: GroupCandidate) -> str:
     """A neutral description of what the items have in common, never a guess at a name."""
-    items, codes, prefix, neighbours = GROUP_PARTS
-    parts = [items.format(n=len(group.members))]
+    items, options, codes, prefix, neighbours = GROUP_PARTS
+    count = options if group.kind == "multiple_response" else items
+    parts = [count.format(n=len(group.members))]
     if group.code_min is not None:
         parts.append(codes.format(low=f"{group.code_min:g}", high=f"{group.code_max:g}"))
     parts.append(prefix.format(prefix=group.prefix) if group.prefix else neighbours)
@@ -119,6 +121,8 @@ def _group(group: GroupCandidate) -> Group:
         group_id=group.group_id,
         members=TrackedValue[list[str]](value=list(group.members), origin="computed"),
         basis=list(group.basis),
+        kind=group.kind,
+        attached=list(group.attached),
         descriptive_label=TrackedValue[str](value=descriptive_label(group), origin="computed"),
         ai_hypothesis=TrackedValue[str](origin="human"),
         n_complete_rows=group.n_complete_rows,
@@ -169,6 +173,8 @@ def sums_of_groups(data: LoadedData, groups) -> dict[str, str]:
     found: dict[str, str] = {}
     numeric = [v.name for v in data.variables if v.storage_type == "numeric"]
     for group in groups:
+        if group.kind != "scale":
+            continue
         members = list(group.members)
         items = data.table[members].apply(pd.to_numeric, errors="coerce")
         total = items.sum(axis=1, min_count=len(members))

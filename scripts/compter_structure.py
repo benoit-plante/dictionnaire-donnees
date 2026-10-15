@@ -29,7 +29,8 @@ import pandas as pd
 
 from ddict.io import read_database
 from ddict.project import build_project
-from ddict.questionnaire import load_questionnaire, read_questionnaire
+from ddict.questionnaire import link, load_questionnaire, read_questionnaire
+from ddict.workflow import add_questionnaire
 
 NUMBERED_LINE = re.compile(r"\s*(?:Q\s?)?\d{1,3}\s?[.)]\s", re.IGNORECASE)
 ITEM_NAME = re.compile(r"q(\d{4})(?:_(\d{4}|other))?", re.IGNORECASE)
@@ -143,9 +144,7 @@ def count_database(sav: Path) -> dict[str, float | int]:
     counts["ensembles_a_cocher_groupes"] = sum(
         {group_of.get(v.name) for v in items} == {group_of.get(items[0].name)}
         and group_of.get(items[0].name) is not None
-        and getattr(
-            next(g for g in project.groups if g.group_id == group_of[items[0].name]), "kind", ""
-        )
+        and next(g for g in project.groups if g.group_id == group_of[items[0].name]).kind
         == "multiple_response"
         for items in kinds["checkbox"].values()
     )
@@ -207,6 +206,32 @@ def count_questionnaire(path: Path, prefix: str) -> dict[str, int]:
     }
 
 
+def count_links(sav: Path, questionnaire: Path, prefix: str) -> dict[str, int]:
+    """Links given by the structure of the export, the questionnaire being `questionnaire`;
+    and, of these, how many point to a row or option whose text agrees with the variable's
+    label (a check: they all should)."""
+    project = build_project(read_database(sav))
+    add_questionnaire(project, questionnaire)
+    platform = link.platforms.by_name(project.source.platform)
+    choices = link.platform_choices(project)
+    questions = {name: target for name, target in choices.items() if target != link.NO_QUESTION}
+    agreeing = 0
+    for name, target_id in questions.items():
+        found = link.target(project.questionnaire, target_id)
+        entry = project.variable(name)
+        texts = [entry.file.label, *(v.label for v in entry.file.value_labels)]
+        if platform.place(name).other:  # an "other" option, in any language
+            texts = list(platform.other_cells)
+        if any(link.texts_agree(t, found.part or found.question.text) for t in texts):
+            agreeing += 1
+    in_questions = [e.name for e in project.variables if platform and platform.place(e.name)]
+    return {
+        f"{prefix}_variables_de_questions": len(in_questions),
+        f"{prefix}_liens_par_la_structure": len(questions),
+        f"{prefix}_liens_dont_le_texte_concorde": agreeing,
+    }
+
+
 def count_excel(xlsx: Path, sav_rows: int, sav_names: set[str]) -> dict[str, int]:
     data = read_database(xlsx)
     names = [v.name for v in data.variables]
@@ -238,9 +263,11 @@ def count_base(folder: Path) -> dict[str, float | int | str]:
             counts["erreur_xlsx"] = type(error).__name__
         else:
             _guarded(counts, "xlsx", count_excel, xlsx, counts.get("lignes", 0), sav_names)
+        _guarded(counts, "liens_xlsx", count_links, savs[0], xlsx, "entete")
     for suffix in ("pdf", "txt"):
         for path in sorted(folder.glob(f"*.{suffix}"))[:1]:
             _guarded(counts, suffix, count_questionnaire, path, suffix)
+            _guarded(counts, f"liens_{suffix}", count_links, savs[0], path, suffix)
     return counts
 
 

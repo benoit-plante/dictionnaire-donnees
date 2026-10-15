@@ -58,7 +58,9 @@ def _read(replace: bool) -> None:
     text = str(st.session_state.get(FIELD) or "").strip().strip('"')
     path = Path(text) if text else None
     if path is None or not path.is_file():
-        _message("error", _("Choisissez d'abord le fichier du questionnaire (.pdf ou .txt)."), key)
+        _message(
+            "error", _("Choisissez d'abord le fichier du questionnaire (.pdf, .txt ou .xlsx)."), key
+        )
         return
     project = c.project()
     try:
@@ -102,9 +104,10 @@ def page(project: Project) -> None:
             _(
                 "Le questionnaire dit ce que chaque variable veut dire : le texte exact des "
                 "questions, le sens des sigles, les options de réponse. Il est lu sur cet "
-                "ordinateur, sans IA : PDF (SurveyMonkey, LimeSurvey, REDCap…) ou texte (.txt "
-                "copié depuis Word). Seules les questions rattachées à des variables iront "
-                "dans le codebook, jamais la page de consentement."
+                "ordinateur, sans IA : PDF (SurveyMonkey, LimeSurvey, REDCap…), texte (.txt "
+                "copié depuis Word) ou export Excel de SurveyMonkey, dont l'en-tête donne le "
+                "texte des questions, énoncés et options. Seules les questions rattachées à "
+                "des variables iront dans le codebook, jamais la page de consentement."
             )
         )
         _chooser(replace=False)

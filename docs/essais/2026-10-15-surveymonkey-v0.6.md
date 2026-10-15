@@ -58,7 +58,17 @@ Après les étapes 2 et 3 de la v0.7 :
 | Codes « Ne sais pas »… observés, signalés | 10, 10 | 6, 6 | 0, 0 |
 | Items `scale` de grille signalés | 12 sur 12 | 100 sur 100 | — |
 
-Restent pour les étapes 4 et 5 : les ensembles à cocher en groupes « réponses multiples », et la lecture des questionnaires.
+Après l'étape 4 (structure de plateforme) :
+
+| | Base fictive | Base 1 | Base 2 |
+|---|---|---|---|
+| Ensembles à cocher en groupes « réponses multiples » | 3 sur 3 | — | 4 sur 4 |
+| En-tête `.xlsx` comme questionnaire : variables de questions rattachées par la structure, textes concordants | 52 sur 52, tous | 104 sur 104, tous | 40 sur 40, tous |
+| Questionnaire PDF : rattachements par la structure, textes concordants | 21, tous | 36, tous | 0 (PDF non lu) |
+
+Deux faits appris sur la base 2 pendant l'étape 4 : une question à choix unique peut avoir sa variable « autre », et SPSS coupe les étiquettes de valeurs à 120 octets, si bien qu'une option longue ne concorde avec le questionnaire que par son début.
+
+Reste pour l'étape 5 : la lecture des questionnaires PDF et `.txt`.
 
 Ce que la mesure précise par rapport à l'essai de l'auteur :
 

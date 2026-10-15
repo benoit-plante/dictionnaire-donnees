@@ -1,5 +1,6 @@
 """v0.7, step 2: survey platforms recognized, two header rows read (D-044)."""
 
+import json
 from pathlib import Path
 
 import pyreadstat
@@ -128,12 +129,23 @@ def test_a_project_of_format_0_1_0_reads_without_conversion():
     old = REFERENCE / "etude-sommeil-0.1.0.dd.json"
     project = load_project(old)
     assert project.source.platform is None
-    # Saved again, it says 0.2.0 and differs only by the version and the new field.
-    new = dumps(project)
-    assert '"schema_version": "0.2.0"' in new and '"platform": null' in new
-    assert new.replace('"schema_version": "0.2.0"', '"schema_version": "0.1.0"').replace(
-        ',\n    "platform": null', ""
-    ) == old.read_text(encoding="utf-8")
+    # Saved again, it says 0.2.0, and keeps everything the old file said, as it said it.
+    new = json.loads(dumps(project))
+    previous = json.loads(old.read_text(encoding="utf-8"))
+    assert new["schema_version"] == "0.2.0" and new["source"]["platform"] is None
+    del new["schema_version"], previous["schema_version"]
+    assert _contains(new, previous)
+
+
+def _contains(new, old) -> bool:
+    """Whether `new` has every key of `old` with the same value; new keys aside."""
+    if isinstance(old, dict):
+        return isinstance(new, dict) and all(
+            k in new and _contains(new[k], v) for k, v in old.items()
+        )
+    if isinstance(old, list):
+        return isinstance(new, list) and len(new) == len(old) and all(map(_contains, new, old))
+    return new == old
 
 
 def test_a_project_of_a_more_recent_version_is_refused_clearly(tmp_path):

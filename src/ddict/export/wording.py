@@ -263,6 +263,7 @@ BASIS = Texts(
         "common_prefix": N_("préfixe commun"),
         "shared_value_labels": N_("mêmes étiquettes de valeurs"),
         "contiguous": N_("variables voisines"),
+        "platform_structure": N_("structure de la plateforme"),
     }
 )
 

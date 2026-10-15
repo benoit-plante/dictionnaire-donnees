@@ -122,6 +122,7 @@ Une étude fictive sur la vie au travail, exportée comme le fait SurveyMonkey, 
 | Questions simples au préfixe commun `q` : ce n'est pas une échelle | `q0001`, `q0002`, `q0006`, `q0007` |
 | Grille d'échelle de Likert, niveau `scale`, une série d'étiquettes par item | `q0003_0001` à `q0003_0012` |
 | Item contenant le verbe « identifier » | `q0003_0005` |
+| Items inversés (une situation satisfaisante) | `q0003_0002`, `q0003_0007`, `q0003_0011` |
 | « Ne sais pas » (6) et « Préfère ne pas répondre » (7) non déclarés manquants | `q0004_0001` à `q0004_0005` |
 | Trois ensembles à cocher (une étiquette `1 = option`, non coché = vide), chacun avec « autre » étiqueté en anglais | `q0005`, `q0008`, `q0010` |
 | Cases à cocher annoncées sans « toutes » (« Cochez les… », « Coche les… ») | `q0008`, `q0010` |

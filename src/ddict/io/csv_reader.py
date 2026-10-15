@@ -164,8 +164,10 @@ def read_csv(
             raise ReadError(
                 f"{path.name}, row {line}: {len(record)} fields instead of {len(header)}"
             )
+    labels: list[str | None] = []
     if split is not None:
         names = split[1]
+        labels = split[0].header_labels(rows[0], rows[1])
     else:
         names = [name.strip() or f"colonne_{pos}" for pos, name in enumerate(header, 1)]
     duplicates = sorted({name for name in names if names.count(name) > 1})
@@ -184,6 +186,7 @@ def read_csv(
             name=name,
             position=position,
             storage_type="numeric" if table[name].dtype == "float64" else "string",
+            label=labels[position - 1] if labels else None,
             missing_tokens=counts,
         )
         for position, (name, (_values, counts)) in enumerate(zip(names, blanked, strict=True), 1)

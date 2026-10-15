@@ -32,8 +32,9 @@ import re
 import unicodedata
 from dataclasses import dataclass
 from datetime import date
+from difflib import SequenceMatcher
 
-from ddict import glossary
+from ddict import glossary, platforms
 from ddict.i18n import _, colon
 from ddict.project.model import Project, Question, Questionnaire, TrackedValue, VariableEntry
 
@@ -219,9 +220,14 @@ def _word_matches(
 
 
 def _series(project: Project) -> dict[str, tuple[int, int]]:
-    """Variables numbered under a same stem: name -> (its number, size of the series)."""
+    """Variables numbered under a same stem: name -> (its number, size of the series). Not
+    the names of a platform export (`q0006`): their number is a rank in the survey, which
+    the structure of the platform reads (v0.7)."""
+    platform = platforms.by_name(project.source.platform)
     stems: dict[str, list[tuple[str, int]]] = {}
     for entry in project.variables:
+        if platform is not None and platform.place(entry.name) is not None:
+            continue
         match = _SERIES.fullmatch(entry.name.lower())
         if match:
             stems.setdefault(match.group(1), []).append((entry.name, int(match.group(2))))
@@ -388,22 +394,30 @@ def _days(first: str, last: str) -> int:
 
 def candidates(project: Project, *, limit: int = MAX_CANDIDATES) -> dict[str, list[str]]:
     """The best targets for each variable, best first; empty when nothing scores enough.
-    "none" comes first when the variable is probably asked by no question (D-039)."""
+    "none" comes first when the variable is probably asked by no question (D-039); the
+    target given by the structure of a platform export, when its text agrees, before all
+    (v0.7)."""
     if project.questionnaire is None:
         return {}
     all_targets = targets(project.questionnaire)
+    structural = platform_choices(project)
     found = {}
     for name, row in scores(project).items():
         ranked = sorted(range(len(row)), key=lambda i: (-row[i], i))
         found[name] = [all_targets[i].target_id for i in ranked[:limit] if row[i] >= MIN_SCORE]
-        if no_question_reason(project.variable(name)):
+        if name in structural:
+            rest = [t for t in found[name] if t != structural[name]]
+            found[name] = [structural[name], *rest[: limit - 1]]
+        elif no_question_reason(project.variable(name)):
             found[name] = [NO_QUESTION, *found[name][: limit - 1]]
     return found
 
 
 def sure_choices(project: Project) -> dict[str, str]:
     """The computation's sure choices (D-041): the clear best target of a variable (the
-    rule of the anchors), or "none" on strong evidence (D-039)."""
+    rule of the anchors), or "none" on strong evidence (D-039); in a platform export, the
+    target its structure gives when the texts agree (v0.7), and "none" for the platform's
+    own variables."""
     if project.questionnaire is None:
         return {}
     result, excluded, all_targets = _raw_scores(project)
@@ -415,7 +429,130 @@ def sure_choices(project: Project) -> dict[str, str]:
     for entry in project.variables:
         if no_question_reason(entry):
             sure[entry.name] = NO_QUESTION
-    return sure
+    return sure | platform_choices(project)
+
+
+# --- The structure of a survey platform's export (v0.7, D-044). ---
+
+# Two texts agree when, case, accents, punctuation and a leading "..." aside, they are the
+# same, or this similar (a typo fixed between the export and the questionnaire).
+TEXT_AGREEMENT = 0.9
+MIN_TRUNCATED = 20  # characters of a text cut short that still identify it
+_PUNCTUATION = re.compile(r"[^a-z0-9]+")
+
+
+def normalized_text(text: str) -> str:
+    """Case, accents, punctuation and a leading "..." or "…" aside."""
+    plain = _plain(text.strip().lstrip(".…").strip())
+    return " ".join(_PUNCTUATION.sub(" ", plain).split())
+
+
+def texts_agree(first: str | None, second: str | None) -> bool:
+    """Whether two texts say the same: equal once normalized, very similar, or the shorter
+    the start of the longer (SPSS cuts value labels at 120 bytes, variable labels at 256)."""
+    a, b = normalized_text(first or ""), normalized_text(second or "")
+    if not a or not b:
+        return False
+    short, long = sorted((a, b), key=len)
+    if len(short) >= MIN_TRUNCATED and long.startswith(short):
+        return True
+    return a == b or SequenceMatcher(None, a, b).ratio() >= TEXT_AGREEMENT
+
+
+def project_questions(project: Project) -> list[platforms.PlatformQuestion]:
+    """The questions of a platform export, from the project's variables; empty otherwise."""
+    platform = platforms.by_name(project.source.platform)
+    if platform is None:
+        return []
+    ticked = {
+        e.name
+        for e in project.variables
+        if len(e.file.value_labels) <= 1 and (e.profile.n_distinct or 0) <= 1
+    }
+    return platforms.survey_questions(platform, [e.name for e in project.variables], ticked)
+
+
+def _option_texts(entry: VariableEntry) -> list[str]:
+    """What may say which option a checkbox variable stands for: its one value label (.sav),
+    or, in an Excel or CSV export, its label (the option, from the header) and the one text
+    it holds."""
+    if len(entry.file.value_labels) == 1:
+        return [entry.file.value_labels[0].label]
+    observed = entry.profile.observed_values or []
+    texts = [o.code for o in observed if isinstance(o.code, str)]
+    return [t for t in (entry.file.label, *texts[:1]) if t]
+
+
+def _agrees(project: Project, found: platforms.PlatformQuestion, question: Question) -> bool:
+    if found.kind == "grid":
+        labels = [project.variable(n).file.label for n in found.items]
+        rows = [row.text for row in question.rows]
+        agreeing = sum(any(texts_agree(label, row) for row in rows) for label in labels)
+        return question.kind == "grid" and agreeing * 2 > len(labels)
+    if found.kind == "checkbox":
+        if texts_agree(project.variable(found.items[0]).file.label, question.text):
+            return True
+        options = [o.text for o in question.options]
+        texts = [_option_texts(project.variable(n)) for n in found.items]
+        agreeing = sum(any(texts_agree(t, o) for t in mine for o in options) for mine in texts)
+        return agreeing * 2 > len(texts)
+    entry = project.variable(found.single or found.items[0])
+    return question.kind in ("single", "open") and texts_agree(entry.file.label, question.text)
+
+
+def _structure_targets(
+    project: Project, found: platforms.PlatformQuestion, question: Question
+) -> dict[str, str]:
+    """The target of each variable of a question, where its own text agrees."""
+    platform = platforms.by_name(project.source.platform)
+    chosen: dict[str, str] = {}
+    # A column the platform adds as a question ("id") stays an identifier (D-039).
+    if found.single:
+        identifier = no_question_reason(project.variable(found.single))
+        chosen[found.single] = NO_QUESTION if identifier else question.question_id
+    if found.kind == "grid":
+        for name in found.items:
+            label = project.variable(name).file.label
+            rows = [row for row in question.rows if texts_agree(label, row.text)]
+            if len(rows) == 1:
+                chosen[name] = rows[0].row_id
+    elif found.kind == "checkbox":
+        for name in found.items:
+            mine = _option_texts(project.variable(name))
+            options = [o for o in question.options if any(texts_agree(t, o.text) for t in mine)]
+            if len(options) == 1:
+                chosen[name] = options[0].option_id
+    # The "other" text of any question, choice or checkboxes: its option, by its words.
+    others = [
+        o
+        for o in question.options
+        if platform and any(texts_agree(o.text, form) for form in platform.other_cells)
+    ]
+    if found.other and len(others) == 1:
+        chosen[found.other] = others[0].option_id
+    return chosen
+
+
+def platform_choices(project: Project) -> dict[str, str]:
+    """The targets given by the structure of a platform export (v0.7): each question of the
+    export is matched, in order, with the next question of the questionnaire whose text
+    agrees with it; then each variable with the row or option whose text agrees with its
+    own. The rank alone never decides: a questionnaire may count otherwise. The platform's
+    own variables come from no question."""
+    questionnaire = project.questionnaire
+    platform = platforms.by_name(project.source.platform)
+    if questionnaire is None or platform is None:
+        return {}
+    chosen = {e.name: NO_QUESTION for e in project.variables if platform.platform_variable(e.name)}
+    questions = questionnaire.questions
+    start = 0
+    for found in project_questions(project):
+        for index in range(start, len(questions)):
+            if _agrees(project, found, questions[index]):
+                chosen |= _structure_targets(project, found, questions[index])
+                start = index + 1
+                break
+    return chosen
 
 
 MAX_NEIGHBOURS = 6

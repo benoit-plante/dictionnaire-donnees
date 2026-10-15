@@ -202,7 +202,6 @@ def test_a_grid_is_one_group(counts):
     assert counts["grilles_entieres"] == counts["grilles"]
 
 
-@FINDING
 def test_a_checkbox_set_is_a_multiple_response_group(counts):
     assert counts["ensembles_a_cocher_groupes"] == counts["ensembles_a_cocher"]
 

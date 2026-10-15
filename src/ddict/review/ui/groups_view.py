@@ -19,6 +19,13 @@ def page(project: Project, group_id: str) -> None:
     members = group.members.value or []
     st.write(f"{field_label('Variables')}" + ", ".join(members))
     st.write(f"{field_label('Indices du regroupement')}{w.basis_text(group.basis)}")
+    if group.kind == "multiple_response":
+        # The options of a "tick all that apply" question (v0.7): no scale, no reversed item.
+        st.write(_("Question à réponses multiples : une variable par option cochée."))
+        if group.attached:
+            st.write(f"{field_label('Texte « autre »')}" + ", ".join(group.attached))
+        _instrument_and_text(project, group_id)
+        return
     if group.cronbach_alpha is not None:
         st.write(_("Alpha de Cronbach observé : {a}").format(a=w.number(group.cronbach_alpha)))
     if group.cronbach_alpha_reversed is not None:
@@ -50,6 +57,11 @@ def page(project: Project, group_id: str) -> None:
             reset=(key,),
             submit=True,
         )
+    _instrument_and_text(project, group_id)
+
+
+def _instrument_and_text(project: Project, group_id: str) -> None:
+    """The instrument's name, with its source, and the choice not to reproduce its text."""
     st.divider()
     st.caption(_("Nom de l'instrument : réservé aux personnes, avec une source documentée."))
 

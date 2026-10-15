@@ -103,7 +103,7 @@ TENSION_ITEMS = (
 )
 REMOVED_TENSION_ITEM = (10, "J'ai travaillé en dehors de mes heures habituelles.")
 # Items of the Likert grid scored the other way: a satisfying situation.
-TENSION_REVERSED = {2, 3, 5, 7, 9, 11}
+TENSION_REVERSED = {2, 7, 11}
 
 QUESTIONS = (
     Question(

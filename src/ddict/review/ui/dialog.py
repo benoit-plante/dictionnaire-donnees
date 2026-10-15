@@ -29,7 +29,7 @@ KINDS = {
     ),
     "questionnaire": (
         N_("Choisir le questionnaire"),
-        [(N_("Questionnaires"), "*.pdf *.txt"), (N_("Tous les fichiers"), "*.*")],
+        [(N_("Questionnaires"), "*.pdf *.txt *.xlsx"), (N_("Tous les fichiers"), "*.*")],
     ),
 }
 TIMEOUT = 600  # seconds: a person may take a while to find the file

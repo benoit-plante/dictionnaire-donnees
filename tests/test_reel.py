@@ -79,7 +79,6 @@ def test_a_grid_is_one_group(counts):
     assert counts["grilles_entieres"] == counts["grilles"]
 
 
-@FINDING
 def test_a_checkbox_set_is_a_multiple_response_group(counts):
     _needs(counts, "ensembles_a_cocher")
     assert counts["ensembles_a_cocher_groupes"] == counts["ensembles_a_cocher"]
@@ -115,3 +114,16 @@ def test_the_questionnaire_has_the_grids_of_the_base(counts):
         if f"{prefix}_questions" in counts:
             assert counts[f"{prefix}_grilles"] == counts["grilles"]
             assert counts[f"{prefix}_checkbox"] == counts["ensembles_a_cocher"]
+
+
+def test_the_excel_header_links_every_question_variable(counts):
+    if "entete_liens_par_la_structure" not in counts:
+        pytest.skip("pas d'export .xlsx")
+    assert counts["entete_liens_par_la_structure"] == counts["entete_variables_de_questions"]
+    assert counts["entete_liens_dont_le_texte_concorde"] == counts["entete_liens_par_la_structure"]
+
+
+def test_structural_links_agree_with_the_pdf(counts):
+    if "pdf_liens_par_la_structure" not in counts:
+        pytest.skip("pas de questionnaire PDF")
+    assert counts["pdf_liens_dont_le_texte_concorde"] == counts["pdf_liens_par_la_structure"]

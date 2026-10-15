@@ -19,7 +19,7 @@ from ddict.project.model import Project, Questionnaire
 from ddict.questionnaire import language as study_language
 from ddict.questionnaire import load_questionnaire
 from ddict.questionnaire.labels import propose_value_labels
-from ddict.questionnaire.link import drop_stale_links
+from ddict.questionnaire.link import drop_stale_links, project_questions
 
 
 class ProjectExists(FileExistsError):
@@ -113,7 +113,9 @@ def add_questionnaire(project: Project, path: Path | str, *, replace: bool = Fal
     Returns the number of links removed. Raises ReadError when the file cannot be read."""
     if project.questionnaire is not None and not replace:
         raise QuestionnaireExists(project.questionnaire.file_name)
-    questionnaire = load_questionnaire(path)
+    # The kind of each question of a platform's export header, from the database (v0.7).
+    kinds = {q.rank: q.kind for q in project_questions(project) if q.kind != "single"}
+    questionnaire = load_questionnaire(path, kinds)
     previous = project.questionnaire
     project.questionnaire = questionnaire
     propose_from_questionnaire(project)

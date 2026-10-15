@@ -135,6 +135,25 @@ class Platform:
             return None
         return names
 
+    def header_labels(self, first: Sequence[object], second: Sequence[object]) -> list[str | None]:
+        """The variable labels the platform's .sav file gives the same columns (v0.7, step 4):
+        the question's text for a question in one column, the item's or option's text for
+        the others, none for the platform's own variables. Header cells, never answers."""
+        names = self.header_names(first, second) or []
+        first = [_cell(c) for c in first] + [""] * len(names)
+        second = [_cell(c) for c in second] + [""] * len(names)
+        labels: list[str | None] = []
+        question_text = ""
+        for column, name in enumerate(names):
+            place = self.place(name)
+            if place is None:
+                labels.append(None)
+                continue
+            question_text = first[column] or question_text
+            whole = place.item is None and not place.other
+            labels.append((question_text if whole else second[column]) or None)
+        return labels
+
 
 def _cell(value: object) -> str:
     return "" if value is None else str(value).strip()
@@ -222,6 +241,51 @@ SURVEYMONKEY = Platform(
 )
 
 PLATFORMS = (SURVEYMONKEY,)
+
+
+@dataclass(frozen=True)
+class PlatformQuestion:
+    """A question of the survey, as its variables show it (v0.7, step 4)."""
+
+    rank: int
+    kind: str  # "grid", "checkbox", or "single" (one variable: a choice or an open answer)
+    items: tuple[str, ...]  # the variables of its items or options, by rank
+    other: str | None = None  # the variable of its "other" text
+    single: str | None = None  # the variable of a whole question
+
+    @property
+    def variables(self) -> tuple[str, ...]:
+        found = (self.single,) if self.single else ()
+        return (*found, *self.items, *((self.other,) if self.other else ()))
+
+
+def survey_questions(
+    platform: Platform, names: Sequence[str], ticked: set[str]
+) -> list[PlatformQuestion]:
+    """The questions of an export, in survey order, from the names of its variables.
+
+    `ticked`: the variables that look like a checkbox (a single value label, or a single
+    value observed): a question whose items all do is a set of checkboxes, otherwise a grid.
+    """
+    by_rank: dict[int, list[tuple[str, Place]]] = {}
+    for name in names:
+        place = platform.place(name)
+        if place is not None:
+            by_rank.setdefault(place.question, []).append((name, place))
+    found = []
+    for rank in sorted(by_rank):
+        members = by_rank[rank]
+        items = tuple(n for n, p in sorted(members, key=lambda m: m[1].item or 0) if p.item)
+        other = next((n for n, p in members if p.other), None)
+        single = next((n for n, p in members if p.item is None and not p.other), None)
+        if not items:
+            kind = "single"
+        elif all(n in ticked for n in items):
+            kind = "checkbox"
+        else:
+            kind = "grid"
+        found.append(PlatformQuestion(rank, kind, items, other, single))
+    return found
 
 
 def by_name(name: str | None) -> Platform | None:

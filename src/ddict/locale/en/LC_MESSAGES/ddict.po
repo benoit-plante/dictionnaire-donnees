@@ -351,8 +351,8 @@ msgstr "Choose a project file…"
 msgid "Choisir une base…"
 msgstr "Choose a database…"
 
-msgid "Choisissez d'abord le fichier du questionnaire (.pdf ou .txt)."
-msgstr "First choose the questionnaire file (.pdf or .txt)."
+msgid "Choisissez d'abord le fichier du questionnaire (.pdf, .txt ou .xlsx)."
+msgstr "First choose the questionnaire file (.pdf, .txt or .xlsx)."
 
 msgid "Choisissez d'abord une base de données existante."
 msgstr "First choose an existing database."
@@ -974,12 +974,14 @@ msgstr "The project {path} already exists. Use --replace to overwrite it."
 msgid ""
 "Le questionnaire dit ce que chaque variable veut dire : le texte exact des questions, le sens des"
 " sigles, les options de réponse. Il est lu sur cet ordinateur, sans IA : PDF (SurveyMonkey, "
-"LimeSurvey, REDCap…) ou texte (.txt copié depuis Word). Seules les questions rattachées à des "
+"LimeSurvey, REDCap…), texte (.txt copié depuis Word) ou export Excel de SurveyMonkey, dont l'en-"
+"tête donne le texte des questions, énoncés et options. Seules les questions rattachées à des "
 "variables iront dans le codebook, jamais la page de consentement."
 msgstr ""
 "The questionnaire tells what each variable means: the exact text of the questions, the meaning of"
 " acronyms, the answer options. It is read on this computer, without AI: PDF (SurveyMonkey, "
-"LimeSurvey, REDCap…) or text (.txt copied from Word). Only the questions linked to variables go "
+"LimeSurvey, REDCap…), text (.txt copied from Word) or SurveyMonkey's Excel export, whose header "
+"gives the text of the questions, items and options. Only the questions linked to variables go "
 "into the codebook, never the consent page."
 
 msgid "Le serveur local ne répond pas comme prévu."
@@ -1028,8 +1030,10 @@ msgstr "Complete rows"
 msgid "Lire le questionnaire"
 msgstr "Read the questionnaire"
 
-msgid "Lire le questionnaire de l'étude (.pdf ou .txt) et l'ajouter au projet."
-msgstr "Read the study questionnaire (.pdf or .txt) and add it to the project."
+msgid ""
+"Lire le questionnaire de l'étude (.pdf, .txt, ou export .xlsx d'une plateforme) et l'ajouter au "
+"projet."
+msgstr "Read the study questionnaire (.pdf, .txt, or a platform's .xlsx export) and add it to the project."
 
 msgid "Lire une base (.sav, .csv, .dta, .sas7bdat ou .xlsx) et créer le fichier projet."
 msgstr "Read a database (.sav, .csv, .dta, .sas7bdat or .xlsx) and create the project file."
@@ -1268,11 +1272,14 @@ msgstr "Question in the questionnaire"
 msgid "Question inconnue : {id}"
 msgstr "Unknown question: {id}"
 
+msgid "Question à réponses multiples : une variable par option cochée."
+msgstr "Multiple-response question: one variable per ticked option."
+
 msgid "Questionnaire"
 msgstr "Questionnaire"
 
-msgid "Questionnaire (.pdf ou .txt)."
-msgstr "Questionnaire (.pdf or .txt)."
+msgid "Questionnaire (.pdf, .txt, ou export .xlsx d'une plateforme)."
+msgstr "Questionnaire (.pdf, .txt, or a platform's .xlsx export)."
 
 msgid "Questionnaire de l'étude"
 msgstr "Study questionnaire"
@@ -1505,6 +1512,9 @@ msgstr "Question text"
 
 msgid "Texte des questions"
 msgstr "Text of the questions"
+
+msgid "Texte « autre »"
+msgstr "\"Other\" text"
 
 msgid ""
 "Tirées des options de la question de chaque variable, dans l'ordre supposé des codes. Décochez "
@@ -1892,6 +1902,9 @@ msgstr "threshold"
 msgid "source"
 msgstr "source"
 
+msgid "structure de la plateforme"
+msgstr "platform structure"
+
 msgid "texte"
 msgstr "text"
 
@@ -1989,6 +2002,10 @@ msgstr "{n} rare categories removed (privacy)"
 #, python-brace-format
 msgid "{n} items"
 msgstr "{n} items"
+
+#, python-brace-format
+msgid "{n} options à cocher"
+msgstr "{n} checkbox options"
 
 #, python-brace-format
 msgid "{n} questions : {counts}{grids}."

@@ -73,7 +73,8 @@ def read_xlsx(path: Path | str) -> LoadedData:
         platform, names = split
         width = len(names)
         records = [[*row[:width], *[None] * (width - len(row))] for row in rows[2:]]
-        return _loaded(path, names, records, platform.name)
+        labels = platform.header_labels(rows[0], rows[1])
+        return _loaded(path, names, records, platform.name, labels)
 
     width = max(len(row) for row in rows)
     header = [*rows[0], *[None] * (width - len(rows[0]))]
@@ -93,8 +94,13 @@ def read_xlsx(path: Path | str) -> LoadedData:
 
 
 def _loaded(
-    path: Path, names: list[str], records: list[list[object]], platform: str | None
+    path: Path,
+    names: list[str],
+    records: list[list[object]],
+    platform: str | None,
+    labels: list[str | None] | None = None,
 ) -> LoadedData:
+    """`labels`: the variable labels a platform's header gives, as its .sav file would."""
     width = len(names)
     duplicates = sorted({name for name in names if names.count(name) > 1})
     if duplicates:
@@ -112,6 +118,7 @@ def _loaded(
             name=name,
             position=position,
             storage_type="numeric" if table[name].dtype == "float64" else "string",
+            label=labels[position - 1] if labels else None,
             missing_tokens=counts,
         )
         for position, (name, (_values, counts)) in enumerate(zip(names, blanked, strict=True), 1)

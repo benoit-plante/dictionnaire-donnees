@@ -197,6 +197,10 @@ class Group(Strict):
     group_id: str
     members: TrackedValue[list[str]]
     basis: list[str] = []
+    # v0.7 (D-044): a probable scale, or the options of a "tick all that apply" question,
+    # whose "other" text is attached outside the members.
+    kind: Literal["scale", "multiple_response"] = "scale"
+    attached: list[str] = []
     descriptive_label: TrackedValue[str]
     ai_hypothesis: TrackedValue[str]
     # Human only, each with a documented source (principle 4).
@@ -287,7 +291,7 @@ class Questionnaire(Strict):
 
     file_name: str
     sha256: str
-    format: Literal["pdf", "txt"]
+    format: Literal["pdf", "txt", "xlsx"]  # xlsx: a platform export's header (v0.7, D-045)
     n_pages: int | None = None
     questions: list[Question] = []
     texts: list[QuestionnaireText] = []

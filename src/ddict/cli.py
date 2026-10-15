@@ -595,10 +595,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     questionnaire = commands.add_parser(
         "questionnaire",
-        help=_("Lire le questionnaire de l'étude (.pdf ou .txt) et l'ajouter au projet."),
+        help=_(
+            "Lire le questionnaire de l'étude (.pdf, .txt, ou export .xlsx d'une plateforme) "
+            "et l'ajouter au projet."
+        ),
     )
     questionnaire.add_argument("projet", help=_("Fichier projet (.dd.json)."))
-    questionnaire.add_argument("fichier", help=_("Questionnaire (.pdf ou .txt)."))
+    questionnaire.add_argument(
+        "fichier", help=_("Questionnaire (.pdf, .txt, ou export .xlsx d'une plateforme).")
+    )
     questionnaire.add_argument(
         "--remplacer",
         "--replace",
