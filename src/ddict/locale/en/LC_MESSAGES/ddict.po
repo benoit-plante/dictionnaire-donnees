@@ -1878,6 +1878,14 @@ msgstr "Download the report"
 
 #, python-brace-format
 msgid ""
+"Un fichier {format} ne contient {lacks} : l'outil les devine, vérifiez-les. Un export .sav, quand"
+" il est possible, donne de meilleurs résultats."
+msgstr ""
+"A {format} file holds {lacks}: the tool guesses them, check them. A .sav export, when possible, "
+"gives better results."
+
+#, python-brace-format
+msgid ""
 "Un projet existe déjà pour cette base : {name}. Ouvrez-le pour reprendre votre travail, ou "
 "remplacez-le (ses décisions seront perdues)."
 msgstr ""
@@ -2173,6 +2181,12 @@ msgstr "same label"
 
 msgid "mêmes étiquettes de valeurs"
 msgstr "same value labels"
+
+msgid "ni codes de valeurs manquantes, ni niveaux de mesure"
+msgstr "no missing-value codes and no levels of measurement"
+
+msgid "ni étiquettes des valeurs, ni codes de valeurs manquantes, ni niveaux de mesure"
+msgstr "no value labels, no missing-value codes and no levels of measurement"
 
 msgid "nom d'instrument"
 msgstr "instrument name"

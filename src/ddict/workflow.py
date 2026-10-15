@@ -90,6 +90,30 @@ def platform_notes(project: Project) -> list[str]:
     return notes
 
 
+# What each format lacks of a .sav file (D-054): the tool guesses it.
+_LACKS_ALL = N_("ni étiquettes des valeurs, ni codes de valeurs manquantes, ni niveaux de mesure")
+FORMAT_LACKS = {
+    "csv": _LACKS_ALL,
+    "xlsx": _LACKS_ALL,
+    "sas7bdat": _LACKS_ALL,  # its value labels live in a format catalog, not read
+    "dta": N_("ni codes de valeurs manquantes, ni niveaux de mesure"),
+}
+FORMAT_TITLES = {"csv": "CSV", "xlsx": "Excel", "sas7bdat": "SAS", "dta": "Stata"}
+
+
+def format_note(project: Project) -> str | None:
+    """Below a database that is not a .sav file (D-054): what was guessed, to check. None
+    for a .sav, or when the platform note already advises its .sav export."""
+    source = project.source
+    lacks = FORMAT_LACKS.get(source.format)
+    if lacks is None or (platforms.by_name(source.platform) and source.format in ("xlsx", "csv")):
+        return None
+    return _(
+        "Un fichier {format} ne contient {lacks} : l'outil les devine, vérifiez-les. "
+        "Un export .sav, quand il est possible, donne de meilleurs résultats."
+    ).format(format=FORMAT_TITLES[source.format], lacks=_(lacks))
+
+
 # --- The questionnaire (v0.2), from the command line or the interface. ---
 
 TO_CHECK = Texts(

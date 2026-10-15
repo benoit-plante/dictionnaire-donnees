@@ -46,6 +46,7 @@ from ddict.workflow import (
     export_name_table,
     export_syntax,
     failure_advice,
+    format_note,
     naming_summary,
     platform_notes,
     platform_summary,
@@ -76,6 +77,8 @@ def cmd_profile(args: argparse.Namespace) -> int:
     print(_("Projet créé : {path}").format(path=output))
     print(profile_summary(project))
     for note in platform_notes(project):
+        print(note)
+    if note := format_note(project):
         print(note)
     return 0
 

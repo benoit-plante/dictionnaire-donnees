@@ -10,7 +10,7 @@ from ddict.io import read_database
 from ddict.platforms import SURVEYMONKEY, Place, recognize, split_header
 from ddict.project import build_project
 from ddict.project.store import ProjectError, dumps, load_project
-from ddict.workflow import platform_notes
+from ddict.workflow import format_note, platform_notes
 
 ROOT = Path(__file__).resolve().parent.parent
 EXAMPLES = ROOT / "exemples" / "bases-fictives"
@@ -180,3 +180,24 @@ def test_the_base_page_says_which_export_it_is(tmp_path):
     assert "Export SurveyMonkey reconnu." in infos
     assert any("préférez-le" in i for i in infos)
     assert [m.value for m in app.metric][:2] == ["51", "110"]
+
+
+@pytest.mark.parametrize(
+    ("file", "lacks"),
+    [
+        ("etude-sommeil.sav", None),
+        ("etude-sommeil.csv", "étiquettes des valeurs"),
+        ("etude-sommeil.xlsx", "étiquettes des valeurs"),
+        ("etude-sommeil.sas7bdat", "étiquettes des valeurs"),
+        ("etude-sommeil.dta", "codes de valeurs manquantes"),
+        # A platform export in Excel: its own note already advises the .sav (D-054).
+        ("travail-t2_surveymonkey.xlsx", None),
+    ],
+)
+def test_a_database_that_is_not_a_sav_is_checked(file, lacks):
+    note = format_note(build_project(read_database(EXAMPLES / file)))
+    if lacks is None:
+        assert note is None
+    else:
+        assert lacks in note and ".sav" in note
+        assert ("étiquettes" in note) == (not file.endswith(".dta"))
