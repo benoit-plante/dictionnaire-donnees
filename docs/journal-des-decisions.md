@@ -709,3 +709,108 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   - Pour le mot : « nom de base » (ce choix), « préfixe » comme pour les grilles, « racine ».
 - **Justification :** choix de l'auteur, pour un travail plus direct : tout se voit et se décide au même endroit. La règle de D-029 est tenue : la colonne remplie d'avance est la liste exacte, relue et modifiable ligne par ligne avant tout enregistrement. « Nom de base » se comprend sans vocabulaire de grammaire et reste juste pour une question seule, dont il est le nom entier.
 - **Conséquences :** un nom écrit et « Rejeter » sur la même ligne sont refusés ensemble ; une ligne fautive empêche tout l'enregistrement, sans rien changer. Le reste de D-053 tient (pas de lot pour les rattachements par la structure).
+
+### D-057 — Périmètre de la v0.8
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** la v0.8 fait du codebook un contrat d'analyse : export « contexte d'analyse », cotation structurée, niveau de mesure modifiable, métadonnées de la base, complétude, script de préparation, empreinte du codebook. La base synthétique et les filtres du questionnaire sont proposés pour la v0.9 ; l'assistant d'analyse reste une piste pour un projet distinct.
+- **Options considérées :**
+  1. Tout le contrat d'analyse, l'utilité sans IA présentée d'abord (ce choix).
+  2. Seulement ce qui sert sans IA ; le contexte compact plus tard.
+  3. Une autre priorité (application Mac, autres plateformes, grande base).
+- **Justification :** choix de l'auteur. La plupart des fonctions servent une équipe qui analyse elle-même (scores, niveau de mesure, complétude, reproductibilité) ; l'export compact répond à un usage qui existe déjà, une IA qui aide à écrire le code d'analyse, et repose sur les mêmes décisions.
+- **Conséquences :** plan en 9 étapes (`docs/plan-v0.8.md`).
+
+### D-058 — Format du contexte d'analyse
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** un `datapackage.json` (Frictionless Table Schema, propriétés propres à l'outil dans l'espace de noms `ddict:`) et un `<base>-contexte.md` compact, une ligne par variable, valeurs acceptées seulement. Les variables y sont désignées par leur nom final, avec leur nom d'origine.
+- **Options considérées :**
+  1. Frictionless et un Markdown compact (ce choix).
+  2. Un format propre à l'outil seulement.
+  3. DDI Codebook.
+- **Justification :** un standard ouvert, lisible par des programmes et accepté par des dépôts ; le Markdown se colle tel quel dans un modèle. DDI est plus lourd que le besoin.
+- **Conséquences :** la version du standard et la licence de son schéma sont vérifiées à l'étape 1.
+
+### D-059 — Statistiques dans le contexte d'analyse
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** absentes par défaut ; ajoutées sur demande (case de la page « Export », `--avec-statistiques`), toujours filtrées par la porte de confidentialité.
+- **Options considérées :**
+  1. Absentes par défaut (ce choix).
+  2. Toujours présentes.
+- **Justification :** sans elles, le contexte ne contient que des métadonnées ; ce qui peut sortir du poste relève du certificat d'éthique et de l'équipe.
+
+### D-060 — Cotation structurée
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** la cotation d'un groupe devient un objet (items, items inversés et règle d'inversion, somme ou moyenne, nombre minimal d'items répondus, étendue et nom du score), saisi par une personne avec sa source ; le texte libre reste possible en note. Le modèle ne la propose jamais. Un groupe « réponses multiples » n'en a pas.
+- **Options considérées :**
+  1. Objet structuré, humain et sourcé (ce choix).
+  2. Texte libre seulement, comme aujourd'hui.
+- **Justification :** un score se calcule alors sans deviner, par un programme ou par un modèle ; une règle de cotation est une information d'instrument, que le modèle ne doit pas inventer (principe 4).
+
+### D-061 — Format du projet 0.3.0
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** le format du projet passe en 0.3.0 ; les projets 0.1.0 et 0.2.0 sont convertis à l'ouverture (le texte de cotation devient une note). Un projet converti ne s'ouvre plus avec une version plus ancienne.
+- **Options considérées :**
+  1. Conversion à l'ouverture (ce choix).
+  2. Garder l'ancien champ à côté du nouveau, sans conversion.
+- **Justification :** un seul endroit pour la cotation ; deux champs pour la même chose finiraient par se contredire.
+- **Conséquences :** première conversion du format ; testée sur des projets de chaque version, et signalée dans le guide.
+
+### D-062 — Script de préparation
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** l'outil écrit un script de préparation (SPSS et R) qui crée de nouvelles variables (items inversés `_inv`, scores) selon les décisions acceptées, sans modifier les variables d'origine. Il s'exécute après le fichier de commandes, sur les noms finaux, et compare un score recalculé à un score déjà présent dans la base.
+- **Options considérées :**
+  1. Nouvelles variables, variables d'origine intactes (ce choix).
+  2. Pas de script, comme D-025 le prévoyait.
+- **Justification :** le calcul des scores avec items inversés est une source d'erreurs fréquente ; aucune valeur d'origine n'est recodée, et l'équipe exécute le script dans son propre logiciel.
+- **Conséquences :** élargit D-025, qui excluait tout recodage, même sur une copie : créer de nouvelles variables est désormais permis, recoder les valeurs d'origine ne l'est toujours pas.
+
+### D-063 — Niveau de mesure modifiable
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** chaque variable a un niveau de mesure suivi ; le calcul le propose quand le fichier n'en a pas (CSV, Excel) ou quand le niveau `scale` d'un item étiqueté de grille est douteux (`ordinal`), et une personne décide. Le niveau accepté passe dans les fichiers de commandes, la copie documentée et le contexte d'analyse.
+- **Options considérées :**
+  1. Modifiable, proposé par le calcul (ce choix).
+  2. Seulement signalé, comme en v0.7.
+- **Justification :** le choix des analyses repose sur le niveau de mesure ; la v0.7 avait laissé ouverte la question du niveau `scale` des items (D-047).
+
+### D-064 — Métadonnées de la base
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** ce que représente une ligne, la structure (transversale, une vague par fichier, format large, format long) et les variables de plan sont saisis par une personne sur la page « Base ». Seules la structure « une vague par fichier » (d'après la marque de vague) et le format large (d'après des suffixes de temps) peuvent être proposés par le calcul.
+- **Options considérées :**
+  1. Saisie humaine, deux propositions par le calcul (ce choix).
+  2. Tout deviner par le calcul.
+- **Justification :** ces faits ne se lisent pas de façon sûre dans les données ; un modèle qui les ignore traite des mesures répétées comme des participants indépendants.
+
+### D-065 — Assistant d'analyse
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** un assistant d'analyse (vérificateur de scripts, boucle d'analyse locale, interprétation, rédaction de la méthode) serait un projet distinct, qui lirait le contexte d'analyse. `dictionnaire-donnees` n'exécute jamais de code d'analyse.
+- **Options considérées :**
+  1. Projet distinct (ce choix).
+  2. L'intégrer à l'outil.
+- **Justification :** l'outil reste un outil de documentation ; la v0.8 ne dépend pas de cet assistant, qui n'est qu'une piste.
