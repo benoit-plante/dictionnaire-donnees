@@ -59,6 +59,9 @@ msgstr "# Differences between the waves"
 msgid "## Appariements"
 msgstr "## Matches"
 
+msgid "## Complétude"
+msgstr "## Completeness"
+
 msgid "## Correspondance des noms"
 msgstr "## Correspondence of names"
 
@@ -561,6 +564,13 @@ msgstr "Suspect codes"
 msgid "Codes suspects à confirmer : {n}"
 msgstr "Suspect codes to confirm: {n}"
 
+msgid "Complétude"
+msgstr "Completeness"
+
+#, python-brace-format
+msgid "Complétude : {element}"
+msgstr "Completeness: {element}"
+
 msgid "Confidentialité"
 msgstr "Privacy"
 
@@ -615,6 +625,9 @@ msgstr "Correlation with the rest of the group"
 
 msgid "Cotation"
 msgstr "Scoring"
+
+msgid "Cotation (groupes d'échelle)"
+msgstr "Scoring (scale groups)"
 
 msgid "Cotation (source)"
 msgstr "Scoring (source)"
@@ -1673,6 +1686,9 @@ msgstr "Question in the questionnaire"
 msgid "Question inconnue : {id}"
 msgstr "Unknown question: {id}"
 
+msgid "Question rattachée"
+msgstr "Linked question"
+
 msgid "Question à réponses multiples : une variable par option cochée."
 msgstr "Multiple-response question: one variable per ticked option."
 
@@ -2253,6 +2269,9 @@ msgstr "computed"
 msgid "cases à cocher d'après la base"
 msgstr "checkboxes, according to the database"
 
+msgid "ce qu'est une ligne"
+msgstr "what a row is"
+
 #, python-brace-format
 msgid "choix justes du calcul défaits ({names})"
 msgstr "right choices of the computation undone ({names})"
@@ -2291,6 +2310,9 @@ msgstr "working (AI proposals included)"
 msgid "deviné : la variable n'a pas d'étiquette dans le fichier"
 msgstr "guessed: the variable has no label in the file"
 
+msgid "dite"
+msgstr "said"
+
 msgid "donne le sens d'un sigle absent du glossaire"
 msgstr "gives the meaning of an acronym missing from the glossary"
 
@@ -2308,6 +2330,10 @@ msgstr "integer"
 
 msgid "et"
 msgstr "and"
+
+#, python-brace-format
+msgid "et {n} autres"
+msgstr "and {n} more"
 
 msgid "exporté pour toutes les variables rattachées"
 msgstr "exported for all linked variables"
@@ -2341,6 +2367,12 @@ msgstr "grouping identifier"
 
 msgid "identifiant probable"
 msgstr "likely identifier"
+
+msgid "incomplète"
+msgstr "incomplete"
+
+msgid "la structure"
+msgstr "the structure"
 
 msgid "longitudinale, format large (une colonne par temps)"
 msgstr "longitudinal, wide format (one column per time)"
@@ -2795,6 +2827,9 @@ msgstr "{title}: {ok} blocks succeeded, {skipped} already done, {failed} failed.
 msgid "« {token} » lu comme vide ({n})"
 msgstr "\"{token}\" read as empty ({n})"
 
+msgid "À documenter"
+msgstr "To document"
+
 msgid "À faire"
 msgstr "To do"
 
@@ -2853,6 +2888,12 @@ msgstr "Equal to the answer key"
 msgid "Élément"
 msgstr "Item"
 
+msgid "Éléments décidés par l'équipe, sur ceux qui s'appliquent ; le reste n'est pas documenté."
+msgstr "Elements decided by the team, out of those that apply; the rest is not documented."
+
+msgid "Éléments décidés par l'équipe, sur ceux qui s'appliquent."
+msgstr "Elements decided by the team, out of those that apply."
+
 msgid "Équipe"
 msgstr "Team"
 
@@ -2878,6 +2919,9 @@ msgstr "Label {code} never used"
 msgid "Étiquettes de valeurs"
 msgstr "Value labels"
 
+msgid "Étiquettes de valeurs (variables codées)"
+msgstr "Value labels (coded variables)"
+
 msgid "Étiquettes de valeurs proposées pour ce groupe"
 msgstr "Value labels proposed for this group"
 
@@ -2901,6 +2945,9 @@ msgstr "single choice"
 
 msgid "à cocher"
 msgstr "checkbox"
+
+msgid "à documenter"
+msgstr "to document"
 
 msgid "à nommer"
 msgstr "to name"

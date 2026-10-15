@@ -12,7 +12,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.worksheet import Worksheet
 
 from ddict.export import wording as w
-from ddict.i18n import N_, TextList, _, colon, in_language
+from ddict.i18n import N_, TextList, _, colon, in_language, semicolon
 from ddict.project import fingerprint
 from ddict.project.model import Project, TrackedValue
 
@@ -71,6 +71,13 @@ def _about(project: Project, kind: w.ExportKind, omit_groups: tuple[str, ...]) -
         [_("Format du projet"), project.schema_version],
         [_("Empreinte du codebook"), fingerprint.short(project)],
         *[[name, value] for name, value in w.dataset_facts(project)],
+        *[
+            [
+                _("Complétude : {element}").format(element=name),
+                count + (f"{semicolon()}{_('à documenter')}{colon()}{missing}" if missing else ""),
+            ]
+            for name, count, missing in w.completeness_rows(project)
+        ],
         *_questionnaire_rows(project, omit_groups),
     ]
 

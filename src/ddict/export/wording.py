@@ -15,7 +15,7 @@ from ddict import glossary
 from ddict.i18n import N_, Texts, _, colon, decimal, quoted, semicolon
 from ddict.profile.compute import is_missing_label
 from ddict.profile.variants import spelling_variants
-from ddict.project import measure, scoring
+from ddict.project import completeness, measure, scoring
 from ddict.project.build import GROUP_PARTS
 from ddict.project.decisions import is_accepted
 from ddict.project.model import (
@@ -591,3 +591,44 @@ def dataset_facts(project: Project) -> list[tuple[str, str]]:
     if found.description:
         facts.append((_("Description de la base"), found.description))
     return facts
+
+
+# --- v0.8, step 5: how complete the codebook is. ---
+
+COMPLETENESS = Texts(
+    {
+        "question": N_("Question rattachée"),
+        "label": N_("Libellé"),
+        "value_labels": N_("Étiquettes de valeurs (variables codées)"),
+        "measure_level": N_("Niveau de mesure"),
+        "new_name": N_("Nouveau nom"),
+        "scoring": N_("Cotation (groupes d'échelle)"),
+    }
+)
+DATASET_PARTS = Texts({"unit": N_("ce qu'est une ligne"), "structure": N_("la structure")})
+SHOWN_MISSING = 10
+
+
+def missing_text(names: list[str]) -> str:
+    """At most ten names, then how many more."""
+    text = ", ".join(names[:SHOWN_MISSING])
+    if len(names) > SHOWN_MISSING:
+        text += " " + _("et {n} autres").format(n=len(names) - SHOWN_MISSING)
+    return text
+
+
+def completeness_rows(project: Project) -> list[tuple[str, str, str]]:
+    """(element, "decided / applicable", what is missing), the database last."""
+    rows = [
+        (COMPLETENESS[p.key], f"{p.done} / {p.applicable}", missing_text(p.missing))
+        for p in completeness.parts(project)
+    ]
+    missing = completeness.dataset_missing(project)
+    rows.append(
+        (
+            _("Description de la base"),
+            _("dite") if not missing else _("incomplète"),
+            ", ".join(DATASET_PARTS[m] for m in missing),
+        )
+    )
+    return rows

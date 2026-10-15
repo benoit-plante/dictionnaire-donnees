@@ -10,6 +10,19 @@
 - SHA-256 fingerprint of the questionnaire: 307165d2eb4185449fdf95d1a387d5503aafbe76b789e743a50a6c26c300571c
 - Variables linked to a question: 1
 
+## Completeness
+
+Elements decided by the team, out of those that apply; the rest is not documented.
+
+| Item | Decided | To document |
+|---|---|---|
+| Linked question | 1 / 34 | id_participant, courriel, date_passation, date_naissance, genre, vague, sommeil_q1, sommeil_q2, sommeil_q3, sommeil_q4 and 23 more |
+| Label | 33 / 34 | sommeil_q7 |
+| Value labels (coded variables) | 17 / 21 | aide_medicament, aide_naturel, aide_tcc, aide_aucune |
+| Measurement level | 27 / 27 |  |
+| Scoring (scale groups) | 0 / 2 | G1, G2 |
+| Description of the database | incomplete | what a row is, the structure |
+
 ## Overview
 
 | Type | Variables |

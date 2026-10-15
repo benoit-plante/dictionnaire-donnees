@@ -10,6 +10,19 @@
 - Empreinte SHA-256 du questionnaire : 307165d2eb4185449fdf95d1a387d5503aafbe76b789e743a50a6c26c300571c
 - Variables rattachées à une question : 1
 
+## Complétude
+
+Éléments décidés par l'équipe, sur ceux qui s'appliquent ; le reste n'est pas documenté.
+
+| Élément | Décidés | À documenter |
+|---|---|---|
+| Question rattachée | 1 / 34 | id_participant, courriel, date_passation, date_naissance, genre, vague, sommeil_q1, sommeil_q2, sommeil_q3, sommeil_q4 et 23 autres |
+| Libellé | 33 / 34 | sommeil_q7 |
+| Étiquettes de valeurs (variables codées) | 17 / 21 | aide_medicament, aide_naturel, aide_tcc, aide_aucune |
+| Niveau de mesure | 27 / 27 |  |
+| Cotation (groupes d'échelle) | 0 / 2 | G1, G2 |
+| Description de la base | incomplète | ce qu'est une ligne, la structure |
+
 ## Vue d'ensemble
 
 | Type | Variables |

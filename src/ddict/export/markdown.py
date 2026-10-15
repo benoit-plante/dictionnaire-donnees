@@ -51,6 +51,22 @@ def _overview(project: Project, kind: w.ExportKind) -> list[str]:
     lines += [f"- {name}{colon()}{_inline(value)}" for name, value in w.dataset_facts(project)]
     lines += [
         "",
+        _("## Complétude"),
+        "",
+        _(
+            "Éléments décidés par l'équipe, sur ceux qui s'appliquent ; le reste n'est pas "
+            "documenté."
+        ),
+        "",
+        f"| {_('Élément')} | {_('Décidés')} | {_('À documenter')} |",
+        "|---|---|---|",
+    ]
+    lines += [
+        f"| {_cell(name)} | {count} | {_cell(missing)} |"
+        for name, count, missing in w.completeness_rows(project)
+    ]
+    lines += [
+        "",
         _("## Vue d'ensemble"),
         "",
         f"| {_('Type')} | {_('Variables')} |",

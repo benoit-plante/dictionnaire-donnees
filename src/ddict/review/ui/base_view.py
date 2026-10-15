@@ -301,6 +301,14 @@ def page(project: Project) -> None:
         pd.DataFrame(sorted(types.items()), columns=[_("Type"), _("Variables")]),
         hide_index=True,
     )
+    st.subheader(_("Complétude"))
+    st.caption(_("Éléments décidés par l'équipe, sur ceux qui s'appliquent."))
+    st.dataframe(
+        pd.DataFrame(
+            w.completeness_rows(project), columns=[_("Élément"), _("Décidés"), _("À documenter")]
+        ),
+        hide_index=True,
+    )
     _levels(project)
     if sensitive:
         st.subheader(_("Variables sensibles"))
