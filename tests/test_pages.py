@@ -36,6 +36,7 @@ def test_tasks_follow_the_recommended_order(folder):
         "Ajouter le questionnaire de l'étude",
         "Sigles sans définition : 2",
         "Codes suspects à confirmer : 3",  # age 999, sommeil_q3 9, nb_reveils -9
+        "Niveaux de mesure proposés : 1",  # langue_maison: text declared "scale" (v0.8)
     ]
     add_questionnaire(project, folder / "questionnaire-sommeil.pdf")
     assert _texts(tasks(project)) == [
@@ -43,6 +44,7 @@ def test_tasks_follow_the_recommended_order(folder):
         "Sigles sans définition : 1",
         "Variables sans question : 34",
         "Codes suspects à confirmer : 3",
+        "Niveaux de mesure proposés : 1",
     ]
     project.variable("age").question = TrackedValue[str](
         value="Q3", origin="ai", status="proposed", ai_run="run-0001"
@@ -58,6 +60,7 @@ def test_tasks_follow_the_recommended_order(folder):
         "Rattachements proposés à réviser : 1",
         "Variables sans question : 33",
         "Codes suspects à confirmer : 3",
+        "Niveaux de mesure proposés : 1",
         "Libellés ou descriptions proposés : 1",
     ]
     assert (found[1].mode, found[1].filter) == ("variables", "unlinked")

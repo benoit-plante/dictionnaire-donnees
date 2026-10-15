@@ -284,6 +284,17 @@ def questionnaire_of(sav: Path, paths: list[Path]) -> Path | None:
     return min(scored)[1] if scored else None
 
 
+def count_context(sav: Path) -> dict[str, float]:
+    """The size of the analysis context of the base as read (v0.8, step 6): tokens per
+    variable (about four characters a token), without the text of the questions."""
+    from ddict.export.context import render_context
+
+    project = build_project(read_database(sav))
+    text = render_context(project)
+    kept = text.split("\n## Texte des questions")[0]
+    return {"contexte_tokens_par_variable": round(len(kept) / 4 / len(project.variables), 1)}
+
+
 def count_base(folder: Path) -> dict[str, float | int | str]:
     """All the counts of one base: its .sav, its Excel export, its questionnaires."""
     counts: dict[str, float | int | str] = {}
@@ -308,6 +319,7 @@ def count_base(folder: Path) -> dict[str, float | int | str]:
         if path is not None:
             _guarded(counts, suffix, count_questionnaire, path, suffix)
             _guarded(counts, f"liens_{suffix}", count_links, sav, path, suffix)
+    _guarded(counts, "contexte", count_context, sav)
     if counts["fichiers_sav"] > 1:  # several waves of the study
         _guarded(counts, "vagues", count_waves, folder)
     return counts

@@ -48,6 +48,7 @@ revision = [
 dev = [
     "babel>=2.18.0",
     "httpx>=0.28.1",
+    "jsonschema>=4.26.0",
     "pytest>=8",
     "pytest-socket>=0.7",
     "ruff>=0.6",

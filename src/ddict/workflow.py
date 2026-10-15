@@ -7,6 +7,7 @@ from pathlib import Path
 
 from ddict import naming, platforms, waves
 from ddict.export import write_markdown, write_xlsx
+from ddict.export.context import write_context
 from ddict.export.documented import CopyError, CopyResult, find_database, write_documented_copy
 from ddict.export.syntax import SUFFIXES, write_syntax
 from ddict.export.wording import entry_anomalies
@@ -467,6 +468,38 @@ def export_name_table(project: Project, project_path: Path) -> Path | None:
     path = project_path.with_name(project_stem(project_path) + "-correspondance.csv")
     waves.write_name_table(project, path)
     return path
+
+
+def context_paths(project_path: Path) -> tuple[Path, Path]:
+    """The analysis context next to the project (v0.8, D-058): "etude-contexte.md" and
+    "etude-datapackage.json"."""
+    stem = project_stem(project_path)
+    return (
+        project_path.with_name(stem + "-contexte.md"),
+        project_path.with_name(stem + "-datapackage.json"),
+    )
+
+
+def export_context(
+    project: Project,
+    project_path: Path,
+    *,
+    statistics: bool = False,
+    omit_groups: tuple[str, ...] = (),
+    language: str | None = None,
+) -> tuple[Path, Path]:
+    """Write the analysis context: accepted values only; statistics only on request (D-059)."""
+    check_groups(project, omit_groups)
+    markdown, package = context_paths(project_path)
+    write_context(
+        project,
+        markdown,
+        package,
+        statistics=statistics,
+        omit_groups=omit_groups,
+        language=language,
+    )
+    return markdown, package
 
 
 def syntax_paths(project_path: Path) -> dict[str, Path]:

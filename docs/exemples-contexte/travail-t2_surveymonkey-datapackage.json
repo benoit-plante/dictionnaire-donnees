@@ -605,7 +605,7 @@
                 "label": "Très satisfait·e"
               }
             ],
-            "categoriesOrdered": true,
+            "categoriesOrdered": false,
             "missingValues": [
               {
                 "value": "6",
@@ -618,7 +618,7 @@
             ],
             "_ddict": {
               "original_name": "q0004_0001",
-              "measure_level": "ordinal",
+              "measure_level": "nominal",
               "question": "Q4.r1",
               "group": "G2"
             }
@@ -649,7 +649,7 @@
                 "label": "Très satisfait·e"
               }
             ],
-            "categoriesOrdered": true,
+            "categoriesOrdered": false,
             "missingValues": [
               {
                 "value": "6",
@@ -662,7 +662,7 @@
             ],
             "_ddict": {
               "original_name": "q0004_0002",
-              "measure_level": "ordinal",
+              "measure_level": "nominal",
               "question": "Q4.r2",
               "group": "G2"
             }
@@ -693,7 +693,7 @@
                 "label": "Très satisfait·e"
               }
             ],
-            "categoriesOrdered": true,
+            "categoriesOrdered": false,
             "missingValues": [
               {
                 "value": "6",
@@ -706,7 +706,7 @@
             ],
             "_ddict": {
               "original_name": "q0004_0003",
-              "measure_level": "ordinal",
+              "measure_level": "nominal",
               "question": "Q4.r3",
               "group": "G2"
             }
@@ -737,7 +737,7 @@
                 "label": "Très satisfait·e"
               }
             ],
-            "categoriesOrdered": true,
+            "categoriesOrdered": false,
             "missingValues": [
               {
                 "value": "6",
@@ -750,7 +750,7 @@
             ],
             "_ddict": {
               "original_name": "q0004_0004",
-              "measure_level": "ordinal",
+              "measure_level": "nominal",
               "question": "Q4.r4",
               "group": "G2"
             }
@@ -781,7 +781,7 @@
                 "label": "Très satisfait·e"
               }
             ],
-            "categoriesOrdered": true,
+            "categoriesOrdered": false,
             "missingValues": [
               {
                 "value": "6",
@@ -794,7 +794,7 @@
             ],
             "_ddict": {
               "original_name": "q0004_0005",
-              "measure_level": "ordinal",
+              "measure_level": "nominal",
               "question": "Q4.r5",
               "group": "G2"
             }
@@ -913,6 +913,7 @@
             "type": "string",
             "_ddict": {
               "original_name": "q0005_other",
+              "measure_level": "nominal",
               "question": "Q5.o6",
               "group": "G3"
             }
@@ -1099,6 +1100,7 @@
             "type": "string",
             "_ddict": {
               "original_name": "q0008_other",
+              "measure_level": "nominal",
               "question": "Q8.o7",
               "group": "G4"
             }
@@ -1209,6 +1211,7 @@
             "type": "string",
             "_ddict": {
               "original_name": "q0010_other",
+              "measure_level": "nominal",
               "question": "Q10.o5",
               "group": "G5"
             }
@@ -1245,15 +1248,16 @@
     }
   ],
   "_ddict": {
-    "tool": "ddict 0.8.0",
-    "codebook_fingerprint": "922f416e71a1",
+    "tool": "dictionnaire-donnees 0.7.1",
+    "codebook_fingerprint": "a8d2266ad3df4530ad2eca6eec051078d7a8297fad8264e7c3b7b7d519fb0081",
     "language": "fr",
+    "statistics": false,
     "dataset": {
       "unit_of_observation": "participant",
       "structure": "one_wave_per_file",
       "wave": "t2",
       "design_variables": {
-        "id": "id_participant_t2"
+        "cluster_id": "id_participant_t2"
       },
       "description": "Enquête fictive sur le travail, deuxième vague."
     },
@@ -1264,15 +1268,50 @@
       "undocumented_is_unknown",
       "multiple_response_empty_is_unchecked"
     ],
-    "completeness": {
-      "question": 55,
-      "label": 55,
-      "value_labels": 39,
-      "value_labels_applicable": 40,
-      "measure_level": 41,
-      "scoring": 0,
-      "scoring_applicable": 2
-    },
+    "completeness": [
+      {
+        "element": "question",
+        "decided": 55,
+        "applicable": 55,
+        "missing": []
+      },
+      {
+        "element": "label",
+        "decided": 55,
+        "applicable": 55,
+        "missing": []
+      },
+      {
+        "element": "value_labels",
+        "decided": 39,
+        "applicable": 40,
+        "missing": [
+          "collector_id_t2"
+        ]
+      },
+      {
+        "element": "measure_level",
+        "decided": 44,
+        "applicable": 44,
+        "missing": []
+      },
+      {
+        "element": "new_name",
+        "decided": 55,
+        "applicable": 55,
+        "missing": []
+      },
+      {
+        "element": "scoring",
+        "decided": 0,
+        "applicable": 2,
+        "missing": [
+          "G1",
+          "G2"
+        ]
+      }
+    ],
+    "dataset_missing": [],
     "groups": [
       {
         "id": "G1",

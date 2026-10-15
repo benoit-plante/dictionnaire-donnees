@@ -34,6 +34,10 @@ msgid "# Banc d'essai : {model}"
 msgstr "# Model bench: {model}"
 
 #, python-brace-format
+msgid "# Contexte d'analyse : {name}"
+msgstr "# Analysis context: {name}"
+
+#, python-brace-format
 msgid "# Dictionnaire de données : {name}"
 msgstr "# Data dictionary: {name}"
 
@@ -68,6 +72,9 @@ msgstr "## Correspondence of names"
 msgid "## Glossaire des sigles"
 msgstr "## Glossary of acronyms"
 
+msgid "## Groupes"
+msgstr "## Groups"
+
 msgid "## Groupes de variables"
 msgstr "## Groups of variables"
 
@@ -80,8 +87,20 @@ msgstr "## Base names of the questions (v0.7)"
 msgid "## Plusieurs candidates"
 msgstr "## Several candidates"
 
+msgid "## Points d'attention"
+msgstr "## Points of attention"
+
 msgid "## Rattachements aux questions"
 msgstr "## Links to questions"
+
+msgid "## Règles"
+msgstr "## Rules"
+
+msgid "## Statistiques"
+msgstr "## Statistics"
+
+msgid "## Texte des questions"
+msgstr "## Text of the questions"
 
 msgid "## Variables"
 msgstr "## Variables"
@@ -246,11 +265,22 @@ msgstr "Show"
 msgid "Ajouter"
 msgstr "Add"
 
+msgid ""
+"Ajouter au contexte d'analyse les statistiques, filtrées par la porte de confidentialité. Sans "
+"cette option, il ne contient que des métadonnées."
+msgstr ""
+"Add the statistics to the analysis context, filtered by the privacy gate. Without this option, it"
+" holds metadata only."
+
 msgid "Ajouter le questionnaire de l'étude"
 msgstr "Add the study questionnaire"
 
 msgid "Ajouter le seuil"
 msgstr "Add the threshold"
+
+#, python-brace-format
+msgid "Ajouter les statistiques (effectifs de moins de {n} masqués)"
+msgstr "Add the statistics (counts below {n} masked)"
 
 msgid "Ajouter un sigle"
 msgstr "Add an acronym"
@@ -358,6 +388,10 @@ msgstr "Model bench"
 
 msgid "Base"
 msgstr "Database"
+
+#, python-brace-format
+msgid "Base : `{name}` ({format}), {rows} lignes, {n} variables. Empreinte du fichier : `{sha}`."
+msgstr "Database: `{name}` ({format}), {rows} rows, {n} variables. File fingerprint: `{sha}`."
 
 msgid ""
 "Base de données : SPSS (.sav, .zsav), CSV, Stata (.dta), SAS (.sas7bdat) ou Excel (.xlsx, "
@@ -536,6 +570,14 @@ msgstr "Code {code} confirmed as missing by the team"
 msgid "Code {code} observé sans étiquette"
 msgstr "Code {code} observed without a label"
 
+#, python-brace-format
+msgid ""
+"Codebook : empreinte `{fingerprint}`, dictionnaire-donnees {version}. Seules les décisions "
+"acceptées par l'équipe y figurent."
+msgstr ""
+"Codebook: fingerprint `{fingerprint}`, dictionnaire-donnees {version}. Only the decisions "
+"accepted by the team are in it."
+
 msgid "Codebook Excel"
 msgstr "Excel codebook"
 
@@ -585,6 +627,16 @@ msgstr "Tip: first accept the glossary and review the proposed links; the model 
 msgid "Consigne donnée au modèle"
 msgstr "Instructions given to the model"
 
+msgid "Contexte (Markdown)"
+msgstr "Context (Markdown)"
+
+msgid "Contexte d'analyse"
+msgstr "Analysis context"
+
+#, python-brace-format
+msgid "Contexte d'analyse : {path}"
+msgstr "Analysis context: {path}"
+
 #, python-brace-format
 msgid "Copie : {path}"
 msgstr "Copy: {path}"
@@ -631,6 +683,9 @@ msgstr "Scoring (scale groups)"
 
 msgid "Cotation (source)"
 msgstr "Scoring (source)"
+
+msgid "Cotation : non documentée."
+msgstr "Scoring: not documented."
 
 msgid ""
 "Création de dictionnaires de données, en local. Lancé seul, ddict ouvre l'interface dans le "
@@ -742,6 +797,10 @@ msgstr "Count"
 
 msgid "Effectif minimal affiché ; en dessous, il est masqué (défaut : 5)."
 msgstr "Smallest count shown; below it, the count is masked (default: 5)."
+
+#, python-brace-format
+msgid "Effectifs inférieurs à {n} masqués ; aucune statistique pour une variable sensible."
+msgstr "Counts below {n} masked; no statistics for a sensitive variable."
 
 #, python-brace-format
 msgid ""
@@ -908,6 +967,10 @@ msgid "Fichiers projet"
 msgstr "Project files"
 
 #, python-brace-format
+msgid "Fichiers écrits à côté du projet : {md} et {json}."
+msgstr "Files written next to the project: {md} and {json}."
+
+#, python-brace-format
 msgid "Fichiers écrits à côté du projet : {names}."
 msgstr "Files written next to the project: {names}."
 
@@ -1029,6 +1092,9 @@ msgstr "Interface at {url} (this computer only)."
 
 msgid "Interrompu. Les blocs terminés sont enregistrés ; relancez pour continuer."
 msgstr "Interrupted. The finished blocks are saved; run again to continue."
+
+msgid "Inverser les items marqués « inv » avant tout score, selon la cotation de leur groupe."
+msgstr "Reverse the items marked \"inv\" before any score, as their group's scoring says."
 
 #, python-brace-format
 msgid "Item probablement inversé (corrélation avec le reste de l'échelle : {r})"
@@ -1167,6 +1233,17 @@ msgstr "Language of the codebook (default: that of the interface)."
 msgid "Langue inconnue : {language}"
 msgstr "Unknown language: {language}"
 
+msgid ""
+"Le codebook en format compact, pour un programme ou pour une IA qui aide à écrire le code "
+"d'analyse : un fichier Markdown à coller dans un modèle, et un datapackage.json (format "
+"Frictionless). Seulement ce qui est accepté. Ce qui peut sortir de votre ordinateur relève de "
+"votre équipe et du certificat d'éthique de l'étude, pas de l'outil."
+msgstr ""
+"The codebook in a compact format, for a program or for an AI that helps write the analysis code: "
+"a Markdown file to paste into a model, and a datapackage.json (Frictionless format). Only what is"
+" accepted. What may leave your computer is for your team and the study's ethics approval to "
+"decide, not the tool."
+
 #, python-brace-format
 msgid ""
 "Le fichier de données n'est jamais modifié ; le projet garde seulement ce que l'outil a calculé "
@@ -1287,6 +1364,9 @@ msgstr ""
 "The work stops after the block in progress if you click \"Stop\" or change pages. Finished blocks"
 " are kept; running again resumes where it stopped."
 
+msgid "Les codes de la colonne « Manquants » sont des valeurs manquantes : les exclure de tout calcul."
+msgstr "The codes of the \"Missing\" column are missing values: leave them out of every computation."
+
 msgid ""
 "Les définitions viennent du questionnaire ou de l'équipe ; l'IA n'en propose jamais. Une "
 "définition acceptée aide le modèle et figure dans le codebook."
@@ -1296,6 +1376,11 @@ msgstr ""
 
 msgid "Les propositions sont à réviser dans « Variables »."
 msgstr "The proposals are to be reviewed in \"Variables\"."
+
+msgid ""
+"Les variables marquées « sensible » ne doivent apparaître dans aucune sortie (ni valeurs, ni "
+"listes)."
+msgstr "The variables marked \"sensitive\" must appear in no output (neither values nor lists)."
 
 msgid "Libellé"
 msgstr "Label"
@@ -1343,6 +1428,9 @@ msgstr "Maximum length of the names"
 
 msgid "Manquant déclaré"
 msgstr "Declared missing"
+
+msgid "Manquants"
+msgstr "Missing"
 
 msgid "Manquants déclarés"
 msgstr "Declared missing"
@@ -1482,6 +1570,15 @@ msgid "Noms"
 msgstr "Names"
 
 #, python-brace-format
+msgid ""
+"Noms : les noms ci-dessous sont les nouveaux noms (nom d'origine entre parenthèses). Travailler "
+"sur la copie documentée `{copy}`, ou sur la base après le fichier de commandes, qui renomme en "
+"premier."
+msgstr ""
+"Names: the names below are the new names (original name in brackets). Work on the documented copy"
+" `{copy}`, or on the database after the command file, which renames first."
+
+#, python-brace-format
 msgid "Noms de base des questions ({n})"
 msgstr "Base names of the questions ({n})"
 
@@ -1498,6 +1595,10 @@ msgstr "Names in conflict: {n}"
 #, python-brace-format
 msgid "Noms proposés à valider : {n}"
 msgstr "Proposed names to validate: {n}"
+
+#, python-brace-format
+msgid "Non documenté : {gaps}."
+msgstr "Not documented: {gaps}."
 
 msgid "Note"
 msgstr "Note"
@@ -1679,6 +1780,12 @@ msgstr "Preparing the fictional databases…"
 msgid "Question"
 msgstr "Question"
 
+#, python-brace-format
+msgid ""
+"Question : {question} Chaque option : 1 = cochée, vide = non cochée ; le libellé de la ligne est "
+"l'option."
+msgstr "Question: {question} Each option: 1 = ticked, empty = not ticked; the row's label is the option."
+
 msgid "Question du questionnaire"
 msgstr "Question in the questionnaire"
 
@@ -1688,6 +1795,13 @@ msgstr "Unknown question: {id}"
 
 msgid "Question rattachée"
 msgstr "Linked question"
+
+msgid ""
+"Question à cocher (groupe « réponses multiples ») : une case vide est une option non cochée, sauf"
+" si toutes les cases de la question sont vides (question sans réponse)."
+msgstr ""
+"Check-all-that-apply question (\"multiple response\" group): an empty box is an option not "
+"ticked, unless every box of the question is empty (question not answered)."
 
 msgid "Question à réponses multiples : une variable par option cochée."
 msgstr "Multiple-response question: one variable per ticked option."
@@ -1865,6 +1979,9 @@ msgstr "For people only; the range and the thresholds require a source."
 msgid "Révision du dictionnaire"
 msgstr "Data dictionary review"
 
+msgid "Sans elles, le contexte ne contient que des métadonnées, aucune donnée."
+msgstr "Without them, the context holds metadata only, no data."
+
 msgid "Sans proposition"
 msgstr "No proposal"
 
@@ -2030,6 +2147,10 @@ msgstr "Text of the questions"
 msgid "Texte « autre »"
 msgstr "\"Other\" text"
 
+#, python-brace-format
+msgid "Texte « autre » : {names}."
+msgstr "\"Other\" text: {names}."
+
 msgid ""
 "Tirées des options de la question de chaque variable, dans l'ordre supposé des codes. Décochez "
 "celles qui ne conviennent pas."
@@ -2168,6 +2289,10 @@ msgstr "Value {code} probably missing, not declared: is it a missing code?"
 msgid "Valeurs"
 msgstr "Values"
 
+#, python-brace-format
+msgid "Valeurs de tous ses items : {values}."
+msgstr "Values of all its items: {values}."
+
 msgid "Valeurs distinctes"
 msgstr "Distinct values"
 
@@ -2224,6 +2349,9 @@ msgstr "Variables without a question: {n}"
 msgid "Variables sensibles"
 msgstr "Sensitive variables"
 
+msgid "Variantes d'écriture d'une même réponse"
+msgstr "Spelling variants of a same answer"
+
 #, python-brace-format
 msgid "Variantes d'écriture d'une même réponse : {spellings}"
 msgstr "Spelling variants of the same answer: {spellings}"
@@ -2245,6 +2373,9 @@ msgid "au moins {n} items répondus, sinon manquant"
 msgstr "at least {n} items answered, else missing"
 
 msgid "aucun"
+msgstr "none"
+
+msgid "aucune"
 msgstr "none"
 
 msgid "aucune question correspondante dans la base"
@@ -2291,6 +2422,9 @@ msgstr "codes from {low} to {high}"
 
 msgid "corrigé"
 msgstr "corrected"
+
+msgid "datapackage.json"
+msgstr "datapackage.json"
 
 msgid "date"
 msgstr "date"
@@ -2362,6 +2496,9 @@ msgstr "grids"
 msgid "humain"
 msgstr "human"
 
+msgid "identifiant"
+msgstr "identifier"
+
 msgid "identifiant de regroupement"
 msgstr "grouping identifier"
 
@@ -2404,6 +2541,10 @@ msgstr "SPSS reserved word"
 msgid "moyenne"
 msgstr "mean"
 
+#, python-brace-format
+msgid "moyenne {mean}"
+msgstr "mean {mean}"
+
 msgid "médiane"
 msgstr "median"
 
@@ -2427,6 +2568,10 @@ msgstr "same label"
 
 msgid "mêmes étiquettes de valeurs"
 msgstr "same value labels"
+
+#, python-brace-format
+msgid "n = {n}"
+msgstr "n = {n}"
 
 msgid "ni codes de valeurs manquantes, ni niveaux de mesure"
 msgstr "no missing-value codes and no levels of measurement"
@@ -2457,6 +2602,9 @@ msgstr "identifier name or label"
 
 msgid "nominal"
 msgstr "nominal"
+
+msgid "non documenté"
+msgstr "not documented"
 
 #, python-brace-format
 msgid "omis pour les groupes {groups} (instrument protégé, D-014)"
@@ -2541,11 +2689,18 @@ msgstr "rule"
 msgid "réponse invalide"
 msgstr "invalid answer"
 
+msgid "réponses multiples"
+msgstr "multiple response"
+
 msgid "réussi"
 msgstr "succeeded"
 
 msgid "s'écarte du choix sûr du calcul : comparez avec la première question de la liste"
 msgstr "departs from the computation's sure choice: compare with the first question of the list"
+
+#, python-brace-format
+msgid "score de {group}"
+msgstr "score of {group}"
 
 msgid "sens d'un sigle"
 msgstr "meaning of an acronym"
@@ -2556,6 +2711,10 @@ msgstr "meaning of codes ({names})"
 
 msgid "sens de codes sans étiquette"
 msgstr "meaning of codes without a label"
+
+#, python-brace-format
+msgid "sensible ({kind})"
+msgstr "sensitive ({kind})"
 
 msgid "seuil"
 msgstr "threshold"
@@ -2772,6 +2931,10 @@ msgid "{n} sigles, dont {p} à valider"
 msgstr "{n} acronyms, {p} of them to accept"
 
 #, python-brace-format
+msgid "{n} variables"
+msgstr "{n} variables"
+
+#, python-brace-format
 msgid ""
 "{n} variables ont encore des propositions sans décision : elles ne figurent pas dans la version "
 "finale."
@@ -2823,6 +2986,13 @@ msgstr "{title}: sending the first block…"
 msgid "{title} : {ok} blocs réussis, {skipped} déjà faits, {failed} en échec."
 msgstr "{title}: {ok} blocks succeeded, {skipped} already done, {failed} failed."
 
+msgid ""
+"« Non documenté » veut dire inconnu : ne pas le deviner. Ne citer aucun seuil, étendue ou "
+"instrument absent de ce document."
+msgstr ""
+"\"Not documented\" means unknown: do not guess it. Quote no threshold, range or instrument absent"
+" from this document."
+
 #, python-brace-format
 msgid "« {token} » lu comme vide ({n})"
 msgstr "\"{token}\" read as empty ({n})"
@@ -2856,6 +3026,13 @@ msgid "Écraser un projet existant."
 msgstr "Overwrite an existing project."
 
 msgid ""
+"Écrire aussi le contexte d'analyse (contexte .md et datapackage.json) : le codebook compact, à "
+"donner à un programme ou à un modèle (v0.8)."
+msgstr ""
+"Also write the analysis context (context .md and datapackage.json): the compact codebook, to give"
+" to a program or a model (v0.8)."
+
+msgid ""
 "Écrire aussi les fichiers de commandes SPSS et R qui appliquent les décisions acceptées à vos "
 "données."
 msgstr "Also write the SPSS and R command files that apply the accepted decisions to your data."
@@ -2865,6 +3042,9 @@ msgstr "Write the documented copy"
 
 msgid "Écrire le codebook et le rapport"
 msgstr "Write the codebook and the report"
+
+msgid "Écrire le contexte à côté du projet"
+msgstr "Write the context next to the project"
 
 msgid "Écrire les fichiers de commandes à côté du projet"
 msgstr "Write the command files next to the project"
@@ -2954,6 +3134,10 @@ msgstr "to name"
 
 msgid "à valider"
 msgstr "to accept"
+
+#, python-brace-format
+msgid "é.-t. {sd}"
+msgstr "sd {sd}"
 
 msgid "écart-type"
 msgstr "standard deviation"

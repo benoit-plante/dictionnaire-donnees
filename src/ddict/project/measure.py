@@ -4,7 +4,8 @@ to the model, fingerprint).
 
 The level in force is the one a person accepted or wrote, else the file's. The rules propose
 where the file has none (CSV, Excel), and next to the file's when it is doubtful (an item of
-a grid declared "scale" whose every observed value has a label, flagged since v0.7). They
+a grid declared "scale" whose every observed value has a label, flagged since v0.7; a text
+of categories declared "scale"). They
 never propose for an identifier, a free text, a date, an empty variable or one of mixed
 types, and never replace a decision.
 """
@@ -67,6 +68,12 @@ def proposal(entry: VariableEntry, group_kind: str | None) -> str | None:
         return rule_level(entry, group_kind)
     if _doubtful(entry):
         return "ordinal"
+    if (
+        entry.file.measure_level == "scale"
+        and entry.profile.inferred_type == "text"
+        and rule_level(entry, group_kind) == "nominal"
+    ):
+        return "nominal"  # categories written as text, declared "scale" (SPSS's default)
     return None
 
 

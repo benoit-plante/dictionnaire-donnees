@@ -135,3 +135,8 @@ def test_the_names_of_an_earlier_wave(counts):
         assert counts[f"{prefix}_mots_concordants_non_apparies"] == 0
         assert counts[f"{prefix}_natures_differentes"] == 0
         assert counts[f"{prefix}_appariees"] >= counts[f"{prefix}_mots_concordants"]
+
+
+def test_the_analysis_context_is_short(counts):
+    """v0.8, step 6: at most 60 tokens per variable on average (a number only)."""
+    assert counts["contexte_tokens_par_variable"] <= 60

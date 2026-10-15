@@ -1,30 +1,31 @@
 # Contexte d'analyse : etude-sommeil.sav
 
 - Base : `etude-sommeil.sav` (SPSS), 200 lignes, 34 variables. Empreinte du fichier : `a189e6bd7c31`.
-- Codebook : empreinte `019400d58ede`, ddict 0.8.0. Seules les décisions acceptées par l'équipe y figurent.
-- Une ligne = un participant. Structure : transversale.
-- Description : Étude fictive sur le sommeil, une seule passation.
+- Codebook : empreinte `168c4c19a2b4`, dictionnaire-donnees 0.7.1. Seules les décisions acceptées par l'équipe y figurent.
+- Une ligne représente : un participant
+- Structure : transversale
+- Description de la base : Étude fictive sur le sommeil, une seule passation.
 
 ## Règles
 
 1. Les codes de la colonne « Manquants » sont des valeurs manquantes : les exclure de tout calcul.
-2. Inverser les items marqués « inv » avant tout score, selon la règle de leur groupe.
+2. Inverser les items marqués « inv » avant tout score, selon la cotation de leur groupe.
 3. Les variables marquées « sensible » ne doivent apparaître dans aucune sortie (ni valeurs, ni listes).
 4. « Non documenté » veut dire inconnu : ne pas le deviner. Ne citer aucun seuil, étendue ou instrument absent de ce document.
 
 ## Complétude
 
-Question 34/34 · libellé 33/34 · étiquettes de valeurs 17/21 · niveau de mesure 27/34 · cotation 1/2 groupes d'échelle.
-Non documenté : libellé : `sommeil_q7` ; étiquettes de valeurs : `aide_medicament`, `aide_naturel`, `aide_tcc`, `aide_aucune` ; cotation : G2.
+Question rattachée 34 / 34 · Libellé 33 / 34 · Étiquettes de valeurs (variables codées) 17 / 21 · Niveau de mesure 27 / 27 · Cotation (groupes d'échelle) 1 / 2 · Description de la base dite.
+Non documenté : Libellé : sommeil_q7 ; Étiquettes de valeurs (variables codées) : aide_medicament, aide_naturel, aide_tcc, aide_aucune ; Cotation (groupes d'échelle) : G2.
 
 ## Groupes
 
 **G1** (échelle, 8 variables) : `sommeil_q1`, `sommeil_q2`, `sommeil_q3`, `sommeil_q4`, `sommeil_q5`, `sommeil_q6`, `sommeil_q7`, `sommeil_q8`.
-Valeurs de tous ses items : 1 Pas du tout; 2 Un peu; 3 Moyennement; 4 Beaucoup; 5 Extrêmement.
-Cotation : `sommeil_total` = somme des 8 items après inversion de `sommeil_q3`, `sommeil_q6` (6 − x) ; au moins 7 items répondus, sinon manquant ; étendue 8–40. Source : Manuel fictif de l'échelle de sommeil, p. 4 (référence inventée pour l'exemple).
+Valeurs de tous ses items : 1 Pas du tout ; 2 Un peu ; 3 Moyennement ; 4 Beaucoup ; 5 Extrêmement.
+Cotation : sommeil_total = somme des 8 items, après inversion de sommeil_q3, sommeil_q6 (6 - x) ; au moins 7 items répondus, sinon manquant ; étendue 8 – 40 (source : Manuel fictif de l'échelle de sommeil, p. 4 (référence inventée pour l'exemple)).
 
 **G2** (échelle, 7 variables) : `anx1`, `anx2`, `anx3`, `anx4`, `anx5`, `anx6`, `anx7`.
-Valeurs de tous ses items : 0 Jamais; 1 Parfois; 2 Souvent; 3 Presque toujours.
+Valeurs de tous ses items : 0 Jamais ; 1 Parfois ; 2 Souvent ; 3 Presque toujours.
 Cotation : non documentée.
 
 ## Variables
@@ -33,10 +34,10 @@ Cotation : non documentée.
 |---|---|---|---|---|---|---|---|---|
 | `id_participant` | Identifiant participant | texte |  |  |  |  | aucune | sensible (identifiant) |
 | `courriel` | Courriel | texte |  |  |  |  | Q5 | sensible (identifiant) |
-| `date_passation` | Date passation | date-heure |  |  |  |  | aucune |  |
+| `date_passation` | Date passation | date et heure |  |  |  |  | aucune |  |
 | `date_naissance` | DDN | date |  |  |  |  | Q2 | sensible (quasi-identifiant) |
-| `age` | Age | entier | continu |  | 999 |  | Q3 |  |
-| `genre` | Genre | entier | nominal | 1 Femme; 2 Homme; 3 Autre identité | 9 |  | Q4 |  |
+| `age` | Age | entier | échelle |  | 999 |  | Q3 |  |
+| `genre` | Genre | entier | nominal | 1 Femme ; 2 Homme ; 3 Autre identité | 9 |  | Q4 |  |
 | `vague` | Vague | entier | nominal | 1 Vague 1 |  |  | aucune |  |
 | `sommeil_q1` | Q1 endormissement | entier | ordinal | → G1 |  | G1 | Q7.r1 |  |
 | `sommeil_q2` | Q2 sommeil reparateur | entier | ordinal | → G1 |  | G1 | Q7.r2 |  |
@@ -50,9 +51,9 @@ Cotation : non documentée.
 | `anx2` | ANX tendu | entier | ordinal | → G2 | -9 | G2 | Q12.r2 |  |
 | `anx3` | ANX controle inquietude | entier | ordinal | → G2 | -9 | G2 | Q12.r3 |  |
 | `anx4` | ANX agite | entier | ordinal | → G2 | -9 | G2 | Q12.r4 |  |
-| `heures_sommeil` | Nb heures sommeil (moy) | décimal | continu |  |  |  | Q8 |  |
-| `heures_sommeil_2` | Nb heures sommeil (moy) | décimal | continu |  |  |  | Q8 |  |
-| `nb_reveils` | Nb reveils / nuit | entier | continu |  | -9 |  | Q9 |  |
+| `heures_sommeil` | Nb heures sommeil (moy) | décimal | échelle |  |  |  | Q8 |  |
+| `heures_sommeil_2` | Nb heures sommeil (moy) | décimal | échelle |  |  |  | Q8 |  |
+| `nb_reveils` | Nb reveils / nuit | entier | échelle |  | -9 |  | Q9 |  |
 | `aide_medicament` | Aide sommeil: medicament | entier | nominal |  |  |  | Q10.o1 |  |
 | `aide_naturel` | Aide sommeil: produit naturel | entier | nominal |  |  |  | Q10.o2 |  |
 | `aide_tcc` | Aide sommeil: TCC | entier | nominal |  |  |  | Q10.o3 |  |
@@ -60,8 +61,8 @@ Cotation : non documentée.
 | `anx5` | ANX irritable | entier | ordinal | → G2 | -9 | G2 | Q12.r5 |  |
 | `anx6` | ANX peur | entier | ordinal | → G2 | -9 | G2 | Q12.r6 |  |
 | `anx7` | ANX difficulte relaxer | entier | ordinal | → G2 | -9 | G2 | Q12.r7 |  |
-| `satisfaction_globale` | Satisfaction globale 0-10 | entier | continu | 0 Pas du tout satisfait; 10 Tout à fait satisfait; 99 Ne sait pas |  |  | Q11 |  |
-| `taille_cm` | Taille (cm) | texte |  |  |  |  | Q6 |  |
+| `satisfaction_globale` | Satisfaction globale 0-10 | entier | échelle | 0 Pas du tout satisfait ; 10 Tout à fait satisfait ; 99 Ne sait pas |  |  | Q11 |  |
+| `taille_cm` | Taille (cm) | mixte |  |  |  |  | Q6 |  |
 | `q_retiree` | Question retiree v2 | vide |  |  |  |  | aucune |  |
 | `langue_maison` | Langue maison | texte | nominal |  |  |  | Q14 |  |
 | `commentaire` | Commentaires | texte |  |  |  |  | Q13 | sensible (texte libre) |

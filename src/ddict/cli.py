@@ -43,6 +43,7 @@ from ddict.workflow import (
     documented_copy,
     exchange_dir,
     export_codebook,
+    export_context,
     export_name_table,
     export_syntax,
     failure_advice,
@@ -112,6 +113,15 @@ def cmd_export(args: argparse.Namespace) -> int:
     if args.syntaxe:
         for path in export_syntax(project, project_path, language=args.langue).values():
             print(_("Fichier de commandes : {path}").format(path=path))
+    if args.contexte:
+        for path in export_context(
+            project,
+            project_path,
+            statistics=args.avec_statistiques,
+            omit_groups=tuple(args.sans_texte or ()),
+            language=args.langue,
+        ):
+            print(_("Contexte d'analyse : {path}").format(path=path))
     return 0
 
 
@@ -610,6 +620,24 @@ def build_parser() -> argparse.ArgumentParser:
         help=_(
             "Écrire aussi les fichiers de commandes SPSS et R qui appliquent les "
             "décisions acceptées à vos données."
+        ),
+    )
+    export.add_argument(
+        "--contexte",
+        "--context",
+        action="store_true",
+        help=_(
+            "Écrire aussi le contexte d'analyse (contexte .md et datapackage.json) : le "
+            "codebook compact, à donner à un programme ou à un modèle (v0.8)."
+        ),
+    )
+    export.add_argument(
+        "--avec-statistiques",
+        "--with-statistics",
+        action="store_true",
+        help=_(
+            "Ajouter au contexte d'analyse les statistiques, filtrées par la porte de "
+            "confidentialité. Sans cette option, il ne contient que des métadonnées."
         ),
     )
     export.add_argument(

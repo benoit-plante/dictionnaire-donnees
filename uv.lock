@@ -327,6 +327,7 @@ revision = [
 dev = [
     { name = "babel" },
     { name = "httpx" },
+    { name = "jsonschema" },
     { name = "pytest" },
     { name = "pytest-socket" },
     { name = "ruff" },
@@ -350,6 +351,7 @@ provides-extras = ["ia", "revision"]
 dev = [
     { name = "babel", specifier = ">=2.18.0" },
     { name = "httpx", specifier = ">=0.28.1" },
+    { name = "jsonschema", specifier = ">=4.26.0" },
     { name = "pytest", specifier = ">=8" },
     { name = "pytest-socket", specifier = ">=0.7" },
     { name = "ruff", specifier = ">=0.6" },

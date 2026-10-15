@@ -66,6 +66,7 @@ Installée seulement sur demande (`pip install "ddict[revision]"`, ou `uv sync -
 | hatchling | Construction du paquet | MIT | 0 |
 | httpx | Faux serveur des tests du client IA (aussi dans l'option « ia ») | BSD-3-Clause | 10 |
 | streamlit | Tests de l'interface de révision (aussi dans l'option « revision ») | Apache-2.0 | 12 |
+| jsonschema | Validation du `datapackage.json` du contexte d'analyse contre les schémas Frictionless v2 gardés dans `tests/schemas/` (domaine public, Unlicense) | MIT | v0.8, 6 |
 
 **Outils facultatifs, hors Python**, sur le poste de développement seulement ; ni l'outil ni ses tests ordinaires n'en dépendent, et chaque test qui les utilise est sauté s'ils manquent :
 

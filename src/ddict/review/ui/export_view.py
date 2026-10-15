@@ -16,6 +16,7 @@ import streamlit as st
 
 from ddict import i18n
 from ddict.export import render_markdown, write_xlsx
+from ddict.export.context import context_package, package_text, render_context
 from ddict.export.documented import CopyError, default_copy_path, find_database
 from ddict.export.syntax import render_syntax
 from ddict.i18n import N_, Texts, _
@@ -24,9 +25,11 @@ from ddict.review import logic
 from ddict.review.ui import common as c
 from ddict.review.ui import dialog
 from ddict.workflow import (
+    context_paths,
     copy_error_text,
     documented_copy,
     export_codebook,
+    export_context,
     export_name_table,
     export_paths,
     export_syntax,
@@ -38,6 +41,7 @@ LANGUAGE = "export-language"
 DATABASE = "copy-database"  # the database chosen by hand, when not next to the project
 REPLACE = "copy-replace"
 OMIT = "export-omit"
+STATISTICS = "context-statistics"
 KINDS = Texts(
     {
         "final": N_("Finale : seulement ce qui vient du fichier, du calcul ou de vos décisions"),
@@ -178,6 +182,79 @@ def _open_folder() -> None:
         subprocess.run(["open" if sys.platform == "darwin" else "xdg-open", folder], check=False)
 
 
+def _write_context(omit: tuple[str, ...], language: str) -> None:
+    key = "context-write"
+    try:
+        paths = export_context(
+            c.project(),
+            c.project_path(),
+            statistics=bool(st.session_state.get(STATISTICS)),
+            omit_groups=omit,
+            language=language,
+        )
+    except OSError as error:
+        st.session_state.message = (
+            "error",
+            _("Impossible d'écrire les fichiers : {detail}.").format(detail=error),
+            key,
+        )
+        return
+    text = _("Fichiers écrits à côté du projet : {md} et {json}.").format(
+        md=paths[0].name, json=paths[1].name
+    )
+    st.session_state.message = ("success", text, key)
+
+
+def _context_section(project: Project, omit: tuple[str, ...], language: str) -> None:
+    """The analysis context (v0.8, D-058): the codebook compact, for a program or a model."""
+    st.subheader(_("Contexte d'analyse"))
+    st.caption(
+        _(
+            "Le codebook en format compact, pour un programme ou pour une IA qui aide à écrire "
+            "le code d'analyse : un fichier Markdown à coller dans un modèle, et un "
+            "datapackage.json (format Frictionless). Seulement ce qui est accepté. Ce qui peut "
+            "sortir de votre ordinateur relève de votre équipe et du certificat d'éthique de "
+            "l'étude, pas de l'outil."
+        )
+    )
+    st.checkbox(
+        _("Ajouter les statistiques (effectifs de moins de {n} masqués)").format(
+            n=project.settings.min_cell_count
+        ),
+        key=STATISTICS,
+        help=_("Sans elles, le contexte ne contient que des métadonnées, aucune donnée."),
+    )
+    statistics = bool(st.session_state.get(STATISTICS))
+    markdown_path, package_path = context_paths(c.project_path())
+    left, right, third = st.columns(3)
+    left.button(
+        _("Écrire le contexte à côté du projet"),
+        key="context-write",
+        on_click=_write_context,
+        args=(omit, language),
+    )
+    middle_text = render_context(
+        project, statistics=statistics, omit_groups=omit, language=language
+    )
+    right.download_button(
+        _("Contexte (Markdown)"),
+        data=middle_text.encode("utf-8"),
+        file_name=markdown_path.name,
+        mime="text/markdown",
+        key="context-download-md",
+    )
+    third.download_button(
+        _("datapackage.json"),
+        data=package_text(
+            context_package(project, statistics=statistics, language=language)
+        ).encode("utf-8"),
+        file_name=package_path.name,
+        mime="application/json",
+        key="context-download-json",
+    )
+    c.show_message("context-write")
+
+
 def page(project: Project) -> None:
     st.header(_("Export"))
     st.radio(
@@ -292,4 +369,5 @@ def page(project: Project) -> None:
             key=f"export-download-{program}",
         )
 
+    _context_section(project, omit, language)
     _copy_section(project)

@@ -5061,9 +5061,9 @@
         "updated_at": null
       },
       "measure_level": {
-        "value": null,
-        "origin": "human",
-        "status": "none",
+        "value": "nominal",
+        "origin": "rule",
+        "status": "proposed",
         "proposed_value": null,
         "ai_run": null,
         "updated_at": null
