@@ -17,8 +17,10 @@ SCHEMA_VERSION = "0.2.0"
 Code = int | float | str
 # "questionnaire": computed from the questionnaire under a strict rule, and like an AI value
 # only a proposal until a person accepts it (value labels from the options, D-016).
-Origin = Literal["file", "computed", "ai", "questionnaire", "human"]
-PROPOSING_ORIGINS = ("ai", "questionnaire")
+# "rule" and "reference" (v0.7, D-048): a new name given by the naming rules, or taken from
+# an earlier wave; proposals too, never a name without a person.
+Origin = Literal["file", "computed", "ai", "questionnaire", "rule", "reference", "human"]
+PROPOSING_ORIGINS = ("ai", "questionnaire", "rule", "reference")
 Status = Literal["none", "proposed", "validated", "corrected", "rejected"]
 # A documented source is mandatory for thresholds, theoretical ranges and instrument names
 # (CONCEPTION.md, principle 4): an empty or blank source is refused.
@@ -50,9 +52,9 @@ class TrackedValue(Strict, Generic[T]):
         if (self.origin == "ai") != (self.ai_run is not None):
             raise ValueError("ai_run is required for, and only for, values proposed by AI")
         if self.status == "proposed" and self.origin not in PROPOSING_ORIGINS:
-            raise ValueError("only AI and questionnaire values can be 'proposed'")
+            raise ValueError("only proposing origins (AI, questionnaire, rule, reference)")
         if self.origin in PROPOSING_ORIGINS and self.status == "none":
-            raise ValueError("an AI or questionnaire value needs a status")
+            raise ValueError("a proposed value needs a status")
         if self.status == "corrected" and self.proposed_value is None:
             raise ValueError("a corrected value keeps the value it replaces")
         return self
@@ -174,6 +176,8 @@ class VariableEntry(Strict):
     # The question it comes from (D-013): "Q8", "Q7.r3", "Q10.o2", or "none"; the text is
     # looked up in the questionnaire, never stored here.
     question: TrackedValue[str] = TrackedValue[str](origin="human")
+    # Its new name (v0.7, D-048); `name` stays the key by which the database is read.
+    new_name: TrackedValue[str] = TrackedValue[str](origin="human")
     # Value labels proposed from the options of the linked question (D-016), when the file
     # has none: "questionnaire" origin, to be accepted by a person.
     value_labels: TrackedValue[list[ValueLabel]] = TrackedValue[list[ValueLabel]](origin="human")
@@ -201,6 +205,9 @@ class Group(Strict):
     # whose "other" text is attached outside the members.
     kind: Literal["scale", "multiple_response"] = "scale"
     attached: list[str] = []
+    # The prefix of its items' names ("k6"): given by a person, or taken from an earlier wave;
+    # never proposed by the model, an instrument's acronym being a name (principle 4).
+    name_prefix: TrackedValue[str] = TrackedValue[str](origin="human")
     descriptive_label: TrackedValue[str]
     ai_hypothesis: TrackedValue[str]
     # Human only, each with a documented source (principle 4).
@@ -249,11 +256,21 @@ class SourceInfo(Strict):
     platform: str | None = None
 
 
+class NamingSettings(Strict):
+    """How new names are written (v0.7): at most `max_length` characters (Stata's limit),
+    with the mark of a wave ("t2") as a suffix (`k6_1_t2`, D-049) or a prefix (`t2_k6_1`)."""
+
+    max_length: int = Field(default=32, ge=8, le=64)
+    wave: str | None = None
+    position: Literal["suffix", "prefix"] = "suffix"
+
+
 class Settings(Strict):
     min_cell_count: int = Field(default=5, ge=1)
     max_observed_values: int = Field(default=20, ge=1)
     # The language of the study: its questionnaire and labels (v0.5, D-032).
     language: Literal["fr", "en"] = "fr"
+    naming: NamingSettings = NamingSettings()
 
 
 class QuestionOption(Strict):
@@ -321,6 +338,15 @@ class GlossaryEntry(Strict):
         return self
 
 
+class QuestionStem(Strict):
+    """The stem of the names of a question's variables (`taches` for `taches_1`...), one per
+    question (v0.7): `key` is the platform's question ("q0005") or the questionnaire's
+    ("Q5")."""
+
+    key: str
+    stem: TrackedValue[str]
+
+
 class Project(Strict):
     schema_version: str = SCHEMA_VERSION
     source: SourceInfo
@@ -330,6 +356,7 @@ class Project(Strict):
     ai_runs: list[AiRun] = []
     questionnaire: Questionnaire | None = None
     glossary: list[GlossaryEntry] = []
+    stems: list[QuestionStem] = []
 
     def variable(self, name: str) -> VariableEntry:
         for entry in self.variables:

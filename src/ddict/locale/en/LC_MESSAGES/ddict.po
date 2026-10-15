@@ -1058,6 +1058,19 @@ msgstr "Declared missing"
 msgid "Manquants déclarés"
 msgstr "Declared missing"
 
+#, python-brace-format
+msgid "Marque de vague : {mark}"
+msgstr "Wave mark: {mark}"
+
+msgid "Marque de vague au début des noms, par exemple t2_."
+msgstr "Wave mark at the start of the names, for example t2_."
+
+msgid "Marque de vague invalide : lettres et chiffres seulement."
+msgstr "Invalid wave mark: letters and digits only."
+
+msgid "Marque de vague à la fin des noms, par exemple _t2."
+msgstr "Wave mark at the end of the names, for example _t2."
+
 msgid "Marque décimale"
 msgstr "Decimal mark"
 
@@ -1239,6 +1252,11 @@ msgstr "Project created: {path}"
 
 msgid "Projets récents"
 msgstr "Recent projects"
+
+msgid ""
+"Proposer de nouveaux noms aux variables, par les règles de nommage ; le fichier d'origine n'est "
+"jamais modifié."
+msgstr "Propose new names for the variables, by the naming rules; the original file is never changed."
 
 #, python-brace-format
 msgid "Propositions enregistrées dans {path}, à réviser."
@@ -1901,6 +1919,9 @@ msgstr "looks like a threshold"
 msgid "ressemble à une citation"
 msgstr "looks like a citation"
 
+msgid "règle de nommage"
+msgstr "naming rule"
+
 msgid "réponse invalide"
 msgstr "invalid answer"
 
@@ -1955,6 +1976,9 @@ msgstr "a computed score"
 
 msgid "une date de passation"
 msgstr "a date of completion"
+
+msgid "vague précédente"
+msgstr "earlier wave"
 
 msgid "valeurs au format code postal"
 msgstr "values in postal code format"
@@ -2058,6 +2082,10 @@ msgid ""
 msgstr "{n} variables still have proposals without a decision: they are not in the final version."
 
 #, python-brace-format
+msgid "{n} variables ont un nom en conflit avec un autre."
+msgstr "{n} variables have a name in conflict with another."
+
+#, python-brace-format
 msgid "{n} variables sur {total} ont des questions candidates."
 msgstr "{n} of {total} variables have candidate questions."
 
@@ -2072,6 +2100,10 @@ msgstr "{n} variables, {rows} rows; {sensitive} sensitive variables; {flagged} w
 #, python-brace-format
 msgid "{old} n'est plus dans ce filtre ; voici la variable suivante : {new}."
 msgstr "{old} is no longer in this filter; here is the next variable: {new}."
+
+#, python-brace-format
+msgid "{proposed} noms proposés, {accepted} acceptés, {to_name} variables à nommer."
+msgstr "{proposed} names proposed, {accepted} accepted, {to_name} variables to name."
 
 #, python-brace-format
 msgid ""

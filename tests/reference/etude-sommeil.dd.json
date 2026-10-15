@@ -15,7 +15,12 @@
   "settings": {
     "min_cell_count": 5,
     "max_observed_values": 20,
-    "language": "fr"
+    "language": "fr",
+    "naming": {
+      "max_length": 32,
+      "wave": null,
+      "position": "suffix"
+    }
   },
   "variables": [
     {
@@ -73,6 +78,14 @@
         ]
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "new_name": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -191,6 +204,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -292,6 +313,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "new_name": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -410,6 +439,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -513,6 +550,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "new_name": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -671,6 +716,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -785,6 +838,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "new_name": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -947,6 +1008,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -1095,6 +1164,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "new_name": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -1266,6 +1343,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -1414,6 +1499,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "new_name": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -1576,6 +1669,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -1724,6 +1825,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "new_name": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -1886,6 +1995,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -2034,6 +2151,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "new_name": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -2201,6 +2326,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -2354,6 +2487,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "new_name": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -2521,6 +2662,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -2681,6 +2830,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -2782,6 +2939,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "new_name": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -2892,6 +3057,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "new_name": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -3045,6 +3218,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -3154,6 +3335,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "new_name": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -3277,6 +3466,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -3393,6 +3590,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -3502,6 +3707,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "new_name": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -3669,6 +3882,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -3829,6 +4050,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -3982,6 +4211,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "new_name": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -4168,6 +4405,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -4278,6 +4523,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -4381,6 +4634,14 @@
         "reasons": []
       },
       "question": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "new_name": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -4527,6 +4788,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -4638,6 +4907,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "new_name": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "value_labels": {
         "value": null,
         "origin": "human",
@@ -4714,6 +4991,14 @@
       ],
       "kind": "scale",
       "attached": [],
+      "name_prefix": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "descriptive_label": {
         "value": "8 items, codes de 1 à 5, préfixe « sommeil_q »",
         "origin": "computed",
@@ -4764,6 +5049,14 @@
       ],
       "kind": "scale",
       "attached": [],
+      "name_prefix": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "descriptive_label": {
         "value": "7 items, codes de 0 à 3, préfixe « anx »",
         "origin": "computed",
@@ -4793,5 +5086,6 @@
   ],
   "ai_runs": [],
   "questionnaire": null,
-  "glossary": []
+  "glossary": [],
+  "stems": []
 }

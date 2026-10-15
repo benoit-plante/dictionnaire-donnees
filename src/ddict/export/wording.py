@@ -75,6 +75,8 @@ ORIGINS = Texts(
         "computed": N_("calcul"),
         "ai": N_("IA"),
         "questionnaire": N_("questionnaire"),
+        "rule": N_("règle de nommage"),
+        "reference": N_("vague précédente"),
         "human": N_("humain"),
     }
 )

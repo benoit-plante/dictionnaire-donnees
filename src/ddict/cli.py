@@ -22,6 +22,7 @@ from ddict.io import ReadError
 from ddict.llm import DEFAULT_BLOCK_SIZE, build_blocks
 from ddict.llm.defaults import DEFAULT_ENDPOINT
 from ddict.llm.link import DEFAULT_LINK_BLOCK_SIZE, build_link_blocks
+from ddict.naming import NamingError
 from ddict.privacy import MIN_CELL_COUNT
 from ddict.project import (
     ProjectError,
@@ -42,11 +43,13 @@ from ddict.workflow import (
     export_codebook,
     export_syntax,
     failure_advice,
+    naming_summary,
     platform_notes,
     platform_summary,
     profile_database,
     profile_summary,
     questionnaire_summary,
+    rename,
 )
 
 EXIT_ERROR = 2
@@ -164,6 +167,21 @@ def cmd_questionnaire(args: argparse.Namespace) -> int:
         )
     found = questionnaire_summary(project.questionnaire) + platform_summary(project)
     for line in found + acronym_summary(project):
+        print(line)
+    print(_("Enregistré dans {path}.").format(path=project_path))
+    return 0
+
+
+def cmd_rename(args: argparse.Namespace) -> int:
+    project_path = Path(args.projet)
+    project = load_project(project_path)
+    try:
+        rename(project, suffix=args.suffixe, prefix=args.prefixe)
+    except NamingError:
+        print(_("Marque de vague invalide : lettres et chiffres seulement."), file=sys.stderr)
+        return EXIT_ERROR
+    save_project(project, project_path)
+    for line in naming_summary(project):
         print(line)
     print(_("Enregistré dans {path}.").format(path=project_path))
     return 0
@@ -613,6 +631,24 @@ def build_parser() -> argparse.ArgumentParser:
         help=_("Remplacer le questionnaire déjà lu."),
     )
     questionnaire.set_defaults(handler=cmd_questionnaire)
+
+    rename_command = commands.add_parser(
+        "renommer",
+        aliases=["rename"],
+        help=_(
+            "Proposer de nouveaux noms aux variables, par les règles de nommage ; le fichier "
+            "d'origine n'est jamais modifié."
+        ),
+    )
+    rename_command.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    mark = rename_command.add_mutually_exclusive_group()
+    mark.add_argument(
+        "--suffixe", "--suffix", help=_("Marque de vague à la fin des noms, par exemple _t2.")
+    )
+    mark.add_argument(
+        "--prefixe", "--prefix", help=_("Marque de vague au début des noms, par exemple t2_.")
+    )
+    rename_command.set_defaults(handler=cmd_rename)
 
     enrich = commands.add_parser(
         "enrichir",

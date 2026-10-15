@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from ddict import platforms
+from ddict import naming, platforms
 from ddict.export import write_markdown, write_xlsx
 from ddict.export.documented import CopyError, CopyResult, find_database, write_documented_copy
 from ddict.export.syntax import SUFFIXES, write_syntax
@@ -180,6 +180,39 @@ def platform_summary(project: Project) -> list[str]:
             "questionnaire."
         ).format(platform=platform.title, n=asked)
     ]
+
+
+# --- New names (v0.7), from the command line or the interface. ---
+
+
+def rename(project: Project, *, suffix: str | None = None, prefix: str | None = None) -> None:
+    """Set the mark of the wave if given ("_t2" as a suffix, "t2_" as a prefix), then propose
+    stems and names by the rules where nothing is decided (not saved)."""
+    if suffix and prefix:
+        raise naming.NamingError(["suffix_and_prefix"])
+    if suffix:
+        naming.set_wave(project, suffix.strip("_"), "suffix")
+    elif prefix:
+        naming.set_wave(project, prefix.strip("_"), "prefix")
+    naming.propose(project)
+
+
+def naming_summary(project: Project) -> list[str]:
+    counts = naming.summary(project)
+    lines = [
+        _("{proposed} noms proposés, {accepted} acceptés, {to_name} variables à nommer.").format(
+            **counts
+        )
+    ]
+    if counts["conflicts"]:
+        lines.append(
+            _("{n} variables ont un nom en conflit avec un autre.").format(n=counts["conflicts"])
+        )
+    wave = project.settings.naming
+    if wave.wave:
+        mark = f"_{wave.wave}" if wave.position == "suffix" else f"{wave.wave}_"
+        lines.append(_("Marque de vague : {mark}").format(mark=mark))
+    return lines
 
 
 def acronym_summary(project: Project) -> list[str]:

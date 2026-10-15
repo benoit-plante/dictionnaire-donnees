@@ -76,6 +76,7 @@ def test_key_order_follows_the_design(project):
         "ai_runs",
         "questionnaire",
         "glossary",
+        "stems",  # v0.7: the stems of the new names
     ]
     assert list(data["variables"][0])[:5] == ["name", "position", "file", "profile", "privacy"]
 
