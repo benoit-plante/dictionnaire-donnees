@@ -654,3 +654,16 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   1. Trois sources, table au format de l'export (ce choix).
   2. Fichier projet seulement.
 - **Justification :** la sortie d'une vague sert d'entrée à la suivante ; une table ne contient que des noms et n'apparie que par nom d'origine identique, fragile quand la plateforme renumérote ses questions, ce que le rapport signale.
+
+### D-053 — Pas d'acceptation groupée des rattachements par la structure de plateforme
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** la règle de D-029 reste telle quelle : un rattachement ne s'accepte en lot que lorsque le modèle et le calcul s'accordent. Les rattachements sûrs par la structure d'un export de plateforme (numéro et texte concordants) restent des propositions à accepter une par une, ou en lot quand le modèle les confirme.
+- **Options considérées :**
+  1. Permettre le lot, avec aperçu obligatoire, pour les rattachements sûrs par la structure.
+  2. Garder la règle de D-029 (ce choix).
+  3. Permettre le lot pour tous les choix sûrs du calcul.
+- **Justification :** choix de l'auteur, par prudence : un rattachement entre dans le codebook par la décision d'une personne, variable par variable, sauf quand deux méthodes indépendantes s'accordent.
+- **Conséquences :** l'étape 9 de la v0.7 n'ajoute pas de décision groupée pour les rattachements ; l'acceptation groupée des noms (par groupe ou par question), prévue au plan, reste.
