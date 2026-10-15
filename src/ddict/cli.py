@@ -43,6 +43,7 @@ from ddict.workflow import (
     export_syntax,
     failure_advice,
     platform_notes,
+    platform_summary,
     profile_database,
     profile_summary,
     questionnaire_summary,
@@ -161,7 +162,8 @@ def cmd_questionnaire(args: argparse.Namespace) -> int:
                 "Relancez ddict rattacher."
             ).format(n=removed)
         )
-    for line in questionnaire_summary(project.questionnaire) + acronym_summary(project):
+    found = questionnaire_summary(project.questionnaire) + platform_summary(project)
+    for line in found + acronym_summary(project):
         print(line)
     print(_("Enregistré dans {path}.").format(path=project_path))
     return 0

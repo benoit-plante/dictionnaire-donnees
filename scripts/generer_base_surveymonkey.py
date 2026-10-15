@@ -10,7 +10,8 @@ the trial of two real exports showed (docs/plan-v0.7.md, § 1). All items are in
 - Numeric codes in `F8.2`, one value label set per variable; `scale` level for the items of
   the Likert grid, `nominal` elsewhere; dates of the survey as strings (`A22` or `A100`).
 - A checkbox variable has a single value label (`1 = option`), unticked is empty, and the
-  question text as its label; the "other" variable is labelled in English.
+  question text as its label; the "other" option is a checkbox of its own, last, as well as
+  a text variable (`q0005_other`) labelled in English. The Excel export has only the text.
 - "Ne sais pas" (6) and "Préfère ne pas répondre" (7) follow a 1-5 scale, not declared
   missing; an item of the Likert grid uses the verb "identifier"; a text variable labelled
   `id` comes last (a family code and invented initials).
@@ -18,10 +19,11 @@ the trial of two real exports showed (docs/plan-v0.7.md, § 1). All items are in
 Both waves also exist as an Excel workbook with the two header rows of SurveyMonkey (the
 platform columns titled "Respondent ID" in the old exports, `respondent_id` in the recent
 ones), and wave 2 as a CSV file too, with a numbered questionnaire (.txt) and a PDF laid
-out like SurveyMonkey's (grid column titles stacked over several lines). Against wave 1,
-wave 2 adds a question (which shifts the `qNNNN` numbering), removes an item of the Likert
-grid and changes a value label. Wave 1 is also given renamed, as the team would have left
-it: its documented copy (`_t1` names) and its table of names (D-052).
+out like SurveyMonkey's (grid column titles stacked over several lines), also with numbered
+questions. Against wave 1, wave 2 adds a question (which shifts the `qNNNN` numbering),
+removes an item of the Likert grid and changes a value label. Wave 1 is also given renamed,
+as the team would have left it: its documented copy (`_t1` names) and its table of names
+(D-052).
 
 The answer key (`corrige-surveymonkey.json`) gives the groups, the links, the names and the
 differences between the waves.
@@ -242,6 +244,21 @@ class Column:
     item_key: int | None = None  # the item of the wave-2 list (grid), stable across waves
 
 
+def ticked_other(column: Column) -> bool:
+    """The "other" option of a checkbox question, ticked: a checkbox of its own in the .sav."""
+    question = column.question
+    return (
+        question is not None
+        and question.kind == "checkbox"
+        and not column.other
+        and (column.item or 0) > len(question.options)
+    )
+
+
+def option_text(question: Question, item: int) -> str:
+    return question.options[item - 1] if item <= len(question.options) else OTHER_OPTION
+
+
 def wave_questions(wave: int) -> list[Question]:
     return [q for q in QUESTIONS if wave in q.waves]
 
@@ -276,7 +293,8 @@ def columns(wave: int) -> list[Column]:
             for item, (key, _text) in enumerate(grid_items(question, wave), start=1):
                 found.append(Column(f"{base}_{item:04d}", question, rank, item, item_key=key))
         elif question.kind == "checkbox":
-            for item in range(1, len(question.options) + 1):
+            # The options, then "other" ticked (an option of its own), then its text.
+            for item in range(1, len(question.options) + 2):
                 found.append(Column(f"{base}_{item:04d}", question, rank, item))
             found.append(Column(f"{base}_other", question, rank, other=True))
         else:
@@ -360,6 +378,8 @@ def build_wave(wave: int) -> tuple[pd.DataFrame, dict]:
             for k, row in enumerate(np.sort(rng.choice(n, size=9, replace=False))):
                 texts[row] = ("Formation des stagiaires", "Inventaire", "Livraisons")[k % 3]
             data[name] = texts
+        elif question.kind == "checkbox" and ticked_other(column):
+            data[name] = np.full(n, np.nan)  # set below, from the text of "other"
         elif question.kind == "checkbox":
             share = 0.25 + 0.1 * ((column.item or 1) % 4)
             data[name] = np.where(rng.random(n) < share, 1.0, np.nan)
@@ -378,6 +398,10 @@ def build_wave(wave: int) -> tuple[pd.DataFrame, dict]:
             data[name] = [
                 f"F{100 + (i // 2):03d}-{a}{b}" for i, (a, b) in enumerate(letters.tolist())
             ]
+    for column in columns(wave):
+        if ticked_other(column):  # ticked whenever its text was written
+            texts = data[f"q{column.rank:04d}_other"]
+            data[column.name] = np.where([bool(x) for x in texts], 1.0, np.nan)
     names = [c.name for c in columns(wave)]
     df = pd.DataFrame({name: data[name] for name in names})
     return df, _sav_metadata(wave, df)
@@ -410,7 +434,7 @@ def _sav_metadata(wave: int, df: pd.DataFrame) -> dict:
             labels[name] = OTHER_LABEL
         elif question.kind == "checkbox":
             labels[name] = question.text
-            value_labels[name] = {1.0: question.options[(column.item or 1) - 1]}
+            value_labels[name] = {1.0: option_text(question, column.item or 1)}
         elif question.kind == "single":
             labels[name] = question.text
             value_labels[name] = {
@@ -499,6 +523,8 @@ def export_rows(wave: int) -> list[list[object]]:
     first, second, kept = [], [], []
     seen: set[int] = set()
     for column in columns(wave):
+        if ticked_other(column):  # the Excel export has only the text of "other"
+            continue
         if column.question is None:
             if headers[column.name] is None:  # the collector's name is not in this export
                 continue
@@ -612,7 +638,8 @@ def write_questionnaire_txt(path: Path) -> None:
 _HEADER_WRAP = 10
 
 
-def _pdf_pages() -> list[bytes]:
+def _pdf_pages(numbered: bool = False) -> list[bytes]:
+    """The pages of the PDF; `numbered`: questions numbered "1.", "2.", as some exports do."""
     page_height, margin = common._PAGE_HEIGHT, common._MARGIN
     pages, stream, y = [], b"", page_height - margin
 
@@ -634,12 +661,15 @@ def _pdf_pages() -> list[bytes]:
     y -= 8
     write("F1", 10, margin, CONTACT, 95, 13)
     new_page()
+    number = 0
     for question in wave_questions(2):
         if question.kind == "hidden":
             continue
         if y < 260:
             new_page()
-        write("F2", 10, margin, question.text, 85, 13)
+        number += 1
+        text = f"{number}. {question.text}" if numbered else question.text
+        write("F2", 10, margin, text, 85, 13)
         y -= 4
         if question.kind == "grid":
             x0 = 260
@@ -668,8 +698,8 @@ def _pdf_pages() -> list[bytes]:
     return pages
 
 
-def write_questionnaire_pdf(path: Path) -> None:
-    pages = _pdf_pages()
+def write_questionnaire_pdf(path: Path, numbered: bool = False) -> None:
+    pages = _pdf_pages(numbered)
     first_page = 5
     kids = b" ".join(b"%d 0 R" % (first_page + 2 * i) for i in range(len(pages)))
     objects = [
@@ -774,6 +804,7 @@ def answer_key() -> dict:
         "csv": f"{STEM}-t2_surveymonkey.csv",
         "questionnaire_txt": f"{QUESTIONNAIRE_NAME}.txt",
         "questionnaire_pdf": f"{QUESTIONNAIRE_NAME}.pdf",
+        "questionnaire_pdf_numbered": f"{QUESTIONNAIRE_NAME}-numerote.pdf",
         "questions": [
             {
                 "id": f"Q{n}",
@@ -844,6 +875,7 @@ def write_all(out_dir: Path) -> list[Path]:
         (f"{STEM}-t2_surveymonkey.csv", lambda p: write_export_csv(2, p)),
         (f"{QUESTIONNAIRE_NAME}.txt", write_questionnaire_txt),
         (f"{QUESTIONNAIRE_NAME}.pdf", write_questionnaire_pdf),
+        (f"{QUESTIONNAIRE_NAME}-numerote.pdf", lambda p: write_questionnaire_pdf(p, True)),
         (ANSWER_KEY_NAME, write_answer_key),
     )
     for name, writer in writers:

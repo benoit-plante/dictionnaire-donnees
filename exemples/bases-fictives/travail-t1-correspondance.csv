@@ -33,6 +33,7 @@ q0004_0002,taches_2_t1
 q0004_0003,taches_3_t1
 q0004_0004,taches_4_t1
 q0004_0005,taches_5_t1
+q0004_0006,taches_6_t1
 q0004_other,taches_autre_txt_t1
 q0005,formation_sst_t1
 q0006,pauses_t1
@@ -42,12 +43,14 @@ q0007_0003,consignes_securite_3_t1
 q0007_0004,consignes_securite_4_t1
 q0007_0005,consignes_securite_5_t1
 q0007_0006,consignes_securite_6_t1
+q0007_0007,consignes_securite_7_t1
 q0007_other,consignes_securite_autre_txt_t1
 q0008,situation_danger_t1
 q0009_0001,transport_1_t1
 q0009_0002,transport_2_t1
 q0009_0003,transport_3_t1
 q0009_0004,transport_4_t1
+q0009_0005,transport_5_t1
 q0009_other,transport_autre_txt_t1
 q0010,commentaires_t1
 q0011,id_participant_t1

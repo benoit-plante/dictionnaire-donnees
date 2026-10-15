@@ -162,6 +162,12 @@
           "other": false,
           "kind": "checkbox"
         },
+        "q0004_0006": {
+          "question": 4,
+          "item": 6,
+          "other": false,
+          "kind": "checkbox"
+        },
         "q0004_other": {
           "question": 4,
           "item": null,
@@ -216,6 +222,12 @@
           "other": false,
           "kind": "checkbox"
         },
+        "q0007_0007": {
+          "question": 7,
+          "item": 7,
+          "other": false,
+          "kind": "checkbox"
+        },
         "q0007_other": {
           "question": 7,
           "item": null,
@@ -249,6 +261,12 @@
         "q0009_0004": {
           "question": 9,
           "item": 4,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0009_0005": {
+          "question": 9,
+          "item": 5,
           "other": false,
           "kind": "checkbox"
         },
@@ -307,7 +325,8 @@
             "q0004_0002",
             "q0004_0003",
             "q0004_0004",
-            "q0004_0005"
+            "q0004_0005",
+            "q0004_0006"
           ],
           "attached": [
             "q0004_other"
@@ -321,7 +340,8 @@
             "q0007_0003",
             "q0007_0004",
             "q0007_0005",
-            "q0007_0006"
+            "q0007_0006",
+            "q0007_0007"
           ],
           "attached": [
             "q0007_other"
@@ -333,7 +353,8 @@
             "q0009_0001",
             "q0009_0002",
             "q0009_0003",
-            "q0009_0004"
+            "q0009_0004",
+            "q0009_0005"
           ],
           "attached": [
             "q0009_other"
@@ -365,6 +386,7 @@
         "q0004_0003": "Q4.o3",
         "q0004_0004": "Q4.o4",
         "q0004_0005": "Q4.o5",
+        "q0004_0006": "Q4.o6",
         "q0004_other": "Q4.o6",
         "q0005": "Q5",
         "q0006": "Q6",
@@ -374,12 +396,14 @@
         "q0007_0004": "Q7.o4",
         "q0007_0005": "Q7.o5",
         "q0007_0006": "Q7.o6",
+        "q0007_0007": "Q7.o7",
         "q0007_other": "Q7.o7",
         "q0008": "Q8",
         "q0009_0001": "Q9.o1",
         "q0009_0002": "Q9.o2",
         "q0009_0003": "Q9.o3",
         "q0009_0004": "Q9.o4",
+        "q0009_0005": "Q9.o5",
         "q0009_other": "Q9.o5",
         "q0010": "Q10",
         "q0011": "none",
@@ -444,6 +468,7 @@
         "q0004_0003": "taches_3_t1",
         "q0004_0004": "taches_4_t1",
         "q0004_0005": "taches_5_t1",
+        "q0004_0006": "taches_6_t1",
         "q0004_other": "taches_autre_txt_t1",
         "q0005": "formation_sst_t1",
         "q0006": "pauses_t1",
@@ -453,12 +478,14 @@
         "q0007_0004": "consignes_securite_4_t1",
         "q0007_0005": "consignes_securite_5_t1",
         "q0007_0006": "consignes_securite_6_t1",
+        "q0007_0007": "consignes_securite_7_t1",
         "q0007_other": "consignes_securite_autre_txt_t1",
         "q0008": "situation_danger_t1",
         "q0009_0001": "transport_1_t1",
         "q0009_0002": "transport_2_t1",
         "q0009_0003": "transport_3_t1",
         "q0009_0004": "transport_4_t1",
+        "q0009_0005": "transport_5_t1",
         "q0009_other": "transport_autre_txt_t1",
         "q0010": "commentaires_t1",
         "q0011": "id_participant_t1"
@@ -625,6 +652,12 @@
           "other": false,
           "kind": "checkbox"
         },
+        "q0005_0006": {
+          "question": 5,
+          "item": 6,
+          "other": false,
+          "kind": "checkbox"
+        },
         "q0005_other": {
           "question": 5,
           "item": null,
@@ -679,6 +712,12 @@
           "other": false,
           "kind": "checkbox"
         },
+        "q0008_0007": {
+          "question": 8,
+          "item": 7,
+          "other": false,
+          "kind": "checkbox"
+        },
         "q0008_other": {
           "question": 8,
           "item": null,
@@ -712,6 +751,12 @@
         "q0010_0004": {
           "question": 10,
           "item": 4,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0010_0005": {
+          "question": 10,
+          "item": 5,
           "other": false,
           "kind": "checkbox"
         },
@@ -769,7 +814,8 @@
             "q0005_0002",
             "q0005_0003",
             "q0005_0004",
-            "q0005_0005"
+            "q0005_0005",
+            "q0005_0006"
           ],
           "attached": [
             "q0005_other"
@@ -783,7 +829,8 @@
             "q0008_0003",
             "q0008_0004",
             "q0008_0005",
-            "q0008_0006"
+            "q0008_0006",
+            "q0008_0007"
           ],
           "attached": [
             "q0008_other"
@@ -795,7 +842,8 @@
             "q0010_0001",
             "q0010_0002",
             "q0010_0003",
-            "q0010_0004"
+            "q0010_0004",
+            "q0010_0005"
           ],
           "attached": [
             "q0010_other"
@@ -827,6 +875,7 @@
         "q0005_0003": "Q5.o3",
         "q0005_0004": "Q5.o4",
         "q0005_0005": "Q5.o5",
+        "q0005_0006": "Q5.o6",
         "q0005_other": "Q5.o6",
         "q0006": "Q6",
         "q0007": "Q7",
@@ -836,12 +885,14 @@
         "q0008_0004": "Q8.o4",
         "q0008_0005": "Q8.o5",
         "q0008_0006": "Q8.o6",
+        "q0008_0007": "Q8.o7",
         "q0008_other": "Q8.o7",
         "q0009": "Q9",
         "q0010_0001": "Q10.o1",
         "q0010_0002": "Q10.o2",
         "q0010_0003": "Q10.o3",
         "q0010_0004": "Q10.o4",
+        "q0010_0005": "Q10.o5",
         "q0010_other": "Q10.o5",
         "q0011": "Q11",
         "q0012": "none",
@@ -907,6 +958,7 @@
         "q0005_0003": "taches_3_t2",
         "q0005_0004": "taches_4_t2",
         "q0005_0005": "taches_5_t2",
+        "q0005_0006": "taches_6_t2",
         "q0005_other": "taches_autre_txt_t2",
         "q0006": "formation_sst_t2",
         "q0007": "pauses_t2",
@@ -916,12 +968,14 @@
         "q0008_0004": "consignes_securite_4_t2",
         "q0008_0005": "consignes_securite_5_t2",
         "q0008_0006": "consignes_securite_6_t2",
+        "q0008_0007": "consignes_securite_7_t2",
         "q0008_other": "consignes_securite_autre_txt_t2",
         "q0009": "situation_danger_t2",
         "q0010_0001": "transport_1_t2",
         "q0010_0002": "transport_2_t2",
         "q0010_0003": "transport_3_t2",
         "q0010_0004": "transport_4_t2",
+        "q0010_0005": "transport_5_t2",
         "q0010_other": "transport_autre_txt_t2",
         "q0011": "commentaires_t2",
         "q0012": "id_participant_t2"
@@ -930,6 +984,7 @@
       "csv": "travail-t2_surveymonkey.csv",
       "questionnaire_txt": "questionnaire-travail.txt",
       "questionnaire_pdf": "questionnaire-travail.pdf",
+      "questionnaire_pdf_numbered": "questionnaire-travail-numerote.pdf",
       "questions": [
         {
           "id": "Q1",
@@ -1039,6 +1094,7 @@
       "q0005_0003": "q0004_0003",
       "q0005_0004": "q0004_0004",
       "q0005_0005": "q0004_0005",
+      "q0005_0006": "q0004_0006",
       "q0005_other": "q0004_other",
       "q0006": "q0005",
       "q0007": "q0006",
@@ -1048,12 +1104,14 @@
       "q0008_0004": "q0007_0004",
       "q0008_0005": "q0007_0005",
       "q0008_0006": "q0007_0006",
+      "q0008_0007": "q0007_0007",
       "q0008_other": "q0007_other",
       "q0009": "q0008",
       "q0010_0001": "q0009_0001",
       "q0010_0002": "q0009_0002",
       "q0010_0003": "q0009_0003",
       "q0010_0004": "q0009_0004",
+      "q0010_0005": "q0009_0005",
       "q0010_other": "q0009_other",
       "q0011": "q0010",
       "q0012": "q0011"

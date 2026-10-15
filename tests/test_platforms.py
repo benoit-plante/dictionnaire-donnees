@@ -15,6 +15,12 @@ from ddict.workflow import platform_notes
 ROOT = Path(__file__).resolve().parent.parent
 EXAMPLES = ROOT / "exemples" / "bases-fictives"
 REFERENCE = ROOT / "tests" / "reference"
+# The .sav variables an Excel export does not have: the collector's name, and the "other"
+# option of each checkbox question as a checkbox of its own (seen in a real export).
+NOT_IN_EXCEL = {
+    "CollectorNm", "q0004_0006", "q0007_0007", "q0009_0005",  # wave 1
+    "q0005_0006", "q0008_0007", "q0010_0005",  # wave 2
+}  # fmt: skip
 
 
 def _names(file_name: str) -> list[str]:
@@ -101,8 +107,9 @@ def test_the_excel_export_reads_like_its_sav_file(file_name):
     assert data.source.platform == "surveymonkey"
     assert data.source.n_rows == sav.source.n_rows
     names = [v.name for v in data.variables]
-    # Every column of the .sav file but the collector's name, which this export does not have.
-    assert names == [v.name for v in sav.variables if v.name != "CollectorNm"]
+    # Every column of the .sav file but the collector's name and the "other" options ticked,
+    # which this export does not have (it has their texts).
+    assert names == [v.name for v in sav.variables if v.name not in NOT_IN_EXCEL]
 
 
 def test_the_csv_export_reads_like_the_excel_one():

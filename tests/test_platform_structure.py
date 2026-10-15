@@ -19,6 +19,8 @@ from ddict.workflow import add_questionnaire
 EXAMPLES = Path(__file__).resolve().parent.parent / "exemples" / "bases-fictives"
 KEY = json.loads((EXAMPLES / "corrige-surveymonkey.json").read_text(encoding="utf-8"))
 HEADER = EXAMPLES / "travail-t2_surveymonkey.xlsx"
+# The "other" option of each checkbox question of wave 2, a checkbox of its own in the .sav.
+TICKED_OTHERS = {"q0005_0006", "q0008_0007", "q0010_0005"}
 
 
 def _project(file_name: str, questionnaire: Path | None = None):
@@ -49,16 +51,21 @@ def test_the_groups_are_those_of_the_survey(wave):
     "file_name", ["travail-t2_surveymonkey.xlsx", "travail-t2_surveymonkey.csv"]
 )
 def test_the_excel_and_csv_exports_give_the_same_groups(file_name):
-    assert _groups(_project(file_name)) == KEY["waves"]["t2"]["groups"]
+    # Without the "other" options ticked, which these exports do not have.
+    expected = [
+        g | {"members": [m for m in g["members"] if m not in TICKED_OTHERS]}
+        for g in KEY["waves"]["t2"]["groups"]
+    ]
+    assert _groups(_project(file_name)) == expected
 
 
 def test_a_set_of_checkboxes_has_no_item_statistics():
     project = _project("travail-t2_surveymonkey.sav")
     group = next(g for g in project.groups if g.kind == "multiple_response")
     assert group.cronbach_alpha is None and group.basis == ["platform_structure"]
-    assert group.descriptive_label.value == "5 options à cocher, préfixe « q0005_ »"
+    assert group.descriptive_label.value == "6 options à cocher, préfixe « q0005_ »"
     with i18n.using("en"):
-        assert group_description(group, "final") == '5 checkbox options, prefix "q0005_"'
+        assert group_description(group, "final") == '6 checkbox options, prefix "q0005_"'
     member = project.variable("q0005_0001")
     assert member.group_id.value == group.group_id
     assert project.variable("q0005_other").group_id.value is None  # attached, not a member
@@ -168,7 +175,8 @@ def test_the_excel_export_gets_its_labels_from_its_header():
 )
 def test_an_excel_or_csv_base_is_linked_by_the_structure(file_name):
     project = _project(file_name, HEADER)
-    expected = {k: v for k, v in KEY["waves"]["t2"]["links"].items() if k != "CollectorNm"}
+    links = KEY["waves"]["t2"]["links"].items()
+    expected = {k: v for k, v in links if k != "CollectorNm" and k not in TICKED_OTHERS}
     assert link.platform_choices(project) == expected
 
 
@@ -234,6 +242,7 @@ def test_the_header_questionnaire_and_the_groups_in_the_interface(tmp_path):
     app.button(key="questionnaire-read").click().run()
     assert not app.exception, app.exception
     assert any("12 questions" in m.value for m in app.markdown)
+    assert any("toutes retrouvées dans ce questionnaire" in i.value for i in app.info)
 
     app.session_state["mode"] = "groups"
     app.run()

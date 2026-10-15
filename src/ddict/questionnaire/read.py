@@ -30,6 +30,8 @@ class Line:
     indent: int  # leading spaces (PDF) or tabs (text): options sit deeper than questions
     cells: tuple[tuple[int, str], ...]  # (position, text): several for a table row
     after_blank: bool = False  # a blank line came before (text files only)
+    # The printed number of a numbered question ("3." or "Q3."), taken out of its text (v0.7).
+    number: int | None = None
 
     @property
     def text(self) -> str:

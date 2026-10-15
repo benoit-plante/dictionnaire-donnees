@@ -23,6 +23,7 @@ from ddict.workflow import (
     QuestionnaireExists,
     acronym_summary,
     add_questionnaire,
+    platform_summary,
     questionnaire_summary,
 )
 
@@ -120,6 +121,8 @@ def page(project: Project) -> None:
     st.write(summary[1])
     for line in summary[2:]:
         st.warning(line)
+    for line in platform_summary(project):
+        st.info(line)
     for line in acronym_summary(project):
         st.info(line)
     if any(q.to_check for q in questionnaire.questions):

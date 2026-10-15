@@ -1,9 +1,8 @@
-"""v0.7, step 1: the fictional SurveyMonkey export and what v0.6 does with it.
+"""v0.7: the fictional SurveyMonkey export, and the findings of the trial on two real ones.
 
 The first tests check that the fictional files follow SurveyMonkey's conventions, as seen in
 two real exports (docs/plan-v0.7.md, § 1). The others state, one finding of that trial at a
-time, what the tool should do; they fail with v0.6 (strict xfail) and are turned into plain
-tests by the step that fixes them.
+time, what the tool does since v0.7 (each failed with v0.6: docs/essais/).
 """
 
 import hashlib
@@ -30,6 +29,7 @@ FILES = [
     "travail-t2_surveymonkey.csv",
     "questionnaire-travail.txt",
     "questionnaire-travail.pdf",
+    "questionnaire-travail-numerote.pdf",
     "corrige-surveymonkey.json",
 ]
 
@@ -66,7 +66,7 @@ def test_the_key_covers_every_variable(key):
     assert between["added"] == ["q0002"]
     assert between["removed"] == ["q0002_0010"]
     assert between["value_labels_changed"] == ["q0007"]
-    assert len(between["pairs_t2_to_t1"]) == 52 - 1  # all but the added question
+    assert len(between["pairs_t2_to_t1"]) == 55 - 1  # all but the added question
 
 
 def test_the_sav_files_follow_surveymonkey_conventions(key):
@@ -149,7 +149,7 @@ def test_wave_1_is_given_renamed(key):
     lines = (EXAMPLES / "travail-t1-correspondance.csv").read_text(encoding="utf-8").splitlines()
     assert lines[0] == "nom_origine,nouveau_nom"
     assert lines[1] == "CollectorNm,nom_collecteur_t1"
-    assert len(lines) == 1 + 52
+    assert len(lines) == 1 + 55
 
 
 # --- What v0.6 does with these files: the findings of the trial, to be fixed. -------------
@@ -178,9 +178,6 @@ def test_the_counts_see_the_structure(counts):
     assert counts["dates_de_passation"] == 2
     assert counts["taux_min_valeurs_de_date_lisibles_pct"] == 100.0
     assert counts["codes_a_etiquette_de_manquant"] == 10
-
-
-FINDING = pytest.mark.xfail(strict=True, reason="v0.6: finding of the trial, fixed in v0.7")
 
 
 def test_the_platform_is_recognized(counts):
@@ -229,13 +226,14 @@ def _expected_questions(key) -> list[tuple[str, int]]:
     return [(q["kind"], q["n_rows"]) for q in key["waves"]["t2"]["questions"]]
 
 
-@FINDING
 def test_the_numbered_text_questionnaire_is_read(key):
     found = load_questionnaire(EXAMPLES / "questionnaire-travail.txt").questions
     assert [(q.kind, len(q.rows)) for q in found] == _expected_questions(key)
 
 
-@FINDING
-def test_the_surveymonkey_pdf_is_read(key):
-    found = load_questionnaire(EXAMPLES / "questionnaire-travail.pdf").questions
+@pytest.mark.parametrize(
+    "file_name", ["questionnaire-travail.pdf", "questionnaire-travail-numerote.pdf"]
+)
+def test_the_surveymonkey_pdf_is_read(key, file_name):
+    found = load_questionnaire(EXAMPLES / file_name).questions
     assert [(q.kind, len(q.rows)) for q in found] == _expected_questions(key)

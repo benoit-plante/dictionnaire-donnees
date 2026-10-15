@@ -68,7 +68,25 @@ Après l'étape 4 (structure de plateforme) :
 
 Deux faits appris sur la base 2 pendant l'étape 4 : une question à choix unique peut avoir sa variable « autre », et SPSS coupe les étiquettes de valeurs à 120 octets, si bien qu'une option longue ne concorde avec le questionnaire que par son début.
 
-Reste pour l'étape 5 : la lecture des questionnaires PDF et `.txt`.
+Après l'étape 5 (lecture des questionnaires) :
+
+| | Base fictive (PDF, PDF numéroté, `.txt` numéroté) | Base 1 (PDF) | Base 2 (PDF numéroté) |
+|---|---|---|---|
+| Questions trouvées | 11, 11, 11 (11 attendues) | 8 (15 avant) : 7 grilles de 102 énoncés, 1 choix unique | 13 (0 avant) |
+| Grilles et ensembles à cocher retrouvés | tous | 7 grilles sur 7 | 4 ensembles sur 4, dont 1 reconnu d'après la base |
+| Questions de la base sans question concordante | 0 | 3 (absentes du PDF, qui commence par une page de titre) | 0 |
+| Rattachements par la structure, textes concordants | tous | 100 sur 104, tous | 40 sur 40, tous |
+| Points à vérifier signalés par la structure | 0 | 3 grilles au nombre d'énoncés différent (20 pour 19, 30 pour 28, 10 pour 11) | 0 |
+
+Ce que les vrais PDF ont appris, mesuré par la seule forme des lignes (page, retrait, nombre de cellules, longueur, ponctuation finale, sans aucun mot) :
+
+- une grille de SurveyMonkey continue sur la page suivante sans ses titres de colonnes, et un énoncé peut y être coupé par la page ;
+- les titres de colonnes longs s'empilent sur trois lignes, la première ne portant qu'un mot loin à droite : c'était la « fausse question faite d'un morceau d'en-tête » ;
+- les 7 « questions ouvertes » étaient les énoncés d'une grille, qui finissent par « ? » ;
+- la base 2 a un PDF à questions numérotées, des options de plus de 100 caractères, et une question à cocher dont la formulation ne le dit pas ;
+- dans le `.sav`, l'option « Autre » d'une question à cocher est aussi une case à cocher (sa dernière), en plus de sa variable de texte ; l'export Excel n'a que le texte. La base fictive le reproduit depuis l'étape 5.
+
+Les écarts restants de la base 1 (un ou deux énoncés de trop, un de moins) sont signalés à la personne par la structure, et ne produisent aucun rattachement faux : un rattachement exige que les textes concordent.
 
 Ce que la mesure précise par rapport à l'essai de l'auteur :
 

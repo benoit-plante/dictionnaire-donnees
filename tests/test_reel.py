@@ -9,10 +9,9 @@ which never returns a value, a label, a text nor a file name, and reports an err
 type only; assertions compare numbers, so a failure shows numbers. Tests are named base1,
 base2, never after the files.
 
-The findings of the trial are xfail, as in test_surveymonkey.py, but not strict: a finding
-may not show in every base (a base without grids cannot have one cut in two). A test
-without object in a base is skipped. The step that fixes a finding turns its test into a
-plain one.
+Each finding of the trial (docs/plan-v0.7.md, § 1) has its test, fixed in v0.7, steps 2 to
+5. A finding may not show in every base (a base without grids cannot have one cut in two):
+a test without object in a base is skipped.
 """
 
 import os
@@ -28,8 +27,6 @@ _FOLDER = os.environ.get("DDICT_DONNEES_REELLES")
 _COUNTER = load_counter()
 BASES = _COUNTER.bases(Path(_FOLDER)) if _FOLDER and Path(_FOLDER).is_dir() else {}
 _CACHE: dict[str, dict] = {}
-
-FINDING = pytest.mark.xfail(strict=False, reason="v0.6: finding of the trial, fixed in v0.7")
 
 
 def _params():
@@ -106,14 +103,13 @@ def test_the_scale_level_of_labelled_items_is_flagged(counts):
     assert counts["items_niveau_scale_signales"] == counts["items_de_grille_niveau_scale"]
 
 
-@FINDING
-def test_the_questionnaire_has_the_grids_of_the_base(counts):
-    if not any(f"{p}_questions" in counts for p in ("pdf", "txt")):
-        pytest.skip("pas de questionnaire")
-    for prefix in ("pdf", "txt"):
-        if f"{prefix}_questions" in counts:
-            assert counts[f"{prefix}_grilles"] == counts["grilles"]
-            assert counts[f"{prefix}_checkbox"] == counts["ensembles_a_cocher"]
+def test_the_pdf_has_the_grids_and_checkboxes_of_the_base(counts):
+    if "pdf_questions" not in counts:
+        pytest.skip("pas de questionnaire PDF")
+    assert counts["pdf_grilles"] == counts["grilles"]
+    # Read as checkboxes, or found such by the structure of the export.
+    checkboxes = counts["pdf_checkbox"] + counts["pdf_a_verifier_kind_from_platform"]
+    assert checkboxes == counts["ensembles_a_cocher"]
 
 
 def test_the_excel_header_links_every_question_variable(counts):

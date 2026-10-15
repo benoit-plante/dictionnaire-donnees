@@ -1498,6 +1498,18 @@ msgstr "Source of the threshold"
 msgid "Statut"
 msgstr "Status"
 
+#, python-brace-format
+msgid ""
+"Structure de l'export {platform} : {n} questions, dont {m} sans question concordante dans ce "
+"questionnaire."
+msgstr ""
+"Structure of the {platform} export: {n} questions, {m} of them without a matching question in "
+"this questionnaire."
+
+#, python-brace-format
+msgid "Structure de l'export {platform} : {n} questions, toutes retrouvées dans ce questionnaire."
+msgstr "Structure of the {platform} export: {n} questions, all found in this questionnaire."
+
 msgid "Syntaxe SPSS"
 msgstr "SPSS syntax"
 
@@ -1680,6 +1692,9 @@ msgstr "Check again"
 msgid "aucun"
 msgstr "none"
 
+msgid "aucune question correspondante dans la base"
+msgstr "no matching question in the database"
+
 msgid "aucune question du questionnaire"
 msgstr "no question in the questionnaire"
 
@@ -1692,6 +1707,9 @@ msgstr "binary"
 
 msgid "calcul"
 msgstr "computed"
+
+msgid "cases à cocher d'après la base"
+msgstr "checkboxes, according to the database"
 
 #, python-brace-format
 msgid "choix justes du calcul défaits ({names})"
@@ -1836,6 +1854,12 @@ msgstr "open"
 
 msgid "ouvertes"
 msgstr "open"
+
+msgid "pas le même nombre d'options que dans la base"
+msgstr "not the same number of options as in the database"
+
+msgid "pas le même nombre d'énoncés que dans la base"
+msgstr "not the same number of items as in the database"
 
 msgid "proposé"
 msgstr "proposed"

@@ -516,18 +516,18 @@ def _structure_targets(
             rows = [row for row in question.rows if texts_agree(label, row.text)]
             if len(rows) == 1:
                 chosen[name] = rows[0].row_id
-    elif found.kind == "checkbox":
+    # The "other" option of any question, by its words in any language ("Autre (veuillez
+    # préciser)", "Other (please specify)"): its text, and its own checkbox if any.
+    forms = platform.other_cells if platform else ()
+    others = [o for o in question.options if any(texts_agree(o.text, f) for f in forms)]
+    if found.kind == "checkbox":
         for name in found.items:
             mine = _option_texts(project.variable(name))
             options = [o for o in question.options if any(texts_agree(t, o.text) for t in mine)]
+            if not options and any(texts_agree(t, f) for t in mine for f in forms):
+                options = others
             if len(options) == 1:
                 chosen[name] = options[0].option_id
-    # The "other" text of any question, choice or checkboxes: its option, by its words.
-    others = [
-        o
-        for o in question.options
-        if platform and any(texts_agree(o.text, form) for form in platform.other_cells)
-    ]
     if found.other and len(others) == 1:
         chosen[found.other] = others[0].option_id
     return chosen
@@ -544,15 +544,82 @@ def platform_choices(project: Project) -> dict[str, str]:
     if questionnaire is None or platform is None:
         return {}
     chosen = {e.name: NO_QUESTION for e in project.variables if platform.platform_variable(e.name)}
-    questions = questionnaire.questions
+    for found, question in matched_questions(project):
+        chosen |= _structure_targets(project, found, question)
+    return chosen
+
+
+def matched_questions(
+    project: Project,
+) -> list[tuple[platforms.PlatformQuestion, Question]]:
+    """Each question of a platform export with the question of the questionnaire whose
+    text agrees, in order; the export's questions without one are left out."""
+    if project.questionnaire is None:
+        return []
+    questions = project.questionnaire.questions
+    pairs = []
     start = 0
     for found in project_questions(project):
         for index in range(start, len(questions)):
             if _agrees(project, found, questions[index]):
-                chosen |= _structure_targets(project, found, questions[index])
+                pairs.append((found, questions[index]))
                 start = index + 1
                 break
-    return chosen
+    return pairs
+
+
+# What the structure of the export says about the questionnaire as read (v0.7).
+PLATFORM_CHECKS = (
+    "platform_rows_differ",
+    "platform_options_differ",
+    "kind_from_platform",
+    "not_in_platform_structure",
+)
+
+
+def check_against_platform(project: Project) -> None:
+    """Compare the questionnaire with the structure of a platform export, and say so in
+    each question's points to check: a grid with another number of rows, a set of
+    checkboxes with another number of options, a question the export does not have. A
+    question read as a single choice whose export is a set of checkboxes becomes one (its
+    words are not changed).
+    """
+    questionnaire = project.questionnaire
+    if questionnaire is None or platforms.by_name(project.source.platform) is None:
+        return
+    for question in questionnaire.questions:
+        question.to_check = [c for c in question.to_check if c not in PLATFORM_CHECKS]
+    pairs = matched_questions(project)
+    for found, question in pairs:
+        if found.kind == "grid" and len(question.rows) != len(found.items):
+            question.to_check = [*question.to_check, "platform_rows_differ"]
+        if found.kind == "checkbox":
+            if question.kind == "single":
+                question.kind = "checkbox"
+                question.to_check = [*question.to_check, "kind_from_platform"]
+            # The "other" option may be a checkbox of its own as well as a text (seen in a
+            # real export): as many options as items, or one more for "other".
+            expected = {len(found.items), len(found.items) + (1 if found.other else 0)}
+            if question.kind == "checkbox" and len(question.options) not in expected:
+                question.to_check = [*question.to_check, "platform_options_differ"]
+    paired = {id(question) for _found, question in pairs}
+    for question in questionnaire.questions:
+        if id(question) not in paired:
+            question.to_check = [*question.to_check, "not_in_platform_structure"]
+
+
+def platform_coverage(project: Project) -> tuple[int, int]:
+    """(questions of a platform export, those without a question in the questionnaire)."""
+    if project.questionnaire is None or platforms.by_name(project.source.platform) is None:
+        return 0, 0
+    pairs = matched_questions(project)
+    # The export's questions, but a column it adds as a question ("id", an identifier).
+    asked = {
+        q.rank
+        for q in project_questions(project)
+        if q.items or not no_question_reason(project.variable(q.single or q.other))
+    }
+    return len(asked), len(asked - {found.rank for found, _q in pairs})
 
 
 MAX_NEIGHBOURS = 6

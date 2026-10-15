@@ -112,6 +112,7 @@ Une étude fictive sur la vie au travail, exportée comme le fait SurveyMonkey, 
 | `travail-t2_surveymonkey.xlsx` et `.csv` | Vague 2, export Excel et CSV : en-tête sur deux lignes, colonnes de plateforme titrées par les noms récents (`respondent_id`), réponses en texte |
 | `questionnaire-travail.txt` | Questionnaire de la vague 2 copié dans un traitement de texte, questions numérotées |
 | `questionnaire-travail.pdf` | Le même, mis en page comme un PDF de SurveyMonkey : questions non numérotées, titres de colonnes des grilles sur plusieurs lignes |
+| `questionnaire-travail-numerote.pdf` | Le même PDF, questions numérotées (« 1. », « 2. »…) |
 | `travail-t1-documente.sav` | Vague 1 telle que l'équipe l'a laissée : renommée (`eft_1_t1`…), codes 6 et 7 déclarés manquants pour la grille du milieu de travail |
 | `travail-t1-correspondance.csv` | Table des noms de la vague 1 (`nom_origine,nouveau_nom`, D-052) |
 
@@ -124,7 +125,7 @@ Une étude fictive sur la vie au travail, exportée comme le fait SurveyMonkey, 
 | Item contenant le verbe « identifier » | `q0003_0005` |
 | Items inversés (une situation satisfaisante) | `q0003_0002`, `q0003_0007`, `q0003_0011` |
 | « Ne sais pas » (6) et « Préfère ne pas répondre » (7) non déclarés manquants | `q0004_0001` à `q0004_0005` |
-| Trois ensembles à cocher (une étiquette `1 = option`, non coché = vide), chacun avec « autre » étiqueté en anglais | `q0005`, `q0008`, `q0010` |
+| Trois ensembles à cocher (une étiquette `1 = option`, non coché = vide), chacun avec « autre » : une case de plus dans le `.sav` (`q0005_0006`), absente de l'export Excel, et un texte étiqueté en anglais (`q0005_other`) | `q0005`, `q0008`, `q0010` |
 | Cases à cocher annoncées sans « toutes » (« Cochez les… », « Coche les… ») | `q0008`, `q0010` |
 | Questions ouvertes (témoin `ZQXSMTXT`) | `q0009`, `q0011` |
 | Variable texte finale étiquetée `id` : code de famille et initiales inventées | `q0012` |

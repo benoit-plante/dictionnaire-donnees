@@ -225,7 +225,12 @@ def count_links(sav: Path, questionnaire: Path, prefix: str) -> dict[str, int]:
         if any(link.texts_agree(t, found.part or found.question.text) for t in texts):
             agreeing += 1
     in_questions = [e.name for e in project.variables if platform and platform.place(e.name)]
+    asked, unmatched = link.platform_coverage(project)
+    checks = Counter(c for q in project.questionnaire.questions for c in q.to_check)
     return {
+        f"{prefix}_questions_de_la_base": asked,
+        f"{prefix}_questions_de_la_base_sans_concordance": unmatched,
+        **{f"{prefix}_a_verifier_{code}": checks.get(code, 0) for code in link.PLATFORM_CHECKS},
         f"{prefix}_variables_de_questions": len(in_questions),
         f"{prefix}_liens_par_la_structure": len(questions),
         f"{prefix}_liens_dont_le_texte_concorde": agreeing,

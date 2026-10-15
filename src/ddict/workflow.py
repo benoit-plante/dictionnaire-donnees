@@ -19,7 +19,12 @@ from ddict.project.model import Project, Questionnaire
 from ddict.questionnaire import language as study_language
 from ddict.questionnaire import load_questionnaire
 from ddict.questionnaire.labels import propose_value_labels
-from ddict.questionnaire.link import drop_stale_links, project_questions
+from ddict.questionnaire.link import (
+    check_against_platform,
+    drop_stale_links,
+    platform_coverage,
+    project_questions,
+)
 
 
 class ProjectExists(FileExistsError):
@@ -91,6 +96,10 @@ TO_CHECK = Texts(
         "grid_header_unclear": N_("titres de colonnes collés"),
         "grid_without_header": N_("grille sans titres de colonnes"),
         "grid_rows_unnumbered": N_("énoncés de grille non numérotés"),
+        "platform_rows_differ": N_("pas le même nombre d'énoncés que dans la base"),
+        "platform_options_differ": N_("pas le même nombre d'options que dans la base"),
+        "kind_from_platform": N_("cases à cocher d'après la base"),
+        "not_in_platform_structure": N_("aucune question correspondante dans la base"),
     }
 )
 KINDS = Texts(
@@ -118,6 +127,7 @@ def add_questionnaire(project: Project, path: Path | str, *, replace: bool = Fal
     questionnaire = load_questionnaire(path, kinds)
     previous = project.questionnaire
     project.questionnaire = questionnaire
+    check_against_platform(project)  # v0.7: the structure of a platform export
     propose_from_questionnaire(project)
     removed = drop_stale_links(project, previous) if previous is not None else 0
     propose_value_labels(project)
@@ -149,6 +159,27 @@ def questionnaire_summary(questionnaire: Questionnaire) -> list[str]:
                 )
             )
     return lines
+
+
+def platform_summary(project: Project) -> list[str]:
+    """How the questionnaire covers the questions of a platform export (v0.7)."""
+    platform = platforms.by_name(project.source.platform)
+    asked, unmatched = platform_coverage(project)
+    if platform is None or not asked:
+        return []
+    if unmatched:
+        return [
+            _(
+                "Structure de l'export {platform} : {n} questions, dont {m} sans question "
+                "concordante dans ce questionnaire."
+            ).format(platform=platform.title, n=asked, m=unmatched)
+        ]
+    return [
+        _(
+            "Structure de l'export {platform} : {n} questions, toutes retrouvées dans ce "
+            "questionnaire."
+        ).format(platform=platform.title, n=asked)
+    ]
 
 
 def acronym_summary(project: Project) -> list[str]:
