@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from ddict import platforms
 from ddict.export import write_markdown, write_xlsx
 from ddict.export.documented import CopyError, CopyResult, find_database, write_documented_copy
 from ddict.export.syntax import SUFFIXES, write_syntax
@@ -63,6 +64,24 @@ def profile_summary(project: Project) -> str:
         sensitive=sensitive,
         flagged=flagged,
     )
+
+
+def platform_notes(project: Project) -> list[str]:
+    """What to know about a survey platform export (v0.7): which platform, and that its .sav
+    file is better than its Excel or CSV export, which has neither codes nor labels."""
+    platform = platforms.by_name(project.source.platform)
+    if platform is None:
+        return []
+    notes = [_("Export {platform} reconnu.").format(platform=platform.title)]
+    if project.source.format in ("xlsx", "csv"):
+        notes.append(
+            _(
+                "Si vous avez aussi l'export .sav de ce sondage, préférez-le : il garde les "
+                "codes des réponses et leurs étiquettes, que l'export {format} remplace par "
+                "du texte."
+            ).format(format=project.source.format.upper())
+        )
+    return notes
 
 
 # --- The questionnaire (v0.2), from the command line or the interface. ---

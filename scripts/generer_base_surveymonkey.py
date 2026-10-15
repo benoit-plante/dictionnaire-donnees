@@ -15,12 +15,13 @@ the trial of two real exports showed (docs/plan-v0.7.md, § 1). All items are in
   missing; an item of the Likert grid uses the verb "identifier"; a text variable labelled
   `id` comes last (a family code and invented initials).
 
-Wave 2 also exists as an Excel workbook and a CSV file with the two header rows of
-SurveyMonkey, with a numbered questionnaire (.txt) and a PDF laid out like SurveyMonkey's
-(grid column titles stacked over several lines). Against wave 1, wave 2 adds a question
-(which shifts the `qNNNN` numbering), removes an item of the Likert grid and changes a value
-label. Wave 1 is also given renamed, as the team would have left it: its documented copy
-(`_t1` names) and its table of names (D-052).
+Both waves also exist as an Excel workbook with the two header rows of SurveyMonkey (the
+platform columns titled "Respondent ID" in the old exports, `respondent_id` in the recent
+ones), and wave 2 as a CSV file too, with a numbered questionnaire (.txt) and a PDF laid
+out like SurveyMonkey's (grid column titles stacked over several lines). Against wave 1,
+wave 2 adds a question (which shifts the `qNNNN` numbering), removes an item of the Likert
+grid and changes a value label. Wave 1 is also given renamed, as the team would have left
+it: its documented copy (`_t1` names) and its table of names (D-052).
 
 The answer key (`corrige-surveymonkey.json`) gives the groups, the links, the names and the
 differences between the waves.
@@ -489,7 +490,12 @@ def export_rows(wave: int) -> list[list[object]]:
     """The rows of SurveyMonkey's Excel or CSV export: the question once above its first
     column, the item, option or "Response" below, then answers as text, never codes."""
     df, meta = build_wave(wave)
-    headers = {old if wave == 1 else recent: header for _r, old, recent, header, _f in PLATFORM}
+    # The old exports title the platform columns ("Respondent ID"); the recent ones use the
+    # recent names themselves (seen in the real exports).
+    headers = {
+        old if wave == 1 else recent: (header if wave == 1 else recent) if header else None
+        for _r, old, recent, header, _f in PLATFORM
+    }
     first, second, kept = [], [], []
     seen: set[int] = set()
     for column in columns(wave):
@@ -761,6 +767,7 @@ def answer_key() -> dict:
             "stems": stems,
             "names": expected_names(wave, f"_t{wave}"),
         }
+    waves["t1"]["xlsx"] = f"{STEM}-t1_surveymonkey.xlsx"
     t2 = waves["t2"]
     t2 |= {
         "xlsx": f"{STEM}-t2_surveymonkey.xlsx",
@@ -832,6 +839,7 @@ def write_all(out_dir: Path) -> list[Path]:
     writers = (
         (f"{STEM}-t1-documente.sav", lambda p: write_documented_copy(1, p)),
         (f"{STEM}-t1-correspondance.csv", lambda p: write_name_table(1, p)),
+        (f"{STEM}-t1_surveymonkey.xlsx", lambda p: write_export_xlsx(1, p)),
         (f"{STEM}-t2_surveymonkey.xlsx", lambda p: write_export_xlsx(2, p)),
         (f"{STEM}-t2_surveymonkey.csv", lambda p: write_export_csv(2, p)),
         (f"{QUESTIONNAIRE_NAME}.txt", write_questionnaire_txt),

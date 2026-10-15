@@ -56,6 +56,8 @@ class SourceFile:
     encoding: str | None = None
     delimiter: str | None = None  # CSV only
     decimal: str | None = None  # CSV only
+    # The survey platform whose export this is ("surveymonkey"), when recognized (v0.7).
+    platform: str | None = None
 
 
 @dataclass(frozen=True)

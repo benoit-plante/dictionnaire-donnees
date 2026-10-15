@@ -25,6 +25,7 @@ FILES = [
     "travail-t2_surveymonkey.sav",
     "travail-t1-documente.sav",
     "travail-t1-correspondance.csv",
+    "travail-t1_surveymonkey.xlsx",
     "travail-t2_surveymonkey.xlsx",
     "travail-t2_surveymonkey.csv",
     "questionnaire-travail.txt",
@@ -112,7 +113,7 @@ def test_the_excel_export_has_two_header_rows():
     rows = list(workbook.worksheets[0].iter_rows(values_only=True))
     workbook.close()
     first, second = rows[0], rows[1]
-    assert first[0] == "Respondent ID" and second[0] is None
+    assert first[0] == "respondent_id" and second[0] is None
     grid = first.index(
         "Au cours du dernier mois, à quelle fréquence avez-vous vécu les "
         "situations suivantes au travail ?"
@@ -182,12 +183,10 @@ def test_the_counts_see_the_structure(counts):
 FINDING = pytest.mark.xfail(strict=True, reason="v0.6: finding of the trial, fixed in v0.7")
 
 
-@FINDING
 def test_the_platform_is_recognized(counts):
     assert counts["plateforme_reconnue"] == 1
 
 
-@FINDING
 def test_the_second_header_row_is_not_a_participant(counts):
     assert counts["xlsx_lignes_en_trop"] == 0
     assert counts["xlsx_colonnes_sans_nom"] == 0

@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.1.0",
+  "schema_version": "0.2.0",
   "source": {
     "name": "etude-sommeil.sav",
     "format": "sav",
@@ -9,7 +9,8 @@
     "label": "Etude sommeil (fictive)",
     "encoding": "UTF-8",
     "delimiter": null,
-    "decimal": null
+    "decimal": null,
+    "platform": null
   },
   "settings": {
     "min_cell_count": 5,

@@ -13,7 +13,7 @@ from ddict.i18n import _, field_label, quoted
 from ddict.project.model import Project
 from ddict.review import logic
 from ddict.review.ui import common as c
-from ddict.workflow import profile_summary
+from ddict.workflow import platform_notes, profile_summary
 
 FORMATS = {
     "sav": "SPSS",
@@ -50,6 +50,8 @@ def page(project: Project) -> None:
     source = project.source
     st.header(source.name + (f" — {source.label}" if source.label else ""))
     st.write(profile_summary(project))
+    for note in platform_notes(project):
+        st.info(note)
     _study_language(project)
 
     sensitive = [e for e in project.variables if logic.is_sensitive(e)]

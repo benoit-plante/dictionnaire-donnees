@@ -1,6 +1,10 @@
 """Read an Excel workbook (.xlsx) as a team types it: names in the first row of the first
 sheet, one row per participant (v0.2).
 
+The export of a survey platform has two header rows (v0.7): the question once above its
+first column, its items or options below. It is recognized (ddict.platforms), its columns
+get the names of the platform's .sav file, and the second row is never read as data.
+
 Each cell is turned into the text a CSV export would hold ("170", "2026-01-05 08:00"), and
 the columns are then typed by the CSV rules: a workbook and its CSV export give the same
 profile. Formulas are read through their last computed value. An Excel file has no
@@ -20,6 +24,7 @@ from openpyxl.utils.exceptions import InvalidFileException
 from ddict.io.csv_reader import _blank_tokens, _to_column
 from ddict.io.model import LoadedData, ReadError, SourceFile, VariableMetadata
 from ddict.io.sav import file_sha256
+from ddict.platforms import split_header
 
 
 def _texts(values: list[object]) -> list[str]:
@@ -63,6 +68,13 @@ def read_xlsx(path: Path | str) -> LoadedData:
     if not rows:
         raise ReadError(f"{path.name}: the first sheet is empty")
 
+    split = split_header(rows)
+    if split is not None:
+        platform, names = split
+        width = len(names)
+        records = [[*row[:width], *[None] * (width - len(row))] for row in rows[2:]]
+        return _loaded(path, names, records, platform.name)
+
     width = max(len(row) for row in rows)
     header = [*rows[0], *[None] * (width - len(rows[0]))]
     while header and header[-1] in (None, ""):  # columns without a name nor any value
@@ -77,6 +89,13 @@ def read_xlsx(path: Path | str) -> LoadedData:
         str(name).strip() if name not in (None, "") else f"colonne_{position}"
         for position, name in enumerate(header, start=1)
     ]
+    return _loaded(path, names, records, None)
+
+
+def _loaded(
+    path: Path, names: list[str], records: list[list[object]], platform: str | None
+) -> LoadedData:
+    width = len(names)
     duplicates = sorted({name for name in names if names.count(name) > 1})
     if duplicates:
         raise ReadError(f"{path.name}: duplicate column names: {', '.join(duplicates)}")
@@ -103,5 +122,6 @@ def read_xlsx(path: Path | str) -> LoadedData:
         sha256=file_sha256(path),
         n_rows=len(table),
         n_columns=width,
+        platform=platform,
     )
     return LoadedData(source=source, variables=variables, table=table)

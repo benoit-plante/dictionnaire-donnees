@@ -189,6 +189,7 @@ def build_project(data: LoadedData, *, min_cell_count: int = MIN_CELL_COUNT) -> 
             encoding=source.encoding,
             delimiter=source.delimiter,
             decimal=source.decimal,
+            platform=source.platform,
         ),
         settings=Settings(min_cell_count=min_cell_count, max_observed_values=MAX_OBSERVED_VALUES),
         variables=[

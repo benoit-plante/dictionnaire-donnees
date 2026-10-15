@@ -7,6 +7,9 @@ profiling decides what it is (dates, mixed types, ...).
 
 Cells holding a usual missing-value token ("NA" from R, "#N/A" from Excel, ...) are read
 as empty, and counted per column so that the codebook says so (D-010).
+
+The export of a survey platform has two header rows (v0.7), read as in an Excel export
+(ddict.platforms): the second row is never data.
 """
 
 from __future__ import annotations
@@ -22,6 +25,7 @@ import pandas as pd
 
 from ddict.io.model import LoadedData, ReadError, SourceFile, VariableMetadata
 from ddict.io.sav import file_sha256
+from ddict.platforms import split_header
 
 DELIMITERS = (";", ",", "\t", "|")
 # Excel in French saves "CSV (séparateur : point-virgule)" in Windows-1252.
@@ -150,13 +154,20 @@ def read_csv(
     if len(rows) < 1:
         raise ReadError(f"{path.name} is empty")
 
-    header, records = rows[0], rows[1:]
-    for line, record in enumerate(records, start=2):
+    header, records, first_line = rows[0], rows[1:], 2
+    split = split_header(rows)
+    platform = split[0].name if split else None
+    if split is not None:
+        records, first_line = rows[2:], 3
+    for line, record in enumerate(records, start=first_line):
         if len(record) != len(header):
             raise ReadError(
                 f"{path.name}, row {line}: {len(record)} fields instead of {len(header)}"
             )
-    names = [name.strip() or f"colonne_{position}" for position, name in enumerate(header, 1)]
+    if split is not None:
+        names = split[1]
+    else:
+        names = [name.strip() or f"colonne_{pos}" for pos, name in enumerate(header, 1)]
     duplicates = sorted({name for name in names if names.count(name) > 1})
     if duplicates:
         raise ReadError(f"{path.name}: duplicate column names: {', '.join(duplicates)}")
@@ -186,5 +197,6 @@ def read_csv(
         encoding=encoding,
         delimiter=delimiter,
         decimal=decimal,
+        platform=platform,
     )
     return LoadedData(source=source, variables=variables, table=table)

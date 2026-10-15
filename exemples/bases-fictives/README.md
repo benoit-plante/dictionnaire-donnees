@@ -108,7 +108,8 @@ Une étude fictive sur la vie au travail, exportée comme le fait SurveyMonkey, 
 |---|---|
 | `travail-t1_surveymonkey.sav` | Vague 1, export brut, noms de plateforme anciens (`RespondentID`, `StartDate`…) |
 | `travail-t2_surveymonkey.sav` | Vague 2, export brut, noms de plateforme récents (`respondent_id`, `date_created`…) |
-| `travail-t2_surveymonkey.xlsx` et `.csv` | Vague 2, export Excel et CSV : en-tête sur deux lignes, réponses en texte |
+| `travail-t1_surveymonkey.xlsx` | Vague 1, export Excel : en-tête sur deux lignes, colonnes de plateforme titrées à l'ancienne (« Respondent ID »), réponses en texte |
+| `travail-t2_surveymonkey.xlsx` et `.csv` | Vague 2, export Excel et CSV : en-tête sur deux lignes, colonnes de plateforme titrées par les noms récents (`respondent_id`), réponses en texte |
 | `questionnaire-travail.txt` | Questionnaire de la vague 2 copié dans un traitement de texte, questions numérotées |
 | `questionnaire-travail.pdf` | Le même, mis en page comme un PDF de SurveyMonkey : questions non numérotées, titres de colonnes des grilles sur plusieurs lignes |
 | `travail-t1-documente.sav` | Vague 1 telle que l'équipe l'a laissée : renommée (`eft_1_t1`…), codes 6 et 7 déclarés manquants pour la grille du milieu de travail |

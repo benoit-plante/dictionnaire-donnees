@@ -11,7 +11,8 @@ from typing import Annotated, Generic, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
-SCHEMA_VERSION = "0.1.0"
+# 0.2.0 (v0.7, D-048): new fields only, all with a default; a 0.1.0 file reads as it is.
+SCHEMA_VERSION = "0.2.0"
 
 Code = int | float | str
 # "questionnaire": computed from the questionnaire under a strict rule, and like an AI value
@@ -240,6 +241,8 @@ class SourceInfo(Strict):
     encoding: str | None = None
     delimiter: str | None = None
     decimal: str | None = None
+    # The survey platform whose export this is (v0.7, D-044): "surveymonkey", or None.
+    platform: str | None = None
 
 
 class Settings(Strict):

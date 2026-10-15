@@ -32,6 +32,13 @@ def save_project(project: Project, path: Path | str) -> None:
     temporary.replace(path)
 
 
+def _version(text: str) -> tuple[int, ...]:
+    try:
+        return tuple(int(part) for part in text.split("."))
+    except ValueError:
+        return (0,)
+
+
 def load_project(path: Path | str) -> Project:
     path = Path(path)
     try:
@@ -41,10 +48,18 @@ def load_project(path: Path | str) -> Project:
     version = data.get("schema_version") if isinstance(data, dict) else None
     if not isinstance(version, str) or version.split(".")[0] != SCHEMA_VERSION.split(".")[0]:
         raise ProjectError(f"{path.name}: unsupported schema version {version!r}")
+    if _version(version) > _version(SCHEMA_VERSION):
+        raise ProjectError(
+            f"{path.name} was written by a more recent version of the tool "
+            f"(format {version}, this version reads up to {SCHEMA_VERSION}): update the tool"
+        )
     try:
-        return Project.model_validate(data)
+        project = Project.model_validate(data)
     except ValidationError as error:
         raise ProjectError(f"{path.name} is not a valid project file: {error}") from error
+    # An older format reads as it is (new fields have defaults) and is saved in this one.
+    project.schema_version = SCHEMA_VERSION
+    return project
 
 
 def source_differences(project: Project, data: LoadedData) -> list[str]:

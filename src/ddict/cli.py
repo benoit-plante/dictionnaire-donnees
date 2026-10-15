@@ -42,6 +42,7 @@ from ddict.workflow import (
     export_codebook,
     export_syntax,
     failure_advice,
+    platform_notes,
     profile_database,
     profile_summary,
     questionnaire_summary,
@@ -65,6 +66,8 @@ def cmd_profile(args: argparse.Namespace) -> int:
         return EXIT_ERROR
     print(_("Projet créé : {path}").format(path=output))
     print(profile_summary(project))
+    for note in platform_notes(project):
+        print(note)
     return 0
 
 

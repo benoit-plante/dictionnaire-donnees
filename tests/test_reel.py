@@ -57,12 +57,10 @@ def test_the_base_is_read(counts):
     assert counts["variables_plateforme"] > 0
 
 
-@FINDING
 def test_the_platform_is_recognized(counts):
     assert counts["plateforme_reconnue"] == 1
 
 
-@FINDING
 def test_the_second_header_row_is_not_a_participant(counts):
     if "xlsx_lignes_en_trop" not in counts:
         pytest.skip("pas d'export .xlsx")

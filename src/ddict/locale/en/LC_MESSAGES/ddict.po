@@ -628,6 +628,10 @@ msgstr "File error: {detail}"
 msgid "Export"
 msgstr "Export"
 
+#, python-brace-format
+msgid "Export {platform} reconnu."
+msgstr "{platform} export recognized."
+
 msgid ""
 "Facultative. Chaque proposition attend votre décision, et l'IA ne définit jamais un sigle. Ordre "
 "recommandé : glossaire, rattachement, révision des rattachements, puis libellés et descriptions."
@@ -1422,6 +1426,14 @@ msgid ""
 msgstr ""
 "Only their metadata is used: no statistics on their values, and nothing of them is sent to the "
 "model."
+
+#, python-brace-format
+msgid ""
+"Si vous avez aussi l'export .sav de ce sondage, préférez-le : il garde les codes des réponses et "
+"leurs étiquettes, que l'export {format} remplace par du texte."
+msgstr ""
+"If you also have the .sav export of this survey, prefer it: it keeps the answer codes and their "
+"labels, which the {format} export replaces with text."
 
 msgid "Sigle"
 msgstr "Acronym"
