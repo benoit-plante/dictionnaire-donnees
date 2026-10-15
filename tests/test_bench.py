@@ -189,3 +189,31 @@ def test_ai_page(server, fictional_files, tmp_path):
     assert any("Rapport écrit à côté du projet" in s.value for s in app.success)
     assert len(list(tmp_path.glob("banc-essai-*.md"))) == 1
     assert path.read_bytes() == before  # the project is not touched
+
+
+def test_why_links_were_missed():
+    """v0.6, step 2: each missed link is classified, and undone right choices counted."""
+    key = {"a": "Q1", "b": "Q2", "c": "none", "d": "Q4", "e": "Q5", "f": "Q6", "g": "none"}
+    candidates = {"a": ["Q1"], "b": ["Q3"], "c": ["Q7"], "d": ["Q4", "Q8"], "e": ["Q5"]}
+    # f and g have no candidate: they are not sent to the model, which answers nothing.
+    proposed = {"a": "Q1", "b": "Q3", "c": "Q7", "d": "Q8", "e": None, "f": None, "g": None}
+    computed = {"a": "Q1", "b": "Q3", "c": "Q7", "d": "Q4", "e": "Q5", "f": "none", "g": "none"}
+    missed, undone = bench.classify_misses(key, candidates, proposed, computed)
+    assert missed == {
+        "no_candidate": ["b", "f"],
+        "wrong_choice": ["d"],
+        "not_asked": ["c"],
+        "no_answer": ["e", "g"],
+    }
+    assert undone == ["d", "e"]  # not g: the model never saw it
+
+
+def test_the_report_says_why():
+    _progress, results = _run(Server())
+    report = bench.render_report(
+        results, model=MODEL, endpoint="http://127.0.0.1:11434/v1", date="2026-10-14"
+    )
+    assert "Pourquoi les rattachements du modèle ont été manqués" in report
+    assert "Bonne question absente des candidates" in report
+    sleep = results[0]
+    assert sum(len(v) for v in sleep.missed.values()) == len(sleep.model_wrong)

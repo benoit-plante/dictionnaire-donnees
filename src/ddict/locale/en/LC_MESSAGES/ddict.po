@@ -111,10 +111,6 @@ msgstr "- Variables with flags: {n}"
 msgid "- Variables sensibles : {n}"
 msgstr "- Sensitive variables: {n}"
 
-#, python-brace-format
-msgid "- {base}, rattachements manqués : {names}"
-msgstr "- {base}, missed links: {names}"
-
 msgid ""
 "1. Installez Ollama depuis [ollama.com](https://ollama.com) (bouton « Download for Windows »), "
 "puis lancez-le : son icône apparaît près de l'horloge.\n"
@@ -291,6 +287,12 @@ msgstr "Block {block} ({n} variables): {status}."
 msgid "Blocs en échec"
 msgstr "Failed blocks"
 
+msgid "Bonne candidate mal choisie"
+msgstr "Right candidate not chosen"
+
+msgid "Bonne question absente des candidates"
+msgstr "Right question not among the candidates"
+
 msgid "C'est un code manquant"
 msgstr "It is a missing code"
 
@@ -368,6 +370,9 @@ msgid ""
 msgstr ""
 "Choose the links in the interface (ddict review), or add --model to have a local model propose a "
 "choice among the candidates."
+
+msgid "Choix justes du calcul défaits"
+msgstr "Right choices of the computation undone"
 
 msgid "Classe"
 msgstr "Class"
@@ -1192,6 +1197,9 @@ msgstr ""
 "For a new version of the file. Links that pointed to the former version are removed; acronyms "
 "already decided are kept."
 
+msgid "Pourquoi les rattachements du modèle ont été manqués :"
+msgstr "Why the model's links were missed:"
+
 msgid "Produire le codebook Excel et le rapport Markdown d'un projet."
 msgstr "Produce the Excel codebook and the Markdown report of a project."
 
@@ -1361,6 +1369,9 @@ msgstr "For people only; the range and the thresholds require a source."
 
 msgid "Révision du dictionnaire"
 msgstr "Data dictionary review"
+
+msgid "Sans proposition"
+msgstr "No proposal"
 
 msgid "Sans question"
 msgstr "Without a question"
@@ -1583,6 +1594,9 @@ msgstr "Constant variable"
 msgid "Variable entièrement vide"
 msgstr "Entirely empty variable"
 
+msgid "Variable sans question rattachée"
+msgstr "Variable without a question linked"
+
 msgid "Variable sensible : aucune statistique sur ses valeurs."
 msgstr "Sensitive variable: no statistics on its values."
 
@@ -1634,6 +1648,10 @@ msgstr "binary"
 
 msgid "calcul"
 msgstr "computed"
+
+#, python-brace-format
+msgid "choix justes du calcul défaits ({names})"
+msgstr "right choices of the computation undone ({names})"
 
 msgid "choix unique"
 msgstr "single choice"

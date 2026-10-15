@@ -62,6 +62,52 @@ class BaseResult:
     enrich_failures: int = 0
     enrich_seconds: float = 0.0
     failure_detail: str | None = None  # the reason of the first failed block
+    # Why each missed link was missed (v0.6, step 2): see MISS_CAUSES.
+    missed: dict[str, list[str]] = field(default_factory=dict)
+    # Right first choices of the computation that the model did not keep.
+    computed_undone: list[str] = field(default_factory=list)
+
+
+MISS_CAUSES = Texts(
+    {
+        "no_candidate": N_("Bonne question absente des candidates"),
+        "wrong_choice": N_("Bonne candidate mal choisie"),
+        "not_asked": N_("Variable sans question rattachée"),
+        "no_answer": N_("Sans proposition"),
+    }
+)
+
+
+def classify_misses(
+    key: dict[str, str],
+    candidates: dict[str, list[str]],
+    proposed: dict[str, str | None],
+    computed: dict[str, str],
+) -> tuple[dict[str, list[str]], list[str]]:
+    """Why each link of the key was missed, and the computation's right choices undone.
+
+    `candidates`: what the model could choose from; `proposed`: what it answered (None when
+    it gave nothing); `computed`: the computation's first choice."""
+    missed: dict[str, list[str]] = {cause: [] for cause in MISS_CAUSES}
+    undone = []
+    for name, target in key.items():
+        answer = proposed.get(name)
+        if answer == target:
+            continue
+        offered = candidates.get(name, [])
+        # A variable without candidates is not sent to the model: it undoes nothing.
+        if offered and computed.get(name) == target:
+            undone.append(name)
+        if target == link.NO_QUESTION and answer not in (None, link.NO_QUESTION):
+            cause = "not_asked"
+        elif target != link.NO_QUESTION and target not in offered:
+            cause = "no_candidate"
+        elif answer is None:
+            cause = "no_answer"
+        else:
+            cause = "wrong_choice"
+        missed[cause].append(name)
+    return missed, undone
 
 
 def data_dir() -> Path:
@@ -116,17 +162,20 @@ def run_base(
     result = BaseResult(base["name"], len(project.variables), len(key))
     computed = link.best_guess(project)
     result.computed_right = sum(1 for n, t in key.items() if computed.get(n) == t)
+    offered = link.candidates(project)
 
     yield _("{base} : rattachements proposés par le modèle…").format(base=base["name"])
     start = clock()
     events = list(propose_links(project, client, now=now, block_size=DEFAULT_LINK_BLOCK_SIZE))
     result.link_seconds = clock() - start
     result.link_failures = _failures(events, result)
+    proposed = {name: project.variable(name).question.value for name in key}
     for name, target in key.items():
-        if project.variable(name).question.value == target:
+        if proposed[name] == target:
             result.model_right += 1
         else:
             result.model_wrong.append(name)
+    result.missed, result.computed_undone = classify_misses(key, offered, proposed, computed)
 
     # The labels are measured as after a careful review: the right links, and the acronyms
     # the questionnaire defines accepted.
@@ -203,14 +252,33 @@ def render_report(results: list[BaseResult], *, model: str, endpoint: str, date:
         f"{sum(r.link_failures for r in results)} | "
         f"{_seconds(sum(r.link_seconds for r in results))} |"
     )
+    lines += [
+        "",
+        _("Pourquoi les rattachements du modèle ont été manqués :"),
+        "",
+        f"| {_('Base')} | "
+        + " | ".join(MISS_CAUSES[c] for c in MISS_CAUSES)
+        + f" | {_('Choix justes du calcul défaits')} |",
+        "|---|" + "---|" * (len(MISS_CAUSES) + 1),
+    ]
+    for r in results:
+        counts = " | ".join(str(len(r.missed.get(c, []))) for c in MISS_CAUSES)
+        lines.append(f"| {r.name} | {counts} | {len(r.computed_undone)} |")
     lines.append("")
     for r in results:
-        if r.model_wrong:
-            lines.append(
-                _("- {base}, rattachements manqués : {names}").format(
-                    base=r.name, names=", ".join(f"`{n}`" for n in r.model_wrong)
+        details = [
+            f"{MISS_CAUSES[c].lower()} ({', '.join(f'`{n}`' for n in r.missed[c])})"
+            for c in MISS_CAUSES
+            if r.missed.get(c)
+        ]
+        if r.computed_undone:
+            details.append(
+                _("choix justes du calcul défaits ({names})").format(
+                    names=", ".join(f"`{n}`" for n in r.computed_undone)
                 )
             )
+        if details:
+            lines.append(f"- {r.name}{colon()}" + semicolon().join(details))
     lines += [
         "",
         _("## Libellés et descriptions"),
