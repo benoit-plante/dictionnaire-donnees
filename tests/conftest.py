@@ -78,3 +78,36 @@ def english_generator():
 def english_files(english_generator, tmp_path_factory):
     out_dir = tmp_path_factory.mktemp("sleep-study")
     return {path.name: path for path in english_generator.write_all(out_dir)}
+
+
+SURVEYMONKEY_GENERATOR_PATH = ROOT / "scripts" / "generer_base_surveymonkey.py"
+
+
+@pytest.fixture(scope="session")
+def surveymonkey_generator():
+    """The fictional SurveyMonkey export, in two waves (v0.7)."""
+    sys.path.insert(0, str(ROOT / "scripts"))
+    spec = importlib.util.spec_from_file_location(
+        "generer_base_surveymonkey", SURVEYMONKEY_GENERATOR_PATH
+    )
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.fixture(scope="session")
+def surveymonkey_files(surveymonkey_generator, tmp_path_factory):
+    out_dir = tmp_path_factory.mktemp("surveymonkey")
+    return {path.name: path for path in surveymonkey_generator.write_all(out_dir)}
+
+
+def load_counter():
+    """scripts/compter_structure.py: counts only, for the real exports (D-046)."""
+    spec = importlib.util.spec_from_file_location(
+        "compter_structure", ROOT / "scripts" / "compter_structure.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module

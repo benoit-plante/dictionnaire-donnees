@@ -99,3 +99,37 @@ Les identifiants, les courriels et les commentaires contiennent des **chaînes t
 | Grille du PDF lisible | les options de Q7, plus courtes, ne se collent pas comme en français |
 | Témoin de la page de consentement | `ZQXQUESTEN` |
 
+
+## Export SurveyMonkey fictif, en deux vagues (v0.7)
+
+Une étude fictive sur la vie au travail, exportée comme le fait SurveyMonkey, écrite par `scripts/generer_base_surveymonkey.py` (graine fixe). Elle reproduit les conventions observées dans deux vrais exports, sans rien en reprendre : tous les énoncés sont inventés. Le corrigé `corrige-surveymonkey.json` donne la structure de chaque variable, les groupes, les rattachements, les noms attendus et les écarts entre les vagues.
+
+| Fichier | Ce qu'il imite |
+|---|---|
+| `travail-t1_surveymonkey.sav` | Vague 1, export brut, noms de plateforme anciens (`RespondentID`, `StartDate`…) |
+| `travail-t2_surveymonkey.sav` | Vague 2, export brut, noms de plateforme récents (`respondent_id`, `date_created`…) |
+| `travail-t2_surveymonkey.xlsx` et `.csv` | Vague 2, export Excel et CSV : en-tête sur deux lignes, réponses en texte |
+| `questionnaire-travail.txt` | Questionnaire de la vague 2 copié dans un traitement de texte, questions numérotées |
+| `questionnaire-travail.pdf` | Le même, mis en page comme un PDF de SurveyMonkey : questions non numérotées, titres de colonnes des grilles sur plusieurs lignes |
+| `travail-t1-documente.sav` | Vague 1 telle que l'équipe l'a laissée : renommée (`eft_1_t1`…), codes 6 et 7 déclarés manquants pour la grille du milieu de travail |
+| `travail-t1-correspondance.csv` | Table des noms de la vague 1 (`nom_origine,nouveau_nom`, D-052) |
+
+| Piège | Où (vague 2) |
+|---|---|
+| Variables de la plateforme en tête, dont des identifiants (témoin `ZQXSMID`) et des dates de passation en texte (`A22` ou `A100`) | `CollectorNm` à `custom_1` |
+| Questions nommées par leur rang, énoncés et options par le leur | `q0001`, `q0003_0004`, `q0005_other` |
+| Questions simples au préfixe commun `q` : ce n'est pas une échelle | `q0001`, `q0002`, `q0006`, `q0007` |
+| Grille d'échelle de Likert, niveau `scale`, une série d'étiquettes par item | `q0003_0001` à `q0003_0012` |
+| Item contenant le verbe « identifier » | `q0003_0005` |
+| « Ne sais pas » (6) et « Préfère ne pas répondre » (7) non déclarés manquants | `q0004_0001` à `q0004_0005` |
+| Trois ensembles à cocher (une étiquette `1 = option`, non coché = vide), chacun avec « autre » étiqueté en anglais | `q0005`, `q0008`, `q0010` |
+| Cases à cocher annoncées sans « toutes » (« Cochez les… », « Coche les… ») | `q0008`, `q0010` |
+| Questions ouvertes (témoin `ZQXSMTXT`) | `q0009`, `q0011` |
+| Variable texte finale étiquetée `id` : code de famille et initiales inventées | `q0012` |
+| Page d'information avec les coordonnées de l'équipe | témoin `ZQXSMQUEST` |
+
+| Écart entre les vagues | Où |
+|---|---|
+| Question ajoutée en vague 2, qui décale la numérotation `qNNNN` | `q0002` (ancienneté) |
+| Item retiré de la grille de Likert | 10ᵉ item de la vague 1 (`q0002_0010`) |
+| Étiquette de valeur changée | `q0007` : « Plus de deux » devient « Trois ou plus » |

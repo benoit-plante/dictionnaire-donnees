@@ -1,0 +1,81 @@
+Étude fictive sur la vie au travail
+
+Cette étude est entièrement fictive : elle sert à vérifier un outil de documentation des données. Elle comprend l'Échelle fictive des tensions au travail (EFT).
+
+Responsable : Mme Alix ZQXSMQUEST-Exemple, Laboratoire fictif du travail. Pour nous joindre : zqxsmquest@exemple.org.
+
+1. Dans quel secteur travaillez-vous ?
+Santé et services sociaux
+Éducation
+Commerce
+Industrie
+Administration
+
+2. Depuis combien de temps occupez-vous votre emploi actuel ?
+Moins d'un an
+De 1 à 5 ans
+De 6 à 10 ans
+Plus de 10 ans
+
+3. Au cours du dernier mois, à quelle fréquence avez-vous vécu les situations suivantes au travail ?
+	Jamais	Rarement	Parfois	Souvent	Toujours
+J'ai eu trop de tâches à accomplir en peu de temps.					
+J'ai pu prendre mes pauses comme prévu.					
+Je me suis senti·e soutenu·e par mes collègues.					
+J'ai eu de la difficulté à décrocher après le travail.					
+J'ai pu identifier les sources de tension dans mon équipe.					
+J'ai reçu des consignes contradictoires.					
+Je me suis senti·e reconnu·e pour mon travail.					
+J'ai manqué d'information pour bien faire mon travail.					
+J'ai eu le sentiment de bien faire mon travail.					
+J'ai été interrompu·e souvent dans mes tâches.					
+J'ai eu assez d'autonomie dans l'organisation de mon travail.					
+J'ai pensé à quitter mon emploi.					
+
+4. Dans quelle mesure êtes-vous satisfait·e des aspects suivants de votre milieu de travail ?
+	Très insatisfait·e	Plutôt insatisfait·e	Ni l'un ni l'autre	Plutôt satisfait·e	Très satisfait·e	Ne sais pas	Préfère ne pas répondre
+Êtes-vous satisfait·e de l'éclairage ?							
+Êtes-vous satisfait·e du niveau de bruit ?							
+Êtes-vous satisfait·e de la température ?							
+Êtes-vous satisfait·e de l'équipement fourni ?							
+Êtes-vous satisfait·e de l'espace de rangement ?							
+
+5. Quelles tâches faites-vous dans une semaine habituelle ? (Cochez toutes les réponses qui s'appliquent)
+Accueil de la clientèle
+Travail à l'ordinateur
+Manutention
+Entretien ménager
+Supervision d'une équipe
+Autre (veuillez préciser)
+
+6. Avez-vous reçu une formation en santé et sécurité au travail au cours de la dernière année ?
+Oui
+Non
+
+7. Combien de pauses prenez-vous dans une journée de travail habituelle ?
+Aucune
+Une
+Deux
+Trois ou plus
+
+8. Cochez les consignes de sécurité que vous avez reçues à votre arrivée.
+Plan d'évacuation
+Port de l'équipement de protection
+Utilisation des produits dangereux
+Premiers soins
+Signalement des accidents
+Ergonomie du poste de travail
+Autre (veuillez préciser)
+
+9. Décrivez une situation récente où vous vous êtes senti·e en danger au travail.
+
+10. Coche les moyens de transport que tu utilises pour te rendre au travail.
+Voiture
+Transport en commun
+Vélo
+Marche
+Autre (veuillez préciser)
+
+11. Avez-vous d'autres commentaires ?
+
+Merci de votre participation !

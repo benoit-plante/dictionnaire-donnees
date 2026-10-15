@@ -1,0 +1,1075 @@
+{
+  "version": 1,
+  "description": "Base fictive au format SurveyMonkey (v0.7) : structure, groupes, rattachements, noms attendus et écarts entre les vagues. Tout est inventé.",
+  "waves": {
+    "t1": {
+      "sav": "travail-t1_surveymonkey.sav",
+      "n_rows": 120,
+      "platform_variables": [
+        "CollectorNm",
+        "RespondentID",
+        "CollectorID",
+        "StartDate",
+        "EndDate",
+        "IPAddress",
+        "EmailAddress",
+        "FirstName",
+        "LastName",
+        "CustomData1"
+      ],
+      "structure": {
+        "q0001": {
+          "question": 1,
+          "item": null,
+          "other": false,
+          "kind": "single"
+        },
+        "q0002_0001": {
+          "question": 2,
+          "item": 1,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0002_0002": {
+          "question": 2,
+          "item": 2,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0002_0003": {
+          "question": 2,
+          "item": 3,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0002_0004": {
+          "question": 2,
+          "item": 4,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0002_0005": {
+          "question": 2,
+          "item": 5,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0002_0006": {
+          "question": 2,
+          "item": 6,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0002_0007": {
+          "question": 2,
+          "item": 7,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0002_0008": {
+          "question": 2,
+          "item": 8,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0002_0009": {
+          "question": 2,
+          "item": 9,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0002_0010": {
+          "question": 2,
+          "item": 10,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0002_0011": {
+          "question": 2,
+          "item": 11,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0002_0012": {
+          "question": 2,
+          "item": 12,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0002_0013": {
+          "question": 2,
+          "item": 13,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0003_0001": {
+          "question": 3,
+          "item": 1,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0003_0002": {
+          "question": 3,
+          "item": 2,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0003_0003": {
+          "question": 3,
+          "item": 3,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0003_0004": {
+          "question": 3,
+          "item": 4,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0003_0005": {
+          "question": 3,
+          "item": 5,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0004_0001": {
+          "question": 4,
+          "item": 1,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0004_0002": {
+          "question": 4,
+          "item": 2,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0004_0003": {
+          "question": 4,
+          "item": 3,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0004_0004": {
+          "question": 4,
+          "item": 4,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0004_0005": {
+          "question": 4,
+          "item": 5,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0004_other": {
+          "question": 4,
+          "item": null,
+          "other": true,
+          "kind": "checkbox"
+        },
+        "q0005": {
+          "question": 5,
+          "item": null,
+          "other": false,
+          "kind": "single"
+        },
+        "q0006": {
+          "question": 6,
+          "item": null,
+          "other": false,
+          "kind": "single"
+        },
+        "q0007_0001": {
+          "question": 7,
+          "item": 1,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0007_0002": {
+          "question": 7,
+          "item": 2,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0007_0003": {
+          "question": 7,
+          "item": 3,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0007_0004": {
+          "question": 7,
+          "item": 4,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0007_0005": {
+          "question": 7,
+          "item": 5,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0007_0006": {
+          "question": 7,
+          "item": 6,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0007_other": {
+          "question": 7,
+          "item": null,
+          "other": true,
+          "kind": "checkbox"
+        },
+        "q0008": {
+          "question": 8,
+          "item": null,
+          "other": false,
+          "kind": "open"
+        },
+        "q0009_0001": {
+          "question": 9,
+          "item": 1,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0009_0002": {
+          "question": 9,
+          "item": 2,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0009_0003": {
+          "question": 9,
+          "item": 3,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0009_0004": {
+          "question": 9,
+          "item": 4,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0009_other": {
+          "question": 9,
+          "item": null,
+          "other": true,
+          "kind": "checkbox"
+        },
+        "q0010": {
+          "question": 10,
+          "item": null,
+          "other": false,
+          "kind": "open"
+        },
+        "q0011": {
+          "question": 11,
+          "item": null,
+          "other": false,
+          "kind": "hidden"
+        }
+      },
+      "groups": [
+        {
+          "kind": "scale",
+          "members": [
+            "q0002_0001",
+            "q0002_0002",
+            "q0002_0003",
+            "q0002_0004",
+            "q0002_0005",
+            "q0002_0006",
+            "q0002_0007",
+            "q0002_0008",
+            "q0002_0009",
+            "q0002_0010",
+            "q0002_0011",
+            "q0002_0012",
+            "q0002_0013"
+          ]
+        },
+        {
+          "kind": "scale",
+          "members": [
+            "q0003_0001",
+            "q0003_0002",
+            "q0003_0003",
+            "q0003_0004",
+            "q0003_0005"
+          ]
+        },
+        {
+          "kind": "multiple_response",
+          "members": [
+            "q0004_0001",
+            "q0004_0002",
+            "q0004_0003",
+            "q0004_0004",
+            "q0004_0005"
+          ],
+          "attached": [
+            "q0004_other"
+          ]
+        },
+        {
+          "kind": "multiple_response",
+          "members": [
+            "q0007_0001",
+            "q0007_0002",
+            "q0007_0003",
+            "q0007_0004",
+            "q0007_0005",
+            "q0007_0006"
+          ],
+          "attached": [
+            "q0007_other"
+          ]
+        },
+        {
+          "kind": "multiple_response",
+          "members": [
+            "q0009_0001",
+            "q0009_0002",
+            "q0009_0003",
+            "q0009_0004"
+          ],
+          "attached": [
+            "q0009_other"
+          ]
+        }
+      ],
+      "links": {
+        "q0001": "Q1",
+        "q0002_0001": "Q2.r1",
+        "q0002_0002": "Q2.r2",
+        "q0002_0003": "Q2.r3",
+        "q0002_0004": "Q2.r4",
+        "q0002_0005": "Q2.r5",
+        "q0002_0006": "Q2.r6",
+        "q0002_0007": "Q2.r7",
+        "q0002_0008": "Q2.r8",
+        "q0002_0009": "Q2.r9",
+        "q0002_0010": "Q2.r10",
+        "q0002_0011": "Q2.r11",
+        "q0002_0012": "Q2.r12",
+        "q0002_0013": "Q2.r13",
+        "q0003_0001": "Q3.r1",
+        "q0003_0002": "Q3.r2",
+        "q0003_0003": "Q3.r3",
+        "q0003_0004": "Q3.r4",
+        "q0003_0005": "Q3.r5",
+        "q0004_0001": "Q4.o1",
+        "q0004_0002": "Q4.o2",
+        "q0004_0003": "Q4.o3",
+        "q0004_0004": "Q4.o4",
+        "q0004_0005": "Q4.o5",
+        "q0004_other": "Q4.o6",
+        "q0005": "Q5",
+        "q0006": "Q6",
+        "q0007_0001": "Q7.o1",
+        "q0007_0002": "Q7.o2",
+        "q0007_0003": "Q7.o3",
+        "q0007_0004": "Q7.o4",
+        "q0007_0005": "Q7.o5",
+        "q0007_0006": "Q7.o6",
+        "q0007_other": "Q7.o7",
+        "q0008": "Q8",
+        "q0009_0001": "Q9.o1",
+        "q0009_0002": "Q9.o2",
+        "q0009_0003": "Q9.o3",
+        "q0009_0004": "Q9.o4",
+        "q0009_other": "Q9.o5",
+        "q0010": "Q10",
+        "q0011": "none",
+        "CollectorNm": "none",
+        "RespondentID": "none",
+        "CollectorID": "none",
+        "StartDate": "none",
+        "EndDate": "none",
+        "IPAddress": "none",
+        "EmailAddress": "none",
+        "FirstName": "none",
+        "LastName": "none",
+        "CustomData1": "none"
+      },
+      "prefixes": {
+        "q0002": "eft",
+        "q0003": "milieu"
+      },
+      "stems": {
+        "q0001": "secteur",
+        "q0004": "taches",
+        "q0005": "formation_sst",
+        "q0006": "pauses",
+        "q0007": "consignes_securite",
+        "q0008": "situation_danger",
+        "q0009": "transport",
+        "q0010": "commentaires",
+        "q0011": "id_participant"
+      },
+      "names": {
+        "CollectorNm": "nom_collecteur_t1",
+        "RespondentID": "respondent_id_t1",
+        "CollectorID": "collector_id_t1",
+        "StartDate": "date_debut_t1",
+        "EndDate": "date_fin_t1",
+        "IPAddress": "adresse_ip_t1",
+        "EmailAddress": "courriel_t1",
+        "FirstName": "prenom_t1",
+        "LastName": "nom_famille_t1",
+        "CustomData1": "donnees_personnalisees_1_t1",
+        "q0001": "secteur_t1",
+        "q0002_0001": "eft_1_t1",
+        "q0002_0002": "eft_2_t1",
+        "q0002_0003": "eft_3_t1",
+        "q0002_0004": "eft_4_t1",
+        "q0002_0005": "eft_5_t1",
+        "q0002_0006": "eft_6_t1",
+        "q0002_0007": "eft_7_t1",
+        "q0002_0008": "eft_8_t1",
+        "q0002_0009": "eft_9_t1",
+        "q0002_0010": "eft_10_t1",
+        "q0002_0011": "eft_11_t1",
+        "q0002_0012": "eft_12_t1",
+        "q0002_0013": "eft_13_t1",
+        "q0003_0001": "milieu_1_t1",
+        "q0003_0002": "milieu_2_t1",
+        "q0003_0003": "milieu_3_t1",
+        "q0003_0004": "milieu_4_t1",
+        "q0003_0005": "milieu_5_t1",
+        "q0004_0001": "taches_1_t1",
+        "q0004_0002": "taches_2_t1",
+        "q0004_0003": "taches_3_t1",
+        "q0004_0004": "taches_4_t1",
+        "q0004_0005": "taches_5_t1",
+        "q0004_other": "taches_autre_txt_t1",
+        "q0005": "formation_sst_t1",
+        "q0006": "pauses_t1",
+        "q0007_0001": "consignes_securite_1_t1",
+        "q0007_0002": "consignes_securite_2_t1",
+        "q0007_0003": "consignes_securite_3_t1",
+        "q0007_0004": "consignes_securite_4_t1",
+        "q0007_0005": "consignes_securite_5_t1",
+        "q0007_0006": "consignes_securite_6_t1",
+        "q0007_other": "consignes_securite_autre_txt_t1",
+        "q0008": "situation_danger_t1",
+        "q0009_0001": "transport_1_t1",
+        "q0009_0002": "transport_2_t1",
+        "q0009_0003": "transport_3_t1",
+        "q0009_0004": "transport_4_t1",
+        "q0009_other": "transport_autre_txt_t1",
+        "q0010": "commentaires_t1",
+        "q0011": "id_participant_t1"
+      }
+    },
+    "t2": {
+      "sav": "travail-t2_surveymonkey.sav",
+      "n_rows": 110,
+      "platform_variables": [
+        "CollectorNm",
+        "respondent_id",
+        "collector_id",
+        "date_created",
+        "date_modified",
+        "ip_address",
+        "email_address",
+        "first_name",
+        "last_name",
+        "custom_1"
+      ],
+      "structure": {
+        "q0001": {
+          "question": 1,
+          "item": null,
+          "other": false,
+          "kind": "single"
+        },
+        "q0002": {
+          "question": 2,
+          "item": null,
+          "other": false,
+          "kind": "single"
+        },
+        "q0003_0001": {
+          "question": 3,
+          "item": 1,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0003_0002": {
+          "question": 3,
+          "item": 2,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0003_0003": {
+          "question": 3,
+          "item": 3,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0003_0004": {
+          "question": 3,
+          "item": 4,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0003_0005": {
+          "question": 3,
+          "item": 5,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0003_0006": {
+          "question": 3,
+          "item": 6,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0003_0007": {
+          "question": 3,
+          "item": 7,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0003_0008": {
+          "question": 3,
+          "item": 8,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0003_0009": {
+          "question": 3,
+          "item": 9,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0003_0010": {
+          "question": 3,
+          "item": 10,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0003_0011": {
+          "question": 3,
+          "item": 11,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0003_0012": {
+          "question": 3,
+          "item": 12,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0004_0001": {
+          "question": 4,
+          "item": 1,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0004_0002": {
+          "question": 4,
+          "item": 2,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0004_0003": {
+          "question": 4,
+          "item": 3,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0004_0004": {
+          "question": 4,
+          "item": 4,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0004_0005": {
+          "question": 4,
+          "item": 5,
+          "other": false,
+          "kind": "grid"
+        },
+        "q0005_0001": {
+          "question": 5,
+          "item": 1,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0005_0002": {
+          "question": 5,
+          "item": 2,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0005_0003": {
+          "question": 5,
+          "item": 3,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0005_0004": {
+          "question": 5,
+          "item": 4,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0005_0005": {
+          "question": 5,
+          "item": 5,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0005_other": {
+          "question": 5,
+          "item": null,
+          "other": true,
+          "kind": "checkbox"
+        },
+        "q0006": {
+          "question": 6,
+          "item": null,
+          "other": false,
+          "kind": "single"
+        },
+        "q0007": {
+          "question": 7,
+          "item": null,
+          "other": false,
+          "kind": "single"
+        },
+        "q0008_0001": {
+          "question": 8,
+          "item": 1,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0008_0002": {
+          "question": 8,
+          "item": 2,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0008_0003": {
+          "question": 8,
+          "item": 3,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0008_0004": {
+          "question": 8,
+          "item": 4,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0008_0005": {
+          "question": 8,
+          "item": 5,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0008_0006": {
+          "question": 8,
+          "item": 6,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0008_other": {
+          "question": 8,
+          "item": null,
+          "other": true,
+          "kind": "checkbox"
+        },
+        "q0009": {
+          "question": 9,
+          "item": null,
+          "other": false,
+          "kind": "open"
+        },
+        "q0010_0001": {
+          "question": 10,
+          "item": 1,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0010_0002": {
+          "question": 10,
+          "item": 2,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0010_0003": {
+          "question": 10,
+          "item": 3,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0010_0004": {
+          "question": 10,
+          "item": 4,
+          "other": false,
+          "kind": "checkbox"
+        },
+        "q0010_other": {
+          "question": 10,
+          "item": null,
+          "other": true,
+          "kind": "checkbox"
+        },
+        "q0011": {
+          "question": 11,
+          "item": null,
+          "other": false,
+          "kind": "open"
+        },
+        "q0012": {
+          "question": 12,
+          "item": null,
+          "other": false,
+          "kind": "hidden"
+        }
+      },
+      "groups": [
+        {
+          "kind": "scale",
+          "members": [
+            "q0003_0001",
+            "q0003_0002",
+            "q0003_0003",
+            "q0003_0004",
+            "q0003_0005",
+            "q0003_0006",
+            "q0003_0007",
+            "q0003_0008",
+            "q0003_0009",
+            "q0003_0010",
+            "q0003_0011",
+            "q0003_0012"
+          ]
+        },
+        {
+          "kind": "scale",
+          "members": [
+            "q0004_0001",
+            "q0004_0002",
+            "q0004_0003",
+            "q0004_0004",
+            "q0004_0005"
+          ]
+        },
+        {
+          "kind": "multiple_response",
+          "members": [
+            "q0005_0001",
+            "q0005_0002",
+            "q0005_0003",
+            "q0005_0004",
+            "q0005_0005"
+          ],
+          "attached": [
+            "q0005_other"
+          ]
+        },
+        {
+          "kind": "multiple_response",
+          "members": [
+            "q0008_0001",
+            "q0008_0002",
+            "q0008_0003",
+            "q0008_0004",
+            "q0008_0005",
+            "q0008_0006"
+          ],
+          "attached": [
+            "q0008_other"
+          ]
+        },
+        {
+          "kind": "multiple_response",
+          "members": [
+            "q0010_0001",
+            "q0010_0002",
+            "q0010_0003",
+            "q0010_0004"
+          ],
+          "attached": [
+            "q0010_other"
+          ]
+        }
+      ],
+      "links": {
+        "q0001": "Q1",
+        "q0002": "Q2",
+        "q0003_0001": "Q3.r1",
+        "q0003_0002": "Q3.r2",
+        "q0003_0003": "Q3.r3",
+        "q0003_0004": "Q3.r4",
+        "q0003_0005": "Q3.r5",
+        "q0003_0006": "Q3.r6",
+        "q0003_0007": "Q3.r7",
+        "q0003_0008": "Q3.r8",
+        "q0003_0009": "Q3.r9",
+        "q0003_0010": "Q3.r10",
+        "q0003_0011": "Q3.r11",
+        "q0003_0012": "Q3.r12",
+        "q0004_0001": "Q4.r1",
+        "q0004_0002": "Q4.r2",
+        "q0004_0003": "Q4.r3",
+        "q0004_0004": "Q4.r4",
+        "q0004_0005": "Q4.r5",
+        "q0005_0001": "Q5.o1",
+        "q0005_0002": "Q5.o2",
+        "q0005_0003": "Q5.o3",
+        "q0005_0004": "Q5.o4",
+        "q0005_0005": "Q5.o5",
+        "q0005_other": "Q5.o6",
+        "q0006": "Q6",
+        "q0007": "Q7",
+        "q0008_0001": "Q8.o1",
+        "q0008_0002": "Q8.o2",
+        "q0008_0003": "Q8.o3",
+        "q0008_0004": "Q8.o4",
+        "q0008_0005": "Q8.o5",
+        "q0008_0006": "Q8.o6",
+        "q0008_other": "Q8.o7",
+        "q0009": "Q9",
+        "q0010_0001": "Q10.o1",
+        "q0010_0002": "Q10.o2",
+        "q0010_0003": "Q10.o3",
+        "q0010_0004": "Q10.o4",
+        "q0010_other": "Q10.o5",
+        "q0011": "Q11",
+        "q0012": "none",
+        "CollectorNm": "none",
+        "respondent_id": "none",
+        "collector_id": "none",
+        "date_created": "none",
+        "date_modified": "none",
+        "ip_address": "none",
+        "email_address": "none",
+        "first_name": "none",
+        "last_name": "none",
+        "custom_1": "none"
+      },
+      "prefixes": {
+        "q0003": "eft",
+        "q0004": "milieu"
+      },
+      "stems": {
+        "q0001": "secteur",
+        "q0002": "anciennete",
+        "q0005": "taches",
+        "q0006": "formation_sst",
+        "q0007": "pauses",
+        "q0008": "consignes_securite",
+        "q0009": "situation_danger",
+        "q0010": "transport",
+        "q0011": "commentaires",
+        "q0012": "id_participant"
+      },
+      "names": {
+        "CollectorNm": "nom_collecteur_t2",
+        "respondent_id": "respondent_id_t2",
+        "collector_id": "collector_id_t2",
+        "date_created": "date_debut_t2",
+        "date_modified": "date_fin_t2",
+        "ip_address": "adresse_ip_t2",
+        "email_address": "courriel_t2",
+        "first_name": "prenom_t2",
+        "last_name": "nom_famille_t2",
+        "custom_1": "donnees_personnalisees_1_t2",
+        "q0001": "secteur_t2",
+        "q0002": "anciennete_t2",
+        "q0003_0001": "eft_1_t2",
+        "q0003_0002": "eft_2_t2",
+        "q0003_0003": "eft_3_t2",
+        "q0003_0004": "eft_4_t2",
+        "q0003_0005": "eft_5_t2",
+        "q0003_0006": "eft_6_t2",
+        "q0003_0007": "eft_7_t2",
+        "q0003_0008": "eft_8_t2",
+        "q0003_0009": "eft_9_t2",
+        "q0003_0010": "eft_11_t2",
+        "q0003_0011": "eft_12_t2",
+        "q0003_0012": "eft_13_t2",
+        "q0004_0001": "milieu_1_t2",
+        "q0004_0002": "milieu_2_t2",
+        "q0004_0003": "milieu_3_t2",
+        "q0004_0004": "milieu_4_t2",
+        "q0004_0005": "milieu_5_t2",
+        "q0005_0001": "taches_1_t2",
+        "q0005_0002": "taches_2_t2",
+        "q0005_0003": "taches_3_t2",
+        "q0005_0004": "taches_4_t2",
+        "q0005_0005": "taches_5_t2",
+        "q0005_other": "taches_autre_txt_t2",
+        "q0006": "formation_sst_t2",
+        "q0007": "pauses_t2",
+        "q0008_0001": "consignes_securite_1_t2",
+        "q0008_0002": "consignes_securite_2_t2",
+        "q0008_0003": "consignes_securite_3_t2",
+        "q0008_0004": "consignes_securite_4_t2",
+        "q0008_0005": "consignes_securite_5_t2",
+        "q0008_0006": "consignes_securite_6_t2",
+        "q0008_other": "consignes_securite_autre_txt_t2",
+        "q0009": "situation_danger_t2",
+        "q0010_0001": "transport_1_t2",
+        "q0010_0002": "transport_2_t2",
+        "q0010_0003": "transport_3_t2",
+        "q0010_0004": "transport_4_t2",
+        "q0010_other": "transport_autre_txt_t2",
+        "q0011": "commentaires_t2",
+        "q0012": "id_participant_t2"
+      },
+      "xlsx": "travail-t2_surveymonkey.xlsx",
+      "csv": "travail-t2_surveymonkey.csv",
+      "questionnaire_txt": "questionnaire-travail.txt",
+      "questionnaire_pdf": "questionnaire-travail.pdf",
+      "questions": [
+        {
+          "id": "Q1",
+          "kind": "single",
+          "n_rows": 0,
+          "n_options": 5
+        },
+        {
+          "id": "Q2",
+          "kind": "single",
+          "n_rows": 0,
+          "n_options": 4
+        },
+        {
+          "id": "Q3",
+          "kind": "grid",
+          "n_rows": 12,
+          "n_options": 5
+        },
+        {
+          "id": "Q4",
+          "kind": "grid",
+          "n_rows": 5,
+          "n_options": 7
+        },
+        {
+          "id": "Q5",
+          "kind": "checkbox",
+          "n_rows": 0,
+          "n_options": 6
+        },
+        {
+          "id": "Q6",
+          "kind": "single",
+          "n_rows": 0,
+          "n_options": 2
+        },
+        {
+          "id": "Q7",
+          "kind": "single",
+          "n_rows": 0,
+          "n_options": 4
+        },
+        {
+          "id": "Q8",
+          "kind": "checkbox",
+          "n_rows": 0,
+          "n_options": 7
+        },
+        {
+          "id": "Q9",
+          "kind": "open",
+          "n_rows": 0,
+          "n_options": 0
+        },
+        {
+          "id": "Q10",
+          "kind": "checkbox",
+          "n_rows": 0,
+          "n_options": 5
+        },
+        {
+          "id": "Q11",
+          "kind": "open",
+          "n_rows": 0,
+          "n_options": 0
+        }
+      ]
+    }
+  },
+  "t1_renamed": {
+    "documented_copy": "travail-t1-documente.sav",
+    "name_table": "travail-t1-correspondance.csv"
+  },
+  "between_waves": {
+    "pairs_t2_to_t1": {
+      "CollectorNm": "CollectorNm",
+      "respondent_id": "RespondentID",
+      "collector_id": "CollectorID",
+      "date_created": "StartDate",
+      "date_modified": "EndDate",
+      "ip_address": "IPAddress",
+      "email_address": "EmailAddress",
+      "first_name": "FirstName",
+      "last_name": "LastName",
+      "custom_1": "CustomData1",
+      "q0001": "q0001",
+      "q0003_0001": "q0003_0001",
+      "q0003_0002": "q0003_0002",
+      "q0003_0003": "q0003_0003",
+      "q0003_0004": "q0003_0004",
+      "q0003_0005": "q0003_0005",
+      "q0003_0006": "q0002_0006",
+      "q0003_0007": "q0002_0007",
+      "q0003_0008": "q0002_0008",
+      "q0003_0009": "q0002_0009",
+      "q0003_0010": "q0002_0011",
+      "q0003_0011": "q0002_0012",
+      "q0003_0012": "q0002_0013",
+      "q0004_0001": "q0003_0001",
+      "q0004_0002": "q0003_0002",
+      "q0004_0003": "q0003_0003",
+      "q0004_0004": "q0003_0004",
+      "q0004_0005": "q0003_0005",
+      "q0005_0001": "q0004_0001",
+      "q0005_0002": "q0004_0002",
+      "q0005_0003": "q0004_0003",
+      "q0005_0004": "q0004_0004",
+      "q0005_0005": "q0004_0005",
+      "q0005_other": "q0004_other",
+      "q0006": "q0005",
+      "q0007": "q0006",
+      "q0008_0001": "q0007_0001",
+      "q0008_0002": "q0007_0002",
+      "q0008_0003": "q0007_0003",
+      "q0008_0004": "q0007_0004",
+      "q0008_0005": "q0007_0005",
+      "q0008_0006": "q0007_0006",
+      "q0008_other": "q0007_other",
+      "q0009": "q0008",
+      "q0010_0001": "q0009_0001",
+      "q0010_0002": "q0009_0002",
+      "q0010_0003": "q0009_0003",
+      "q0010_0004": "q0009_0004",
+      "q0010_other": "q0009_other",
+      "q0011": "q0010",
+      "q0012": "q0011"
+    },
+    "added": [
+      "q0002"
+    ],
+    "removed": [
+      "q0002_0010"
+    ],
+    "value_labels_changed": [
+      "q0007"
+    ]
+  },
+  "canaries": [
+    "ZQXSMID",
+    "ZQXSMTXT",
+    "ZQXSMQUEST"
+  ]
+}

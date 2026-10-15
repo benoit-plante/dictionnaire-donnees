@@ -67,6 +67,11 @@ packages = ["src/ddict"]
 [tool.pytest.ini_options]
 # Network access is forbidden in every test (CONCEPTION.md, principle 5).
 addopts = ["--disable-socket", "--strict-markers"]
+markers = [
+    # D-046: real exports outside the repository, given by DDICT_DONNEES_REELLES; skipped
+    # without it, so never run by continuous integration. Counts only, never a value.
+    "reel: tests on real survey exports kept outside the repository (D-046)",
+]
 testpaths = ["tests"]
 
 [tool.ruff]

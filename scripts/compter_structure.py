@@ -1,0 +1,249 @@
+"""Count what the tool finds in a survey platform export, as numbers only (v0.7, D-046).
+
+For the real exports kept outside the repository: every result is a count or a rate, never
+a value, a label, a question text nor a file name, so that it can be shown, kept in a trial
+report or compared by a test without revealing anything. An error is reported by its type
+only, since its message could quote the data.
+
+The expected structure comes from the names alone (SurveyMonkey's `q0003_0004`), read
+independently of the tool, so that the counts measure the tool against it.
+
+A base is a folder holding one `.sav` file and, optionally, the `.xlsx` export of the same
+survey and its questionnaire (`.pdf`, `.txt`). With a folder of folders, each subfolder is a
+base, named `base1`, `base2`, ... in alphabetical order.
+
+Usage (from the repository root):
+    uv run python scripts/compter_structure.py <folder>
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+from collections import Counter, defaultdict
+from pathlib import Path
+
+import pandas as pd
+
+from ddict.io import read_database
+from ddict.project import build_project
+from ddict.questionnaire import load_questionnaire
+
+ITEM_NAME = re.compile(r"q(\d{4})(?:_(\d{4}|other))?", re.IGNORECASE)
+PLATFORM_NAMES = {
+    "collectornm",
+    "respondentid",
+    "collectorid",
+    "startdate",
+    "enddate",
+    "ipaddress",
+    "emailaddress",
+    "firstname",
+    "lastname",
+    "customdata1",
+    "respondent_id",
+    "collector_id",
+    "date_created",
+    "date_modified",
+    "ip_address",
+    "email_address",
+    "first_name",
+    "last_name",
+    "custom_1",
+}
+DATE_NAMES = {"startdate", "enddate", "date_created", "date_modified"}
+DATE_FORMATS = (
+    "%m/%d/%Y %I:%M:%S %p",
+    "%m/%d/%Y %H:%M:%S",
+    "%d/%m/%Y %H:%M:%S",
+    "%Y-%m-%d %H:%M:%S",
+    "%Y-%m-%dT%H:%M:%S",
+    "%m/%d/%Y %H:%M",
+    "%m/%d/%Y",
+    "%Y-%m-%d",
+)
+MISSING_LABEL = re.compile(
+    r"ne (le )?sai[st] pas|je ne sais pas|\bnsp\b|pr[ée]f[èe]re ne pas|refus|sans objet"
+    r"|ne s'applique pas|don'?t know|prefer not|refused|not applicable|\bn/?a\b",
+    re.IGNORECASE,
+)
+
+
+def _structure(variables) -> dict[str, dict[int, list]]:
+    """Grids, checkbox sets and single questions, by question rank, from names and labels."""
+    by_question: dict[int, list] = defaultdict(list)
+    for variable in variables:
+        match = ITEM_NAME.fullmatch(variable.name)
+        if match:
+            by_question[int(match.group(1))].append((variable, match.group(2)))
+    kinds: dict[str, dict[int, list]] = {"grid": {}, "checkbox": {}, "single": {}}
+    for rank, members in by_question.items():
+        items = [v for v, part in members if part and part.lower() != "other"]
+        if not items:
+            kinds["single"][rank] = [v for v, _part in members]
+        elif all(len(v.value_labels) == 1 for v in items):
+            kinds["checkbox"][rank] = items
+        elif len(items) >= 3:
+            kinds["grid"][rank] = items
+    return kinds
+
+
+def _date_rate(column: pd.Series) -> float:
+    texts = [str(v).strip() for v in column if isinstance(v, str) and str(v).strip()]
+    if not texts:
+        return 100.0
+    best = 0
+    for fmt in DATE_FORMATS:
+        parsed = pd.to_datetime(pd.Series(texts), format=fmt, errors="coerce")
+        best = max(best, int(parsed.notna().sum()))
+    return round(100 * best / len(texts), 1)
+
+
+def count_database(sav: Path) -> dict[str, float | int]:
+    data = read_database(sav)
+    project = build_project(data)
+    kinds = _structure(data.variables)
+    by_name = {e.name: e for e in project.variables}
+    counts: dict[str, float | int] = {
+        "variables": len(data.variables),
+        "lignes": data.source.n_rows,
+        "variables_plateforme": sum(v.name.lower() in PLATFORM_NAMES for v in data.variables),
+        "plateforme_reconnue": int(getattr(project.source, "platform", None) is not None),
+        "questions_plateforme": len({r for k in kinds.values() for r in k}),
+        "grilles": len(kinds["grid"]),
+        "ensembles_a_cocher": len(kinds["checkbox"]),
+        "questions_simples": len(kinds["single"]),
+        "groupes": len(project.groups),
+    }
+
+    group_of = {m: g.group_id for g in project.groups for m in (g.members.value or [])}
+    ranks = {}
+    for variable in data.variables:
+        match = ITEM_NAME.fullmatch(variable.name)
+        if match:
+            ranks[variable.name] = int(match.group(1))
+    counts["groupes_melant_des_questions"] = sum(
+        len({ranks.get(m) for m in (g.members.value or [])}) > 1 for g in project.groups
+    )
+    whole = split = 0
+    for items in kinds["grid"].values():
+        groups = {group_of.get(v.name) for v in items}
+        whole += groups == {group_of.get(items[0].name)} and None not in groups
+        split += len(groups - {None}) > 1
+    counts["grilles_entieres"] = whole
+    counts["grilles_coupees"] = split
+    counts["ensembles_a_cocher_groupes"] = sum(
+        {group_of.get(v.name) for v in items} == {group_of.get(items[0].name)}
+        and group_of.get(items[0].name) is not None
+        and getattr(
+            next(g for g in project.groups if g.group_id == group_of[items[0].name]), "kind", ""
+        )
+        == "multiple_response"
+        for items in kinds["checkbox"].values()
+    )
+
+    grid_items = [v.name for items in kinds["grid"].values() for v in items]
+    counts["items_de_grille_identifiant_probable"] = sum(
+        by_name[n].privacy.privacy_class.value == "likely_identifier" for n in grid_items
+    )
+    scale_items = [n for n in grid_items if by_name[n].file.measure_level == "scale"]
+    counts["items_de_grille_niveau_scale"] = len(scale_items)
+    counts["items_niveau_scale_signales"] = sum(
+        "measure_level_doubtful" in by_name[n].profile.flags for n in scale_items
+    )
+
+    dates = [v.name for v in data.variables if v.name.lower() in DATE_NAMES]
+    counts["dates_de_passation"] = len(dates)
+    counts["dates_lues_comme_dates"] = sum(
+        by_name[n].profile.inferred_type in ("date", "datetime") for n in dates
+    )
+    counts["dates_classees_texte_libre"] = sum(
+        by_name[n].privacy.privacy_class.value == "free_text" for n in dates
+    )
+    counts["taux_min_valeurs_de_date_lisibles_pct"] = min(
+        (_date_rate(data.table[n]) for n in dates), default=100.0
+    )
+
+    labelled_missing = [
+        (v.name, code)
+        for v in data.variables
+        for code, label in v.value_labels.items()
+        if MISSING_LABEL.search(str(label))
+    ]
+    counts["codes_a_etiquette_de_manquant"] = len(labelled_missing)
+    counts["codes_a_etiquette_de_manquant_signales"] = sum(
+        code in by_name[name].profile.suspect_missing_codes for name, code in labelled_missing
+    )
+    return counts
+
+
+def count_questionnaire(path: Path, prefix: str) -> dict[str, int]:
+    questionnaire = load_questionnaire(path)
+    kinds = Counter(q.kind for q in questionnaire.questions)
+    return {
+        f"{prefix}_questions": len(questionnaire.questions),
+        **{f"{prefix}_{kind}": kinds.get(kind, 0) for kind in ("open", "single", "checkbox")},
+        f"{prefix}_grilles": kinds.get("grid", 0),
+        f"{prefix}_enonces_de_grille": sum(len(q.rows) for q in questionnaire.questions),
+        f"{prefix}_a_verifier": sum(bool(q.to_check) for q in questionnaire.questions),
+    }
+
+
+def count_excel(xlsx: Path, sav_rows: int, sav_names: set[str]) -> dict[str, int]:
+    data = read_database(xlsx)
+    names = [v.name for v in data.variables]
+    return {
+        "xlsx_lignes_en_trop": data.source.n_rows - sav_rows,
+        "xlsx_colonnes_sans_nom": sum(n.startswith("colonne_") for n in names),
+        "xlsx_noms_absents_du_sav": sum(n not in sav_names for n in names),
+    }
+
+
+def _guarded(counts: dict, step: str, function, *args) -> None:
+    try:
+        counts.update(function(*args))
+    except Exception as error:  # only the type: a message could quote the data
+        counts[f"erreur_{step}"] = type(error).__name__
+
+
+def count_base(folder: Path) -> dict[str, float | int | str]:
+    """All the counts of one base (a folder with one .sav file)."""
+    counts: dict[str, float | int | str] = {}
+    savs = sorted(folder.glob("*.sav"))
+    if len(savs) != 1:
+        return {"erreur": "un_fichier_sav_attendu", "fichiers_sav": len(savs)}
+    _guarded(counts, "sav", count_database, savs[0])
+    for xlsx in sorted(folder.glob("*.xlsx"))[:1]:
+        try:
+            sav_names = {v.name for v in read_database(savs[0]).variables}
+        except Exception as error:
+            counts["erreur_xlsx"] = type(error).__name__
+        else:
+            _guarded(counts, "xlsx", count_excel, xlsx, counts.get("lignes", 0), sav_names)
+    for suffix in ("pdf", "txt"):
+        for path in sorted(folder.glob(f"*.{suffix}"))[:1]:
+            _guarded(counts, suffix, count_questionnaire, path, suffix)
+    return counts
+
+
+def bases(folder: Path) -> dict[str, Path]:
+    """The bases of a folder: itself, or its subfolders as base1, base2, ..."""
+    if any(folder.glob("*.sav")):
+        return {"base1": folder}
+    subfolders = sorted(p for p in folder.iterdir() if p.is_dir())
+    return {f"base{n}": path for n, path in enumerate(subfolders, start=1)}
+
+
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(description="Décompte la structure d'exports de sondage.")
+    parser.add_argument("folder", type=Path)
+    args = parser.parse_args(argv)
+    result = {name: count_base(path) for name, path in bases(args.folder).items()}
+    json.dump(result, sys.stdout, indent=2, ensure_ascii=False)
+    print()
+
+
+if __name__ == "__main__":
+    main()
