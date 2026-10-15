@@ -472,3 +472,67 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   3. Garder le dépôt privé et vérifier macOS seulement sur un vrai Mac.
 - **Justification :** GitHub Actions est gratuit pour un dépôt public, macOS compris, ce qui permet les essais macOS de D-035 ; l'outil est un logiciel libre destiné à être partagé. Avant le changement, l'historique (68 versions) a été vérifié : aucune donnée réelle, aucune base publique d'essai, aucun mot de passe ni clé, seulement des adresses fictives ; un seul chemin personnel (`C:\Users\…`) dans une ancienne version du scénario manuel, sans conséquence. Le nom et l'adresse de l'auteur figurent dans l'historique.
 - **Conséquences :** `CLAUDE.md` mis à jour ; les essais macOS de D-035 tournent sans frais ; tout ce qui entre dans le dépôt est public dès l'envoi.
+
+### D-038 — Périmètre de la v0.6
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** la v0.6 rend les rattachements plus complets : « aucune question » proposée par le calcul, questions voisines pour les variables sans candidate, calcul sûr signalé au modèle, banc d'essai qui classe les rattachements manqués, base de contrôle. Le dépôt des données, REDCap, la révision groupée des libellés et Linux sont reportés.
+- **Options considérées :**
+  1. Des rattachements plus complets (ce choix).
+  2. Dépôt des données et REDCap.
+  3. Révision plus rapide des libellés.
+- **Justification :** le rattachement est l'étape qui demande le plus de révision ; le diagnostic des bases fictives montre trois pertes précises (variables sans question rattachées, variables sans candidate, bons choix du calcul défaits par le modèle).
+- **Conséquences :** plan en 7 étapes (`docs/plan-v0.6.md`).
+
+### D-039 — « Aucune question » proposée par le calcul
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** le calcul met la candidate « aucune question » en tête quand un indice fort la rend probable : identifiant probable, date de passation ou de réponse sans question de date correspondante, score calculé (nom ou somme exacte des items d'un groupe, vérifiée au profilage, dont seul le fait est gardé). Sinon, elle reste en fin de liste. La décision reste à une personne.
+- **Options considérées :**
+  1. En tête sur indices forts (ce choix).
+  2. Toujours en fin de liste, comme avant.
+  3. Retirer les questions candidates de ces variables.
+- **Justification :** six variables sans question des bases fictives sont rattachées à tort ; retirer les candidates empêcherait de corriger un indice trompeur.
+- **Conséquences :** un test vérifie qu'aucune variable qui a une question ne perd sa question en tête.
+
+### D-040 — Questions voisines
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** élargit D-013
+- **Décision :** pour une variable sans candidate, le calcul propose les questions situées entre les rattachements sûrs qui l'entourent dans l'ordre du questionnaire, au plus 6, marquées comme voisines pour le modèle et dans l'interface. Le modèle choisit toujours dans la liste qu'il reçoit (D-013), élargie à ces voisines.
+- **Options considérées :**
+  1. Questions voisines pour les variables sans candidate (ce choix).
+  2. Tout le questionnaire pour ces variables.
+  3. Statu quo : la personne choisit seule.
+- **Justification :** une question peut ne partager aucun mot avec le nom de sa variable (« How old are you? » pour `age`) ; l'ordre du questionnaire, lui, est un indice fiable.
+- **Conséquences :** prompt `link-v3` (français et anglais).
+
+### D-041 — Désaccord entre le modèle et un calcul sûr
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** quand la première candidate du calcul est sûre (règle des ancres), le modèle le sait ; s'il choisit autre chose, sa proposition est gardée mais accompagnée d'un signal de désaccord, jamais remplacée en silence.
+- **Options considérées :**
+  1. Signaler le désaccord (ce choix).
+  2. Imposer le choix du calcul.
+  3. Statu quo.
+- **Justification :** au banc, le modèle défait des choix justes du calcul (calcul seul 88 / 98, modèle 81 / 98) ; imposer le calcul retirerait au modèle les cas où il voit mieux.
+- **Conséquences :** le banc mesure les bons choix du calcul défaits, avant et après.
+
+### D-042 — Base de contrôle
+
+- **Date :** 2026-10-14
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** une base fictive nouvelle, générée avec son corrigé avant toute mise au point de la v0.6, est mise de côté : elle est mesurée une seule fois, à la fin, pour la 0.5 et la 0.6, puis rejoint le banc d'essai.
+- **Options considérées :**
+  1. Une base de contrôle mise de côté (ce choix).
+  2. Mesurer seulement sur les trois bases du banc.
+- **Justification :** les bases du banc ont servi à régler l'outil depuis la v0.2 ; un progrès mesuré sur elles seules pourrait n'être qu'un réglage sur mesure.
+- **Conséquences :** si la 0.6 ne fait pas mieux sur la base de contrôle, les changements sont revus.
