@@ -23,6 +23,7 @@ import io
 import re
 from collections import Counter
 from dataclasses import dataclass, field
+from difflib import SequenceMatcher
 from pathlib import Path
 
 from ddict import naming, platforms
@@ -46,7 +47,14 @@ WEIGHTS = {
     "same_rank": 1.0,
     "same_type": 0.5,
     "same_original_name": 1.0,
+    "similar_label": 1.5,  # a reworded item, perhaps: a candidate, never a match alone
 }
+# Reasons that may make a match; "similar_label" alone only offers a candidate.
+STRONG_REASONS = frozenset(
+    {"same_platform_variable", "same_label", "same_question_text", "same_question",
+     "same_original_name"}
+)  # fmt: skip
+SIMILAR_LABEL = 0.7  # of SequenceMatcher's ratio, on normalized labels
 MIN_SCORE = 3.0  # below, not a match
 MARGIN = 1.25  # the best must be this many times the second (the rule of the anchors)
 MAX_CANDIDATES = 3
@@ -311,11 +319,18 @@ def _reasons(
         reasons.append("same_label")
     elif question_text and link.texts_agree(question_text, earlier.question_text):
         reasons.append("same_question_text")
+    elif _similar(entry.file.label, earlier.label):
+        reasons.append("similar_label")
     if _same_labels(_value_labels(entry), earlier.value_labels):
         reasons.append("same_value_labels")
     if earlier.numeric is not None and earlier.numeric == (entry.file.storage_type == "numeric"):
         reasons.append("same_type")
     return reasons
+
+
+def _similar(first: str | None, second: str | None) -> bool:
+    a, b = link.normalized_text(first or ""), link.normalized_text(second or "")
+    return bool(a and b) and SequenceMatcher(None, a, b).ratio() >= SIMILAR_LABEL
 
 
 def _score(reasons: list[str]) -> float:
@@ -333,7 +348,8 @@ def match(project: Project, wave: EarlierWave) -> WaveReport:
         for earlier in wave.variables:
             reasons = _reasons(project, entry, earlier, wave, text)
             score = _score(reasons)
-            if score >= (WEIGHTS["same_original_name"] if wave.source == "table" else MIN_SCORE):
+            enough = WEIGHTS["same_original_name"] if wave.source == "table" else MIN_SCORE
+            if score >= enough or "similar_label" in reasons:
                 found.append(Match(entry.name, earlier.name, score, tuple(reasons)))
         scored[entry.name] = sorted(found, key=lambda m: -m.score)
     _with_questions(project, wave, scored)
@@ -342,7 +358,9 @@ def match(project: Project, wave: EarlierWave) -> WaveReport:
     # Clear matches, best first; an earlier variable goes to one variable only.
     clear = []
     for found in scored.values():
-        if found and (len(found) == 1 or found[0].score >= MARGIN * found[1].score):
+        if not found or not STRONG_REASONS & set(found[0].reasons):
+            continue  # nothing, or a similar label only: a person decides
+        if len(found) == 1 or found[0].score >= MARGIN * found[1].score:
             clear.append(found[0])
     # Two variables as good for the same earlier one: neither gets it, a person chooses.
     best: dict[str, list[Match]] = {}
@@ -404,14 +422,20 @@ def _with_questions(project: Project, wave: EarlierWave, scored: dict[str, list[
         return
     by_name = {v.name: v for v in wave.variables}
     for question in link.project_questions(project):
-        clear = [scored[n][0] for n in question.variables if scored.get(n)]
-        keys = Counter(by_name[m.earlier].question_key for m in clear)
-        if not keys:
-            continue
-        key, count = keys.most_common(1)[0]
-        if key is None or count * 2 <= len(clear):
-            continue
         for name in question.variables:
+            # The other variables of the question, matched by a strong reason: a variable
+            # never reinforces itself.
+            clear = [
+                scored[n][0]
+                for n in question.variables
+                if n != name and scored.get(n) and STRONG_REASONS & set(scored[n][0].reasons)
+            ]
+            keys = Counter(by_name[m.earlier].question_key for m in clear)
+            if not keys:
+                continue
+            key, count = keys.most_common(1)[0]
+            if key is None or count * 2 <= len(clear):
+                continue
             place = platform.place(name)
             for earlier in wave.variables:
                 if earlier.question_key != key or earlier.other != place.other:
@@ -531,6 +555,7 @@ REASONS = Texts(
         "same_rank": N_("même rang"),
         "same_type": N_("même type"),
         "same_original_name": N_("même nom d'origine (seulement)"),
+        "similar_label": N_("étiquette semblable"),
     }
 )
 

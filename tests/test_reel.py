@@ -123,3 +123,15 @@ def test_structural_links_agree_with_the_pdf(counts):
     if "pdf_liens_par_la_structure" not in counts:
         pytest.skip("pas de questionnaire PDF")
     assert counts["pdf_liens_dont_le_texte_concorde"] == counts["pdf_liens_par_la_structure"]
+
+
+def test_the_names_of_an_earlier_wave(counts):
+    """Each wave named, the next taking its names: every variable whose words agree with an
+    earlier one is matched, and never an item with a whole question."""
+    transitions = sorted({k.rsplit("_", 1)[0] for k in counts if k.endswith("_appariees")})
+    if not transitions:
+        pytest.skip("une seule vague")
+    for prefix in transitions:
+        assert counts[f"{prefix}_mots_concordants_non_apparies"] == 0
+        assert counts[f"{prefix}_natures_differentes"] == 0
+        assert counts[f"{prefix}_appariees"] >= counts[f"{prefix}_mots_concordants"]

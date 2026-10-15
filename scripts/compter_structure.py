@@ -308,6 +308,8 @@ def count_base(folder: Path) -> dict[str, float | int | str]:
         if path is not None:
             _guarded(counts, suffix, count_questionnaire, path, suffix)
             _guarded(counts, f"liens_{suffix}", count_links, sav, path, suffix)
+    if counts["fichiers_sav"] > 1:  # several waves of the study
+        _guarded(counts, "vagues", count_waves, folder)
     return counts
 
 
@@ -317,6 +319,105 @@ def bases(folder: Path) -> dict[str, Path]:
         return {"base1": folder}
     subfolders = sorted(p for p in folder.iterdir() if p.is_dir())
     return {f"base{n}": path for n, path in enumerate(subfolders, start=1)}
+
+
+def _named_wave(sav: Path, mark: str, path: Path, reference: Path | None):
+    """A wave named as a team would: the names of the earlier wave taken, a prefix given to
+    every other grid, everything proposed accepted; saved in `path` (a temporary folder)."""
+    from ddict import naming, waves
+
+    now = "2026-01-01T00:00:00"
+    project = build_project(read_database(sav))
+    naming.set_wave(project, mark)
+    report = None
+    if reference is not None:
+        earlier = waves.read_earlier_wave(reference)
+        report = waves.match(project, earlier)
+        waves.apply(project, earlier, report)
+    for group in project.groups:
+        if group.kind == "scale" and not group.name_prefix.value:
+            prefix = f"g{group.members.value[0][1:5].lstrip('0')}"
+            naming.set_prefix(project, group.group_id, prefix, now=now)
+        elif group.name_prefix.status == "proposed":
+            group.name_prefix = group.name_prefix.model_copy(update={"status": "validated"})
+    naming.propose(project)
+    for entry in project.variables:
+        if entry.new_name.status == "proposed":
+            naming.decide(project, entry.name, "accept", now=now)
+    from ddict.project import save_project
+
+    save_project(project, path)
+    return project, report
+
+
+def count_waves(folder: Path) -> dict[str, int]:
+    """A folder with several waves (`.sav` files, in name order): each wave named, the next
+    one taking its names. Counts only: matches, added, removed, to decide, and checks that
+    a team would expect (a match between an item and a whole question; an item whose words
+    agree with an earlier one but left unmatched)."""
+    import tempfile
+
+    from ddict import waves
+    from ddict.platforms import SURVEYMONKEY
+
+    savs = sorted(folder.glob("*.sav"))
+    counts: dict[str, int] = {"vagues": len(savs)}
+    with tempfile.TemporaryDirectory() as temporary:
+        previous = None
+        for number, sav in enumerate(savs, start=1):
+            path = Path(temporary) / f"vague{number}.dd.json"
+            project, report = _named_wave(sav, f"t{number}", path, previous)
+            if report is not None:
+                prefix = f"vagues_{number - 1}_{number}"
+                earlier = read_database(savs[number - 2])
+                labels = [v.label for v in earlier.variables if SURVEYMONKEY.place(v.name)]
+                agreeing = {
+                    e.name
+                    for e in project.variables
+                    if SURVEYMONKEY.place(e.name)
+                    and any(link.texts_agree(e.file.label, label) for label in labels)
+                }
+                matched = {m.variable for m in report.matches}
+                by_name = {v.name: v for v in waves.read_earlier_wave(previous).variables}
+                # An earlier variable goes to one variable only: words repeated in this wave
+                # (the same item twice) leave the second one unmatched, rightly.
+                free = [
+                    w.label
+                    for w in by_name.values()
+                    if w.name not in {m.earlier for m in report.matches}
+                    and SURVEYMONKEY.place(w.original or "")
+                ]
+                left = {
+                    name
+                    for name in agreeing - matched
+                    if any(link.texts_agree(project.variable(name).file.label, f) for f in free)
+                }
+                kinds = 0
+                for match in report.matches:
+                    now_place = SURVEYMONKEY.place(match.variable)
+                    old_place = SURVEYMONKEY.place(by_name[match.earlier].original or "")
+                    if (
+                        now_place
+                        and old_place
+                        and (
+                            (now_place.item is None) != (old_place.item is None)
+                            or now_place.other != old_place.other
+                        )
+                    ):
+                        kinds += 1
+                counts |= {
+                    f"{prefix}_appariees": len(report.matches),
+                    f"{prefix}_ajoutees": len(report.added),
+                    f"{prefix}_a_departager": len(report.candidates),
+                    f"{prefix}_retirees": len(report.removed),
+                    f"{prefix}_etiquettes_de_valeurs_changees": len(report.value_labels_changed),
+                    f"{prefix}_mots_concordants": len(agreeing),
+                    f"{prefix}_mots_concordants_deja_pris": len(agreeing - matched - left),
+                    f"{prefix}_mots_concordants_non_apparies": len(left),
+                    f"{prefix}_natures_differentes": kinds,
+                }
+            previous = path
+    return counts
 
 
 def main(argv: list[str] | None = None) -> None:

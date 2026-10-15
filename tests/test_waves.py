@@ -178,3 +178,21 @@ def test_rename_command_with_a_reference(wave_1, tmp_path, capsys):
     bad.write_text("x", encoding="utf-8")
     assert main(["rename", str(path), "--reference", str(bad)]) == 2
     assert "Impossible de lire la vague précédente" in capsys.readouterr().err
+
+
+def test_a_reworded_question_is_a_candidate_never_a_match(wave_1):
+    project = _wave_2()
+    # An open question reworded in wave 2: alone, a similar label offers a candidate only.
+    project.variable(
+        "q0009"
+    ).file.label = "Décrivez une situation où vous vous êtes senti·e en danger."
+    # A grid item reworded keeps its place among its matched neighbours: matched by it.
+    project.variable("q0003_0001").file.label = "J'ai eu beaucoup trop de tâches en peu de temps."
+    report = rename(project, suffix="_t2", reference=wave_1 / "travail-t1.dd.json")
+    matched = {m.variable: m for m in report.matches}
+    assert "q0009" not in matched
+    best = report.candidates["q0009"][0]
+    assert best.earlier == "situation_danger_t1" and best.reasons[0] == "similar_label"
+    assert project.variable("q0009").new_name.origin != "reference"
+    assert matched["q0003_0001"].earlier == "eft_1_t1"
+    assert {"similar_label", "same_question"} <= set(matched["q0003_0001"].reasons)

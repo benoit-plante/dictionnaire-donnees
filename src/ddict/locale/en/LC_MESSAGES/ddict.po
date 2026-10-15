@@ -2652,6 +2652,9 @@ msgstr "grid items not numbered"
 msgid "étendue observée"
 msgstr "observed range"
 
+msgid "étiquette semblable"
+msgstr "similar label"
+
 msgid "étiquettes proposées à partir des options, ordre supposé, à vérifier"
 msgstr "labels proposed from the options, assumed order, to check"
 
