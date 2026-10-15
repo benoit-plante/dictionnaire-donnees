@@ -42,6 +42,7 @@ from ddict.workflow import (
     documented_copy,
     exchange_dir,
     export_codebook,
+    export_name_table,
     export_syntax,
     failure_advice,
     naming_summary,
@@ -101,6 +102,9 @@ def cmd_export(args: argparse.Namespace) -> int:
         return EXIT_ERROR
     print(_("Codebook Excel : {path}").format(path=xlsx))
     print(_("Rapport Markdown : {path}").format(path=markdown))
+    table = export_name_table(project, project_path)
+    if table is not None:
+        print(_("Table de correspondance des noms : {path}").format(path=table))
     if args.syntaxe:
         for path in export_syntax(project, project_path, language=args.langue).values():
             print(_("Fichier de commandes : {path}").format(path=path))

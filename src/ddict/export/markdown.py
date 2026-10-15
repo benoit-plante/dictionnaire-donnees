@@ -56,7 +56,7 @@ def _overview(project: Project, kind: w.ExportKind) -> list[str]:
     lines += [
         "",
         _("- Variables sensibles : {n}").format(n=len(sensitive))
-        + (f" ({', '.join(f'`{e.name}`' for e in sensitive)})" if sensitive else ""),
+        + (f" ({', '.join(f'`{w.final_name(e)}`' for e in sensitive)})" if sensitive else ""),
         _("- Variables avec signalements : {n}").format(n=len(flagged)),
         "",
     ]
@@ -68,8 +68,11 @@ def _variable(
 ) -> list[str]:
     p = entry.profile
     label = w.label_text(entry, kind)
-    title = f"### `{entry.name}`" + (f" — {_inline(label)}" if label else "")
+    title = f"### `{w.name_text(entry, kind)}`" + (f" — {_inline(label)}" if label else "")
     lines = [title, ""]
+    if w.shown(entry.new_name, kind) is not None:  # v0.7: renamed in this export
+        original = field_label("Nom d'origine")
+        lines += [f"{original}`{entry.name}`", ""]
     description = w.text(entry.description, kind)
     if description:
         lines += [_inline(description), ""]
@@ -176,9 +179,13 @@ def _groups(project: Project, kind: w.ExportKind) -> list[str]:
         lines += [f"### {group.group_id}" + (f" — {_inline(description)}" if description else "")]
         lines.append("")
         members = w.shown(group.members, kind)
+        names = w.names_of(project)
         facts = []
         if members:
-            facts.append(f"{field_label('Variables')}" + ", ".join(f"`{m}`" for m in members.value))
+            facts.append(
+                f"{field_label('Variables')}"
+                + ", ".join(f"`{names.get(m, m)}`" for m in members.value)
+            )
         facts.append(f"{field_label('Indices du regroupement')}{w.basis_text(group.basis)}")
         hypothesis = w.text(group.ai_hypothesis, kind)
         if hypothesis:
@@ -196,12 +203,12 @@ def _groups(project: Project, kind: w.ExportKind) -> list[str]:
         if suspects:
             facts.append(
                 f"{field_label('Items probablement inversés')}"
-                + ", ".join(f"`{s}`" for s in suspects)
+                + ", ".join(f"`{names[s]}`" for s in suspects)
             )
         if group.reverse_items:
             facts.append(
                 f"{field_label('Items inversés confirmés')}"
-                + ", ".join(f"`{s}`" for s in group.reverse_items)
+                + ", ".join(f"`{names.get(s, s)}`" for s in group.reverse_items)
             )
         if group.cronbach_alpha is not None:
             alpha = _("Alpha de Cronbach observé : {alpha} ({n} lignes complètes)").format(
@@ -214,6 +221,21 @@ def _groups(project: Project, kind: w.ExportKind) -> list[str]:
             facts.append(alpha)
         lines += [f"- {fact}" for fact in facts] + [""]
     return lines
+
+
+def _correspondence(project: Project, kind: w.ExportKind) -> list[str]:
+    """Original name -> new name (v0.7), when this export renames variables."""
+    rows = w.correspondence_rows(project, kind)
+    if not rows:
+        return []
+    lines = [
+        _("## Correspondance des noms"),
+        "",
+        "| " + " | ".join([_("Nom d'origine"), _("Nouveau nom"), _("Statut"), _("Origine")]) + " |",
+        "|---|---|---|---|",
+    ]
+    lines += [f"| `{a}` | `{b}` | {_cell(c)} | {_cell(d)} |" for a, b, c, d in rows]
+    return [*lines, ""]
 
 
 def _glossary(project: Project, kind: w.ExportKind) -> list[str]:
@@ -242,6 +264,7 @@ def render_markdown(
     lines += [_("## Variables"), ""]
     for entry in project.variables:
         lines += _variable(project, entry, kind, omitted)
+    lines += _correspondence(project, kind)
     return "\n".join(lines).rstrip("\n") + "\n"
 
 

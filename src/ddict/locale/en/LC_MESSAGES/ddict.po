@@ -43,6 +43,9 @@ msgstr "# Items reversed according to the team: not recoded. Suggestion, to do y
 msgid "# Les niveaux de mesure ne sont pas appliqués : haven ne les écrit pas."
 msgstr "# Measurement levels are not applied: haven does not write them."
 
+msgid "# Nouveaux noms acceptés, en premier : la suite porte sur ces noms."
+msgstr "# Accepted new names, first: what follows uses these names."
+
 msgid ""
 "# user_na = TRUE garde les codes manquants déjà déclarés dans le fichier ; sans lui, haven les "
 "remplace par NA."
@@ -55,6 +58,9 @@ msgstr "# Differences between the waves"
 
 msgid "## Appariements"
 msgstr "## Matches"
+
+msgid "## Correspondance des noms"
+msgstr "## Correspondence of names"
 
 msgid "## Glossaire des sigles"
 msgstr "## Glossary of acronyms"
@@ -111,6 +117,9 @@ msgstr "(empty)"
 
 msgid "* Items inversés selon l'équipe : non recodés. Suggestion, à faire vous-même."
 msgstr "* Items reversed according to the team: not recoded. Suggestion, to do yourself."
+
+msgid "* Nouveaux noms acceptés, en premier : la suite porte sur ces noms."
+msgstr "* Accepted new names, first: what follows uses these names."
 
 #, python-brace-format
 msgid "* {name} : SPSS accepte au plus {n} codes manquants ; à déclarer à la main : {codes}."
@@ -509,6 +518,9 @@ msgstr ""
 "Copy written next to the database: {name}. Read back and compared with the original: {rows} rows "
 "and {columns} variables, identical cell by cell."
 
+msgid "Correspondance"
+msgstr "Correspondence"
+
 msgid "Corriger ou saisir"
 msgstr "Correct or enter"
 
@@ -558,6 +570,13 @@ msgstr "Last report: {name}"
 
 msgid "Description"
 msgstr "Description"
+
+msgid ""
+"Deux variables auraient le même nom dans la copie : réglez les conflits de noms sur la page « "
+"Noms ». Rien n'a été écrit."
+msgstr ""
+"Two variables would have the same name in the copy: settle the conflicts of names on the "
+"\"Names\" page. Nothing was written."
 
 msgid "Dictionnaire de données"
 msgstr "Data dictionary"
@@ -1189,6 +1208,9 @@ msgstr "Doubtful \"scale\" measurement level: every observed value has a label (
 msgid "Nom"
 msgstr "Name"
 
+msgid "Nom d'origine"
+msgstr "Original name"
+
 msgid "Nom de l'instrument : réservé aux personnes, avec une source documentée."
 msgstr "Name of the instrument: for people only, with a documented source."
 
@@ -1204,6 +1226,9 @@ msgstr "Notes"
 
 msgid "Notes de l'équipe"
 msgstr "Team notes"
+
+msgid "Nouveau nom"
+msgstr "New name"
 
 msgid "Nouveau projet"
 msgstr "New project"
@@ -1589,6 +1614,10 @@ msgstr "SPSS syntax"
 
 msgid "Séparateur"
 msgstr "Separator"
+
+#, python-brace-format
+msgid "Table de correspondance des noms : {path}"
+msgstr "Table of names: {path}"
 
 msgid "Texte"
 msgstr "Text"

@@ -94,6 +94,7 @@ def _questionnaire_rows(project: Project, omit_groups: tuple[str, ...]) -> list[
 
 def _variables(project: Project, kind: w.ExportKind, omitted: set[str]) -> list[list]:
     rows = []
+    renamed = w.renamed(project, kind)
     for e in project.variables:
         reference = w.question_reference(project, e, kind)
         p = e.profile
@@ -107,7 +108,8 @@ def _variables(project: Project, kind: w.ExportKind, omitted: set[str]) -> list[
         rows.append(
             [
                 e.position,
-                e.name,
+                w.name_text(e, kind),
+                *([e.name] if renamed else []),  # v0.7: the original name, when renamed
                 w.label_text(e, kind),
                 w.text(e.description, kind),
                 ""
@@ -188,7 +190,7 @@ def _values(project: Project, kind: w.ExportKind) -> list[list]:
         for code, label, count, is_missing in w.value_rows(e):
             rows.append(
                 [
-                    e.name,
+                    w.final_name(e),
                     code,
                     label,
                     count,
@@ -198,12 +200,13 @@ def _values(project: Project, kind: w.ExportKind) -> list[list]:
             )
         if source == _(w.LABELS_PROPOSED):  # proposals are not mixed with the counts
             for item in e.value_labels.value or []:
-                rows.append([e.name, w.code_text(item.code), item.label, "", "", source])
+                rows.append([w.final_name(e), w.code_text(item.code), item.label, "", "", source])
     return rows
 
 
 def _groups(project: Project, kind: w.ExportKind) -> list[list]:
     rows = []
+    names = w.names_of(project)
     for g in project.groups:
         members = w.shown(g.members, kind)
         suspects = [
@@ -215,10 +218,10 @@ def _groups(project: Project, kind: w.ExportKind) -> list[list]:
             [
                 g.group_id,
                 w.group_description(g, kind),
-                ", ".join(members.value) if members else "",
+                ", ".join(names.get(m, m) for m in members.value) if members else "",
                 w.basis_text(g.basis),
-                ", ".join(suspects),
-                ", ".join(g.reverse_items),
+                ", ".join(names[s] for s in suspects),
+                ", ".join(names.get(r, r) for r in g.reverse_items),
                 w.text(g.ai_hypothesis, kind),
                 f"{g.instrument_name.value} ({g.instrument_name.source})"
                 if g.instrument_name
@@ -269,13 +272,14 @@ def _provenance(project: Project, kind: w.ExportKind) -> list[list]:
                 field,
                 text if text is not None else as_text(value.value),
                 w.ORIGINS[tracked.origin],
-                w.STATUSES[tracked.status],
+                w.status_text(tracked),
                 as_text(tracked.proposed_value),
                 tracked.ai_run,
             ]
         )
 
     for e in project.variables:
+        add(e.name, _("Nouveau nom"), e.new_name)
         add(e.name, _("Question"), e.question)
         if e.value_labels.value is not None:
             value = w.shown(e.value_labels, kind)
@@ -330,7 +334,10 @@ def write_xlsx(
     book = Workbook()
     book.remove(book.active)
     _sheet(book, _("Informations"), [_("Élément"), _("Valeur")], _about(project, kind, omit_groups))
-    _sheet(book, _("Variables"), VARIABLE_HEADER, _variables(project, kind, omitted))
+    header = list(VARIABLE_HEADER)
+    if w.renamed(project, kind):
+        header.insert(2, _("Nom d'origine"))
+    _sheet(book, _("Variables"), header, _variables(project, kind, omitted))
     _sheet(
         book,
         _("Valeurs"),
@@ -351,6 +358,13 @@ def write_xlsx(
             _("Glossaire"),
             [_("Sigle"), _("Définition"), _("Origine"), _("Statut"), _("Source")],
             [list(row) for row in w.glossary_rows(project, kind)],
+        )
+    if w.renamed(project, kind):
+        _sheet(
+            book,
+            _("Correspondance"),
+            [_("Nom d'origine"), _("Nouveau nom"), _("Statut"), _("Origine")],
+            [list(row) for row in w.correspondence_rows(project, kind)],
         )
     _sheet(
         book,

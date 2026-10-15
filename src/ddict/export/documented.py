@@ -6,6 +6,9 @@ declared or confirmed by the team (D-028), measure levels. The original is only 
 never opened for writing; the copy goes next to it under a new name. Before the copy is
 announced it is read back and compared cell by cell with the original; at the first
 difference it is deleted. Nothing of the data enters the project nor goes to the model.
+
+The copy has the new names a person accepted (v0.7): its columns are renamed, and the check
+compares each column with the original column of the same variable.
 """
 
 from __future__ import annotations
@@ -92,9 +95,11 @@ def _missing(entry: VariableEntry, confirmed: bool = True) -> list[Code | dict] 
 
 
 def _metadata(project: Project, columns: list[str]) -> tuple[dict, list[str]]:
+    """The metadata of the copy, by the names of the copy (the accepted new names)."""
     labels, value_labels, missing, measure, refused = {}, {}, {}, {}, []
-    for name in columns:
-        entry = project.variable(name)
+    for original in columns:
+        entry = project.variable(original)
+        name = w.final_name(entry)
         labels[name] = w.label_text(entry, "final") or None
         string = entry.file.storage_type == "string"
         accepted = {
@@ -105,7 +110,7 @@ def _metadata(project: Project, columns: list[str]) -> tuple[dict, list[str]]:
         codes = _missing(entry)
         if codes is None:
             # The codes the team confirmed do not fit: keep those of the file.
-            refused.append(name)
+            refused.append(original)
             codes = _missing(entry, confirmed=False)
         if codes:
             missing[name] = codes
@@ -177,7 +182,15 @@ def write_documented_copy(
     columns = list(table.columns)
     if columns != [e.name for e in project.variables] or len(table) != project.source.n_rows:
         raise CopyError("other_file", str(database))
+    names = w.names_of(project)
+    if len({n.lower() for n in names.values()}) != len(names):
+        raise CopyError("name_conflict", "")
     metadata, refused = _metadata(project, columns)
+    table = table.rename(columns=names)
+    kept = {
+        key: ({names.get(k, k): v for k, v in value.items()} if isinstance(value, dict) else value)
+        for key, value in kept.items()
+    }
 
     working = target.with_name(target.name + WORKING_SUFFIX)
     try:

@@ -5,7 +5,8 @@ not be tried in Stata (D-030). They hold only
 decisions: variable labels, value labels (from the file or accepted), missing codes
 (declared in the file or confirmed by the team, D-028), measure levels from the file.
 Nothing proposed, no participant value. Values are never recoded; the reversed items the
-team confirmed are only suggested in comments.
+team confirmed are only suggested in comments. The new names a person accepted (v0.7) are
+applied first; everything after is written with them. Renaming is not recoding (D-025).
 """
 
 from __future__ import annotations
@@ -49,7 +50,7 @@ def decisions(entry: VariableEntry) -> Decisions:
             ranges.append((item.low, item.high))
     singles += [c for c in w.confirmed_missing(entry) if c not in singles]
     return Decisions(
-        name=entry.name,
+        name=w.final_name(entry),
         string=entry.file.storage_type == "string",
         label=_one_line(w.label_text(entry, "final")),
         labels=[(lab.code, _one_line(lab.label)) for lab in accepted_labels(entry)],
@@ -107,8 +108,26 @@ def _spss_code(code: Code, string: bool) -> str:
     return _spss_text(str(code)) if string else _number(code)
 
 
+def _renames(project: Project) -> list[tuple[str, str]]:
+    """(original name, accepted new name) for the variables renamed (v0.7)."""
+    return [(e.name, w.final_name(e)) for e in project.variables if w.final_name(e) != e.name]
+
+
 def spss(project: Project, today: str) -> str:
     lines = ["* Encoding: UTF-8.", *_header(project, "*", today), ""]
+    renames = [
+        (old, new)
+        for old, new in _renames(project)
+        if SPSS_NAME.match(old) and SPSS_NAME.match(new)
+    ]
+    if renames:
+        lines += [
+            _("* Nouveaux noms acceptés, en premier : la suite porte sur ces noms."),
+            "RENAME VARIABLES",
+            *(f"  ({old} = {new})" for old, new in renames[:-1]),
+            f"  ({renames[-1][0]} = {renames[-1][1]}).",
+            "",
+        ]
     for entry in project.variables:
         d = decisions(entry)
         if not SPSS_NAME.match(d.name) or d.name.endswith("."):
@@ -216,6 +235,17 @@ def r_script(project: Project, today: str) -> str:
         "}",
         "",
     ]
+    renames = _renames(project)
+    if renames:
+        lines += [
+            _("# Nouveaux noms acceptés, en premier : la suite porte sur ces noms."),
+            "ddict_noms <- c(",
+            *(f"  {_r_text(old)} = {_r_text(new)}," for old, new in renames[:-1]),
+            f"  {_r_text(renames[-1][0])} = {_r_text(renames[-1][1])}",
+            ")",
+            "names(donnees)[match(names(ddict_noms), names(donnees))] <- ddict_noms",
+            "",
+        ]
     for entry in project.variables:
         d = decisions(entry)
         column = f"donnees[[{_r_text(d.name)}]]"
@@ -262,10 +292,10 @@ def _reversed_line(
     r = entry.theoretical_range
     if r is None:
         return _("{c} {name} ({group}) : étendue théorique non renseignée.").format(
-            c=comment, name=entry.name, group=group_id
+            c=comment, name=w.final_name(entry), group=group_id
         )
     total = w.number(r.min + r.max).replace(",", ".")
-    return f"{comment} {compute(entry.name, total)}"
+    return f"{comment} {compute(w.final_name(entry), total)}"
 
 
 WRITERS = {"spss": spss, "r": r_script}

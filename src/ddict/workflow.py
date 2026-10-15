@@ -417,6 +417,16 @@ def export_codebook(
     return xlsx, markdown
 
 
+def export_name_table(project: Project, project_path: Path) -> Path | None:
+    """The table of names (D-052) next to the project, when a person accepted new names:
+    "etude-correspondance.csv", the reference of the next wave."""
+    if not any(e.name != naming.final_name(e) for e in project.variables):
+        return None
+    path = project_path.with_name(project_stem(project_path) + "-correspondance.csv")
+    waves.write_name_table(project, path)
+    return path
+
+
 def syntax_paths(project_path: Path) -> dict[str, Path]:
     """The command files next to the project: "etude-metadonnees.sps" and ".R"."""
     stem = project_stem(project_path) + "-metadonnees"
@@ -463,6 +473,11 @@ def copy_error_text(error: CopyError, source_name: str) -> str:
         ).format(name=Path(error.detail).name)
     if error.reason == "same_file":
         return _("La copie ne peut pas porter le nom de la base d'origine.")
+    if error.reason == "name_conflict":
+        return _(
+            "Deux variables auraient le même nom dans la copie : réglez les conflits de "
+            "noms sur la page « Noms ». Rien n'a été écrit."
+        )
     if error.reason == "not_identical":
         return _(
             "La copie relue ne correspondait pas à l'original ({n} cases différentes) : elle a "

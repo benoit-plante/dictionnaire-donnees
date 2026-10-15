@@ -117,6 +117,53 @@ def shown(tracked: TrackedValue, kind: ExportKind) -> Shown | None:
     return None
 
 
+def status_text(tracked: TrackedValue) -> str:
+    """The status of a value; a proposal of the naming rules or of an earlier wave is
+    "proposé", not "proposé par IA"."""
+    if tracked.status == "proposed" and tracked.origin != "ai":
+        return _("proposé")
+    return STATUSES[tracked.status]
+
+
+# --- New names (v0.7, D-048): only accepted ones are applied in a final export. ---
+
+
+def renamed(project: Project, kind: ExportKind) -> bool:
+    """Whether this export shows new names: accepted ones, and proposals in a work export."""
+    return any(shown(e.new_name, kind) is not None for e in project.variables)
+
+
+def name_text(entry: VariableEntry, kind: ExportKind) -> str:
+    """The name of a variable in this export: its accepted new name, else its own; in a work
+    export, a proposed new name, marked."""
+    value = shown(entry.new_name, kind)
+    if value is None:
+        return entry.name
+    return f"{value.value} [{_('proposé')}]" if value.pending else str(value.value)
+
+
+def final_name(entry: VariableEntry) -> str:
+    """The name the data has once the decisions are applied: only an accepted new name."""
+    return entry.new_name.value if is_accepted(entry.new_name) else entry.name
+
+
+def names_of(project: Project) -> dict[str, str]:
+    """Original name -> final name, for every variable."""
+    return {e.name: final_name(e) for e in project.variables}
+
+
+def correspondence_rows(project: Project, kind: ExportKind) -> list[tuple[str, str, str, str]]:
+    """(original name, new name, status, origin) for each variable this export renames."""
+    rows = []
+    for entry in project.variables:
+        value = shown(entry.new_name, kind)
+        if value is None:
+            continue
+        tracked = entry.new_name
+        rows.append((entry.name, str(value.value), status_text(tracked), ORIGINS[tracked.origin]))
+    return rows
+
+
 def text(tracked: TrackedValue, kind: ExportKind) -> str:
     value = shown(tracked, kind)
     if value is None:
