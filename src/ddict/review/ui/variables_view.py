@@ -177,7 +177,19 @@ def _question(project: Project, entry: VariableEntry) -> None:
         return found[0] if found else link.NO_QUESTION
 
     st.selectbox(_("Rattacher à"), choices, format_func=option_text, key=c.field(key, start))
-    if near and found:
+    if found and found[0] == link.NO_QUESTION:
+        why = {
+            "identifier": N_("un identifiant"),
+            "completion_date": N_("une date de passation"),
+            "computed_score": N_("un score calculé"),
+        }.get(link.no_question_reason(entry) or "identifier")
+        st.caption(
+            _(
+                "En tête de liste : « aucune », car la variable semble être {why} ; "
+                "puis les questions candidates calculées."
+            ).format(why=_(why))
+        )
+    elif near and found:
         st.caption(
             _(
                 "En tête de liste : les questions voisines, autour de sa place dans le "

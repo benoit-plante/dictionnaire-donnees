@@ -1,6 +1,6 @@
 # dictionnaire-donnees
 
-> Nom de travail. Version 0.5.0 : l'outil existe aussi en anglais (interface, codebook, études menées en anglais) et s'installe sur un Mac par double-clic. **L'anglais et macOS sont à l'essai** : la traduction n'a pas encore été relue par une personne anglophone, et l'installation sur Mac n'a été vérifiée que sur un Mac de GitHub. À essayer d'abord sur la base fictive et son questionnaire, fournis.
+> Nom de travail. Version 0.6.0 : des rattachements aux questions plus complets (« aucune question » proposée pour les identifiants, dates et scores calculés ; questions voisines ; désaccords du modèle signalés). Depuis la 0.5, l'outil existe aussi en anglais et s'installe sur un Mac par double-clic. **L'anglais et macOS sont à l'essai** : la traduction n'a pas encore été relue par une personne anglophone, et l'installation sur Mac n'a été vérifiée que sur un Mac de GitHub. À essayer d'abord sur la base fictive et son questionnaire, fournis.
 
 Outil libre et local qui aide les équipes de recherche à produire le **dictionnaire de données** (codebook) d'une base existante (SPSS, CSV, Stata, SAS ou Excel), avec l'aide du questionnaire de l'étude.
 

@@ -14,7 +14,7 @@ En français : [`../installation-macos.md`](../installation-macos.md).
 
 ## 1. Install
 
-1. Download the tool's archive from the releases page of the project on GitHub: the **Source code (zip)** link, for example `dictionnaire-donnees-0.5.0.zip`.
+1. Download the tool's archive from the releases page of the project on GitHub: the **Source code (zip)** link, for example `dictionnaire-donnees-0.6.0.zip`.
 2. In the Finder, double-click the downloaded file: macOS extracts it next to it. Open the folder you get: it is **the tool's folder**, with `installer.command`, `docs` and `exemples`.
 3. Double-click **`installer.command`**. The first time, macOS refuses to open it, with a message such as "Apple could not verify “installer.command” is free of malware" or "from an unidentified developer". That is normal: the message appears for any downloaded script that is not signed by a paying publisher; the installer is a plain text file, readable in any editor.
    - Click **Done** (or **OK**), then open **System Settings > Privacy & Security**. Further down, a message mentions `installer.command`: click **Open Anyway**, confirm with your password or Touch ID, then **Open**.

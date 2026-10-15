@@ -14,7 +14,7 @@ On a Mac: [`installation-macos.md`](installation-macos.md). En français : [`../
 
 ## 1. Install
 
-1. Download the tool's archive from the releases page of the project on GitHub: the **Source code (zip)** link, for example `dictionnaire-donnees-0.5.0.zip`.
+1. Download the tool's archive from the releases page of the project on GitHub: the **Source code (zip)** link, for example `dictionnaire-donnees-0.6.0.zip`.
 2. In File Explorer, right-click the downloaded file, **Extract All**, then **Extract**. Open the extracted folder; if it holds only one folder of the same name, open that one: it is **the tool's folder**, with `installer.bat`, `docs` and `exemples`.
 3. Double-click **`installer.bat`**.
    - If Windows shows "**Windows protected your PC**", click **More info**, then **Run anyway**. This message appears for any downloaded program that is not signed by a paying publisher; the installer is a plain script, readable in the `windows` folder.
@@ -61,8 +61,10 @@ The text of the questionnaire stays in the project file; only the questions link
 
 Each variable comes from a question, a grid item or an option of a checkbox question; or from none (an identifier, a date of completion, a computed score).
 
-- **Without AI**: **Variables** page, **Without a question** filter. On each variable's page, the **Question in the questionnaire** section offers a list with the candidate questions computed by the tool at the top; choose, then **Link**. Some questions do not use the words of the variable's name ("How old are you?" for `age`): the tool finds no candidate for them, and you choose them in the list.
-- **With AI** (section 6): the model chooses among the candidates, then you accept, correct or reject each choice, in the same way.
+- **Without AI**: **Variables** page, **Without a question** filter. On each variable's page, the **Question in the questionnaire** section offers a list with the candidate questions computed by the tool at the top; choose, then **Link**.
+  - For an identifier, a date of completion or a score that is the exact sum of the items of a grid, "**No question in the questionnaire**" comes first: the tool deems it likely, but the decision is yours.
+  - Some questions do not use the words of the variable's name ("How old are you?" for `age`). When the tool finds no candidate, it puts first the **neighbouring questions**, those at that place in the questionnaire, between the sure questions around it; a short text below the list says so.
+- **With AI** (section 6): the model chooses among the candidates, then you accept, correct or reject each choice, in the same way. When the computation is sure of its choice and the model chooses another, the model's proposal is kept but flagged ("departs from the computation's sure choice"): compare with the first question of the list. These links are left out of the grouped decisions.
 
 When the file has no value labels (a CSV, for example), the tool proposes "1 = Not at all … 5 = Extremely" from the options of the linked question, only in safe cases. The words "**assumed order, to check**" are meant seriously: check the order of the codes in your survey platform or recoding script before accepting. A recoded database may have 0 = "Other" where the questionnaire puts "Other" last.
 
@@ -79,7 +81,7 @@ The AI proposes links to questions, then labels and descriptions easier to read 
 
 During a job, **Stop** (or a change of page) interrupts it after the block in progress. The finished blocks are saved; run it again to continue where it stopped. Allow about a minute for the fictional database with a graphics card, several minutes without.
 
-**Model bench** (at the bottom of the same page): to choose a model, **Measure this model** tries it on the tool's fictional databases (two in French, one in English), whose right answers are known. The report says how many links are right (and those of the computation alone, for comparison), how many labels or descriptions may contain an invention (citation, threshold, instrument name, meaning of an acronym, range, meaning of codes without a label) and the duration. Your data is not used. The report is written next to the project (`banc-essai-<model>-<date>.md`) and can be downloaded. About two minutes with a graphics card.
+**Model bench** (at the bottom of the same page): to choose a model, **Measure this model** tries it on the tool's fictional databases (three in French, one in English), whose right answers are known; the fourth, a fictional study of physical activity, served to check version 0.6 without any tuning. The report says how many links are right (and those of the computation alone, for comparison), how many labels or descriptions may contain an invention (citation, threshold, instrument name, meaning of an acronym, range, meaning of codes without a label) and the duration. Your data is not used. The report is written next to the project (`banc-essai-<model>-<date>.md`) and can be downloaded. About three minutes with a graphics card.
 
 ## 7. Review
 

@@ -82,3 +82,26 @@ def test_the_model_sees_none_first(bases):
 def test_best_guess_is_none(bases):
     project, _key = bases["sleep-study"]
     assert link.best_guess(project)["date_completed"] == link.NO_QUESTION
+
+
+@pytest.mark.allow_hosts(["127.0.0.1"])
+def test_the_page_says_why_none_comes_first(bases, tmp_path):
+    from pathlib import Path
+
+    from streamlit.testing.v1 import AppTest
+
+    from ddict.project import save_project
+
+    path = tmp_path / "etude.dd.json"
+    save_project(bases["etude-sommeil"][0], path)
+    app = Path(__file__).resolve().parent.parent / "src" / "ddict" / "review" / "app.py"
+    test = AppTest.from_file(str(app), default_timeout=30)
+    test.session_state["project_path"] = str(path)
+    test.session_state["mode"] = "variables"
+    test.run()
+    test.sidebar.radio(key="filter").set_value("unlinked").run()
+    test.selectbox(key="variable").set_value("date_passation").run()
+    assert not test.exception, test.exception
+    assert test.selectbox(key="question-date_passation").value == link.NO_QUESTION
+    captions = [c.value for c in test.caption]
+    assert any("semble être une date de passation" in c for c in captions), captions

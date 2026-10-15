@@ -1,5 +1,15 @@
 # Changements
 
+## 0.6.0 — 2026-10-14
+
+Des rattachements aux questions plus complets, et moins à corriger (plan : `docs/plan-v0.6.md`, D-038 à D-042). Au banc d'essai avec qwen2.5 7B, 89 rattachements justes sur 98 au lieu de 82 ; sur une base de contrôle qui n'a servi à aucun réglage, 20 sur 23 au lieu de 17 (`docs/essais/2026-10-14-base-controle.md`).
+
+- **« Aucune question » proposée** en tête de liste quand des indices forts la rendent probable : identifiant probable, date de passation récente, score calculé (nom en « total », « score »… ou somme exacte des items d'une grille, vérifiée au profilage ; seul le fait est gardé). Ces variables ne sont plus rattachées à tort (D-039).
+- **Questions voisines** : pour une variable sans question candidate (« How old are you? » pour `age`), les questions situées à cet endroit du questionnaire, au plus 6, sont proposées en tête de liste et envoyées au modèle comme voisines (prompt `link-v3`) (D-040).
+- **Désaccord signalé** : quand le calcul est sûr de son choix et que le modèle en choisit un autre, la proposition du modèle est gardée mais signalée, et laissée hors des décisions groupées (D-041).
+- **Banc d'essai** : le rapport classe chaque rattachement manqué (aucune candidate, mauvais choix, variable sans question rattachée, sans réponse), et une quatrième base fictive, sur l'activité physique, s'y ajoute après avoir servi de contrôle (D-042).
+- Guides : rattachements (« aucune question », questions voisines, désaccords), en français et en anglais.
+
 ## 0.5.0 — 2026-10-14
 
 L'outil existe aussi en anglais et s'installe sur un Mac (plan : `docs/plan-v0.5.md`, D-031 à D-037). **L'anglais et macOS sont à l'essai** : la traduction n'a pas encore été relue par une personne anglophone (D-034), et l'installation sur Mac a été vérifiée sur un Mac de GitHub, pas encore par une personne sur son propre Mac (D-035).

@@ -11,7 +11,7 @@ Copier `etude-sommeil.sav` et `questionnaire-sommeil.pdf` (dossier `exemples\bas
 
 Pour ne pas mêler les projets d'essai à la liste des projets récents, lancer l'outil avec la variable `DDICT_CONFIG_DIR` pointant vers un dossier temporaire.
 
-Le navigateur s'ouvre sur `http://127.0.0.1:8501`. Aucun bouton « Deploy » en haut à droite. Ollama doit tourner pour les étapes 8 à 11, 19 et 23, avec `qwen2.5:7b-instruct-q4_K_M`.
+Le navigateur s'ouvre sur `http://127.0.0.1:8501`. Aucun bouton « Deploy » en haut à droite. Ollama doit tourner pour les étapes 8 à 11, 19, 23 et 24, avec `qwen2.5:7b-instruct-q4_K_M`.
 
 ## Étapes et résultats attendus
 
@@ -26,7 +26,7 @@ Le navigateur s'ouvre sur `http://127.0.0.1:8501`. Aucun bouton « Deploy » en 
 | 7 | Accueil, recréer le même projet | « Un projet existe déjà » ; « Ouvrir le projet existant » l'ouvre sans rien perdre |
 | 8 | Page « IA locale » | Modèle recommandé choisi ; « Voir exactement ce qui serait envoyé » montre le bloc `l-001` |
 | 9 | **Faire proposer : rattachement aux questions** | Barre de progression bloc par bloc ; « 6 blocs réussis » ; tableau de bord : « Rattachements proposés à réviser : 32 » |
-| 10 | Tableau de bord, rattachements ; sur `id_participant`, choisir « Aucune question » puis **Rattacher** ; sur une autre variable, **Accepter** | Enregistré ; passage à la variable suivante, avec un message |
+| 10 | Tableau de bord, rattachements ; sur `id_participant`, choisir « Aucune question » puis **Rattacher** ; sur une autre variable, **Accepter** | « Aucune question du questionnaire » est déjà en tête, avec « … semble être un identifiant » sous la liste (v0.6) ; enregistré ; passage à la variable suivante, avec un message |
 | 11 | « IA locale », **Faire proposer : libellés et descriptions**, puis **Arrêter** pendant le premier bloc | Message « arrêté » ; les blocs terminés sont gardés ; une relance dit « … déjà faits » |
 | 12 | Variables : accepter un libellé ; corriger une description et cliquer **Enregistrer** sans appuyer sur Entrée | Texte enregistré, valeur d'origine gardée |
 | 13 | Champs documentés : seuil sans source, puis avec | Refus en français, puis seuil enregistré avec sa source |
@@ -39,6 +39,7 @@ Le navigateur s'ouvre sur `http://127.0.0.1:8501`. Aucun bouton « Deploy » en 
 | 20 | Avec un projet fait à partir de `etude-sommeil.csv` (sans étiquettes) et de `questionnaire-sommeil.txt` (dans le PDF, la grille Q7 est « à vérifier » : pas d'étiquettes proposées), rattachements acceptés : Groupes, G1, **Accepter les étiquettes de valeurs de ce groupe (N)…**, puis accepter | « Étiquettes de N variables acceptées. » |
 | 21 | Export : **Écrire les fichiers de commandes à côté du projet** | Deux fichiers `-metadonnees.sps` et `.R`, pas de `.do` ; `MISSING VALUES age (999).` dans le `.sps` |
 | 22 | Export : **Écrire la copie documentée** ; puis cocher « la remplacer » et recommencer | « … identiques case par case » ; le bouton se grise tant que la case n'est pas cochée ; `etude-sommeil.sav` inchangé |
-| 23 | IA locale : **Mesurer ce modèle** | Barre de progression ; « Rapport écrit à côté du projet » ; le rapport s'affiche (deux bases, rattachements justes, signalements, durées) |
+| 23 | IA locale : **Mesurer ce modèle** | Barre de progression ; « Rapport écrit à côté du projet » ; le rapport s'affiche (quatre bases, rattachements justes et pourquoi les autres sont manqués, signalements, durées) ; environ trois minutes |
+| 24 | Projet fait à partir de `sleep-study.sav` et `questionnaire-sleep.pdf`, rattachement par le modèle ; Variables, filtre « Avec signalements » : `age`, puis une variable signalée « s'écarte du choix sûr du calcul » | `age` : « How old are you? » proposée, et sous la liste « les questions voisines… » ; la variable en désaccord porte le signal en rouge ; le bouton des décisions groupées ne la compte pas |
 
 À la fin, fermer la fenêtre de l'outil et supprimer le dossier de travail.

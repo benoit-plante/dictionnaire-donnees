@@ -575,6 +575,14 @@ msgstr ""
 "At the top of the list: the neighbouring questions, around its place in the questionnaire (no "
 "word links them to the variable's name), then \"none\"."
 
+#, python-brace-format
+msgid ""
+"En tête de liste : « aucune », car la variable semble être {why} ; puis les questions candidates "
+"calculées."
+msgstr ""
+"At the top of the list: \"none\", as the variable seems to be {why}; then the computed candidate "
+"questions."
+
 msgid "Encodage"
 msgstr "Encoding"
 
@@ -607,11 +615,11 @@ msgid "Enregistré."
 msgstr "Saved."
 
 msgid ""
-"Environ deux minutes avec un modèle de 7 milliards de paramètres et une carte graphique ; "
+"Environ trois minutes avec un modèle de 7 milliards de paramètres et une carte graphique ; "
 "davantage sans. Changer de page arrête la mesure."
 msgstr ""
-"About two minutes with a 7-billion-parameter model and a graphics card; longer without. Changing "
-"pages stops the measurement."
+"About three minutes with a 7-billion-parameter model and a graphics card; longer without. "
+"Changing pages stops the measurement."
 
 #, python-brace-format
 msgid "Erreur de fichier : {detail}"
@@ -1882,6 +1890,15 @@ msgstr "texts all different"
 
 msgid "titres de colonnes collés"
 msgstr "column headings run together"
+
+msgid "un identifiant"
+msgstr "an identifier"
+
+msgid "un score calculé"
+msgstr "a computed score"
+
+msgid "une date de passation"
+msgstr "a date of completion"
 
 msgid "valeurs au format code postal"
 msgstr "values in postal code format"

@@ -27,7 +27,7 @@ def _run(endpoint: str, model: str) -> None:
 
     st.caption(
         _(
-            "Environ deux minutes avec un modèle de 7 milliards de paramètres et une carte "
+            "Environ trois minutes avec un modèle de 7 milliards de paramètres et une carte "
             "graphique ; davantage sans. Changer de page arrête la mesure."
         )
     )
