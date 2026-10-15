@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from ddict import naming, platforms
+from ddict import naming, platforms, waves
 from ddict.export import write_markdown, write_xlsx
 from ddict.export.documented import CopyError, CopyResult, find_database, write_documented_copy
 from ddict.export.syntax import SUFFIXES, write_syntax
@@ -185,16 +185,66 @@ def platform_summary(project: Project) -> list[str]:
 # --- New names (v0.7), from the command line or the interface. ---
 
 
-def rename(project: Project, *, suffix: str | None = None, prefix: str | None = None) -> None:
-    """Set the mark of the wave if given ("_t2" as a suffix, "t2_" as a prefix), then propose
-    stems and names by the rules where nothing is decided (not saved)."""
+def rename(
+    project: Project,
+    *,
+    suffix: str | None = None,
+    prefix: str | None = None,
+    reference: Path | str | None = None,
+) -> waves.WaveReport | None:
+    """Set the mark of the wave if given ("_t2" as a suffix, "t2_" as a prefix); take the
+    names of an earlier wave if given (its project, documented copy or table of names,
+    D-052); then propose stems and names by the rules where nothing is decided (not saved).
+    Returns the report of the differences between the waves, with a reference."""
     if suffix and prefix:
         raise naming.NamingError(["suffix_and_prefix"])
     if suffix:
         naming.set_wave(project, suffix.strip("_"), "suffix")
     elif prefix:
         naming.set_wave(project, prefix.strip("_"), "prefix")
-    naming.propose(project)
+    if reference is None:
+        naming.propose(project)
+        return None
+    earlier = waves.read_earlier_wave(reference)
+    report = waves.match(project, earlier)
+    waves.apply(project, earlier, report)
+    return report
+
+
+def wave_report_path(project_path: Path) -> Path:
+    return project_path.with_name(f"{project_stem(project_path)}-ecarts-vagues.md")
+
+
+def write_wave_report(project: Project, report: waves.WaveReport, project_path: Path) -> Path:
+    """Write the report of differences between the waves next to the project."""
+    path = wave_report_path(project_path)
+    with path.open("w", encoding="utf-8", newline="\n") as stream:
+        stream.write(waves.report_markdown(project, report))
+    return path
+
+
+def wave_summary(report: waves.WaveReport) -> list[str]:
+    lines = [
+        _(
+            "Vague précédente : {matched} variables appariées, {added} ajoutées, "
+            "{candidates} à apparier par une personne, {removed} retirées, {changed} aux "
+            "étiquettes de valeurs changées."
+        ).format(
+            matched=len(report.matches),
+            added=len(report.added),
+            candidates=len(report.candidates),
+            removed=len(report.removed),
+            changed=len(report.value_labels_changed),
+        )
+    ]
+    if report.fragile:
+        lines.append(
+            _(
+                "{n} appariements reposent sur le seul nom d'origine : à vérifier, la "
+                "numérotation de la plateforme a pu changer."
+            ).format(n=report.fragile)
+        )
+    return lines
 
 
 def naming_summary(project: Project) -> list[str]:

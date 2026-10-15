@@ -31,6 +31,7 @@ from ddict.project import (
 )
 from ddict.questionnaire.labels import propose_value_labels
 from ddict.questionnaire.link import candidates
+from ddict.waves import ReferenceError
 from ddict.workflow import (
     ProjectExists,
     QuestionnaireExists,
@@ -50,6 +51,8 @@ from ddict.workflow import (
     profile_summary,
     questionnaire_summary,
     rename,
+    wave_summary,
+    write_wave_report,
 )
 
 EXIT_ERROR = 2
@@ -176,13 +179,24 @@ def cmd_rename(args: argparse.Namespace) -> int:
     project_path = Path(args.projet)
     project = load_project(project_path)
     try:
-        rename(project, suffix=args.suffixe, prefix=args.prefixe)
+        report = rename(project, suffix=args.suffixe, prefix=args.prefixe, reference=args.reference)
     except NamingError:
         print(_("Marque de vague invalide : lettres et chiffres seulement."), file=sys.stderr)
+        return EXIT_ERROR
+    except (ReferenceError, ProjectError, ReadError) as error:
+        print(
+            _("Impossible de lire la vague précédente : {detail}").format(detail=error),
+            file=sys.stderr,
+        )
         return EXIT_ERROR
     save_project(project, project_path)
     for line in naming_summary(project):
         print(line)
+    if report is not None:
+        for line in wave_summary(report):
+            print(line)
+        path = write_wave_report(project, report, project_path)
+        print(_("Rapport des écarts entre les vagues : {path}").format(path=path))
     print(_("Enregistré dans {path}.").format(path=project_path))
     return 0
 
@@ -641,6 +655,13 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     rename_command.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    rename_command.add_argument(
+        "--reference",
+        help=_(
+            "La vague précédente : son fichier projet (.dd.json), sa copie documentée (.sav) "
+            "ou sa table de noms (.csv : nom_origine,nouveau_nom)."
+        ),
+    )
     mark = rename_command.add_mutually_exclusive_group()
     mark.add_argument(
         "--suffixe", "--suffix", help=_("Marque de vague à la fin des noms, par exemple _t2.")

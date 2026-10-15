@@ -50,6 +50,12 @@ msgstr ""
 "# user_na = TRUE keeps the missing codes already declared in the file; without it, haven turns "
 "them into NA."
 
+msgid "# Écarts entre les vagues"
+msgstr "# Differences between the waves"
+
+msgid "## Appariements"
+msgstr "## Matches"
+
 msgid "## Glossaire des sigles"
 msgstr "## Glossary of acronyms"
 
@@ -59,17 +65,32 @@ msgstr "## Groups of variables"
 msgid "## Libellés et descriptions"
 msgstr "## Labels and descriptions"
 
+msgid "## Plusieurs candidates"
+msgstr "## Several candidates"
+
 msgid "## Rattachements aux questions"
 msgstr "## Links to questions"
 
 msgid "## Variables"
 msgstr "## Variables"
 
+msgid "## Variables ajoutées"
+msgstr "## Variables added"
+
+msgid "## Variables retirées"
+msgstr "## Variables removed"
+
 msgid "## Vue d'ensemble"
 msgstr "## Overview"
 
+msgid "## Étiquettes de valeurs changées"
+msgstr "## Value labels changed"
+
 msgid "% manquants"
 msgstr "% missing"
+
+msgid "(aucune étiquette)"
+msgstr "(no label)"
 
 msgid "(aucune)"
 msgstr "(none)"
@@ -104,12 +125,32 @@ msgid "* {name} : nom de variable non valide pour SPSS, omise."
 msgstr "* {name}: variable name not valid for SPSS, left out."
 
 #, python-brace-format
+msgid "- Variables ajoutées (sans équivalent) : {n}"
+msgstr "- Variables added (without a match): {n}"
+
+#, python-brace-format
+msgid "- Variables appariées : {n}"
+msgstr "- Variables matched: {n}"
+
+#, python-brace-format
 msgid "- Variables avec signalements : {n}"
 msgstr "- Variables with flags: {n}"
 
 #, python-brace-format
+msgid "- Variables retirées (absentes de la nouvelle vague) : {n}"
+msgstr "- Variables removed (absent from the new wave): {n}"
+
+#, python-brace-format
 msgid "- Variables sensibles : {n}"
 msgstr "- Sensitive variables: {n}"
+
+#, python-brace-format
+msgid "- Variables à apparier par une personne (plusieurs candidates) : {n}"
+msgstr "- Variables for a person to match (several candidates): {n}"
+
+#, python-brace-format
+msgid "- Étiquettes de valeurs changées : {n}"
+msgstr "- Value labels changed: {n}"
 
 msgid ""
 "1. Installez Ollama depuis [ollama.com](https://ollama.com) (bouton « Download for Windows »), "
@@ -751,6 +792,10 @@ msgid "Impossible de lire la base : {detail}"
 msgstr "Cannot read the database: {detail}"
 
 #, python-brace-format
+msgid "Impossible de lire la vague précédente : {detail}"
+msgstr "Cannot read the earlier wave: {detail}"
+
+#, python-brace-format
 msgid "Impossible de lire le projet : {detail}"
 msgstr "Cannot read the project: {detail}"
 
@@ -875,6 +920,13 @@ msgstr "The list is kept on this computer; it holds only the paths of the projec
 
 msgid "La signification du seuil est obligatoire."
 msgstr "The meaning of the threshold is required."
+
+msgid ""
+"La vague précédente : son fichier projet (.dd.json), sa copie documentée (.sav) ou sa table de "
+"noms (.csv : nom_origine,nouveau_nom)."
+msgstr ""
+"The earlier wave: its project file (.dd.json), its documented copy (.sav) or its table of names "
+"(.csv: nom_origine,nouveau_nom)."
 
 msgid "La valeur corrigée est vide."
 msgstr "The corrected value is empty."
@@ -1330,6 +1382,10 @@ msgid "Rapport Markdown à écrire."
 msgstr "Markdown report to write."
 
 #, python-brace-format
+msgid "Rapport des écarts entre les vagues : {path}"
+msgstr "Report of the differences between the waves: {path}"
+
+#, python-brace-format
 msgid "Rapport écrit à côté du projet : {name}."
 msgstr "Report written next to the project: {name}."
 
@@ -1617,6 +1673,18 @@ msgstr "Unit"
 msgid "Utilisez --remplacer."
 msgstr "Use --replace."
 
+#, python-brace-format
+msgid ""
+"Vague précédente : {matched} variables appariées, {added} ajoutées, {candidates} à apparier par "
+"une personne, {removed} retirées, {changed} aux étiquettes de valeurs changées."
+msgstr ""
+"Earlier wave: {matched} variables matched, {added} added, {candidates} for a person to match, "
+"{removed} removed, {changed} with changed value labels."
+
+#, python-brace-format
+msgid "Vague précédente : {name} ; base : {base}."
+msgstr "Earlier wave: {name}; database: {base}."
+
 msgid "Valeur"
 msgstr "Value"
 
@@ -1821,6 +1889,24 @@ msgstr "mean"
 msgid "médiane"
 msgstr "median"
 
+msgid "même nom d'origine (seulement)"
+msgstr "same original name (only)"
+
+msgid "même question"
+msgstr "same question"
+
+msgid "même question que ses voisines"
+msgstr "same question as its neighbours"
+
+msgid "même rang"
+msgstr "same rank"
+
+msgid "même type"
+msgstr "same type"
+
+msgid "même étiquette"
+msgstr "same label"
+
 msgid "mêmes étiquettes de valeurs"
 msgstr "same value labels"
 
@@ -1992,6 +2078,9 @@ msgstr "values in phone format"
 msgid "validé"
 msgstr "accepted"
 
+msgid "variable de la plateforme"
+msgstr "platform variable"
+
 msgid "variables"
 msgstr "variables"
 
@@ -2042,6 +2131,20 @@ msgstr "{name} already exists. Nothing was written; confirm to replace it."
 #, python-brace-format
 msgid "{name} n'est plus le fichier d'où vient le projet : son contenu a changé. Rien n'a été écrit."
 msgstr "{name} is no longer the file the project comes from: its content has changed. Nothing was written."
+
+#, python-brace-format
+msgid ""
+"{n} appariements reposent sur le seul nom d'origine : à vérifier, la numérotation de la "
+"plateforme a pu changer d'une vague à l'autre."
+msgstr ""
+"{n} matches rest on the original name alone: to check, the platform's numbering may have changed "
+"from one wave to the next."
+
+#, python-brace-format
+msgid ""
+"{n} appariements reposent sur le seul nom d'origine : à vérifier, la numérotation de la "
+"plateforme a pu changer."
+msgstr "{n} matches rest on the original name alone: to check, the platform's numbering may have changed."
 
 #, python-brace-format
 msgid "{n} catégories rares retirées (confidentialité)"
