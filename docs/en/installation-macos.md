@@ -14,7 +14,7 @@ En français : [`../installation-macos.md`](../installation-macos.md).
 
 ## 1. Install
 
-1. Download the tool's archive from the releases page of the project on GitHub: the **Source code (zip)** link, for example `dictionnaire-donnees-0.6.0.zip`.
+1. Download the tool's archive from the releases page of the project on GitHub: the **Source code (zip)** link, for example `dictionnaire-donnees-0.7.0.zip`.
 2. In the Finder, double-click the downloaded file: macOS extracts it next to it. Open the folder you get: it is **the tool's folder**, with `installer.command`, `docs` and `exemples`.
 3. Double-click **`installer.command`**. The first time, macOS refuses to open it, with a message such as "Apple could not verify “installer.command” is free of malware" or "from an unidentified developer". That is normal: the message appears for any downloaded script that is not signed by a paying publisher; the installer is a plain text file, readable in any editor.
    - Click **Done** (or **OK**), then open **System Settings > Privacy & Security**. Further down, a message mentions `installer.command`: click **Open Anyway**, confirm with your password or Touch ID, then **Open**.
@@ -37,7 +37,7 @@ Double-click the **Dictionnaire de données** icon. A Terminal window opens and 
 
 ## 3. What comes next
 
-Everything else happens in the browser, as on Windows: follow the [Windows guide](installation-windows.md) from section 3 (a first codebook with the fictional database, questionnaire, links, local AI, review, export, command files, your own data). A few differences:
+Everything else happens in the browser, as on Windows: follow the [Windows guide](installation-windows.md) from section 3 (a first codebook with the fictional database, questionnaire, links, local AI, review, export, command files, your own data, names of the variables). A few differences:
 
 - The "Open" window is the Mac's; the example files are in the tool's folder, then `exemples/bases-fictives`. If the window does not appear, it may be behind the browser.
 - To paste a path in the field under the button: in the Finder, select the file, then **Option-Command-C** ("Copy as Pathname").

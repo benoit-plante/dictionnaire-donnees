@@ -1,6 +1,6 @@
 # dictionnaire-donnees
 
-> Nom de travail. Version 0.6.0 : des rattachements aux questions plus complets (« aucune question » proposée pour les identifiants, dates et scores calculés ; questions voisines ; désaccords du modèle signalés). Depuis la 0.5, l'outil existe aussi en anglais et s'installe sur un Mac par double-clic. **L'anglais et macOS sont à l'essai** : la traduction n'a pas encore été relue par une personne anglophone, et l'installation sur Mac n'a été vérifiée que sur un Mac de GitHub. À essayer d'abord sur la base fictive et son questionnaire, fournis.
+> Nom de travail. Version 0.7.0 : les exports bruts de SurveyMonkey sont lus juste (grilles, questions à cocher, rattachements par la structure du sondage), et les variables se renomment, avec reprise des noms d'une vague à l'autre. Depuis la 0.5, l'outil existe aussi en anglais et s'installe sur un Mac par double-clic. **L'anglais et macOS sont à l'essai** : la traduction n'a pas encore été relue par une personne anglophone, et l'installation sur Mac n'a été vérifiée que sur un Mac de GitHub. À essayer d'abord sur la base fictive et son questionnaire, fournis.
 
 Outil libre et local qui aide les équipes de recherche à produire le **dictionnaire de données** (codebook) d'une base existante (SPSS, CSV, Stata, SAS ou Excel ; le `.sav` de SPSS donne les meilleurs résultats), avec l'aide du questionnaire de l'étude.
 
@@ -26,6 +26,7 @@ ddict enrichir etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M   # fac
 ddict exporter etude-sommeil.dd.json      # codebook Excel et rapport Markdown
 ddict exporter etude-sommeil.dd.json --syntaxe   # et fichiers de commandes SPSS et R
 ddict documenter etude-sommeil.dd.json    # copie documentée de la base (.sav)
+ddict renommer etude-t2.dd.json --suffixe _t2 --reference etude-t1.dd.json  # noms
 ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M  # banc d'essai d'un modèle
 ```
 

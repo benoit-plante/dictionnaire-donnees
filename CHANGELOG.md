@@ -1,5 +1,21 @@
 # Changements
 
+## 0.7.0 — 2026-10-15
+
+Les exports bruts de SurveyMonkey sont lus juste, et les variables se renomment, d'une vague à l'autre (plan : `docs/plan-v0.7.md`, D-043 à D-054). Mis au point sur deux vraies bases, hors du dépôt et décrites par leurs seuls faits de structure, puis vérifié sur une base de contrôle écrite après coup et sur trois vagues réelles d'une même étude (`docs/essais/`).
+
+- **Exports SurveyMonkey reconnus** (`.sav`, `.xlsx`, `.csv`) : la deuxième ligne d'en-tête d'un `.xlsx` ou d'un `.csv` n'est plus lue comme un participant, et ses colonnes reçoivent les noms du `.sav` (D-044). Les conventions de la plateforme sont décrites comme des données, pour qu'une autre plateforme s'ajoute plus tard.
+- **Structure du sondage** lue dans les noms (`q0003_0004`, 4ᵉ énoncé de la 3ᵉ question) : chaque grille est un groupe, chaque question à cocher un groupe « réponses multiples » avec sa variable « autre » ; une variable est rattachée à sa question quand leurs textes concordent. Sur une vraie base, 103 variables de questions sur 104 rattachées par la structure, toutes au texte concordant, sans IA.
+- **L'en-tête de l'export Excel comme questionnaire**, troisième format avec le PDF et le texte (D-045) ; questionnaires `.txt` numérotés, PDF à titres de colonnes sur plusieurs lignes et grilles sur plusieurs pages mieux lus, et contrôlés par la structure de la base.
+- **Corrections tirées des vraies bases** : plus de faux groupe formé par le préfixe `q`, une grille n'est plus coupée par un item écarté, un item qui contient le verbe « identifier » n'est plus un identifiant, les dates de passation en texte sont reconnues, les codes « Ne sais pas » ou « Préfère ne pas répondre » sont proposés comme codes manquants (D-047), et le niveau `scale` d'un item étiqueté est signalé.
+- **Renommer les variables** : page « Noms » et `ddict renommer` (D-048 à D-050). Noms proposés par des règles (noms fixes des variables de plateforme, `<préfixe>_<rang>` pour une grille dont l'équipe a donné le préfixe, radical tiré des mots de la question), marque de vague (`_t2`), vérification de chaque nom, corrections dans le tableau et acceptation par grille ou par question avec la liste exacte.
+- **Reprendre les noms d'une vague précédente**, depuis son fichier projet, sa copie documentée ou une table de noms (D-052) : appariement par les étiquettes, les étiquettes de valeurs et la question, jamais par le seul numéro ; une question reformulée est montrée comme candidate, jamais appariée seule. Rapport des variables ajoutées, retirées et des étiquettes de valeurs changées.
+- **Exports aux nouveaux noms** : colonne « Nom d'origine » et onglet « Correspondance » du codebook, `RENAME VARIABLES` en tête de la syntaxe SPSS, renommage en tête du script R, copie documentée aux nouveaux noms, et la table de noms qui servira à la vague suivante. Vérifié avec R et PSPP.
+- **Radicaux proposés par le modèle** (D-051) : mesurés au banc, ils ne font pas mieux que les règles ; ils restent en ligne de commande seulement (`ddict renommer --modele`).
+- **Le `.sav` comme format de référence** (D-054) : les guides le recommandent, et la page « Base » dit, pour un autre format, ce que l'outil a dû deviner.
+- **Format du projet 0.2.0** : un projet des versions précédentes s'ouvre tel quel ; un projet ouvert avec la 0.7 ne s'ouvre plus avec une version plus ancienne.
+- Guides : exports SurveyMonkey et nouvelle section « Renommer les variables », en français et en anglais.
+
 ## 0.6.0 — 2026-10-14
 
 Des rattachements aux questions plus complets, et moins à corriger (plan : `docs/plan-v0.6.md`, D-038 à D-042). Au banc d'essai avec qwen2.5 7B, 89 rattachements justes sur 98 au lieu de 82 ; sur une base de contrôle qui n'a servi à aucun réglage, 20 sur 23 au lieu de 17 (`docs/essais/2026-10-14-base-controle.md`).

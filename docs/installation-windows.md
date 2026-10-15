@@ -12,7 +12,7 @@ Sur un Mac : [`installation-macos.md`](installation-macos.md). In English: [`en/
 
 ## 1. Installer
 
-1. Téléchargez l'archive de l'outil depuis la page des versions du projet sur GitHub : le lien **Source code (zip)**, par exemple `dictionnaire-donnees-0.6.0.zip`.
+1. Téléchargez l'archive de l'outil depuis la page des versions du projet sur GitHub : le lien **Source code (zip)**, par exemple `dictionnaire-donnees-0.7.0.zip`.
 2. Dans l'Explorateur, clic droit sur le fichier téléchargé, **Extraire tout**, puis **Extraire**. Ouvrez le dossier extrait ; s'il ne contient qu'un seul dossier du même nom, ouvrez celui-là : c'est **le dossier de l'outil**, avec `installer.bat`, `docs` et `exemples`.
 3. Double-cliquez sur **`installer.bat`**.
    - Si Windows affiche « **Windows a protégé votre ordinateur** », cliquez sur **Informations complémentaires**, puis **Exécuter quand même**. Ce message apparaît pour tout programme téléchargé qui n'est pas signé par un éditeur payant ; l'installateur est un simple script, lisible dans le dossier `windows`.
@@ -133,9 +133,26 @@ La démarche est la même avec votre fichier : SPSS (`.sav`), CSV (y compris ceu
 - Sur une grande base, les rattachements proposés par l'IA sont souvent justes, mais pas toujours : les questions répétées à l'identique (« À quelle fréquence cette personne vous apporte du soutien ? », une fois par personne) sont le cas le plus difficile. Vérifiez-les avant les libellés.
 - La liste des projets récents est gardée sur votre ordinateur (dossier `%APPDATA%\ddict`) et ne contient que des chemins de fichiers ; **Effacer la liste**, sur l'accueil, la vide.
 
+**Un export brut de SurveyMonkey** (variables nommées `q0003_0004`, en `.sav`, `.xlsx` ou `.csv`) est reconnu : la page **Base** affiche « Export SurveyMonkey reconnu. ». L'outil lit alors la structure du sondage dans les noms : `q0003_0004` est le 4ᵉ énoncé de la 3ᵉ question. Chaque grille devient un groupe, chaque question à cocher un groupe « réponses multiples » avec sa variable « autre », et une variable est rattachée à sa question du questionnaire quand leurs textes concordent. Dans un `.xlsx` ou un `.csv`, la deuxième ligne d'en-tête n'est jamais lue comme un participant. Les codes dont l'étiquette dit « Ne sais pas » ou « Préfère ne pas répondre » sont proposés comme codes manquants, à confirmer par l'équipe.
+
+## 11. Renommer les variables
+
+Un export de plateforme donne des noms comme `q0003_0004`, et une étude longitudinale veut les mêmes noms d'une vague à l'autre. La page **Noms** (après **Groupes** dans la barre latérale) propose de nouveaux noms ; vous les décidez. Le nom d'origine reste celui de votre fichier, qui n'est jamais modifié.
+
+1. **Donnez le préfixe des grilles.** Page **Groupes**, sur chaque grille : **Préfixe des noms de ses items** (par exemple `k6`), puis **Enregistrer le préfixe**. Ses items seront nommés `k6_1`, `k6_2`… L'outil ne propose jamais de préfixe lui-même : le sigle d'un instrument est votre décision.
+2. **Réglages de nommage** (page **Noms**) : la **marque de vague** (`_t2`, ou vide pour une étude à un seul temps), sa place (à la fin ou au début) et la longueur maximale des noms (32, la limite de Stata, convient à SPSS, R et Stata). **Enregistrer et proposer les noms**.
+3. **Les propositions**, par des règles, sans IA : les variables de la plateforme reçoivent un nom fixe (`respondent_id`, `date_debut`…) ; les items d'une grille, `<préfixe>_<rang>` ; les options d'une question à cocher, `<radical>_<rang>` et `<radical>_autre_txt` ; une question seule, un radical tiré des mots de sa question. Le **radical** d'une question se corrige une seule fois, dans **Radicaux des questions** en bas de la page, et toutes ses variables suivent. Une variable sans proposition possible reste « à nommer » et garde son nom d'origine à l'export.
+4. **Décidez.** Le tableau montre, pour chaque variable, le nom proposé, son origine, son statut et un éventuel problème ; filtres « À nommer », « Proposés », « En conflit », « Décidés ». Corrigez un nom directement dans la colonne **Nouveau nom**, puis **Enregistrer les noms modifiés** : chaque nom est vérifié (minuscules, chiffres et `_`, une lettre au début, pas de mot réservé de SPSS, pas deux fois le même nom). Sous le tableau, **Une variable** permet d'accepter ou de rejeter un nom. **Accepter en lot les noms proposés de** une grille ou d'une question, puis **Voir la liste…** : décochez ce qui ne convient pas, puis **Accepter ces N noms**.
+
+**Reprendre les noms d'une vague précédente.** Ouvrez **Reprendre les noms d'une vague précédente** et choisissez le fichier de la vague 1 : son fichier projet (`.dd.json`, le plus complet), sa copie documentée (`.sav`) ou sa table de noms (`-correspondance.csv`, écrite par l'outil à l'export, ou la vôtre, avec l'en-tête `nom_origine,nouveau_nom`). **Reprendre les noms** apparie chaque variable par son étiquette, ses étiquettes de valeurs et sa question, jamais par son seul numéro : SurveyMonkey renumérote les questions dès qu'une question est ajoutée. Le nom de la vague 1 est proposé avec la marque de la vague actuelle (`k6_1_t1` → `k6_1_t2`), et les préfixes des grilles sont repris. Une question reformulée n'est jamais appariée seule : elle vous est montrée comme candidate. Un **rapport des écarts** est écrit à côté du projet (`<projet>-ecarts-vagues.md`) : variables ajoutées, retirées, étiquettes de valeurs changées. Une table de noms n'apparie que par nom d'origine identique ; si la numérotation a changé, le rapport le signale.
+
+**À l'export**, les noms acceptés s'appliquent partout : le codebook a une colonne « Nom d'origine » et un onglet « Correspondance » ; le fichier SPSS commence par `RENAME VARIABLES`, le script R par le renommage ; la copie documentée est écrite aux nouveaux noms. La table `<projet>-correspondance.csv` est écrite à côté du codebook : c'est elle, ou le fichier projet, qui servira à la vague suivante. La version finale ne contient que les noms acceptés.
+
+En ligne de commande : `ddict renommer projet.dd.json --suffixe _t2 --reference vague1.dd.json`.
+
 ## Mettre à jour ou désinstaller
 
-- **Mettre à jour** : téléchargez et décompressez la nouvelle archive, puis double-cliquez sur son `installer.bat`. Si l'outil est ouvert, l'installateur propose de le fermer (répondez `o`) : il ne peut pas le remplacer pendant qu'il tourne. Vos fichiers projet sont conservés.
+- **Mettre à jour** : téléchargez et décompressez la nouvelle archive, puis double-cliquez sur son `installer.bat`. Si l'outil est ouvert, l'installateur propose de le fermer (répondez `o`) : il ne peut pas le remplacer pendant qu'il tourne. Vos fichiers projet sont conservés. Un projet ouvert avec la version 0.7 ne s'ouvre plus avec une version plus ancienne (son format a changé) ; l'inverse fonctionne.
 - **Désinstaller** : double-cliquez sur `desinstaller.bat`, dans le dossier de l'outil. Il retire l'outil et ses icônes, sans toucher à vos projets, codebooks ou données ; il demande avant d'effacer la liste des projets récents. uv et Ollama restent installés.
 
 ## Pour qui préfère la ligne de commande
@@ -152,6 +169,7 @@ ddict reviser etude-sommeil.dd.json           # ouvrir directement un projet
 ddict exporter etude-sommeil.dd.json          # codebook Excel et rapport
 ddict exporter etude-sommeil.dd.json --syntaxe   # et les fichiers de commandes SPSS et R
 ddict documenter etude-sommeil.dd.json        # copie documentée de la base (.sav)
+ddict renommer etude-t2.dd.json --suffixe _t2 --reference etude-t1.dd.json   # noms
 ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M   # banc d'essai d'un modèle
 ```
 

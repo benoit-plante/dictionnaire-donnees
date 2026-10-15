@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ddict"
-version = "0.6.0"
+version = "0.7.0"
 description = "Local, AI-assisted creation of research data dictionaries (working name: dictionnaire-donnees)."
 readme = "README.md"
 license = "Apache-2.0"

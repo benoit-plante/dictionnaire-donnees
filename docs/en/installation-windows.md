@@ -14,7 +14,7 @@ On a Mac: [`installation-macos.md`](installation-macos.md). En français : [`../
 
 ## 1. Install
 
-1. Download the tool's archive from the releases page of the project on GitHub: the **Source code (zip)** link, for example `dictionnaire-donnees-0.6.0.zip`.
+1. Download the tool's archive from the releases page of the project on GitHub: the **Source code (zip)** link, for example `dictionnaire-donnees-0.7.0.zip`.
 2. In File Explorer, right-click the downloaded file, **Extract All**, then **Extract**. Open the extracted folder; if it holds only one folder of the same name, open that one: it is **the tool's folder**, with `installer.bat`, `docs` and `exemples`.
 3. Double-click **`installer.bat`**.
    - If Windows shows "**Windows protected your PC**", click **More info**, then **Run anyway**. This message appears for any downloaded program that is not signed by a paying publisher; the installer is a plain script, readable in the `windows` folder.
@@ -135,9 +135,26 @@ It works the same with your file: SPSS (`.sav`), CSV (including those of Excel i
 - On a large database, the links proposed by the AI are often right, but not always: questions repeated word for word ("How often does this person support you?", once per person) are the hardest case. Check them before the labels.
 - The list of recent projects is kept on your computer (folder `%APPDATA%\ddict`) and holds only file paths; **Clear the list**, on the home page, empties it.
 
+**A raw SurveyMonkey export** (variables named `q0003_0004`, as `.sav`, `.xlsx` or `.csv`) is recognized: the **Database** page shows "SurveyMonkey export recognized.". The tool then reads the structure of the survey in the names: `q0003_0004` is the 4th item of the 3rd question. Each grid becomes a group, each check-all-that-apply question a "multiple response" group with its "other" variable, and a variable is linked to its question in the questionnaire when their texts agree. In an `.xlsx` or `.csv`, the second header row is never read as a participant. Codes whose label says "Don't know" or "Prefer not to answer" are proposed as missing codes, for the team to confirm.
+
+## 11. Rename the variables
+
+A platform export gives names like `q0003_0004`, and a longitudinal study wants the same names from one wave to the next. The **Names** page (after **Groups** in the sidebar) proposes new names; you decide them. The original name stays that of your file, which is never changed.
+
+1. **Give the prefix of the grids.** **Groups** page, on each grid: **Prefix of its items' names** (for example `k6`), then **Save the prefix**. Its items will be named `k6_1`, `k6_2`… The tool never proposes a prefix itself: the acronym of an instrument is your decision.
+2. **Naming settings** (**Names** page): the **wave mark** (`_t2`, or empty for a study with a single time point), its place (at the end or at the start) and the maximum length of the names (32, Stata's limit, suits SPSS, R and Stata). **Save and propose the names**.
+3. **The proposals**, by rules, without AI: the platform's variables get a fixed name (`respondent_id`, `start_date`…); the items of a grid, `<prefix>_<rank>`; the options of a check-all-that-apply question, `<stem>_<rank>` and `<stem>_other_txt`; a single question, a stem taken from the words of its question. The **stem** of a question is corrected once, in **Stems of the questions** at the bottom of the page, and all its variables follow. A variable with no possible proposal stays "to name" and keeps its original name in the export.
+4. **Decide.** The table shows, for each variable, the proposed name, its origin, its status and any problem; filters "To name", "Proposed", "In conflict", "Decided". Correct a name directly in the **New name** column, then **Save the changed names**: each name is checked (lower case, digits and `_`, a letter first, no SPSS reserved word, no name twice). Below the table, **One variable** lets you accept or reject a name. **Accept at once the proposed names of** a grid or a question, then **See the list…**: untick what does not fit, then **Accept these N names**.
+
+**Take the names of an earlier wave.** Open **Take the names of an earlier wave** and choose the file of wave 1: its project file (`.dd.json`, the most complete), its documented copy (`.sav`) or its table of names (`-correspondance.csv`, written by the tool at export, or your own, with the header `original_name,new_name`). **Take the names** matches each variable by its label, its value labels and its question, never by its number alone: SurveyMonkey renumbers the questions as soon as a question is added. The wave 1 name is proposed with the mark of the current wave (`k6_1_t1` → `k6_1_t2`), and the prefixes of the grids are taken again. A reworded question is never matched on that alone: it is shown to you as a candidate. A **report of the differences** is written next to the project (`<project>-ecarts-vagues.md`): variables added, removed, value labels changed. A table of names only matches by identical original name; if the numbering changed, the report says so.
+
+**At export**, the accepted names apply everywhere: the codebook has an "Original name" column and a "Correspondence" sheet; the SPSS file starts with `RENAME VARIABLES`, the R script with the renaming; the documented copy is written with the new names. The table `<project>-correspondance.csv` is written next to the codebook: it, or the project file, is what the next wave will use. The final version holds only the accepted names.
+
+On the command line: `ddict rename project.dd.json --suffix _t2 --reference wave1.dd.json`.
+
 ## Update or uninstall
 
-- **Update**: download and extract the new archive, then double-click its `installer.bat`. If the tool is open, the installer offers to close it (answer `y`): it cannot replace it while it runs. Your project files are kept.
+- **Update**: download and extract the new archive, then double-click its `installer.bat`. If the tool is open, the installer offers to close it (answer `y`): it cannot replace it while it runs. Your project files are kept. A project opened with version 0.7 no longer opens with an older version (its format changed); the reverse works.
 - **Uninstall**: double-click `desinstaller.bat`, in the tool's folder. It removes the tool and its icons, without touching your projects, codebooks or data; it asks before clearing the list of recent projects. uv and Ollama stay installed.
 
 ## For those who prefer the command line
@@ -154,6 +171,7 @@ ddict review sleep-study.dd.json              # open a project directly
 ddict export sleep-study.dd.json --language en          # Excel codebook and report
 ddict export sleep-study.dd.json --syntax     # and the SPSS and R command files
 ddict document sleep-study.dd.json            # documented copy of the database (.sav)
+ddict rename study-t2.dd.json --suffix _t2 --reference study-t1.dd.json   # names
 ddict evaluate --model qwen2.5:7b-instruct-q4_K_M       # model bench
 ```
 
