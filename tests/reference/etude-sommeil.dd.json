@@ -55,7 +55,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -164,7 +165,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -274,7 +276,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -381,7 +384,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -493,7 +497,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -643,7 +648,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -763,7 +769,8 @@
         ],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -917,7 +924,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": 0.563,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -1071,7 +1079,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": 0.577,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -1234,7 +1243,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": -0.719,
-        "reverse_suspect": true
+        "reverse_suspect": true,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -1388,7 +1398,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": 0.578,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -1542,7 +1553,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": 0.675,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -1696,7 +1708,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": -0.727,
-        "reverse_suspect": true
+        "reverse_suspect": true,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -1850,7 +1863,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": 0.512,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -2004,7 +2018,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": 0.601,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -2163,7 +2178,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": 0.619,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -2322,7 +2338,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": 0.642,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -2481,7 +2498,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": 0.64,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -2640,7 +2658,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": 0.575,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -2747,7 +2766,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -2856,7 +2876,8 @@
         ],
         "duplicate_of": "heures_sommeil",
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -3001,7 +3022,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -3116,7 +3138,8 @@
         ],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -3231,7 +3254,8 @@
         ],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -3346,7 +3370,8 @@
         ],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -3461,7 +3486,8 @@
         ],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -3620,7 +3646,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": 0.655,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -3779,7 +3806,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": 0.583,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -3938,7 +3966,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": 0.556,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -4116,7 +4145,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -4225,7 +4255,8 @@
         ],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -4334,7 +4365,8 @@
         ],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -4472,7 +4504,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {
@@ -4579,7 +4612,8 @@
         "flags": [],
         "duplicate_of": null,
         "item_rest_r": null,
-        "reverse_suspect": false
+        "reverse_suspect": false,
+        "sum_of_group": null
       },
       "privacy": {
         "privacy_class": {

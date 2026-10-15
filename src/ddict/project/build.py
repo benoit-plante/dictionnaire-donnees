@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pandas as pd
+
 from ddict.groups import GroupCandidate, find_groups
 from ddict.i18n import N_
 from ddict.io.model import LoadedData
@@ -144,6 +146,28 @@ def _with_group(entry: VariableEntry, groups: tuple[GroupCandidate, ...]) -> Var
     return entry
 
 
+MIN_SUM_ROWS = 10  # fewer complete rows: no conclusion
+
+
+def sums_of_groups(data: LoadedData, groups) -> dict[str, str]:
+    """The numeric variables that are, in every row where all are given, the exact sum of the
+    items of a group (v0.6, D-039): {"stress_total": "G3"}."""
+    found: dict[str, str] = {}
+    numeric = [v.name for v in data.variables if v.storage_type == "numeric"]
+    for group in groups:
+        members = list(group.members)
+        items = data.table[members].apply(pd.to_numeric, errors="coerce")
+        total = items.sum(axis=1, min_count=len(members))
+        for name in numeric:
+            if name in members or name in found:
+                continue
+            column = pd.to_numeric(data.table[name], errors="coerce")
+            both = total.notna() & column.notna()
+            if both.sum() >= MIN_SUM_ROWS and (total[both] - column[both]).abs().max() < 1e-6:
+                found[name] = group.group_id
+    return found
+
+
 def build_project(data: LoadedData, *, min_cell_count: int = MIN_CELL_COUNT) -> Project:
     """Profile, classify and group, then keep only what the privacy gate lets through."""
     profiles = profile_database(data)
@@ -152,8 +176,9 @@ def build_project(data: LoadedData, *, min_cell_count: int = MIN_CELL_COUNT) -> 
         data.variables, profiles, classes, audience="storage", threshold=min_cell_count
     )
     groups = find_groups(data, profiles, classes)
+    sums = sums_of_groups(data, groups)
     source = data.source
-    return Project(
+    project = Project(
         source=SourceInfo(
             name=source.name,
             format=source.format,
@@ -172,3 +197,6 @@ def build_project(data: LoadedData, *, min_cell_count: int = MIN_CELL_COUNT) -> 
         ],
         groups=[_group(g) for g in groups],
     )
+    for name, group_id in sums.items():
+        project.variable(name).profile.sum_of_group = group_id
+    return project

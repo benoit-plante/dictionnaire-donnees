@@ -31,6 +31,7 @@ import math
 import re
 import unicodedata
 from dataclasses import dataclass
+from datetime import date
 
 from ddict import glossary
 from ddict.i18n import _, colon
@@ -338,8 +339,42 @@ def _with_order(project: Project, result: dict[str, list[float]], n: int) -> dic
     return ordered
 
 
+# A variable asked by no question (v0.6, D-039): strong evidence only.
+SCORE_WORDS = {"total", "score", "somme", "sum", "moyenne", "moy", "mean", "avg"}
+CONTACT_VALUES = {"email_values", "phone_values", "postal_code_values"}
+COMPLETION_DAYS = 400  # dates of completion span the time of a survey, not a lifetime
+
+
+def no_question_reason(entry: VariableEntry) -> str | None:
+    """Why the variable is probably asked by no question: "identifier", "completion_date"
+    or "computed_score"; None when nothing says so clearly."""
+    reasons = set(entry.privacy.reasons)
+    if "identifier_name" in reasons and not reasons & CONTACT_VALUES:
+        return "identifier"
+    profile = entry.profile
+    if (
+        profile.inferred_type in ("date", "datetime")
+        and (entry.privacy.privacy_class.value or "ordinary") == "ordinary"
+        and profile.date_min
+        and profile.date_max
+        and _days(profile.date_min, profile.date_max) <= COMPLETION_DAYS
+    ):
+        return "completion_date"
+    if profile.sum_of_group:
+        return "computed_score"
+    if entry.group_id.value is None and set(_WORD.findall(_plain(entry.name))) & SCORE_WORDS:
+        return "computed_score"
+    return None
+
+
+def _days(first: str, last: str) -> int:
+    start, end = (date.fromisoformat(value[:10]) for value in (first, last))
+    return (end - start).days
+
+
 def candidates(project: Project, *, limit: int = MAX_CANDIDATES) -> dict[str, list[str]]:
-    """The best targets for each variable, best first; empty when nothing scores enough."""
+    """The best targets for each variable, best first; empty when nothing scores enough.
+    "none" comes first when the variable is probably asked by no question (D-039)."""
     if project.questionnaire is None:
         return {}
     all_targets = targets(project.questionnaire)
@@ -347,6 +382,8 @@ def candidates(project: Project, *, limit: int = MAX_CANDIDATES) -> dict[str, li
     for name, row in scores(project).items():
         ranked = sorted(range(len(row)), key=lambda i: (-row[i], i))
         found[name] = [all_targets[i].target_id for i in ranked[:limit] if row[i] >= MIN_SCORE]
+        if no_question_reason(project.variable(name)):
+            found[name] = [NO_QUESTION, *found[name][: limit - 1]]
     return found
 
 

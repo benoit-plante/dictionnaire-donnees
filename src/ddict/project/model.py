@@ -154,6 +154,9 @@ class Profile(Strict):
     # Within its probable scale: correlation with the sum of the other items.
     item_rest_r: float | None = None
     reverse_suspect: bool = False
+    # The exact sum of the items of this group, in every row where all are given (v0.6,
+    # D-039): a computed score, asked by no question. Only the fact is kept.
+    sum_of_group: str | None = None
 
 
 class Privacy(Strict):

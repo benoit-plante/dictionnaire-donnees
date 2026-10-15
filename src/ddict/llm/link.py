@@ -97,8 +97,34 @@ def _needing_context(questionnaire) -> dict:
     }
 
 
+# The "no question" candidate (v0.6, D-039): the answer word of the prompt, and why.
+NO_QUESTION_IDS = {"fr": NONE_ANSWER, "en": "none"}
+NO_QUESTION_WHY = {
+    "fr": {
+        "identifier": "identifiant",
+        "completion_date": "date de passation ou de réponse",
+        "computed_score": "score calculé",
+    },
+    "en": {
+        "identifier": "identifier",
+        "completion_date": "date of completion or response",
+        "computed_score": "computed score",
+    },
+}
+
+
+def _no_question_candidate(entry: VariableEntry, language: str) -> dict:
+    reason = link.no_question_reason(entry) or "identifier"
+    why = NO_QUESTION_WHY.get(language, NO_QUESTION_WHY["fr"])[reason]
+    return {"id": NO_QUESTION_IDS.get(language, NONE_ANSWER), "question": f"({why})"}
+
+
 def _payload(
-    entry: VariableEntry, found: list[link.Target], previous: dict, language: str = "fr"
+    entry: VariableEntry,
+    found: list[link.Target],
+    previous: dict,
+    language: str = "fr",
+    no_question_first: bool = False,
 ) -> dict:
     payload: dict = {"name": entry.name}
     if entry.file.label:
@@ -110,6 +136,8 @@ def _payload(
     elif entry.file.value_labels:
         payload["value_labels"] = {code_text(v.code): v.label for v in entry.file.value_labels}
     payload["candidates"] = [_candidate(t, previous) for t in found]
+    if no_question_first:
+        payload["candidates"].insert(0, _no_question_candidate(entry, language))
     return payload
 
 
@@ -138,7 +166,14 @@ def build_link_blocks(project: Project, *, size: int) -> tuple[Block, ...]:
         block_id = f"l-{start // size + 1:03d}"
         chunk = waiting[start : start + size]
         payloads = [
-            _payload(e, [by_id[i] for i in found[e.name]], previous, language) for e in chunk
+            _payload(
+                e,
+                [by_id[i] for i in found[e.name] if i != link.NO_QUESTION],
+                previous,
+                language,
+                no_question_first=found[e.name][0] == link.NO_QUESTION,
+            )
+            for e in chunk
         ]
         user = json.dumps({"block": block_id, "variables": payloads}, ensure_ascii=False, indent=2)
         blocks.append(

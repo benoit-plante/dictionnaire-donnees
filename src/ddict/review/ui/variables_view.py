@@ -164,7 +164,8 @@ def _question(project: Project, entry: VariableEntry) -> None:
         c.show_message(f"reject-{key}")
 
     found = link.candidates(project).get(name, [])
-    choices = [*found, link.NO_QUESTION, *(i for i in by_id if i not in found)]
+    # "none" may already be first (v0.6, D-039): each choice once.
+    choices = list(dict.fromkeys([*found, link.NO_QUESTION, *by_id]))
 
     def start() -> str:
         current = c.project().variable(name).question

@@ -325,6 +325,10 @@ La logique (changer un statut, valider une source) vit dans `project` et se test
 - `installer.command` et `desinstaller.command` (bash, fins de ligne LF, marqués exécutables dans le dépôt) font sous macOS ce que font `installer.bat` et `desinstaller.bat` : uv, l'outil, l'outil ouvert fermé avec l'accord de la personne, l'icône, Ollama. L'icône est un fichier `.command` dans Applications et sur le bureau : un double-clic ouvre une fenêtre de Terminal qui fait tourner l'outil, et fermer la fenêtre l'arrête. Réglages dans `~/Library/Application Support/ddict`.
 - Vérification (D-035) : `.github/workflows/macos.yml`, lancé à la main. Premier passage réussi le 2026-10-14 sur macOS 26 (Apple Silicon) : tests, installation, interface qui répond, installateur arrêté proprement quand l'outil est ouvert, désinstallation. Ce passage a fait trouver deux écarts du générateur d'exemples entre Windows et macOS (marque de système dans le zip, sauts de ligne dans une cellule), corrigés. Restent à voir sur un vrai Mac : l'icône, la fenêtre « Ouvrir » et les avertissements de sécurité de macOS.
 
+### 7.6 Des rattachements plus complets (v0.6)
+
+- **« Aucune question » proposée** (D-039, étape 3) : `link.no_question_reason` reconnaît un identifiant (nom d'identifiant, sans valeurs de courriel ni de téléphone), une date de passation (dates étalées sur au plus 400 jours, hors date de naissance) ou un score calculé (nom en `total`, `score`, `moyenne`… hors d'un groupe, ou `profile.sum_of_group` : la somme exacte des items d'un groupe, vérifiée au profilage, dont seul le fait est gardé). La candidate « aucune » passe alors en tête ; le modèle la reçoit avec la raison (« (identifiant) ») ; l'interface la montre en tête de liste.
+
 ## 8. Exports
 
 - **Codebook `.xlsx`** : un onglet « Variables » (une ligne par variable), un onglet « Valeurs » (une ligne par code et étiquette), un onglet « Groupes », un onglet « Provenance » (statut et origine de chaque champ, modèles utilisés). En-têtes figés, filtres activés.

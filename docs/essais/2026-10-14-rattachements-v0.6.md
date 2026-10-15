@@ -24,4 +24,9 @@ Version 0.5 avec le classement des rattachements manqués du banc :
 
 ## Après chaque étape
 
-À compléter aux étapes 3 à 5.
+| Étape | Modèle | Calcul seul | Absente des candidates | Mal choisie | Sans question rattachée | Sans proposition | Calcul défait |
+|---|---|---|---|---|---|---|---|
+| Référence (0.5) | 82 / 98 | 88 / 98 | 3 | 4 | 4 | 5 | 3 |
+| 3. « Aucune question » proposée | 86 / 98 | 94 / 98 | 3 | 4 | 1 | 4 | 4 |
+
+**Étape 3.** « Aucune question » arrive en tête pour les six variables administratives des bases du banc et pour `stress_total`, reconnu au profilage comme la somme exacte des items de son groupe ; aucune variable qui a une question ne la perd en tête. Sur la base publique, qui n'a pas servi au réglage, les indices visent l'identifiant et huit scores calculés (K6, WEMWBS, CBCL…), dont `cbcl_score_emotional`, rattaché à tort jusqu'ici. Reste `date_completed`, que le modèle rattache encore à la question sur la date de naissance malgré « aucune » en tête : c'est l'objet de l'étape 5.
