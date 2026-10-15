@@ -4,7 +4,7 @@ It opens on this computer, where the interface runs. It runs in a process of its
 tkinter must own its thread, which a Streamlit script does not. The process prints the
 chosen path, or nothing when the person cancels.
 
-Run as: python -m ddict.review.ui.dialog database|project|questionnaire
+Run as: python -m ddict.review.ui.dialog database|project|questionnaire|reference
 """
 
 from __future__ import annotations
@@ -30,6 +30,13 @@ KINDS = {
     "questionnaire": (
         N_("Choisir le questionnaire"),
         [(N_("Questionnaires"), "*.pdf *.txt *.xlsx"), (N_("Tous les fichiers"), "*.*")],
+    ),
+    "reference": (
+        N_("Choisir la vague précédente"),
+        [
+            (N_("Projet, copie documentée ou table de noms"), "*.dd.json *.sav *.csv"),
+            (N_("Tous les fichiers"), "*.*"),
+        ],
     ),
 }
 TIMEOUT = 600  # seconds: a person may take a while to find the file

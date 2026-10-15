@@ -20,7 +20,7 @@ FRENCH = re.compile(
     r"sur|ou|et|à|vos|votre|cette|ces)\b",
     re.IGNORECASE,
 )
-MODES = ["base", "questionnaire", "glossary", "ai", "variables", "groups", "export"]
+MODES = ["base", "questionnaire", "glossary", "ai", "variables", "groups", "names", "export"]
 
 
 def test_every_string_is_translated():

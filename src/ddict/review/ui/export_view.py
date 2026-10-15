@@ -27,6 +27,7 @@ from ddict.workflow import (
     copy_error_text,
     documented_copy,
     export_codebook,
+    export_name_table,
     export_paths,
     export_syntax,
     syntax_paths,
@@ -63,6 +64,7 @@ def _write() -> None:
             omit_groups=tuple(st.session_state[OMIT]),
             language=_language(),
         )
+        table = export_name_table(c.project(), path)  # v0.7: the reference of the next wave
     except OSError as error:
         st.session_state.message = (
             "error",
@@ -73,13 +75,12 @@ def _write() -> None:
             "export-write",
         )
         return
-    st.session_state.message = (
-        "success",
-        _("Fichiers écrits à côté du projet : {xlsx} et {md}.").format(
-            xlsx=xlsx.name, md=markdown.name
-        ),
-        "export-write",
+    text = _("Fichiers écrits à côté du projet : {xlsx} et {md}.").format(
+        xlsx=xlsx.name, md=markdown.name
     )
+    if table is not None:
+        text += " " + _("Table de correspondance des noms : {path}").format(path=table.name)
+    st.session_state.message = ("success", text, "export-write")
 
 
 def _write_syntax() -> None:

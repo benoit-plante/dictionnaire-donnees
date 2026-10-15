@@ -170,8 +170,18 @@ msgstr ""
 "start it: its icon appears next to the clock.\n"
 "2. Download the recommended model, once (about 4.7 GB), in PowerShell:"
 
+msgid "32, la limite de Stata, convient à SPSS, R et Stata."
+msgstr "32, Stata's limit, suits SPSS, R and Stata."
+
 msgid "Accepter"
 msgstr "Accept"
+
+msgid "Accepter ce préfixe"
+msgstr "Accept this prefix"
+
+#, python-brace-format
+msgid "Accepter ces {n} noms"
+msgstr "Accept these {n} names"
 
 #, python-brace-format
 msgid "Accepter ces {n} rattachements"
@@ -180,6 +190,9 @@ msgstr "Accept these {n} links"
 #, python-brace-format
 msgid "Accepter ces {n} étiquetages"
 msgstr "Accept these {n} sets of labels"
+
+msgid "Accepter en lot les noms proposés de"
+msgstr "Accept at once the proposed names of"
 
 #, python-brace-format
 msgid "Accepter les rattachements où le modèle et le calcul s'accordent ({n})…"
@@ -191,6 +204,10 @@ msgstr "Accept the labels"
 #, python-brace-format
 msgid "Accepter les étiquettes de valeurs de ce groupe ({n})…"
 msgstr "Accept the value labels of this group ({n})…"
+
+#, python-brace-format
+msgid "Accepter {name}"
+msgstr "Accept {name}"
 
 msgid "Accueil"
 msgstr "Home"
@@ -257,6 +274,9 @@ msgstr "AI call"
 msgid "Arrêter"
 msgstr "Stop"
 
+msgid "Au début (t2_k6_1)"
+msgstr "At the start (t2_k6_1)"
+
 msgid "Aucun : tout le texte est reproduit"
 msgstr "None: all the text is reproduced"
 
@@ -271,6 +291,9 @@ msgstr "No reversed item"
 
 msgid "Aucun projet récent."
 msgstr "No recent project."
+
+msgid "Aucun préfixe proposé pour ce groupe."
+msgstr "No prefix proposed for this group."
 
 msgid "Aucun sigle pour l'instant."
 msgstr "No acronym yet."
@@ -296,6 +319,9 @@ msgstr "No variable in this filter."
 
 msgid "Aucune variable à envoyer."
 msgstr "No variable to send."
+
+msgid "Autres variables"
+msgstr "Other variables"
 
 #, python-brace-format
 msgid "Avec les items probables inversés : {a}"
@@ -367,6 +393,10 @@ msgid "Ce fichier projet est introuvable."
 msgstr "This project file cannot be found."
 
 #, python-brace-format
+msgid "Ces noms n'attendent plus de décision : {names}."
+msgstr "These names no longer wait for a decision: {names}."
+
+#, python-brace-format
 msgid "Ces rattachements ne sont plus en accord : {names}."
 msgstr "These links no longer agree: {names}."
 
@@ -386,6 +416,9 @@ msgstr "Choose the database"
 msgid "Choisir la base…"
 msgstr "Choose the database…"
 
+msgid "Choisir la vague précédente"
+msgstr "Choose…"
+
 msgid "Choisir le questionnaire"
 msgstr "Choose the questionnaire"
 
@@ -400,6 +433,12 @@ msgstr "Choose a project file…"
 
 msgid "Choisir une base…"
 msgstr "Choose a database…"
+
+msgid "Choisir…"
+msgstr "Choose…"
+
+msgid "Choisissez d'abord le fichier de la vague précédente."
+msgstr "First choose the file of the earlier wave."
 
 msgid "Choisissez d'abord le fichier du questionnaire (.pdf, .txt ou .xlsx)."
 msgstr "First choose the questionnaire file (.pdf, .txt or .xlsx)."
@@ -561,6 +600,16 @@ msgstr "Min date"
 msgid "Dates"
 msgstr "Dates"
 
+msgid ""
+"De nouveaux noms, proposés par des règles ou repris d'une vague précédente, décidés par vous. Le "
+"nom d'origine reste celui du fichier, qui n'est jamais modifié ; les noms acceptés s'appliquent "
+"dans le codebook, les fichiers de commandes et la copie documentée. Le préfixe d'une grille se "
+"donne dans la vue « Groupes »."
+msgstr ""
+"New names, proposed by rules or taken from an earlier wave, decided by you. The original name "
+"stays that of the file, which is never changed; accepted names apply in the codebook, the command"
+" files and the documented copy. The prefix of a grid is given in the \"Groups\" view."
+
 msgid "De travail : avec les propositions en attente, marquées comme telles"
 msgstr "Working: with the pending proposals, marked as such"
 
@@ -590,6 +639,9 @@ msgstr "Folder where the report is written (default: the current folder)."
 
 msgid "Durée"
 msgstr "Duration"
+
+msgid "Décidés"
+msgstr "Decided"
 
 #, python-brace-format
 msgid "Décision impossible : {detail}"
@@ -629,6 +681,9 @@ msgstr "SHA-256 fingerprint"
 msgid "Empreinte SHA-256 du questionnaire"
 msgstr "SHA-256 fingerprint of the questionnaire"
 
+msgid "En conflit"
+msgstr "In conflict"
+
 msgid "En tête de liste : les questions candidates calculées, puis « aucune »."
 msgstr "At the top of the list: the computed candidate questions, then \"none\"."
 
@@ -659,14 +714,26 @@ msgstr "Save"
 msgid "Enregistrer ce choix"
 msgstr "Save this choice"
 
+msgid "Enregistrer et proposer les noms"
+msgstr "Save and propose the names"
+
 msgid "Enregistrer l'instrument"
 msgstr "Save the instrument"
 
 msgid "Enregistrer l'étendue"
 msgstr "Save the range"
 
+msgid "Enregistrer le préfixe"
+msgstr "Save the prefix"
+
 msgid "Enregistrer les items inversés"
 msgstr "Save the reversed items"
+
+msgid "Enregistrer les noms modifiés"
+msgstr "Save the changed names"
+
+msgid "Enregistrer les radicaux"
+msgstr "Save the stems"
 
 msgid "Enregistrer références et notes"
 msgstr "Save references and notes"
@@ -720,6 +787,9 @@ msgstr "Command file: {path}"
 msgid "Fichier de données"
 msgstr "Data file"
 
+msgid "Fichier de la vague précédente"
+msgstr "File of the earlier wave"
+
 msgid "Fichier projet (.dd.json)."
 msgstr "Project file (.dd.json)."
 
@@ -761,6 +831,10 @@ msgstr "Glossary"
 
 msgid "Glossaire des sigles"
 msgstr "Glossary of acronyms"
+
+#, python-brace-format
+msgid "Grilles sans préfixe de noms : {n}"
+msgstr "Grids without a name prefix: {n}"
 
 msgid "Groupe"
 msgstr "Group"
@@ -937,6 +1011,10 @@ msgstr ""
 msgid "La liste est gardée sur cet ordinateur ; elle ne contient que les chemins des fichiers projet."
 msgstr "The list is kept on this computer; it holds only the paths of the project files."
 
+#, python-brace-format
+msgid "La longueur maximale doit être entre {low} et {high}."
+msgstr "The maximum length must be between {low} and {high}."
+
 msgid "La signification du seuil est obligatoire."
 msgstr "The meaning of the threshold is required."
 
@@ -1062,6 +1140,13 @@ msgstr "The local server does not answer as expected."
 msgid "Le serveur {endpoint} ne répond pas. Ollama est-il lancé ?"
 msgstr "The server {endpoint} does not answer. Is Ollama running?"
 
+msgid ""
+"Le sigle de l'échelle, en minuscules (k6, stai…) : ses items s'appelleront k6_1, k6_2… Donné par "
+"vous, jamais par l'IA."
+msgstr ""
+"The scale's acronym, in lower case (k6, stai…): its items will be named k6_1, k6_2… Given by you,"
+" never by the AI."
+
 msgid "Le sigle est vide."
 msgstr "The acronym is empty."
 
@@ -1120,14 +1205,27 @@ msgstr ""
 "question (identifier, date of completion). Uncheck those that do not fit; each checked link will "
 "be accepted as if you had accepted it by hand."
 
+msgid ""
+"Lisez chaque ligne et décochez les noms qui ne conviennent pas ; chaque nom coché sera accepté "
+"comme si vous l'aviez accepté à la main."
+msgstr ""
+"Read each line and untick the names that do not fit; each ticked name will be accepted as if you "
+"had accepted it by hand."
+
 msgid "Liste effacée."
 msgstr "List cleared."
+
+msgid "Longueur maximale des noms"
+msgstr "Maximum length of the names"
 
 msgid "Manquant déclaré"
 msgstr "Declared missing"
 
 msgid "Manquants déclarés"
 msgstr "Declared missing"
+
+msgid "Marque de vague (vide s'il n'y en a pas)"
+msgstr "Wave mark (empty if none)"
 
 #, python-brace-format
 msgid "Marque de vague : {mark}"
@@ -1218,8 +1316,26 @@ msgid "Nom du modèle dans le serveur local, p. ex. qwen2.5:7b-instruct-q4_K_M."
 msgstr "Name of the model in the local server, e.g. qwen2.5:7b-instruct-q4_K_M."
 
 #, python-brace-format
+msgid "Nom refusé : {why}."
+msgstr "Name refused: {why}."
+
+#, python-brace-format
 msgid "Nombre de variables par message (défaut : {n})."
 msgstr "Number of variables per message (default: {n})."
+
+msgid "Noms"
+msgstr "Names"
+
+msgid "Noms des variables"
+msgstr "Names of the variables"
+
+#, python-brace-format
+msgid "Noms en conflit : {n}"
+msgstr "Names in conflict: {n}"
+
+#, python-brace-format
+msgid "Noms proposés à valider : {n}"
+msgstr "Proposed names to validate: {n}"
 
 msgid "Notes"
 msgstr "Notes"
@@ -1266,6 +1382,9 @@ msgstr "Page"
 #, python-brace-format
 msgid "Pas dans le groupe : {names}"
 msgstr "Not in the group: {names}"
+
+msgid "Place de la marque"
+msgstr "Place of the mark"
 
 msgid "Port local de l'interface (défaut : 8501)."
 msgstr "Local port of the interface (default: 8501)."
@@ -1320,12 +1439,18 @@ msgstr ""
 msgid "Pourquoi les rattachements du modèle ont été manqués :"
 msgstr "Why the model's links were missed:"
 
+msgid "Problème"
+msgstr "Problem"
+
 msgid "Produire le codebook Excel et le rapport Markdown d'un projet."
 msgstr "Produce the Excel codebook and the Markdown report of a project."
 
 #, python-brace-format
 msgid "Projet créé : {path}"
 msgstr "Project created: {path}"
+
+msgid "Projet, copie documentée ou table de noms"
+msgstr "Project, documented copy or table of names"
 
 msgid "Projets récents"
 msgstr "Recent projects"
@@ -1335,6 +1460,9 @@ msgid ""
 "jamais modifié."
 msgstr "Propose new names for the variables, by the naming rules; the original file is never changed."
 
+msgid "Proposer les noms par les règles"
+msgstr "Propose names by the rules"
+
 #, python-brace-format
 msgid "Propositions enregistrées dans {path}, à réviser."
 msgstr "Proposals saved in {path}, to review."
@@ -1342,6 +1470,9 @@ msgstr "Proposals saved in {path}, to review."
 #, python-brace-format
 msgid "Proposé : {v}"
 msgstr "Proposed: {v}"
+
+msgid "Proposés"
+msgstr "Proposed"
 
 msgid ""
 "Proposés après les bons rattachements et les sigles du questionnaire acceptés. Une variable "
@@ -1353,6 +1484,17 @@ msgstr ""
 
 msgid "Provenance"
 msgstr "Provenance"
+
+msgid "Préfixe des noms de ses items"
+msgstr "Prefix of its items' names"
+
+#, python-brace-format
+msgid "Préfixe refusé : {why}."
+msgstr "Prefix refused: {why}."
+
+#, python-brace-format
+msgid "Préfixe repris de la vague précédente : {prefix}"
+msgstr "Prefix taken from the earlier wave: {prefix}"
 
 msgid "Préparation des bases fictives…"
 msgstr "Preparing the fictional databases…"
@@ -1366,6 +1508,10 @@ msgstr "Question in the questionnaire"
 #, python-brace-format
 msgid "Question inconnue : {id}"
 msgstr "Unknown question: {id}"
+
+#, python-brace-format
+msgid "Question {key}"
+msgstr "Question {key}"
 
 msgid "Question à réponses multiples : une variable par option cochée."
 msgstr "Multiple-response question: one variable per ticked option."
@@ -1392,6 +1538,13 @@ msgstr "Questionnaires"
 msgid "Questions trouvées"
 msgstr "Questions found"
 
+msgid "Radical"
+msgstr "Stem"
+
+#, python-brace-format
+msgid "Radicaux des questions ({n})"
+msgstr "Stems of the questions ({n})"
+
 #, python-brace-format
 msgid "Rapport : {path}"
 msgstr "Report: {path}"
@@ -1405,6 +1558,10 @@ msgstr "Markdown report: {path}"
 
 msgid "Rapport Markdown à écrire."
 msgstr "Markdown report to write."
+
+#, python-brace-format
+msgid "Rapport des écarts : {name}"
+msgstr "Report of the differences: {name}"
 
 #, python-brace-format
 msgid "Rapport des écarts entre les vagues : {path}"
@@ -1465,6 +1622,12 @@ msgstr "Also send the blocks already enriched."
 msgid "Renvoyer aussi les blocs déjà traités."
 msgstr "Also send the blocks already processed."
 
+msgid "Reprendre les noms"
+msgstr "Take the names"
+
+msgid "Reprendre les noms d'une vague précédente"
+msgstr "Take the names of an earlier wave"
+
 msgid ""
 "Reproduire les items d'un instrument protégé relève de l'équipe ; le codebook donnera alors la "
 "référence de la question (Q12.r3, p. 4) sans son texte."
@@ -1495,6 +1658,9 @@ msgstr "References"
 
 msgid "Références (une par ligne)"
 msgstr "References (one per line)"
+
+msgid "Réglages de nommage"
+msgstr "Naming settings"
 
 msgid "Réservés aux personnes ; l'étendue et les seuils exigent une source."
 msgstr "For people only; the range and the thresholds require a source."
@@ -1578,6 +1744,17 @@ msgstr "Flags"
 
 msgid "Signification"
 msgstr "Meaning"
+
+msgid ""
+"Son fichier projet (.dd.json, le plus complet), sa copie documentée (.sav) ou sa table de noms "
+"(.csv : nom_origine,nouveau_nom). Chaque variable est appariée par ses étiquettes, ses étiquettes"
+" de valeurs et sa question ; les noms repris sont des propositions. Un rapport des écarts entre "
+"les vagues est écrit à côté du projet."
+msgstr ""
+"Its project file (.dd.json, the richest), its documented copy (.sav) or its table of names (.csv:"
+" nom_origine,nouveau_nom). Each variable is matched by its labels, its value labels and its "
+"question; the names taken are proposals. A report of the differences between the waves is written"
+" next to the project."
 
 msgid "Source"
 msgstr "Source"
@@ -1675,6 +1852,13 @@ msgstr ""
 "(its decisions will be lost)."
 
 msgid ""
+"Un radical par question, partagé par ses variables : « taches » donne taches_1, taches_2… et "
+"taches_autre_txt. Corrigez-le ici, une seule fois."
+msgstr ""
+"One stem per question, shared by its variables: \"taches\" gives taches_1, taches_2… and "
+"taches_autre_txt. Correct it here, once."
+
+msgid ""
 "Une nouvelle copie de votre base au format SPSS (.sav), avec ce que vous avez accepté. Avant de "
 "l'annoncer, l'outil la relit et la compare à l'original case par case. Votre fichier d'origine "
 "n'est jamais modifié. La copie contient les données des participants : rangez-la comme "
@@ -1695,6 +1879,9 @@ msgstr ""
 
 msgid "Une source documentée est obligatoire."
 msgstr "A documented source is required."
+
+msgid "Une variable"
+msgstr "One variable"
 
 msgid "Unité"
 msgstr "Unit"
@@ -1801,6 +1988,9 @@ msgstr "Version"
 msgid "Voir exactement ce qui serait envoyé (rien n'est envoyé)"
 msgstr "See exactly what would be sent (nothing is sent)"
 
+msgid "Voir la liste…"
+msgstr "See the list…"
+
 msgid "Vérifier de nouveau"
 msgstr "Check again"
 
@@ -1870,6 +2060,9 @@ msgstr "gives the meaning of an acronym missing from the glossary"
 msgid "décimal"
 msgstr "decimal"
 
+msgid "déjà le nom d'une autre variable"
+msgstr "already the name of another variable"
+
 msgid "entier"
 msgstr "integer"
 
@@ -1909,8 +2102,14 @@ msgstr "masked"
 msgid "max"
 msgstr "max"
 
+msgid "minuscules, chiffres et « _ », en commençant par une lettre"
+msgstr "lower case, digits and \"_\", starting with a letter"
+
 msgid "mixte"
 msgstr "mixed"
+
+msgid "mot réservé de SPSS"
+msgstr "SPSS reserved word"
 
 msgid "moyenne"
 msgstr "mean"
@@ -1941,6 +2140,9 @@ msgstr "same value labels"
 
 msgid "nom d'instrument"
 msgstr "instrument name"
+
+msgid "nom d'origine d'une autre variable"
+msgstr "original name of another variable"
 
 msgid "nom de code postal"
 msgstr "postal code name"
@@ -2083,6 +2285,9 @@ msgstr "texts all different"
 msgid "titres de colonnes collés"
 msgstr "column headings run together"
 
+msgid "trop long"
+msgstr "too long"
+
 msgid "un identifiant"
 msgstr "an identifier"
 
@@ -2150,6 +2355,14 @@ msgid "{done} variables sur {total} sans proposition en attente"
 msgstr "{done} of {total} variables without a pending proposal"
 
 #, python-brace-format
+msgid "{key} : radical refusé ({why})."
+msgstr "{key}: stem refused ({why})."
+
+#, python-brace-format
+msgid "{name} : nom refusé ({why})."
+msgstr "{name}: name refused ({why})."
+
+#, python-brace-format
 msgid "{name} existe déjà : la remplacer"
 msgstr "{name} already exists: replace it"
 
@@ -2184,12 +2397,24 @@ msgid "{n} items"
 msgstr "{n} items"
 
 #, python-brace-format
+msgid "{n} noms acceptés."
+msgstr "{n} names accepted."
+
+#, python-brace-format
+msgid "{n} noms enregistrés."
+msgstr "{n} names saved."
+
+#, python-brace-format
 msgid "{n} options à cocher"
 msgstr "{n} checkbox options"
 
 #, python-brace-format
 msgid "{n} questions : {counts}{grids}."
 msgstr "{n} questions: {counts}{grids}."
+
+#, python-brace-format
+msgid "{n} radicaux enregistrés."
+msgstr "{n} stems saved."
 
 #, python-brace-format
 msgid "{n} rattachements acceptés."
@@ -2261,6 +2486,12 @@ msgstr "\"{token}\" read as empty ({n})"
 
 msgid "À faire"
 msgstr "To do"
+
+msgid "À la fin (k6_1_t2)"
+msgstr "At the end (k6_1_t2)"
+
+msgid "À nommer"
+msgstr "To name"
 
 msgid "À réviser"
 msgstr "To review"
@@ -2356,6 +2587,9 @@ msgstr "single choice"
 
 msgid "à cocher"
 msgstr "checkbox"
+
+msgid "à nommer"
+msgstr "to name"
 
 msgid "à valider"
 msgstr "to accept"

@@ -149,7 +149,7 @@ def usable_stem(project: Project, key: str | None) -> str | None:
 
 
 @dataclass(frozen=True)
-class _Question:
+class StemQuestion:
     """A question whose variables share a stem."""
 
     key: str
@@ -158,17 +158,17 @@ class _Question:
     other: str | None  # the variable of its "other" text
 
 
-def _questions(project: Project) -> list[_Question]:
+def stem_questions(project: Project) -> list[StemQuestion]:
     """Questions needing a stem: from the platform's structure (not grids, which take a
     prefix), else from the accepted links to the questionnaire."""
-    found: list[_Question] = []
+    found: list[StemQuestion] = []
     if platforms.by_name(project.source.platform) is not None:
         for question in link.project_questions(project):
             if question.kind == "grid":
                 continue
             options = tuple((name, k) for k, name in enumerate(question.items, start=1))
             key = f"q{question.rank:04d}"
-            found.append(_Question(key, question.single, options, question.other))
+            found.append(StemQuestion(key, question.single, options, question.other))
         return found
     by_key: dict[str, dict] = {}
     for entry in project.variables:
@@ -183,11 +183,11 @@ def _questions(project: Project) -> list[_Question]:
             question["single"] = entry.name
     for key, question in by_key.items():
         if question["single"] or question["options"]:
-            found.append(_Question(key, question["single"], tuple(question["options"]), None))
+            found.append(StemQuestion(key, question["single"], tuple(question["options"]), None))
     return found
 
 
-def _question_text(project: Project, question: _Question) -> str | None:
+def question_text(project: Project, question: StemQuestion) -> str | None:
     """The text of a question: from the questionnaire, through a variable's link (accepted,
     or sure); else the file label of its variable, which a platform's .sav gives."""
     sure = link.sure_choices(project) if project.questionnaire else {}
@@ -205,7 +205,7 @@ def _question_text(project: Project, question: _Question) -> str | None:
     return None
 
 
-def _propose_stems(project: Project, questions: list[_Question]) -> None:
+def _propose_stems(project: Project, questions: list[StemQuestion]) -> None:
     taken = {
         s.stem.value
         for s in project.stems
@@ -217,7 +217,7 @@ def _propose_stems(project: Project, questions: list[_Question]) -> None:
             current.stem.origin != "rule" or current.stem.status != "proposed"
         ):
             continue  # decided, or given by a person or an earlier wave
-        text = _question_text(project, question)
+        text = question_text(project, question)
         base = stem_from_text(text) if text else None
         if base is None:
             if current is not None:
@@ -261,7 +261,7 @@ def _rule_names(project: Project) -> dict[str, str]:
         for rank, member in enumerate(group.members.value or [], start=1):
             place = platform.place(member) if platform else None
             found.setdefault(member, f"{prefix}_{place.item if place and place.item else rank}")
-    for question in _questions(project):
+    for question in stem_questions(project):
         base = usable_stem(project, question.key)
         if not base:
             continue
@@ -277,7 +277,7 @@ def _rule_names(project: Project) -> dict[str, str]:
 def propose(project: Project) -> None:
     """Propose stems and names by the rules, where nothing is decided; a proposal the rules
     no longer give, or that breaks a rule, is withdrawn."""
-    _propose_stems(project, _questions(project))
+    _propose_stems(project, stem_questions(project))
     wanted = _rule_names(project)
     for entry in project.variables:
         if _undecided(entry.new_name):

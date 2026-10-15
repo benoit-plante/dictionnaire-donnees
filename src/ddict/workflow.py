@@ -15,6 +15,7 @@ from ddict.i18n import N_, Texts, _
 from ddict.io import read_database
 from ddict.privacy import MIN_CELL_COUNT
 from ddict.project import PROJECT_SUFFIX, build_project, save_project
+from ddict.project.decisions import is_accepted
 from ddict.project.model import Project, Questionnaire
 from ddict.questionnaire import language as study_language
 from ddict.questionnaire import load_questionnaire
@@ -340,6 +341,19 @@ def tasks(project: Project) -> list[Task]:
         found.append(
             Task(labels, _("Étiquettes de valeurs à vérifier : {n}"), "variables", "to_review")
         )
+    # New names (v0.7): only once the team has begun to rename.
+    if any(e.new_name.value for e in project.variables):
+        grids = sum(
+            1 for g in project.groups if g.kind == "scale" and not is_accepted(g.name_prefix)
+        )
+        if grids:
+            found.append(Task(grids, _("Grilles sans préfixe de noms : {n}"), "groups"))
+        proposed = sum(1 for e in project.variables if e.new_name.status == "proposed")
+        if proposed:
+            found.append(Task(proposed, _("Noms proposés à valider : {n}"), "names", "proposed"))
+        clashes = len(naming.conflicts(project))
+        if clashes:
+            found.append(Task(clashes, _("Noms en conflit : {n}"), "names", "conflicts"))
     texts = sum(
         1
         for e in project.variables

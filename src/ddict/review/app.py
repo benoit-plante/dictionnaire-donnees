@@ -21,6 +21,7 @@ from ddict.review.ui import (
     glossary_view,
     groups_view,
     home_view,
+    names_view,
     questionnaire_view,
     variables_view,
 )
@@ -36,6 +37,7 @@ MODES = Texts(
         "ai": N_("IA locale"),
         "variables": N_("Variables"),
         "groups": N_("Groupes"),
+        "names": N_("Noms"),
         "export": N_("Export"),
     }
 )
@@ -56,7 +58,9 @@ def _messages_end(top) -> None:
 
 def _go(mode: str, which: str | None) -> None:
     st.session_state.mode = mode
-    if which is not None:
+    if which is not None and mode == "names":
+        st.session_state[names_view.FILTER] = which
+    elif which is not None:
         st.session_state.filter = which
 
 
@@ -138,6 +142,8 @@ def main() -> None:
         ai_view.page(project)
     elif mode == "export":
         export_view.page(project)
+    elif mode == "names":
+        names_view.page(project)
     elif mode == "variables" and chosen is None:
         bulk_view.links_panel(project)
     elif chosen is not None:

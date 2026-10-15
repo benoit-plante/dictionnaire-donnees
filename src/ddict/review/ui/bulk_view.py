@@ -13,7 +13,7 @@ from ddict.export import wording as w
 from ddict.i18n import _, colon, semicolon
 from ddict.project.model import Project
 from ddict.questionnaire import link
-from ddict.review import logic
+from ddict.review import logic, names
 from ddict.review.ui import common as c
 
 OPEN = "bulk-open"  # "links", or "labels-G3": the list being shown
@@ -95,6 +95,62 @@ def links_panel(project: Project) -> None:
             ),
         )
         right.button(_("Annuler"), key="bulk-links-cancel", on_click=_close)
+    st.divider()
+
+
+def names_panel(project: Project) -> None:
+    """On the Names page (v0.7): the proposed names of a group or of a question."""
+    scopes = names.scopes(project)
+    if not scopes:
+        return
+    chosen = st.session_state.get(OPEN, "") or ""
+    scope = chosen.removeprefix("names-") if chosen.startswith("names-") else None
+    if scope not in scopes:
+        left, right = st.columns([2, 1])
+        picked = left.selectbox(
+            _("Accepter en lot les noms proposés de"),
+            list(scopes),
+            key="bulk-names-scope",
+            format_func=lambda s: f"{names.scope_text(project, s)} ({len(scopes[s])})",
+        )
+        right.button(
+            _("Voir la liste…"),
+            key="bulk-names-open",
+            on_click=_open,
+            args=(f"names-{picked}", "name", scopes[picked]),
+        )
+        c.show_message("bulk-names-accept")
+        return
+    members = scopes[scope]
+    with st.container(border=True):
+        st.markdown(f"**{names.scope_text(project, scope)}**")
+        st.caption(
+            _(
+                "Lisez chaque ligne et décochez les noms qui ne conviennent pas ; chaque nom "
+                "coché sera accepté comme si vous l'aviez accepté à la main."
+            )
+        )
+        for name in members:
+            proposed = project.variable(name).new_name.value
+            st.checkbox(f"**{name}** → `{proposed}`", key=_box("name", name))
+        count = _checked_count("name", members)
+        left, right = st.columns(2)
+        left.button(
+            _("Accepter ces {n} noms").format(n=count),
+            key="bulk-names-accept",
+            type="primary",
+            disabled=count == 0,
+            on_click=_accept,
+            args=(
+                names.accept_names,
+                (),
+                "name",
+                members,
+                "bulk-names-accept",
+                _("{n} noms acceptés."),
+            ),
+        )
+        right.button(_("Annuler"), key="bulk-names-cancel", on_click=_close)
     st.divider()
 
 

@@ -7,7 +7,7 @@ import streamlit as st
 from ddict.export import wording as w
 from ddict.i18n import _, field_label
 from ddict.project.model import Project
-from ddict.review import logic
+from ddict.review import logic, names
 from ddict.review.ui import bulk_view
 from ddict.review.ui import common as c
 
@@ -19,6 +19,8 @@ def page(project: Project, group_id: str) -> None:
     members = group.members.value or []
     st.write(f"{field_label('Variables')}" + ", ".join(members))
     st.write(f"{field_label('Indices du regroupement')}{w.basis_text(group.basis)}")
+    if group.kind == "scale":
+        _prefix(project, group_id)
     if group.kind == "multiple_response":
         # The options of a "tick all that apply" question (v0.7): no scale, no reversed item.
         st.write(_("Question à réponses multiples : une variable par option cochée."))
@@ -58,6 +60,40 @@ def page(project: Project, group_id: str) -> None:
             submit=True,
         )
     _instrument_and_text(project, group_id)
+
+
+def _prefix(project: Project, group_id: str) -> None:
+    """The prefix of the new names of its items (v0.7): `k6` gives k6_1, k6_2..."""
+    key = f"prefix-{group_id}"
+    current = logic.group(project, group_id).name_prefix
+    if current.status == "proposed":
+        st.info(_("Préfixe repris de la vague précédente : {prefix}").format(prefix=current.value))
+        c.button(
+            _("Accepter ce préfixe"),
+            f"accept-{key}",
+            names.accept_group_prefix,
+            group_id,
+            timed=True,
+        )
+    with st.form(f"form-{key}", border=False):
+        st.text_input(
+            _("Préfixe des noms de ses items"),
+            key=c.field(key, lambda: logic.group(c.project(), group_id).name_prefix.value or ""),
+            help=_(
+                "Le sigle de l'échelle, en minuscules (k6, stai…) : ses items s'appelleront "
+                "k6_1, k6_2… Donné par vous, jamais par l'IA."
+            ),
+        )
+        c.button(
+            _("Enregistrer le préfixe"),
+            f"save-{key}",
+            names.set_group_prefix,
+            group_id,
+            c.state(key),
+            timed=True,
+            reset=(key,),
+            submit=True,
+        )
 
 
 def _instrument_and_text(project: Project, group_id: str) -> None:
