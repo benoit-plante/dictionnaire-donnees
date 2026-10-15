@@ -205,13 +205,38 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--modele", default="qwen2.5:7b-instruct-q4_K_M")
     parser.add_argument("--essais", type=int, default=3)
     parser.add_argument("--sortie", type=Path, default=None)
+    parser.add_argument(
+        "--consigne",
+        type=Path,
+        help="Write the prompt of condition B (context and task) to this file, to paste into "
+        "an assistant by hand; nothing is sent by the script.",
+    )
+    parser.add_argument(
+        "--code",
+        type=Path,
+        help="Check this R code (or an answer holding an ```r block), written by an assistant "
+        "used by hand, instead of asking the local model.",
+    )
     args = parser.parse_args(argv)
     for stream in (sys.stdout, sys.stderr):  # a model's answer may hold any character
         stream.reconfigure(encoding="utf-8")
     out = args.sortie or Path(tempfile.mkdtemp(prefix="essai-contexte-"))
     project = PROJECTS["etude-sommeil"]()
+    if args.consigne:
+        prompt = f"{documents(project)['B_contexte']}\n\n---\n\n{TASK}\n"
+        args.consigne.write_text(prompt, encoding="utf-8", newline="\n")
+        print(args.consigne)
+        return
     data = table()
     right = truth(data)
+    if args.code:
+        code = code_of(args.code.read_text(encoding="utf-8"))
+        folder = out / args.code.stem
+        folder.mkdir(parents=True, exist_ok=True)
+        found = run_r(code, folder)
+        result = {"code": args.code.name, "statut": found["statut"][:160]}
+        print(json.dumps(result | check(code, found, data, right), ensure_ascii=False, indent=2))
+        return
     summary = {"modele": args.modele, "taille_documents_car": {}, "essais": []}
     for condition, document in documents(project).items():
         summary["taille_documents_car"][condition] = len(document)
