@@ -86,6 +86,38 @@ class Threshold(Strict):
     source: SourceText
 
 
+class Scoring(Strict):
+    """How the score of a group is computed (v0.8, D-060): written by a person, with its
+    source, never proposed by the model. Structured (items, sum or mean, the scale's minimum
+    and maximum for reversing, the score's name), or a note only, for a scoring that does not
+    fit. The reversed items are the group's confirmed ones (`Group.reverse_items`); the
+    range of the score is computed, never typed."""
+
+    items: list[str] = []  # original names; empty: a note only
+    aggregation: Literal["sum", "mean"] | None = None
+    reverse_rule: Literal["max_plus_min_minus_x"] = "max_plus_min_minus_x"
+    scale_min: float | None = None
+    scale_max: float | None = None
+    min_items_answered: int | None = Field(default=None, ge=1)
+    score_name: str | None = None
+    source: SourceText
+    note: str | None = None
+
+    @model_validator(mode="after")
+    def _complete(self) -> Scoring:
+        if not self.items:
+            if not (self.note or "").strip():
+                raise ValueError("a scoring without items needs a note")
+            return self
+        if self.aggregation is None or not self.score_name:
+            raise ValueError("a structured scoring needs its aggregation and score name")
+        if self.scale_min is None or self.scale_max is None or self.scale_min >= self.scale_max:
+            raise ValueError("the scale's minimum must be below its maximum")
+        if self.min_items_answered is not None and self.min_items_answered > len(self.items):
+            raise ValueError("more items required than the score has")
+        return self
+
+
 class ValueLabel(Strict):
     code: Code
     label: str
@@ -220,7 +252,7 @@ class Group(Strict):
     # Human only, each with a documented source (principle 4).
     instrument_name: SourcedText | None = None
     reverse_items: list[str] = []
-    scoring: SourcedText | None = None
+    scoring: Scoring | None = None  # v0.8 (D-060); was a sourced text (now its note)
     theoretical_range: TheoreticalRange | None = None
     thresholds: list[Threshold] = []
     # D-014: the team's choice not to reproduce the items of a copyrighted instrument; the
@@ -261,6 +293,32 @@ class SourceInfo(Strict):
     decimal: str | None = None
     # The survey platform whose export this is (v0.7, D-044): "surveymonkey", or None.
     platform: str | None = None
+
+
+class DesignVariables(Strict):
+    """The variables of the study's design, by their original names (v0.8, D-064)."""
+
+    cluster_id: str | None = None  # the unit rows belong to (family, class, participant)
+    time: str | None = None  # the time of each row, in a long format
+    wave: str | None = None
+    cluster: str | None = None  # a sampling cluster
+    weight: str | None = None
+
+
+class Dataset(Strict):
+    """What a row of the database is, and how the study is organised (v0.8, D-064): written
+    by a person; only the structure may be proposed by a rule."""
+
+    unit_of_observation: (
+        Literal["participant", "repeated_observation", "dyad", "family", "other"] | None
+    ) = None
+    unit_other: str | None = None
+    # "cross_sectional", "one_wave_per_file", "wide", "long".
+    structure: TrackedValue[str] = TrackedValue[str](origin="human")
+    wave: str | None = None  # the wave of this file, for "one_wave_per_file"
+    time_suffixes: list[str] = []  # "_t1", "_t2"..., for "wide"
+    design: DesignVariables = DesignVariables()
+    description: str | None = None
 
 
 class NamingSettings(Strict):
@@ -366,6 +424,7 @@ class Project(Strict):
     questionnaire: Questionnaire | None = None
     glossary: list[GlossaryEntry] = []
     stems: list[QuestionStem] = []
+    dataset: Dataset = Dataset()  # v0.8 (D-064)
 
     def variable(self, name: str) -> VariableEntry:
         for entry in self.variables:

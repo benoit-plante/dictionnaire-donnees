@@ -48,6 +48,7 @@ def _overview(project: Project, kind: w.ExportKind) -> list[str]:
     lines += [
         f"- {name}{colon()}{_inline(value)}" for name, value in w.questionnaire_facts(project)
     ]
+    lines += [f"- {name}{colon()}{_inline(value)}" for name, value in w.dataset_facts(project)]
     lines += [
         "",
         _("## Vue d'ensemble"),
@@ -214,6 +215,8 @@ def _groups(project: Project, kind: w.ExportKind) -> list[str]:
                 f"{field_label('Items inversés confirmés')}"
                 + ", ".join(f"`{names.get(s, s)}`" for s in group.reverse_items)
             )
+        if group.scoring:
+            facts.append(f"{field_label('Cotation')}{_inline(w.scoring_text(project, group))}")
         if group.cronbach_alpha is not None:
             alpha = _("Alpha de Cronbach observé : {alpha} ({n} lignes complètes)").format(
                 alpha=w.number(group.cronbach_alpha), n=group.n_complete_rows

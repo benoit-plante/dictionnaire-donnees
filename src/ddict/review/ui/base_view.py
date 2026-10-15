@@ -12,7 +12,7 @@ from ddict.export import wording as w
 from ddict.i18n import _, field_label, quoted
 from ddict.project import save_project
 from ddict.project.model import Project
-from ddict.review import levels, logic
+from ddict.review import levels, logic, study
 from ddict.review.logic import ReviewError
 from ddict.review.ui import common as c
 from ddict.workflow import format_note, platform_notes, profile_summary
@@ -27,6 +27,7 @@ FORMATS = {
 
 
 STUDY_LANGUAGE = "study-language"
+DESIGN_KEYS = ("cluster_id", "time", "wave", "cluster", "weight")
 LEVEL_FILTER = "levels-filter"
 LEVEL_TABLE = "levels-table"
 LEVEL_PREFILL = "levels-prefill-filter"  # the filter whose proposals show "Accept" already
@@ -49,6 +50,97 @@ def _study_language(project: Project) -> None:
         ),
     )
     c.show_message(STUDY_LANGUAGE)
+
+
+def _dataset(project: Project) -> None:
+    """What a row is and how the study is organised (v0.8, D-064): written by the team; only
+    the structure may be proposed, from the wave mark or the time suffixes."""
+    st.subheader(_("Description de la base"))
+    tracked = project.dataset.structure
+    if tracked.status == "proposed":
+        text = w.STRUCTURES[tracked.value]
+        detail = project.dataset.wave or ", ".join(project.dataset.time_suffixes)
+        st.info(
+            _("Structure proposée : {structure}").format(structure=text)
+            + (f" ({detail})" if detail else "")
+        )
+        left, right = st.columns(2)
+        with left:
+            c.button(_("Accepter"), "dataset-accept", study.decide_structure, "accept",
+                     timed=True, primary=True)  # fmt: skip
+        with right:
+            c.button(_("Rejeter"), "dataset-reject", study.decide_structure, "reject", timed=True)
+
+    def now_(part: str):
+        found = c.project().dataset
+        if part == "structure":
+            return found.structure.value if found.structure.status != "proposed" else ""
+        if part == "suffixes":
+            return ", ".join(found.time_suffixes)
+        if part.startswith("design_"):
+            return getattr(found.design, part.removeprefix("design_")) or ""
+        return getattr(found, part) or ""
+
+    keys = {part: f"dataset-{part}" for part in
+            ("unit_of_observation", "unit_other", "structure", "wave", "suffixes",
+             "description", *(f"design_{k}" for k in DESIGN_KEYS))}  # fmt: skip
+    names = [e.name for e in project.variables]
+    shown = {e.name: w.final_name(e) for e in project.variables}
+    with st.form("form-dataset", border=False):
+        left, right = st.columns(2)
+        left.selectbox(
+            _("Une ligne représente"),
+            ["", *w.UNITS],
+            format_func=lambda u: w.UNITS[u] if u else _("(non précisé)"),
+            key=c.field(keys["unit_of_observation"], lambda: now_("unit_of_observation")),
+        )
+        right.text_input(
+            _("Autre : laquelle ?"), key=c.field(keys["unit_other"], lambda: now_("unit_other"))
+        )
+        st.selectbox(
+            _("Structure"),
+            ["", *w.STRUCTURES],
+            format_func=lambda s: w.STRUCTURES[s] if s else _("(non précisée)"),
+            key=c.field(keys["structure"], lambda: now_("structure")),
+        )
+        left, right = st.columns(2)
+        left.text_input(
+            _("Vague de ce fichier (une vague par fichier)"),
+            key=c.field(keys["wave"], lambda: now_("wave")),
+        )
+        right.text_input(
+            _("Suffixes de temps (format large), séparés par des virgules"),
+            key=c.field(keys["suffixes"], lambda: now_("suffixes")),
+            placeholder="_t1, _t2",
+        )
+        columns = st.columns(len(DESIGN_KEYS))
+        for column, part in zip(columns, DESIGN_KEYS, strict=True):
+            column.selectbox(
+                w.DESIGN[part].capitalize(),
+                ["", *names],
+                format_func=lambda n: shown.get(n, "—") if n else "—",
+                key=c.field(keys[f"design_{part}"], lambda part=part: now_(f"design_{part}")),
+            )
+        st.text_area(
+            _("Description (courte)"),
+            key=c.field(keys["description"], lambda: now_("description")),
+            height=68,
+        )
+        c.button(
+            _("Enregistrer la description"),
+            "dataset-save",
+            study.set_dataset,
+            c.state(keys["unit_of_observation"]),
+            c.state(keys["unit_other"]),
+            c.state(keys["structure"]),
+            c.state(keys["wave"]),
+            c.state(keys["suffixes"]),
+            lambda: {part: st.session_state[keys[f"design_{part}"]] for part in DESIGN_KEYS},
+            c.state(keys["description"]),
+            timed=True,
+            reset=tuple(keys.values()),
+            submit=True,
+        )
 
 
 def _final(key: str, names: list[str], shown: list[str], column: str) -> dict[str, str]:
@@ -174,6 +266,7 @@ def page(project: Project) -> None:
     if note := format_note(project):
         st.warning(note)
     _study_language(project)
+    _dataset(project)
 
     sensitive = [e for e in project.variables if logic.is_sensitive(e)]
     flagged = [e for e in project.variables if w.entry_anomalies(e)]

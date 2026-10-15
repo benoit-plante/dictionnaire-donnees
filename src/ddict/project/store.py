@@ -8,7 +8,7 @@ from pathlib import Path
 from pydantic import ValidationError
 
 from ddict.io.model import LoadedData
-from ddict.project import measure
+from ddict.project import dataset, measure
 from ddict.project.model import SCHEMA_VERSION, Project
 
 PROJECT_SUFFIX = ".dd.json"
@@ -40,6 +40,15 @@ def _version(text: str) -> tuple[int, ...]:
         return (0,)
 
 
+def _scoring_as_note(data: dict) -> None:
+    """Before 0.3.0 (D-061), a group's scoring was a sourced text: it becomes the note of a
+    scoring, with its source."""
+    for group in (data.get("variables") and data.get("groups")) or []:
+        old = group.get("scoring") if isinstance(group, dict) else None
+        if isinstance(old, dict) and "value" in old:
+            group["scoring"] = {"source": old.get("source"), "note": old.get("value")}
+
+
 def load_project(path: Path | str) -> Project:
     path = Path(path)
     try:
@@ -54,6 +63,7 @@ def load_project(path: Path | str) -> Project:
             f"{path.name} was written by a more recent version of the tool "
             f"(format {version}, this version reads up to {SCHEMA_VERSION}): update the tool"
         )
+    _scoring_as_note(data)
     try:
         project = Project.model_validate(data)
     except ValidationError as error:
@@ -62,6 +72,7 @@ def load_project(path: Path | str) -> Project:
     # Before 0.3.0 (D-061), the rules propose the measure levels it did not have.
     if _version(version) < (0, 3, 0):
         measure.propose(project)
+        dataset.propose_structure(project)
     project.schema_version = SCHEMA_VERSION
     return project
 

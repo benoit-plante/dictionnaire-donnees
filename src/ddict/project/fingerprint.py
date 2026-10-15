@@ -86,6 +86,10 @@ def decided_content(project: Project) -> dict:
         ],
         "glossary": [[e.term, e.meaning] for e in project.glossary if _glossary_accepted(e)],
         "questionnaire": project.questionnaire.sha256 if project.questionnaire else None,
+        "dataset": {
+            **project.dataset.model_dump(mode="json", exclude={"structure"}),
+            "structure": _accepted(project.dataset.structure),
+        },
     }
 
 

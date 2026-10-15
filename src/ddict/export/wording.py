@@ -12,10 +12,10 @@ from dataclasses import dataclass
 from typing import Literal
 
 from ddict import glossary
-from ddict.i18n import N_, Texts, _, decimal, quoted
+from ddict.i18n import N_, Texts, _, colon, decimal, quoted, semicolon
 from ddict.profile.compute import is_missing_label
 from ddict.profile.variants import spelling_variants
-from ddict.project import measure
+from ddict.project import measure, scoring
 from ddict.project.build import GROUP_PARTS
 from ddict.project.decisions import is_accepted
 from ddict.project.model import (
@@ -501,3 +501,93 @@ def questionnaire_facts(project: Project) -> list[tuple[str, str]]:
         (_("Empreinte SHA-256 du questionnaire"), questionnaire.sha256),
         (_("Variables rattachées à une question"), str(linked)),
     ]
+
+
+# --- v0.8, step 4: the scoring of a group and the description of the database. ---
+
+AGGREGATIONS = Texts({"sum": N_("somme"), "mean": N_("moyenne")})
+UNITS = Texts(
+    {
+        "participant": N_("un participant"),
+        "repeated_observation": N_("une observation répétée"),
+        "dyad": N_("une dyade"),
+        "family": N_("une famille"),
+        "other": N_("autre"),
+    }
+)
+STRUCTURES = Texts(
+    {
+        "cross_sectional": N_("transversale"),
+        "one_wave_per_file": N_("longitudinale, une vague par fichier"),
+        "wide": N_("longitudinale, format large (une colonne par temps)"),
+        "long": N_("longitudinale, format long (une ligne par temps)"),
+    }
+)
+DESIGN = Texts(
+    {
+        "cluster_id": N_("identifiant de regroupement"),
+        "time": N_("variable de temps"),
+        "wave": N_("vague"),
+        "cluster": N_("grappe"),
+        "weight": N_("pondération"),
+    }
+)
+
+
+def scoring_text(project: Project, group: Group) -> str:
+    """The scoring in one sentence, with its source: "sommeil_total = somme des 8 items,
+    après inversion de q3, q6 (6 - x) ; au moins 7 items répondus ; étendue 8 – 40"."""
+    found = group.scoring
+    if found is None:
+        return ""
+    names = names_of(project)
+    parts = []
+    if scoring.structured(found):
+        low, high = scoring.score_range(found)
+        text = _("{score} = {how} des {n} items").format(
+            score=found.score_name, how=AGGREGATIONS[found.aggregation], n=len(found.items)
+        )
+        reverse = scoring.reversed_items(group, found)
+        if reverse:
+            text += _(", après inversion de {items} ({total} - x)").format(
+                items=", ".join(names.get(r, r) for r in reverse),
+                total=number(found.scale_min + found.scale_max),
+            )
+        parts.append(text)
+        if found.min_items_answered:
+            parts.append(
+                _("au moins {n} items répondus, sinon manquant").format(n=found.min_items_answered)
+            )
+        parts.append(_("étendue {low} – {high}").format(low=number(low), high=number(high)))
+    if found.note:
+        parts.append(found.note)
+    return semicolon().join(parts) + f" ({_('source')}{colon()}{found.source})"
+
+
+def dataset_facts(project: Project) -> list[tuple[str, str]]:
+    """What the team wrote of the database, for the head of the exports."""
+    found = project.dataset
+    facts = []
+    if found.unit_of_observation:
+        unit = UNITS[found.unit_of_observation]
+        if found.unit_of_observation == "other" and found.unit_other:
+            unit = found.unit_other
+        facts.append((_("Une ligne représente"), unit))
+    if is_accepted(found.structure):
+        structure = STRUCTURES[found.structure.value]
+        if found.structure.value == "one_wave_per_file" and found.wave:
+            structure += f"{semicolon()}{_('vague')} {found.wave}"
+        if found.structure.value == "wide" and found.time_suffixes:
+            structure += f" ({', '.join(found.time_suffixes)})"
+        facts.append((_("Structure"), structure))
+    names = names_of(project)
+    design = [
+        f"{DESIGN[key]}{colon()}{names.get(value, value)}"
+        for key in DESIGN
+        if (value := getattr(found.design, key))
+    ]
+    if design:
+        facts.append((_("Variables de plan"), semicolon().join(design)))
+    if found.description:
+        facts.append((_("Description de la base"), found.description))
+    return facts

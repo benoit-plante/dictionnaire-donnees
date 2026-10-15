@@ -70,6 +70,7 @@ def _about(project: Project, kind: w.ExportKind, omit_groups: tuple[str, ...]) -
         ],
         [_("Format du projet"), project.schema_version],
         [_("Empreinte du codebook"), fingerprint.short(project)],
+        *[[name, value] for name, value in w.dataset_facts(project)],
         *_questionnaire_rows(project, omit_groups),
     ]
 
@@ -228,7 +229,7 @@ def _groups(project: Project, kind: w.ExportKind) -> list[list]:
                 f"{g.instrument_name.value} ({g.instrument_name.source})"
                 if g.instrument_name
                 else "",
-                f"{g.scoring.value} ({g.scoring.source})" if g.scoring else "",
+                w.scoring_text(project, g),
                 g.n_complete_rows,
                 g.cronbach_alpha,
                 g.cronbach_alpha_reversed,

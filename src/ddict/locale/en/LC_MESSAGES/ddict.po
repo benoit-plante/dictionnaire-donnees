@@ -115,6 +115,12 @@ msgstr "(correlation with the rest of the group: {r})"
 msgid "(décisions acceptées)"
 msgstr "(accepted decisions)"
 
+msgid "(non précisé)"
+msgstr "(not said)"
+
+msgid "(non précisée)"
+msgstr "(not said)"
+
 msgid "(pas encore rattachée)"
 msgstr "(not linked yet)"
 
@@ -138,6 +144,10 @@ msgstr "* {name}: a range of missing codes is impossible for a text variable."
 #, python-brace-format
 msgid "* {name} : nom de variable non valide pour SPSS, omise."
 msgstr "* {name}: variable name not valid for SPSS, left out."
+
+#, python-brace-format
+msgid ", après inversion de {items} ({total} - x)"
+msgstr ", after reversing {items} ({total} - x)"
 
 #, python-brace-format
 msgid "- Variables ajoutées (sans équivalent) : {n}"
@@ -166,6 +176,9 @@ msgstr "- Variables for a person to match (several candidates): {n}"
 #, python-brace-format
 msgid "- Étiquettes de valeurs changées : {n}"
 msgstr "- Value labels changed: {n}"
+
+msgid "0 : le score exige tous les items."
+msgstr "0: the score requires every item."
 
 msgid ""
 "1. Installez Ollama depuis [ollama.com](https://ollama.com) (bouton « Download for Windows »), "
@@ -309,6 +322,9 @@ msgstr "No proposal from the questionnaire for {term}."
 msgid "Aucune question du questionnaire"
 msgstr "No question in the questionnaire"
 
+msgid "Aucune structure proposée."
+msgstr "No structure proposed."
+
 msgid "Aucune valeur n'est modifiée. Appliquez ce fichier à une copie de vos données."
 msgstr "No value is changed. Apply this file to a copy of your data."
 
@@ -320,6 +336,9 @@ msgstr "No variable in this filter."
 
 msgid "Aucune variable à envoyer."
 msgstr "No variable to send."
+
+msgid "Autre : laquelle ?"
+msgstr "Other: which?"
 
 msgid "Avec le modèle"
 msgstr "With the model"
@@ -376,6 +395,9 @@ msgstr "It is a missing code"
 msgid "C'est une vraie valeur"
 msgstr "It is a real value"
 
+msgid "Calcul"
+msgstr "Computation"
+
 msgid "Calcul seul"
 msgstr "Computation alone"
 
@@ -392,6 +414,12 @@ msgstr "Empty cells"
 
 msgid "Ce fichier projet est introuvable."
 msgstr "This project file cannot be found."
+
+msgid "Ce nom de score est déjà celui d'un autre groupe."
+msgstr "This score name is already another group's."
+
+msgid "Ces items ne sont pas tous dans le groupe."
+msgstr "These items are not all in the group."
 
 #, python-brace-format
 msgid "Ces niveaux n'attendent plus de décision : {names}."
@@ -465,6 +493,9 @@ msgid ""
 msgstr ""
 "Choose the database: SPSS (.sav), CSV, Stata (.dta), SAS (.sas7bdat) or Excel (.xlsx). The "
 "project file will be created next to it; the database is never changed."
+
+msgid "Choisissez les items du score, ou décrivez la cotation en note."
+msgstr "Choose the items of the score, or describe the scoring in a note."
 
 msgid ""
 "Choisissez les rattachements dans l'interface (ddict reviser), ou ajoutez --modele pour qu'un "
@@ -582,6 +613,9 @@ msgstr "Answer key"
 msgid "Corrélation avec le reste du groupe"
 msgstr "Correlation with the rest of the group"
 
+msgid "Cotation"
+msgstr "Scoring"
+
 msgid "Cotation (source)"
 msgstr "Scoring (source)"
 
@@ -636,6 +670,12 @@ msgstr "Last report: {name}"
 msgid "Description"
 msgstr "Description"
 
+msgid "Description (courte)"
+msgstr "Description (short)"
+
+msgid "Description de la base"
+msgstr "Description of the database"
+
 msgid ""
 "Deux variables auraient le même nom dans la copie : réglez les conflits de noms sur la page « "
 "Noms ». Rien n'a été écrit."
@@ -645,6 +685,9 @@ msgstr ""
 
 msgid "Dictionnaire de données"
 msgstr "Data dictionary"
+
+msgid "Donnez un nom au score."
+msgstr "Give the score a name."
 
 #, python-brace-format
 msgid "Dossier introuvable : {path}"
@@ -757,6 +800,12 @@ msgstr "Save the instrument"
 
 msgid "Enregistrer l'étendue"
 msgstr "Save the range"
+
+msgid "Enregistrer la cotation"
+msgstr "Save the scoring"
+
+msgid "Enregistrer la description"
+msgstr "Save the description"
 
 msgid "Enregistrer le préfixe"
 msgstr "Save the prefix"
@@ -972,6 +1021,9 @@ msgstr "Interrupted. The finished blocks are saved; run again to continue."
 msgid "Item probablement inversé (corrélation avec le reste de l'échelle : {r})"
 msgstr "Item probably reversed (correlation with the rest of the scale: {r})"
 
+msgid "Items du score"
+msgstr "Items of the score"
+
 msgid "Items inversés confirmés"
 msgstr "Confirmed reversed items"
 
@@ -984,6 +1036,9 @@ msgstr "Items probably reversed"
 #, python-brace-format
 msgid "Items probablement inversés : {s}"
 msgstr "Items probably reversed: {s}"
+
+msgid "Items répondus, au minimum"
+msgstr "Items answered, at least"
 
 msgid ""
 "L'interface de révision n'est pas installée. Installez-la avec : uv tool install --reinstall "
@@ -1047,6 +1102,9 @@ msgstr ""
 "The copy, read back, did not match the original ({n} cells differ): it was deleted. Use the "
 "command files instead, and report this problem."
 
+msgid "La cotation exige une source documentée (manuel, article)."
+msgstr "The scoring requires a documented source (manual, article)."
+
 msgid "La définition est vide ; utilisez « Rejeter »."
 msgstr "The definition is empty; use \"Reject\"."
 
@@ -1104,6 +1162,9 @@ msgstr ""
 "The data file is never changed; the project keeps only what the tool computed and your decisions,"
 " not the participants' answers. Project file: {path}"
 
+msgid "Le minimum de l'échelle doit être inférieur à son maximum."
+msgstr "The scale's minimum must be below its maximum."
+
 #, python-brace-format
 msgid ""
 "Le modèle choisit, pour chaque variable, sa question parmi les candidates calculées ({n} "
@@ -1148,6 +1209,10 @@ msgid ""
 msgstr ""
 "The browser saves them in your downloads folder. A codebook is often shared with the data: it "
 "holds only metadata and counts of at least {n}."
+
+#, python-brace-format
+msgid "Le nombre minimal d'items répondus dépasse le nombre d'items ({n})."
+msgstr "The minimum of items answered is above the number of items ({n})."
 
 #, python-brace-format
 msgid ""
@@ -1291,6 +1356,9 @@ msgstr "Decimal mark"
 msgid "Max"
 msgstr "Max"
 
+msgid "Maximum de l'échelle"
+msgstr "Scale maximum"
+
 #, python-brace-format
 msgid "Message du bloc {block}"
 msgstr "Message of block {block}"
@@ -1311,6 +1379,9 @@ msgstr ""
 
 msgid "Min"
 msgstr "Min"
+
+msgid "Minimum de l'échelle"
+msgstr "Scale minimum"
 
 msgid "Modèle"
 msgstr "Model"
@@ -1373,8 +1444,18 @@ msgstr "Base name"
 msgid "Nom de l'instrument : réservé aux personnes, avec une source documentée."
 msgstr "Name of the instrument: for people only, with a documented source."
 
+msgid ""
+"Nom de score invalide : minuscules, chiffres et « _ », une lettre au début, différent des noms "
+"des variables."
+msgstr ""
+"Invalid score name: lower case, digits and \"_\", a letter first, different from the names of the"
+" variables."
+
 msgid "Nom du modèle dans le serveur local, p. ex. qwen2.5:7b-instruct-q4_K_M."
 msgstr "Name of the model in the local server, e.g. qwen2.5:7b-instruct-q4_K_M."
+
+msgid "Nom du score"
+msgstr "Score name"
 
 #, python-brace-format
 msgid "Nom refusé : {why}."
@@ -1404,6 +1485,9 @@ msgstr "Names in conflict: {n}"
 #, python-brace-format
 msgid "Noms proposés à valider : {n}"
 msgstr "Proposed names to validate: {n}"
+
+msgid "Note"
+msgstr "Note"
 
 msgid "Notes"
 msgstr "Notes"
@@ -1723,6 +1807,9 @@ msgstr "Remove"
 msgid "Retirer l'étendue"
 msgstr "Remove the range"
 
+msgid "Retirer la cotation"
+msgstr "Remove the scoring"
+
 msgid "Revenir sur cette décision"
 msgstr "Undo this decision"
 
@@ -1746,6 +1833,15 @@ msgstr "References (one per line)"
 
 msgid "Réglages de nommage"
 msgstr "Naming settings"
+
+msgid ""
+"Réservée aux personnes, avec une source documentée (manuel, article) ; jamais proposée par l'IA. "
+"Les items inversés sont ceux confirmés ci-dessus ; l'étendue du score est calculée. Une cotation "
+"qui n'entre pas dans ce cadre s'écrit en note, sans items."
+msgstr ""
+"For people only, with a documented source (manual, article); never proposed by the AI. The "
+"reversed items are those confirmed above; the range of the score is computed. A scoring that does"
+" not fit this frame is written as a note, without items."
 
 msgid "Réservés aux personnes ; l'étendue et les seuils exigent une source."
 msgstr "For people only; the range and the thresholds require a source."
@@ -1862,6 +1958,9 @@ msgstr "Source of the threshold"
 msgid "Statut"
 msgstr "Status"
 
+msgid "Structure"
+msgstr "Structure"
+
 #, python-brace-format
 msgid ""
 "Structure de l'export {platform} : {n} questions, dont {m} sans question concordante dans ce "
@@ -1873,6 +1972,16 @@ msgstr ""
 #, python-brace-format
 msgid "Structure de l'export {platform} : {n} questions, toutes retrouvées dans ce questionnaire."
 msgstr "Structure of the {platform} export: {n} questions, all found in this questionnaire."
+
+msgid "Structure inconnue."
+msgstr "Unknown structure."
+
+#, python-brace-format
+msgid "Structure proposée : {structure}"
+msgstr "Proposed structure: {structure}"
+
+msgid "Suffixes de temps (format large), séparés par des virgules"
+msgstr "Time suffixes (wide format), separated by commas"
 
 msgid ""
 "Sur l'export SurveyMonkey fictif : le nom de base de chaque question, comparé à celui du corrigé "
@@ -1948,6 +2057,9 @@ msgstr ""
 "A {format} file holds {lacks}: the tool guesses them, check them. A .sav export, when possible, "
 "gives better results."
 
+msgid "Un groupe de cases à cocher n'a pas de cotation."
+msgstr "A group of check boxes has no scoring."
+
 msgid ""
 "Un nom de base par question, partagé par ses variables : « taches » donne taches_1, taches_2… et "
 "taches_autre_txt. Corrigez-le ici, une seule fois."
@@ -1962,6 +2074,9 @@ msgid ""
 msgstr ""
 "A project already exists for this database: {name}. Open it to resume your work, or replace it "
 "(its decisions will be lost)."
+
+msgid "Une ligne représente"
+msgstr "A row is"
 
 msgid ""
 "Une nouvelle copie de votre base au format SPSS (.sav), avec ce que vous avez accepté. Avant de "
@@ -1988,8 +2103,14 @@ msgstr "A documented source is required."
 msgid "Unité"
 msgstr "Unit"
 
+msgid "Unité d'observation inconnue."
+msgstr "Unknown unit of observation."
+
 msgid "Utilisez --remplacer."
 msgstr "Use --replace."
+
+msgid "Vague de ce fichier (une vague par fichier)"
+msgstr "Wave of this file (one wave per file)"
 
 #, python-brace-format
 msgid ""
@@ -2067,8 +2188,15 @@ msgstr "Variables"
 msgid "Variables : {names}"
 msgstr "Variables: {names}"
 
+msgid "Variables de plan"
+msgstr "Design variables"
+
 msgid "Variables enrichies"
 msgstr "Variables enriched"
+
+#, python-brace-format
+msgid "Variables inconnues : {names}."
+msgstr "Unknown variables: {names}."
 
 msgid "Variables rattachées à une question"
 msgstr "Variables linked to a question"
@@ -2096,6 +2224,10 @@ msgstr "You can close this window. Your decisions are saved."
 msgid "Vérifier de nouveau"
 msgstr "Check again"
 
+#, python-brace-format
+msgid "au moins {n} items répondus, sinon manquant"
+msgstr "at least {n} items answered, else missing"
+
 msgid "aucun"
 msgstr "none"
 
@@ -2104,6 +2236,9 @@ msgstr "no matching question in the database"
 
 msgid "aucune question du questionnaire"
 msgstr "no question in the questionnaire"
+
+msgid "autre"
+msgstr "other"
 
 #, python-brace-format
 msgid "avec les items probables inversés : {alpha}"
@@ -2186,6 +2321,9 @@ msgstr "final"
 msgid "finale (valeurs acceptées seulement)"
 msgstr "final (accepted values only)"
 
+msgid "grappe"
+msgstr "cluster"
+
 msgid "grille"
 msgstr "grid"
 
@@ -2198,8 +2336,20 @@ msgstr "grids"
 msgid "humain"
 msgstr "human"
 
+msgid "identifiant de regroupement"
+msgstr "grouping identifier"
+
 msgid "identifiant probable"
 msgstr "likely identifier"
+
+msgid "longitudinale, format large (une colonne par temps)"
+msgstr "longitudinal, wide format (one column per time)"
+
+msgid "longitudinale, format long (une ligne par temps)"
+msgstr "longitudinal, long format (one row per time)"
+
+msgid "longitudinale, une vague par fichier"
+msgstr "longitudinal, one wave per file"
 
 msgid "lue comme un paragraphe, retrouvée par la structure de la base"
 msgstr "read as a paragraph, found by the structure of the database"
@@ -2310,6 +2460,9 @@ msgstr "not the same number of options as in the database"
 msgid "pas le même nombre d'énoncés que dans la base"
 msgstr "not the same number of items as in the database"
 
+msgid "pondération"
+msgstr "weight"
+
 msgid "proposé"
 msgstr "proposed"
 
@@ -2375,6 +2528,9 @@ msgstr "meaning of codes without a label"
 msgid "seuil"
 msgstr "threshold"
 
+msgid "somme"
+msgstr "sum"
+
 msgid "source"
 msgstr "source"
 
@@ -2399,17 +2555,35 @@ msgstr "texts all different"
 msgid "titres de colonnes collés"
 msgstr "column headings run together"
 
+msgid "transversale"
+msgstr "cross-sectional"
+
 msgid "trop long"
 msgstr "too long"
 
 msgid "un identifiant"
 msgstr "an identifier"
 
+msgid "un participant"
+msgstr "a participant"
+
 msgid "un score calculé"
 msgstr "a computed score"
 
 msgid "une date de passation"
 msgstr "a date of completion"
+
+msgid "une dyade"
+msgstr "a dyad"
+
+msgid "une famille"
+msgstr "a family"
+
+msgid "une observation répétée"
+msgstr "a repeated observation"
+
+msgid "vague"
+msgstr "wave"
 
 msgid "vague précédente"
 msgstr "earlier wave"
@@ -2428,6 +2602,9 @@ msgstr "accepted"
 
 msgid "variable de la plateforme"
 msgstr "platform variable"
+
+msgid "variable de temps"
+msgstr "time variable"
 
 msgid "variables"
 msgstr "variables"
@@ -2593,6 +2770,10 @@ msgid "{proposed} noms proposés, {accepted} acceptés, {to_name} variables à n
 msgstr "{proposed} names proposed, {accepted} accepted, {to_name} variables to name."
 
 #, python-brace-format
+msgid "{score} = {how} des {n} items"
+msgstr "{score} = {how} of the {n} items"
+
+#, python-brace-format
 msgid ""
 "{title} : arrêté. Les blocs terminés sont enregistrés ; relancez pour continuer là où le travail "
 "s'est arrêté."
@@ -2741,6 +2922,10 @@ msgstr "grid items not numbered"
 
 msgid "étendue observée"
 msgstr "observed range"
+
+#, python-brace-format
+msgid "étendue {low} – {high}"
+msgstr "range {low} – {high}"
 
 msgid "étiquette semblable"
 msgstr "similar label"

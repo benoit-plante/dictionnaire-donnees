@@ -5359,5 +5359,27 @@
   "ai_runs": [],
   "questionnaire": null,
   "glossary": [],
-  "stems": []
+  "stems": [],
+  "dataset": {
+    "unit_of_observation": null,
+    "unit_other": null,
+    "structure": {
+      "value": null,
+      "origin": "human",
+      "status": "none",
+      "proposed_value": null,
+      "ai_run": null,
+      "updated_at": null
+    },
+    "wave": null,
+    "time_suffixes": [],
+    "design": {
+      "cluster_id": null,
+      "time": null,
+      "wave": null,
+      "cluster": null,
+      "weight": null
+    },
+    "description": null
+  }
 }

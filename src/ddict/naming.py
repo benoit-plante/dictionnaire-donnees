@@ -25,6 +25,7 @@ import unicodedata
 from dataclasses import dataclass
 
 from ddict import platforms
+from ddict.project import dataset
 from ddict.project.decisions import DecisionError, correct, enter, is_accepted, reject, validate
 from ddict.project.model import Project, QuestionStem, TrackedValue, VariableEntry
 from ddict.questionnaire import link
@@ -410,3 +411,4 @@ def set_wave(project: Project, wave: str | None, position: str = "suffix") -> No
         raise NamingError(["style"])
     project.settings.naming.wave = mark
     project.settings.naming.position = position
+    dataset.propose_structure(project)  # one wave per file (v0.8, D-064)

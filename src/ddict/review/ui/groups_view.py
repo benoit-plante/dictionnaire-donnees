@@ -6,8 +6,9 @@ import streamlit as st
 
 from ddict.export import wording as w
 from ddict.i18n import _, field_label
+from ddict.project import scoring
 from ddict.project.model import Project
-from ddict.review import logic, names
+from ddict.review import logic, names, study
 from ddict.review.ui import bulk_view
 from ddict.review.ui import common as c
 
@@ -59,7 +60,93 @@ def page(project: Project, group_id: str) -> None:
             reset=(key,),
             submit=True,
         )
+    _scoring(project, group_id)
     _instrument_and_text(project, group_id)
+
+
+def _scoring(project: Project, group_id: str) -> None:
+    """How the score is computed (v0.8, D-060): written by the team, with its source."""
+    st.divider()
+    st.subheader(_("Cotation"))
+    group = logic.group(project, group_id)
+    if group.scoring:
+        st.success(w.scoring_text(project, group))
+    st.caption(
+        _(
+            "Réservée aux personnes, avec une source documentée (manuel, article) ; jamais "
+            "proposée par l'IA. Les items inversés sont ceux confirmés ci-dessus ; l'étendue "
+            "du score est calculée. Une cotation qui n'entre pas dans ce cadre s'écrit en note, "
+            "sans items."
+        )
+    )
+    members = group.members.value or []
+
+    def current(part: str, default):
+        found = logic.group(c.project(), group_id).scoring
+        value = getattr(found, part) if found else None
+        return default if value is None else value
+
+    bounds = scoring.scale_bounds(project.variable(members[0])) if members else None
+    keys = {part: f"scoring-{part}-{group_id}" for part in
+            ("items", "how", "min", "max", "least", "name", "source", "note")}  # fmt: skip
+    with st.form(f"form-scoring-{group_id}", border=False):
+        st.multiselect(
+            _("Items du score"),
+            members,
+            key=c.field(keys["items"], lambda: current("items", []) or list(members)),
+        )
+        st.radio(
+            _("Calcul"),
+            list(w.AGGREGATIONS),
+            format_func=w.AGGREGATIONS.__getitem__,
+            horizontal=True,
+            key=c.field(keys["how"], lambda: current("aggregation", "sum")),
+        )
+        left, middle, right = st.columns(3)
+        left.number_input(
+            _("Minimum de l'échelle"),
+            key=c.field(keys["min"], lambda: current("scale_min", bounds[0] if bounds else None)),
+        )
+        middle.number_input(
+            _("Maximum de l'échelle"),
+            key=c.field(keys["max"], lambda: current("scale_max", bounds[1] if bounds else None)),
+        )
+        right.number_input(
+            _("Items répondus, au minimum"),
+            min_value=0,
+            step=1,
+            key=c.field(keys["least"], lambda: current("min_items_answered", 0)),
+            help=_("0 : le score exige tous les items."),
+        )
+        st.text_input(
+            _("Nom du score"), key=c.field(keys["name"], lambda: current("score_name", ""))
+        )
+        st.text_input(_("Source"), key=c.field(keys["source"], lambda: current("source", "")))
+        st.text_area(_("Note"), key=c.field(keys["note"], lambda: current("note", "")), height=68)
+        c.button(
+            _("Enregistrer la cotation"),
+            f"save-scoring-{group_id}",
+            study.set_scoring,
+            group_id,
+            c.state(keys["items"]),
+            c.state(keys["how"]),
+            c.state(keys["min"]),
+            c.state(keys["max"]),
+            lambda: int(st.session_state[keys["least"]] or 0) or None,
+            c.state(keys["name"]),
+            c.state(keys["source"]),
+            c.state(keys["note"]),
+            reset=tuple(keys.values()),
+            submit=True,
+        )
+    if group.scoring:
+        c.button(
+            _("Retirer la cotation"),
+            f"remove-scoring-{group_id}",
+            study.remove_scoring,
+            group_id,
+            reset=tuple(keys.values()),
+        )
 
 
 def _prefix(project: Project, group_id: str) -> None:

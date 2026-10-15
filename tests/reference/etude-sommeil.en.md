@@ -4,7 +4,7 @@
 - SHA-256 fingerprint: `a189e6bd7c313c8d06d56881042e0db32d66b9ecc1e48c3e06d36b0af7570f25`
 - Rows: 200; variables: 34
 - Version: final
-- Codebook fingerprint: `3051f62d8cdc` (accepted decisions)
+- Codebook fingerprint: `9f7104d5e62e` (accepted decisions)
 - Counts below 5 masked, as well as a second count when the first could be worked out by subtraction.
 - Questionnaire: questionnaire-sommeil.txt
 - SHA-256 fingerprint of the questionnaire: 307165d2eb4185449fdf95d1a387d5503aafbe76b789e743a50a6c26c300571c
