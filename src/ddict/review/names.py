@@ -237,9 +237,10 @@ def accept_group_prefix(project: Project, group_id: str, *, now: str) -> None:
 def stem_rows(project: Project) -> list[tuple[str, str, str, str]]:
     """(question key, question text, stem, status) for each question with a stem."""
     found = []
+    sure = naming.sure_links(project)
     for question in naming.stem_questions(project):
         current = naming.stem(project, question.key)
-        text = naming.question_text(project, question) or ""
+        text = naming.question_text(project, question, sure) or ""
         stem = current.stem.value if current and current.stem.value else ""
         status = w.status_text(current.stem) if current and current.stem.value else ""
         found.append((question.key, text, stem, status))

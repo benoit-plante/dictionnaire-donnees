@@ -24,6 +24,10 @@ NOW = "2026-10-14T18:00:00"
 
 
 WRONG = {"age": "Q4"}  # the model is wrong here
+STEMS = json.loads(
+    (ROOT / "exemples" / "bases-fictives" / "corrige-surveymonkey.json").read_text(encoding="utf-8")
+)["waves"]["t2"]["stems"]
+STEM_ANSWERS = {"q0007": "eft_pauses", "q0012": ""}  # an invented acronym; unsure
 
 
 class Server:
@@ -46,6 +50,13 @@ class Server:
         self.sent.append(body["messages"][1]["content"])
         self.systems.append(body["messages"][0]["content"])
         content = json.loads(body["messages"][1]["content"])
+        if content["block"].startswith("r-"):  # stems (v0.7): the key's, but two
+            questions = [
+                {"key": q["key"], "stem": STEM_ANSWERS.get(q["key"], STEMS.get(q["key"], ""))}
+                for q in content["questions"]
+            ]
+            text = json.dumps({"block": content["block"], "questions": questions})
+            return httpx.Response(200, json={"choices": [{"message": {"content": text}}]})
         if content["block"].startswith("l-"):
             variables = []
             for v in content["variables"]:
@@ -91,8 +102,16 @@ def test_the_answer_key_matches_the_generators():
 def test_measures(fictional_files):
     server = Server()
     progress, results = _run(server)
-    assert len(progress) == 8
-    sleep, families, english, control = results
+    assert len(progress) == 9
+    sleep, families, english, control, stems = results
+    # Stems (v0.7): the rules alone, then with the model.
+    assert stems.equal(stems.computed) == 3  # secteur, consignes_securite, commentaires
+    assert stems.equal(stems.model) == 8  # the key's, but q0007 and q0012
+    assert stems.model["q0007"] == "eft_pauses"
+    # Acronyms the questions do not hold: "eft", invented, and "sst" (the key's own choice).
+    assert stems.flagged == ["q0006", "q0007"]
+    assert stems.model["q0012"] is None  # unsure: no stem, and none from the rules either
+    assert stems.answered == 9 and stems.failures == 0
     assert (control.name, control.n_key) == ("etude-activite", 23)
     assert english.name == "sleep-study" and english.n_key == 34
     # The English study gets the English instructions (v0.5).

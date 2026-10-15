@@ -19,7 +19,7 @@ from collections.abc import Callable, Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from ddict import __version__
+from ddict import __version__, naming
 from ddict.i18n import N_, Texts, _, colon, field_label, semicolon
 from ddict.io import read_database
 from ddict.llm.link import DEFAULT_LINK_BLOCK_SIZE, LINK_PROMPT_VERSION, NEIGHBOUR_PROMPT_VERSION
@@ -204,16 +204,87 @@ def run_base(
     yield result
 
 
+# --- Stems of names (v0.7, D-051): the model against the rules alone. ---
+
+NAMING_KEY_FILE = "corrige-surveymonkey.json"
+
+
+@dataclass
+class NamingResult:
+    """The stems of the fictional SurveyMonkey export: by the rules alone, then with the
+    model, against the stems of the answer key (a person's choice)."""
+
+    name: str
+    expected: dict[str, str]
+    computed: dict[str, str | None] = field(default_factory=dict)
+    model: dict[str, str | None] = field(default_factory=dict)
+    answered: int = 0  # stems the model proposed itself
+    flagged: list[str] = field(default_factory=list)  # perhaps an acronym it invented
+    failures: int = 0
+    seconds: float = 0.0
+    failure_detail: str | None = None
+
+    def valid(self, found: dict[str, str | None]) -> int:
+        return sum(1 for k in self.expected if found.get(k) and naming.valid_stem(found[k]))
+
+    def equal(self, found: dict[str, str | None]) -> int:
+        return sum(1 for k, v in self.expected.items() if found.get(k) == v)
+
+
+def _stems(project: Project, keys) -> dict[str, str | None]:
+    return {k: naming.usable_stem(project, k) for k in keys}
+
+
+def run_naming(
+    folder: Path,
+    client,
+    *,
+    now: Callable[[], str],
+    clock: Callable[[], float] = time.monotonic,
+) -> Iterator[str | NamingResult]:
+    """Measure the stems on the fictional SurveyMonkey export (its .sav, its Excel header as
+    the questionnaire); yields progress, then the result."""
+    from ddict.llm.stems import ACRONYM_SIGNAL, propose_stems
+
+    wave = json.loads((folder / NAMING_KEY_FILE).read_text(encoding="utf-8"))["waves"]["t2"]
+    result = NamingResult("travail-t2_surveymonkey", dict(wave["stems"]))
+
+    def project() -> Project:
+        found = build_project(read_database(folder / wave["sav"]))
+        add_questionnaire(found, folder / wave["xlsx"])
+        return found
+
+    alone = project()
+    naming.propose(alone)
+    result.computed = _stems(alone, result.expected)
+    yield _("{base} : radicaux des noms proposés par le modèle…").format(base=result.name)
+    with_model = project()
+    start = clock()
+    events = list(propose_stems(with_model, client, now=now))
+    result.seconds = clock() - start
+    result.failures = _failures(events, result)
+    result.model = _stems(with_model, result.expected)
+    for key in result.expected:
+        found = naming.stem(with_model, key)
+        if found is not None and found.stem.origin == "ai":
+            result.answered += 1
+            if ACRONYM_SIGNAL in found.ai_signals:
+                result.flagged.append(key)
+    yield result
+
+
 def run_bench(
     client,
     *,
     now: Callable[[], str],
     clock: Callable[[], float] = time.monotonic,
     folder: Path | None = None,
-) -> Iterator[str | BaseResult]:
+) -> Iterator[str | BaseResult | NamingResult]:
     folder = folder or data_dir()
     for base in load_key(folder)["bases"]:
         yield from run_base(folder, base, client, now=now, clock=clock)
+    if (folder / NAMING_KEY_FILE).is_file():
+        yield from run_naming(folder, client, now=now, clock=clock)
 
 
 def _seconds(value: float) -> str:
@@ -221,7 +292,44 @@ def _seconds(value: float) -> str:
     return f"{value // 60} min {value % 60:02d} s" if value >= 60 else f"{value} s"
 
 
-def render_report(results: list[BaseResult], *, model: str, endpoint: str, date: str) -> str:
+def _naming_section(result: NamingResult) -> list[str]:
+    n = len(result.expected)
+    lines = [
+        "",
+        _("## Radicaux des noms (v0.7)"),
+        "",
+        _(
+            "Sur l'export SurveyMonkey fictif : le radical de chaque question, comparé à celui "
+            "du corrigé (le choix d'une équipe). Le modèle n'est gardé dans l'interface que "
+            "s'il fait mieux que les règles seules (D-051)."
+        ),
+        "",
+        f"| | {_('Radicaux valides')} | {_('Égaux au corrigé')} | "
+        f"{_('Proposés par le modèle')} | {_('Sigle possible')} | {_('Blocs en échec')} | "
+        f"{_('Durée')} |",
+        "|---|---|---|---|---|---|---|",
+        f"| {_('Règles seules')} | {result.valid(result.computed)} / {n} | "
+        f"{result.equal(result.computed)} / {n} | — | — | — | — |",
+        f"| {_('Avec le modèle')} | {result.valid(result.model)} / {n} | "
+        f"{result.equal(result.model)} / {n} | {result.answered} / {n} | "
+        f"{len(result.flagged)} | {result.failures} | {_seconds(result.seconds)} |",
+        "",
+        f"| {_('Question')} | {_('Corrigé')} | {_('Règles seules')} | {_('Avec le modèle')} |",
+        "|---|---|---|---|",
+    ]
+    for key, expected in result.expected.items():
+        lines.append(
+            f"| {key} | `{expected}` | `{result.computed.get(key) or '—'}` | "
+            f"`{result.model.get(key) or '—'}` |"
+        )
+    return lines
+
+
+def render_report(
+    results: list[BaseResult | NamingResult], *, model: str, endpoint: str, date: str
+) -> str:
+    naming_result = next((r for r in results if isinstance(r, NamingResult)), None)
+    results = [r for r in results if isinstance(r, BaseResult)]
     total_key = sum(r.n_key for r in results)
     lines = [
         _("# Banc d'essai : {model}").format(model=model),
@@ -316,6 +424,8 @@ def render_report(results: list[BaseResult], *, model: str, endpoint: str, date:
             )
         if details:
             lines.append(f"- {r.name}{colon()}" + semicolon().join(details))
+    if naming_result is not None:
+        lines += _naming_section(naming_result)
     return "\n".join(lines).rstrip("\n") + "\n"
 
 
@@ -331,10 +441,15 @@ def write_report(text: str, folder: Path, model: str, date: str) -> Path:
     return path
 
 
-def totals(results: list[BaseResult]) -> Counter:
+def totals(results: list[BaseResult | NamingResult]) -> Counter:
     """For the interface: the main figures."""
     counts: Counter = Counter()
     for r in results:
+        if isinstance(r, NamingResult):
+            counts["stems_model"] = r.equal(r.model)
+            counts["stems_rules"] = r.equal(r.computed)
+            counts["stems"] = len(r.expected)
+            continue
         counts["right"] += r.model_right
         counts["key"] += r.n_key
         counts["flagged"] += len({n for names in r.signals.values() for n in names})

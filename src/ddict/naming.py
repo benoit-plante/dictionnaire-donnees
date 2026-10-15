@@ -137,6 +137,23 @@ def stem_from_text(text: str) -> str | None:
     return stem if stem and _STYLE.fullmatch(stem) else None
 
 
+def valid_stem(text: str) -> bool:
+    """A stem the rules accept: the style of a name, at most MAX_STEM characters."""
+    return bool(_STYLE.fullmatch(text)) and len(text) <= MAX_STEM
+
+
+def set_stem_proposal(
+    project: Project, key: str, tracked: TrackedValue[str], signals: list[str]
+) -> None:
+    """A stem proposed by the model (v0.7, D-051), with its signals."""
+    found = stem(project, key)
+    if found is None:
+        project.stems.append(QuestionStem(key=key, stem=tracked, ai_signals=signals))
+    else:
+        found.stem = tracked
+        found.ai_signals = signals
+
+
 def stem(project: Project, key: str) -> QuestionStem | None:
     return next((s for s in project.stems if s.key == key), None)
 
@@ -187,10 +204,18 @@ def stem_questions(project: Project) -> list[StemQuestion]:
     return found
 
 
-def question_text(project: Project, question: StemQuestion) -> str | None:
+def sure_links(project: Project) -> dict[str, str]:
+    """The computation's sure links, computed once for many questions."""
+    return link.sure_choices(project) if project.questionnaire else {}
+
+
+def question_text(
+    project: Project, question: StemQuestion, sure: dict[str, str] | None = None
+) -> str | None:
     """The text of a question: from the questionnaire, through a variable's link (accepted,
-    or sure); else the file label of its variable, which a platform's .sav gives."""
-    sure = link.sure_choices(project) if project.questionnaire else {}
+    or sure); else the file label of its variable, which a platform's .sav gives. `sure`:
+    the sure links, when the caller computed them."""
+    sure = sure_links(project) if sure is None else sure
     names = [n for n in (question.single, *(n for n, _r in question.options)) if n]
     for name in names:
         entry = project.variable(name)
@@ -206,6 +231,7 @@ def question_text(project: Project, question: StemQuestion) -> str | None:
 
 
 def _propose_stems(project: Project, questions: list[StemQuestion]) -> None:
+    sure = None  # computed at the first question that needs a text
     taken = {
         s.stem.value
         for s in project.stems
@@ -217,7 +243,9 @@ def _propose_stems(project: Project, questions: list[StemQuestion]) -> None:
             current.stem.origin != "rule" or current.stem.status != "proposed"
         ):
             continue  # decided, or given by a person or an earlier wave
-        text = question_text(project, question)
+        if sure is None:
+            sure = sure_links(project)
+        text = question_text(project, question, sure)
         base = stem_from_text(text) if text else None
         if base is None:
             if current is not None:
@@ -347,6 +375,8 @@ def decide_stem(project: Project, key: str, action: str, *, now: str, value: str
     found = stem(project, key)
     if action in ("accept", "reject") and found is None:
         raise NamingError(["no_stem"])
+    if found is not None:
+        found.ai_signals = []  # a person's decision settles the signals
     try:
         if action == "accept":
             found.stem = validate(found.stem, now=now)

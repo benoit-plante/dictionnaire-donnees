@@ -63,6 +63,9 @@ packages = ["src/ddict"]
 "exemples/bases-fictives/questionnaire-sleep.pdf" = "ddict/banc/questionnaire-sleep.pdf"
 "exemples/bases-fictives/etude-activite.csv" = "ddict/banc/etude-activite.csv"
 "exemples/bases-fictives/questionnaire-activite.pdf" = "ddict/banc/questionnaire-activite.pdf"
+"exemples/bases-fictives/corrige-surveymonkey.json" = "ddict/banc/corrige-surveymonkey.json"
+"exemples/bases-fictives/travail-t2_surveymonkey.sav" = "ddict/banc/travail-t2_surveymonkey.sav"
+"exemples/bases-fictives/travail-t2_surveymonkey.xlsx" = "ddict/banc/travail-t2_surveymonkey.xlsx"
 
 [tool.pytest.ini_options]
 # Network access is forbidden in every test (CONCEPTION.md, principle 5).

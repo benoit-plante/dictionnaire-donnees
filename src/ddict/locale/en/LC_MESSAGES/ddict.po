@@ -74,6 +74,9 @@ msgstr "## Labels and descriptions"
 msgid "## Plusieurs candidates"
 msgstr "## Several candidates"
 
+msgid "## Radicaux des noms (v0.7)"
+msgstr "## Stems of the names (v0.7)"
+
 msgid "## Rattachements aux questions"
 msgstr "## Links to questions"
 
@@ -323,6 +326,9 @@ msgstr "No variable to send."
 msgid "Autres variables"
 msgstr "Other variables"
 
+msgid "Avec le modèle"
+msgstr "With the model"
+
 #, python-brace-format
 msgid "Avec les items probables inversés : {a}"
 msgstr "With the likely reversed items reversed: {a}"
@@ -562,6 +568,9 @@ msgstr "Correspondence"
 
 msgid "Corriger ou saisir"
 msgstr "Correct or enter"
+
+msgid "Corrigé"
+msgstr "Answer key"
 
 msgid "Corrélation avec le reste du groupe"
 msgstr "Correlation with the rest of the group"
@@ -1482,6 +1491,9 @@ msgstr ""
 "Proposed after the right links and the questionnaire's acronyms were accepted. A flagged variable"
 " may contain an invention, to be checked by a person; the fewer, the better."
 
+msgid "Proposés par le modèle"
+msgstr "Proposed by the model"
+
 msgid "Provenance"
 msgstr "Provenance"
 
@@ -1544,6 +1556,9 @@ msgstr "Stem"
 #, python-brace-format
 msgid "Radicaux des questions ({n})"
 msgstr "Stems of the questions ({n})"
+
+msgid "Radicaux valides"
+msgstr "Valid stems"
 
 #, python-brace-format
 msgid "Rapport : {path}"
@@ -1622,6 +1637,9 @@ msgstr "Also send the blocks already enriched."
 msgid "Renvoyer aussi les blocs déjà traités."
 msgstr "Also send the blocks already processed."
 
+msgid "Renvoyer aussi les questions dont le radical a déjà été proposé par le modèle."
+msgstr "Send again the questions whose stem the model already proposed."
+
 msgid "Reprendre les noms"
 msgstr "Take the names"
 
@@ -1649,6 +1667,9 @@ msgstr "Nothing waiting."
 
 msgid "Rien à envoyer."
 msgstr "Nothing to send."
+
+msgid "Règles seules"
+msgstr "Rules alone"
 
 msgid "Référence"
 msgstr "Reference"
@@ -1716,6 +1737,9 @@ msgstr ""
 
 msgid "Sigle"
 msgstr "Acronym"
+
+msgid "Sigle possible"
+msgstr "Possible acronym"
 
 #, python-brace-format
 msgid "Sigles définis dans le questionnaire, à valider : {terms}."
@@ -1785,6 +1809,15 @@ msgstr ""
 #, python-brace-format
 msgid "Structure de l'export {platform} : {n} questions, toutes retrouvées dans ce questionnaire."
 msgstr "Structure of the {platform} export: {n} questions, all found in this questionnaire."
+
+msgid ""
+"Sur l'export SurveyMonkey fictif : le radical de chaque question, comparé à celui du corrigé (le "
+"choix d'une équipe). Le modèle n'est gardé dans l'interface que s'il fait mieux que les règles "
+"seules (D-051)."
+msgstr ""
+"On the fictional SurveyMonkey export: the stem of each question, compared with the answer key's "
+"(a team's choice). The model is kept in the interface only if it does better than the rules alone"
+" (D-051)."
 
 msgid "Syntaxe SPSS"
 msgstr "SPSS syntax"
@@ -2335,6 +2368,10 @@ msgid "{base} : libellés et descriptions…"
 msgstr "{base}: labels and descriptions…"
 
 #, python-brace-format
+msgid "{base} : radicaux des noms proposés par le modèle…"
+msgstr "{base}: stems of the names proposed by the model…"
+
+#, python-brace-format
 msgid "{base} : rattachements proposés par le modèle…"
 msgstr "{base}: links proposed by the model…"
 
@@ -2535,6 +2572,9 @@ msgstr ""
 
 msgid "Écrire à côté du projet"
 msgstr "Write next to the project"
+
+msgid "Égaux au corrigé"
+msgstr "Equal to the answer key"
 
 msgid "Élément"
 msgstr "Item"

@@ -345,6 +345,8 @@ class QuestionStem(Strict):
 
     key: str
     stem: TrackedValue[str]
+    # What in a stem proposed by the model may be an invention: "stem:acronym" (D-051).
+    ai_signals: list[str] = []
 
 
 class Project(Strict):

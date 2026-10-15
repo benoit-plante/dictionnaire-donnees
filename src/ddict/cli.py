@@ -22,6 +22,7 @@ from ddict.io import ReadError
 from ddict.llm import DEFAULT_BLOCK_SIZE, build_blocks
 from ddict.llm.defaults import DEFAULT_ENDPOINT
 from ddict.llm.link import DEFAULT_LINK_BLOCK_SIZE, build_link_blocks
+from ddict.llm.stems import DEFAULT_STEM_BLOCK_SIZE, build_stem_blocks
 from ddict.naming import NamingError
 from ddict.privacy import MIN_CELL_COUNT
 from ddict.project import (
@@ -194,15 +195,20 @@ def cmd_rename(args: argparse.Namespace) -> int:
         )
         return EXIT_ERROR
     save_project(project, project_path)
-    for line in naming_summary(project):
-        print(line)
     if report is not None:
         for line in wave_summary(report):
             print(line)
         path = write_wave_report(project, report, project_path)
         print(_("Rapport des écarts entre les vagues : {path}").format(path=path))
+    if args.apercu:
+        return _preview(project_path, build_stem_blocks(project, size=args.taille_bloc))
+    status = 0
+    if args.modele:  # optional: the model proposes the stems the rules left open (D-051)
+        status = _run_model(args, project, project_path, "rename")
+    for line in naming_summary(project):
+        print(line)
     print(_("Enregistré dans {path}.").format(path=project_path))
-    return 0
+    return status
 
 
 def cmd_enrich(args: argparse.Namespace) -> int:
@@ -257,11 +263,13 @@ def cmd_link(args: argparse.Namespace) -> int:
 
 
 def _run_model(args: argparse.Namespace, project, project_path: Path, task: str) -> int:
-    """Send the blocks of `task` ("enrich" or "link") to the local model, with progress."""
+    """Send the blocks of `task` ("enrich", "link" or "rename") to the local model, with
+    progress."""
     try:
         from ddict.llm.client import EndpointRefused, LocalModelClient
         from ddict.llm.enrich import enrich
         from ddict.llm.link import propose_links
+        from ddict.llm.stems import propose_stems
     except ImportError:
         print(
             _(
@@ -290,7 +298,7 @@ def _run_model(args: argparse.Namespace, project, project_path: Path, task: str)
     }
     failed = succeeded = 0
     with client:
-        events = {"enrich": enrich, "link": propose_links}[task](
+        events = {"enrich": enrich, "link": propose_links, "rename": propose_stems}[task](
             project,
             client,
             now=lambda: datetime.now().isoformat(timespec="seconds"),
@@ -658,7 +666,11 @@ def build_parser() -> argparse.ArgumentParser:
             "d'origine n'est jamais modifié."
         ),
     )
-    rename_command.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    _model_arguments(
+        rename_command,
+        _("Renvoyer aussi les questions dont le radical a déjà été proposé par le modèle."),
+        DEFAULT_STEM_BLOCK_SIZE,
+    )
     rename_command.add_argument(
         "--reference",
         help=_(
