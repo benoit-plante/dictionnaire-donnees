@@ -31,7 +31,7 @@ En français : [`../installation-macos.md`](../installation-macos.md).
 
 Double-click the **Dictionnaire de données** icon. A Terminal window opens and runs the tool, then your browser opens on the **home page**, at an address that starts with `http://127.0.0.1`: it can be reached from your computer only.
 
-- **To stop the tool, close that Terminal window** (or press Control-C in it). If the Terminal asks whether to terminate the process, answer **Terminate**. Closing the browser tab does not stop it: another double-click on the icon simply opens the tab again.
+- **To stop the tool**, click **Quit the tool** at the bottom of the sidebar, or close that Terminal window (or press Control-C in it). If the Terminal asks whether to terminate the process, answer **Terminate**. Closing the browser tab does not stop it: another double-click on the icon simply opens the tab again.
 - At the first start, macOS may ask whether the Terminal may access the **Documents** folder: the tool starts there, so that the "Open" window begins there. You can allow or refuse; the tool works either way.
 - **Language**: at the top of the home page, **Français · English** chooses the language of the interface.
 

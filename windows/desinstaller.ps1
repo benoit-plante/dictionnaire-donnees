@@ -39,13 +39,16 @@ if ($uv) {
     # An open tool locks its files (found by the trial of 0.4.0): close it first.
     $toolDir = Join-Path (& $uv tool dir).Trim() "ddict"
     $toolExe = Join-Path (& $uv tool dir --bin).Trim() "ddict.exe"
-    $open = @(Get-Process | Where-Object { $_.Path -and ($_.Path -like "$toolDir\*" -or $_.Path -eq $toolExe) })
+    $toolWindow = Join-Path (& $uv tool dir --bin).Trim() "ddict-fenetre.exe"
+    $open = @(Get-Process | Where-Object {
+        $_.Path -and ($_.Path -like "$toolDir\*" -or $_.Path -eq $toolExe -or $_.Path -eq $toolWindow)
+    })
     if ($open.Count -gt 0) {
         if ($NoPrompt -or (Ask "L'outil est ouvert. Le fermer maintenant ? Vos décisions sont déjà enregistrées.")) {
             $open | Stop-Process -Force
             Start-Sleep -Seconds 2
         } else {
-            Say "Fermez la petite fenêtre noire de l'outil, puis relancez desinstaller.bat."
+            Say "Fermez la fenêtre de l'outil (ou cliquez « Quitter l'outil »), puis relancez desinstaller.bat."
             Finish 1
         }
     }

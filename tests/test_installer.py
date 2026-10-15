@@ -125,3 +125,13 @@ def test_macos_uninstaller_keeps_the_projects():
         'rm -rf "$RECENTS"',
     ]
     assert text.index('ask "Effacer aussi') < text.index('rm -rf "$RECENTS"')
+
+
+def test_the_icon_opens_the_window_without_console():
+    """v0.7.1 (D-055): the icon starts the GUI script; the console exe only as a fallback."""
+    text = (ROOT / "windows" / "installer.ps1").read_text(encoding="utf-8-sig")
+    assert '$launcher = Join-Path $bin "ddict-fenetre.exe"' in text
+    assert "$link.TargetPath = $launcher" in text
+    for name in SCRIPTS:
+        script = (ROOT / "windows" / f"{name}.ps1").read_text(encoding="utf-8-sig")
+        assert "$_.Path -eq $toolWindow" in script  # an open window is closed too

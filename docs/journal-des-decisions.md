@@ -680,3 +680,18 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   3. Tous les formats au même rang, comme dans la conception.
 - **Justification :** le `.sav` contient ce que les autres formats obligent à deviner (étiquettes de valeurs, codes manquants déclarés, niveaux de mesure). Retirer les autres formats ne rendrait pas la lecture d'un `.sav` plus juste : les deux chemins sont séparés, et les erreurs relevées sur les vraies bases venaient de la lecture du questionnaire, des groupes et des noms, pas du format. Les garder sert les équipes sans SPSS et les plateformes qui exportent surtout en CSV ; l'en-tête d'un export Excel aide même à côté du `.sav` (D-045).
 - **Conséquences :** l'interface signalera, pour une base qui n'est pas un `.sav`, que certaines informations sont devinées plutôt que lues et sont à vérifier (étape 11 de la v0.7). Une règle propre au CSV ou à Excel ne s'ajoute plus que pour corriger une erreur.
+
+### D-055 — L'outil dans sa propre fenêtre, sans fenêtre noire
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** sous Windows, l'icône lance `ddict-fenetre`, un lanceur sans console : il démarre l'interface sans fenêtre visible et l'affiche dans une fenêtre à elle (pywebview, sur le moteur d'Edge déjà présent dans Windows) ; fermer cette fenêtre arrête l'outil. Un bouton « Quitter l'outil », en bas de la barre latérale, arrête aussi l'outil, partout (fenêtre, navigateur, Mac, ligne de commande). Les messages de démarrage vont dans `journal.txt`, à côté de la liste des projets récents. Sans pywebview ou sans le moteur d'Edge, l'interface s'ouvre dans le navigateur, comme avant. La commande `ddict` et le Mac ne changent pas.
+- **Options considérées :**
+  1. Pas de fenêtre visible, bouton « Quitter » et arrêt automatique quand plus aucun onglet n'est ouvert.
+  2. Fenêtre d'application du navigateur (mode application d'Edge ou de Chrome), avec le même arrêt.
+  3. Une vraie fenêtre d'application avec pywebview (ce choix).
+  4. Une icône près de l'horloge (pystray, LGPL).
+  5. Réécrire l'interface en logiciel classique.
+- **Justification :** la seule option où fermer la fenêtre arrête l'outil, comme pour tout logiciel, sans rien qui tourne en arrière-plan. Essai concluant de l'auteur avant la décision : fenêtre « Ouvrir » au premier plan, téléchargements, export et ouverture du dossier fonctionnent ; l'outil s'arrête entièrement à la fermeture. Licences BSD et MIT, compatibles.
+- **Conséquences :** nouvelle dépendance de l'option « revision », sous Windows seulement (`docs/dependances.md`). Sur Mac, une vraie application reste à faire, faute de pouvoir l'essayer ailleurs que sur un Mac de GitHub ; le bouton « Quitter l'outil » y sert déjà.

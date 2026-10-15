@@ -77,8 +77,11 @@ Step "2/4 - L'outil (une ou deux minutes la première fois)"
 # (found by the trial of 0.4.0). Ask to close it first.
 $toolDir = Join-Path (& $uv tool dir).Trim() "ddict"
 $toolExe = Join-Path (& $uv tool dir --bin).Trim() "ddict.exe"
+$toolWindow = Join-Path (& $uv tool dir --bin).Trim() "ddict-fenetre.exe"
 function Get-OpenTool {
-    @(Get-Process | Where-Object { $_.Path -and ($_.Path -like "$toolDir\*" -or $_.Path -eq $toolExe) })
+    @(Get-Process | Where-Object {
+        $_.Path -and ($_.Path -like "$toolDir\*" -or $_.Path -eq $toolExe -or $_.Path -eq $toolWindow)
+    })
 }
 $open = Get-OpenTool
 if ($open.Count -gt 0) {
@@ -88,7 +91,7 @@ if ($open.Count -gt 0) {
         Start-Sleep -Seconds 2
     }
     if ((Get-OpenTool).Count -gt 0) {
-        Fail "L'outil est encore ouvert. Fermez sa petite fenêtre noire (dans la barre des tâches), puis relancez installer.bat."
+        Fail "L'outil est encore ouvert. Fermez sa fenêtre (ou cliquez « Quitter l'outil »), puis relancez installer.bat."
     }
     Say "Outil fermé."
 }
@@ -106,6 +109,9 @@ if (-not $ShortcutDir) {  # a trial leaves PATH alone
 $bin = (& $uv tool dir --bin).Trim()
 $ddict = Join-Path $bin "ddict.exe"
 if (-not (Test-Path $ddict)) { Fail "L'outil est installé, mais ddict.exe est introuvable dans $bin." }
+# The icon starts the tool in its own window, without a console (D-055).
+$launcher = Join-Path $bin "ddict-fenetre.exe"
+if (-not (Test-Path $launcher)) { $launcher = $ddict }
 $version = (& $ddict --version).Trim()
 Say "Installé : $version"
 
@@ -120,10 +126,10 @@ $shell = New-Object -ComObject WScript.Shell
 foreach ($folder in $folders) {
     New-Item -ItemType Directory -Force $folder | Out-Null
     $link = $shell.CreateShortcut((Join-Path $folder $ShortcutName))
-    $link.TargetPath = $ddict
+    $link.TargetPath = $launcher
     $link.WorkingDirectory = [Environment]::GetFolderPath("MyDocuments")
-    $link.WindowStyle = 7  # the console window starts minimized
-    $link.Description = "Ouvre l'outil dans le navigateur (cet ordinateur seulement)."
+    if ($launcher -eq $ddict) { $link.WindowStyle = 7 }  # a console: it starts minimized
+    $link.Description = "Ouvre l'outil dans sa fenêtre (cet ordinateur seulement)."
     $link.Save()
     Say "Icône créée : $(Join-Path $folder $ShortcutName)"
 }

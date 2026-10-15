@@ -31,7 +31,7 @@ In English: [`en/installation-macos.md`](en/installation-macos.md).
 
 Double-cliquez sur l'icône **Dictionnaire de données**. Une fenêtre du Terminal s'ouvre et fait tourner l'outil, puis votre navigateur s'ouvre sur l'**accueil**, à une adresse qui commence par `http://127.0.0.1` : elle n'est accessible que depuis votre ordinateur.
 
-- **Pour arrêter l'outil, fermez cette fenêtre du Terminal** (ou, dans le Terminal, Contrôle-C). Si le Terminal demande s'il faut mettre fin au processus, répondez **Terminer**. Fermer l'onglet du navigateur ne l'arrête pas : un nouveau double-clic sur l'icône rouvre simplement l'onglet.
+- **Pour arrêter l'outil**, cliquez **Quitter l'outil** en bas de la barre latérale, ou fermez cette fenêtre du Terminal (ou, dans le Terminal, Contrôle-C). Si le Terminal demande s'il faut mettre fin au processus, répondez **Terminer**. Fermer l'onglet du navigateur ne l'arrête pas : un nouveau double-clic sur l'icône rouvre simplement l'onglet.
 - Au premier lancement, macOS peut demander si le Terminal peut accéder au dossier **Documents** : l'outil y démarre, pour que la fenêtre « Ouvrir » commence là. Vous pouvez accepter ou refuser ; l'outil fonctionne dans les deux cas.
 - **Langue** : en haut de l'accueil, **Français · English** choisit la langue de l'interface.
 

@@ -12,7 +12,7 @@ import streamlit as st
 
 from ddict import settings
 from ddict.i18n import N_, Texts, _
-from ddict.review import logic
+from ddict.review import logic, shutdown
 from ddict.review.ui import (
     ai_view,
     base_view,
@@ -78,10 +78,36 @@ def _dashboard(project) -> None:
         )
 
 
+QUITTING = "quitting"
+
+
+def _quit_button() -> None:
+    """At the bottom of the sidebar (v0.7.1, D-055): the way to stop the tool."""
+    st.divider()
+    st.button(
+        _("Quitter l'outil"),
+        key="quit",
+        on_click=lambda: st.session_state.update({QUITTING: True}),
+        icon=":material/power_settings_new:",
+        help=_("Arrête l'outil. Vos décisions sont déjà enregistrées dans le fichier projet."),
+    )
+
+
+def _stopped() -> None:
+    st.title(_("L'outil est arrêté."))
+    st.write(_("Vous pouvez fermer cette fenêtre. Vos décisions sont enregistrées."))
+    shutdown.stop_soon()
+    st.stop()
+
+
 def main() -> None:
     settings.apply()  # read at each run: a change on the home page applies at once
     st.set_page_config(page_title=_("Révision du dictionnaire"), layout="wide")
+    if st.session_state.get(QUITTING):
+        _stopped()
     if not c.has_project():
+        with st.sidebar:
+            _quit_button()
         top = _messages_start()
         home_view.page()
         _messages_end(top)
@@ -128,6 +154,7 @@ def main() -> None:
             chosen = st.selectbox(_("Groupe"), [g.group_id for g in project.groups], key="group")
         elif mode == "groups":
             st.info(_("Aucun groupe trouvé."))
+        _quit_button()
     notice = st.session_state.pop("notice", None)
     if notice:
         st.info(notice)

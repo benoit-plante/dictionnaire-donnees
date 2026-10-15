@@ -31,11 +31,16 @@ classifiers = [
 [project.scripts]
 ddict = "ddict.cli:main"
 
+# The icon's launcher (v0.7.1, D-055): a GUI script, so Windows opens no console window.
+[project.gui-scripts]
+ddict-fenetre = "ddict.window:main"
+
 [project.optional-dependencies]
 ia = [
     "httpx>=0.28.1",
 ]
 revision = [
+    "pywebview>=6.2.1; sys_platform == 'win32'",
     "streamlit>=1.65.0",
 ]
 

@@ -50,6 +50,9 @@ Installée seulement sur demande (`pip install "ddict[revision]"`, ou `uv sync -
 | protobuf | Messages entre serveur et navigateur (requis par streamlit) | BSD-3-Clause | Oui | 12 |
 | requests, urllib3, charset-normalizer | Client HTTP (requis par streamlit ; l'outil ne s'en sert pas) | Apache-2.0, MIT | Oui | 12 |
 | click, toml, watchdog, packaging | Ligne de commande, configuration, surveillance de fichiers | BSD-3-Clause, MIT, Apache-2.0 | Oui | 12 |
+| pywebview (Windows seulement) | La fenêtre de l'outil, sans console : l'interface s'y affiche avec le moteur d'Edge (WebView2) déjà présent dans Windows, et fermer la fenêtre arrête l'outil (D-055) | BSD-3-Clause | Oui | v0.7.1 |
+| pythonnet, clr-loader | Accès de pywebview au moteur d'Edge (requis par pywebview sous Windows) | MIT | Oui | v0.7.1 |
+| bottle, proxy-tools | Petit serveur et utilitaires internes (requis par pywebview ; l'outil ne s'en sert pas) | MIT | Oui | v0.7.1 |
 
 ## Dépendances de développement
 

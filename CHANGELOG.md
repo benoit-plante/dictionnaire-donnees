@@ -1,5 +1,9 @@
 # Changements
 
+## Non publié
+
+- **Plus de fenêtre noire sous Windows** (D-055) : l'icône ouvre l'outil dans sa propre fenêtre, et fermer cette fenêtre arrête l'outil. Bouton « Quitter l'outil » en bas de la barre latérale, partout (aussi dans le navigateur et sur Mac). Sans le moteur d'Edge, l'outil s'ouvre dans le navigateur comme avant ; ses messages de démarrage vont dans `journal.txt`, à côté de la liste des projets récents.
+
 ## 0.7.0 — 2026-10-15
 
 Les exports bruts de SurveyMonkey sont lus juste, et les variables se renomment, d'une vague à l'autre (plan : `docs/plan-v0.7.md`, D-043 à D-054). Mis au point sur deux vraies bases, hors du dépôt et décrites par leurs seuls faits de structure, puis vérifié sur une base de contrôle écrite après coup et sur trois vagues réelles d'une même étude (`docs/essais/`).

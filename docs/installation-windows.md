@@ -1,6 +1,6 @@
 # Installer et utiliser l'outil sous Windows
 
-Ce guide s'adresse aux personnes qui ne programment pas. Il mène de l'installation jusqu'à un codebook complet, produit à partir de la base fictive et de son questionnaire, fournis avec l'outil. Tout se fait par des doubles-clics et dans votre navigateur ; aucune commande n'est à taper. Comptez une heure, plus le téléchargement du modèle d'IA si vous choisissez de l'utiliser.
+Ce guide s'adresse aux personnes qui ne programment pas. Il mène de l'installation jusqu'à un codebook complet, produit à partir de la base fictive et de son questionnaire, fournis avec l'outil. Tout se fait par des doubles-clics et dans la fenêtre de l'outil ; aucune commande n'est à taper. Comptez une heure, plus le téléchargement du modèle d'IA si vous choisissez de l'utiliser.
 
 Sur un Mac : [`installation-macos.md`](installation-macos.md). In English: [`en/installation-windows.md`](en/installation-windows.md) (Windows), [`en/installation-macos.md`](en/installation-macos.md) (macOS).
 
@@ -26,9 +26,11 @@ Sur un Mac : [`installation-macos.md`](installation-macos.md). In English: [`en/
 
 ## 2. Ouvrir l'outil
 
-Double-cliquez sur l'icône **Dictionnaire de données**. Votre navigateur s'ouvre sur l'**accueil** de l'outil, à une adresse qui commence par `http://127.0.0.1` : elle n'est accessible que depuis votre ordinateur.
+Double-cliquez sur l'icône **Dictionnaire de données**. Après quelques secondes, l'outil s'ouvre dans sa propre fenêtre, sur l'**accueil**. C'est une page locale (adresse `http://127.0.0.1`), accessible depuis votre ordinateur seulement.
 
-Une petite fenêtre noire, réduite dans la barre des tâches, fait tourner l'outil. **Pour arrêter l'outil, fermez cette fenêtre.** Fermer l'onglet du navigateur ne l'arrête pas : un nouveau double-clic sur l'icône rouvre simplement l'onglet.
+**Pour arrêter l'outil, fermez sa fenêtre**, ou cliquez **Quitter l'outil** en bas de la barre latérale. Vos décisions sont enregistrées au fur et à mesure : rien n'est perdu. Un nouveau double-clic sur l'icône pendant que l'outil tourne ouvre une fenêtre de plus.
+
+Si la fenêtre ne peut pas s'ouvrir (sur un ordinateur sans le moteur d'Edge, par exemple), l'outil s'ouvre dans votre navigateur et fonctionne de la même façon ; arrêtez-le alors avec **Quitter l'outil**.
 
 **Langue** : en haut de l'accueil, **Français · English** choisit la langue de l'interface. Le choix s'applique aussitôt et reste mémorisé sur votre ordinateur.
 
@@ -36,7 +38,7 @@ Une petite fenêtre noire, réduite dans la barre des tâches, fait tourner l'ou
 
 La base fictive est une petite étude inventée sur le sommeil (200 participants fictifs), avec son questionnaire. Elle permet d'essayer l'outil sans aucune donnée réelle.
 
-1. Sur l'accueil, sous **Nouveau projet**, cliquez sur **Choisir une base…**. La fenêtre « Ouvrir » de Windows apparaît (si vous ne la voyez pas, regardez derrière le navigateur). Allez dans le dossier de l'outil, puis `exemples\bases-fictives`, et choisissez `etude-sommeil.sav`.
+1. Sur l'accueil, sous **Nouveau projet**, cliquez sur **Choisir une base…**. La fenêtre « Ouvrir » de Windows apparaît (si vous ne la voyez pas, regardez dans la barre des tâches). Allez dans le dossier de l'outil, puis `exemples\bases-fictives`, et choisissez `etude-sommeil.sav`.
 2. Cliquez sur **Créer le projet**. L'outil lit la base et crée à côté d'elle le **fichier projet**, `etude-sommeil.dd.json`. Il contient tout ce que l'outil a calculé (types, manquants, modalités, étiquettes) et, plus tard, vos décisions ; il ne contient pas les réponses individuelles des participants. Le fichier de données n'est jamais modifié.
 3. La page **Base** résume ce qui a été lu : nombre de variables et de lignes, variables sensibles, signalements. Elle indique aussi la **langue de l'étude** (celle du questionnaire et des libellés), devinée par l'outil et modifiable : le modèle écrit ses propositions dans cette langue.
 4. Dans la barre latérale, choisissez **Export**, puis **Écrire le codebook et le rapport**. Deux fichiers apparaissent à côté du projet : `etude-sommeil.xlsx` (le codebook, à ouvrir avec Excel) et `etude-sommeil.md` (le même contenu en texte). Le bouton **Ouvrir le dossier** les montre dans l'Explorateur.
@@ -182,8 +184,8 @@ Les commandes et leurs options ont aussi des noms anglais (`ddict export --work`
 | « Windows a protégé votre ordinateur » au double-clic sur `installer.bat` | **Informations complémentaires**, puis **Exécuter quand même** (section 1). |
 | `installer.bat` s'arrête sur un message rouge | Vérifiez la connexion Internet, puis relancez-le. Si le message persiste, notez-le et transmettez-le. Certains postes d'établissement interdisent les scripts : adressez-vous au soutien informatique. |
 | « Ce dossier ne contient pas l'outil » | `installer.bat` a été copié hors de l'archive : lancez celui du dossier de l'outil décompressé (section 1, étape 2). |
-| La fenêtre « Ouvrir » ne s'affiche pas | Elle est peut-être derrière le navigateur : regardez dans la barre des tâches. Sinon, collez le chemin du fichier dans le champ sous le bouton (clic droit sur le fichier dans l'Explorateur, **Copier en tant que chemin d'accès**). |
-| Le navigateur ne s'ouvre pas au double-clic sur l'icône | Ouvrez-le vous-même à l'adresse `http://127.0.0.1:8501`. |
+| La fenêtre « Ouvrir » ne s'affiche pas | Elle est peut-être derrière la fenêtre de l'outil : regardez dans la barre des tâches. Sinon, collez le chemin du fichier dans le champ sous le bouton (clic droit sur le fichier dans l'Explorateur, **Copier en tant que chemin d'accès**). |
+| Rien ne s'ouvre au double-clic sur l'icône | Attendez une dizaine de secondes. Sinon, ouvrez le journal de l'outil : collez `%APPDATA%\ddict\journal.txt` dans la barre d'adresse de l'Explorateur, puis Entrée. Il contient ses messages de démarrage (aucune donnée) : transmettez-le. |
 | « Un projet existe déjà pour cette base » | L'outil n'écrase pas votre travail : **Ouvrir le projet existant**, ou **Remplacer le projet** si vous voulez vraiment repartir de zéro (vos décisions seront perdues). |
 | Page IA locale : « Ollama ne répond pas » | Lancez Ollama depuis le menu Démarrer, attendez son icône près de l'horloge, puis **Vérifier de nouveau**. |
 | Page IA locale : aucun modèle installé | Relancez `installer.bat` et répondez `o` pour télécharger le modèle, ou suivez les indications de la page. |
@@ -192,6 +194,6 @@ Les commandes et leurs options ont aussi des noms anglais (`ddict export --work`
 | Copie documentée : « La base … est introuvable à côté du projet » | Placez la base dans le dossier du projet, ou **Choisir la base…**. |
 | Copie documentée : « n'est plus le fichier d'où vient le projet » | La base a changé depuis la création du projet (nouvelle exportation, données corrigées). Créez un nouveau projet à partir de la base actuelle. |
 | R : « there is no package called 'haven' » | Dans R, une seule fois : `install.packages("haven")`. |
-| L'outil semble figé | Fermez la petite fenêtre noire de la barre des tâches, puis double-cliquez de nouveau sur l'icône. Les décisions déjà prises sont enregistrées. |
+| L'outil semble figé | Fermez sa fenêtre, puis double-cliquez de nouveau sur l'icône. Les décisions déjà prises sont enregistrées. |
 
 Pour toute autre difficulté, notez ce que vous avez fait et le message obtenu, et transmettez-les à la personne qui vous a fourni l'outil.

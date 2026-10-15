@@ -1,6 +1,6 @@
 # Installing and using the tool on Windows
 
-This guide is for people who do not program. It goes from the installation to a complete codebook, made from the fictional database and its questionnaire that come with the tool. Everything is done by double-clicking and in your browser; there are no commands to type. Allow an hour, plus the download of the AI model if you choose to use it.
+This guide is for people who do not program. It goes from the installation to a complete codebook, made from the fictional database and its questionnaire that come with the tool. Everything is done by double-clicking and in the tool's window; there are no commands to type. Allow an hour, plus the download of the AI model if you choose to use it.
 
 On a Mac: [`installation-macos.md`](installation-macos.md). En français : [`../installation-windows.md`](../installation-windows.md).
 
@@ -28,9 +28,11 @@ On a Mac: [`installation-macos.md`](installation-macos.md). En français : [`../
 
 ## 2. Open the tool
 
-Double-click the **Dictionnaire de données** icon. Your browser opens on the tool's **home page**, at an address that starts with `http://127.0.0.1`: it can be reached from your computer only.
+Double-click the **Dictionnaire de données** icon. After a few seconds, the tool opens in its own window, on the **home page**. It is a local page (address `http://127.0.0.1`), reachable from your computer only.
 
-A small black window, minimized in the taskbar, runs the tool. **To stop the tool, close that window.** Closing the browser tab does not stop it: another double-click on the icon simply opens the tab again.
+**To stop the tool, close its window**, or click **Quit the tool** at the bottom of the sidebar. Your decisions are saved as you go: nothing is lost. Another double-click on the icon while the tool runs opens one more window.
+
+If the window cannot open (on a computer without the Edge engine, for example), the tool opens in your browser and works the same way; then stop it with **Quit the tool**.
 
 **Language**: at the top of the home page, **Français · English** chooses the language of the interface. The choice applies at once and is remembered on your computer. Choose **English**.
 
@@ -38,7 +40,7 @@ A small black window, minimized in the taskbar, runs the tool. **To stop the too
 
 The fictional database is a small invented study of sleep (200 fictional participants), with its questionnaire. It lets you try the tool without any real data. It exists in French and in English; this guide uses the English version.
 
-1. On the home page, under **New project**, click **Choose a database…**. The Windows "Open" window appears (if you do not see it, look behind the browser). Go to the tool's folder, then `exemples\bases-fictives`, and choose `sleep-study.sav`.
+1. On the home page, under **New project**, click **Choose a database…**. The Windows "Open" window appears (if you do not see it, look in the taskbar). Go to the tool's folder, then `exemples\bases-fictives`, and choose `sleep-study.sav`.
 2. Click **Create the project**. The tool reads the database and creates next to it the **project file**, `sleep-study.dd.json`. It holds everything the tool computed (types, missing values, categories, labels) and, later, your decisions; it does not hold the participants' individual answers. The data file is never changed.
 3. The **Database** page sums up what was read: number of variables and rows, sensitive variables, flags. It also shows the **language of the study** (that of its questionnaire and labels), guessed by the tool and which you can change: the model writes its proposals in this language. Here it is "English".
 4. In the sidebar, choose **Export**, then **Write the codebook and the report**. Two files appear next to the project: `sleep-study.xlsx` (the codebook, to open with Excel) and `sleep-study.md` (the same content as text). The **Open the folder** button shows them in File Explorer.
@@ -184,9 +186,9 @@ ddict evaluate --model qwen2.5:7b-instruct-q4_K_M       # model bench
 | "Windows protected your PC" when double-clicking `installer.bat` | **More info**, then **Run anyway** (section 1). |
 | `installer.bat` stops on a red message | Check the Internet connection, then run it again. If the message persists, write it down and pass it on. Some institutional computers forbid scripts: ask your IT support. |
 | "Ce dossier ne contient pas l'outil" (this folder does not contain the tool) | `installer.bat` was copied out of the archive: run the one in the extracted tool's folder (section 1, step 2). |
-| "L'outil est encore ouvert" (the tool is still open) | Close the tool's small black window, then run the installer again. |
-| The "Open" window does not appear | It may be behind the browser: look in the taskbar. Otherwise, paste the file's path in the field under the button (right-click the file in File Explorer, **Copy as path**). |
-| The browser does not open when double-clicking the icon | Open it yourself at `http://127.0.0.1:8501`. |
+| "L'outil est encore ouvert" (the tool is still open) | Close the tool's window (or click **Quit the tool**), then run the installer again. |
+| The "Open" window does not appear | It may be behind the tool's window: look in the taskbar. Otherwise, paste the file's path in the field under the button (right-click the file in File Explorer, **Copy as path**). |
+| Nothing opens when double-clicking the icon | Wait ten seconds or so. Otherwise, open the tool's journal: paste `%APPDATA%\ddict\journal.txt` in the address bar of File Explorer, then Enter. It holds its start-up messages (no data): pass it on. |
 | "A project already exists for this database" | The tool does not overwrite your work: **Open the existing project**, or **Replace the project** if you really want to start over (its decisions will be lost). |
 | Local AI page: "Is Ollama running?" | Start Ollama from the Start menu, wait for its icon next to the clock, then **Check again**. |
 | Local AI page: no model installed | Run `installer.bat` again and answer `y` to download the model, or follow the page's instructions. |
@@ -195,6 +197,6 @@ ddict evaluate --model qwen2.5:7b-instruct-q4_K_M       # model bench
 | Documented copy: "The database … cannot be found next to the project" | Put the database in the project's folder, or **Choose the database…**. |
 | Documented copy: "… is no longer the file the project comes from" | The database changed since the project was created (new export, corrected data). Create a new project from the current database. |
 | R: "there is no package called 'haven'" | In R, once: `install.packages("haven")`. |
-| The tool seems frozen | Close the small black window in the taskbar, then double-click the icon again. The decisions already taken are saved. |
+| The tool seems frozen | Close its window, then double-click the icon again. The decisions already taken are saved. |
 
 For any other difficulty, write down what you did and the message you got, and pass them on to the person who gave you the tool.

@@ -274,6 +274,9 @@ msgstr "Preview: {n} message blocks, nothing was sent."
 msgid "Appel IA"
 msgstr "AI call"
 
+msgid "Arrête l'outil. Vos décisions sont déjà enregistrées dans le fichier projet."
+msgstr "Stops the tool. Your decisions are already saved in the project file."
+
 msgid "Arrêter"
 msgstr "Stop"
 
@@ -786,6 +789,13 @@ msgstr "Get proposals: {title}"
 msgid "Faire proposer libellés et descriptions par un modèle local (facultatif)."
 msgstr "Have a local model propose labels and descriptions (optional)."
 
+msgid "Fenêtre fermée : arrêt de l'outil."
+msgstr "Window closed: stopping the tool."
+
+#, python-brace-format
+msgid "Fenêtre impossible ({error}) : ouverture dans le navigateur."
+msgstr "No window ({error}): opening in the browser."
+
 msgid "Fichier"
 msgstr "File"
 
@@ -931,6 +941,10 @@ msgstr ""
 "Interface at http://{host}:{port} (this computer only). Leave this window open; Ctrl+C or close "
 "the window to stop."
 
+#, python-brace-format
+msgid "Interface sur {url} (cet ordinateur seulement)."
+msgstr "Interface at {url} (this computer only)."
+
 msgid "Interrompu. Les blocs terminés sont enregistrés ; relancez pour continuer."
 msgstr "Interrupted. The finished blocks are saved; run again to continue."
 
@@ -958,6 +972,9 @@ msgstr ""
 "The review interface is not installed. Install it with: uv tool install --reinstall "
 "\".[ia,revision]\" (see docs/installation-windows.md)."
 
+msgid "L'interface n'a pas démarré : voir les messages ci-dessus."
+msgstr "The interface did not start: see the messages above."
+
 msgid ""
 "L'option IA n'est pas installée. Réinstallez l'outil avec ses options (voir docs/installation-"
 "windows.md)."
@@ -972,8 +989,14 @@ msgstr ""
 "The AI option is not installed. Reinstall the tool with its options: uv tool install --reinstall "
 "\".[ia,revision]\" (see docs/installation-windows.md)."
 
+msgid "L'outil est arrêté."
+msgstr "The tool is stopped."
+
 msgid "L'outil est déjà ouvert : affichage dans le navigateur."
 msgstr "The tool is already open: shown in the browser."
+
+msgid "L'outil est déjà ouvert : une fenêtre de plus s'ouvre sur lui."
+msgstr "The tool is already open: one more window opens on it."
 
 msgid "L'outil ne télécharge jamais de modèle lui-même : c'est une étape d'installation, faite par vous."
 msgstr "The tool never downloads a model itself: that is an installation step, done by you."
@@ -1550,6 +1573,9 @@ msgstr "Questionnaires"
 msgid "Questions trouvées"
 msgstr "Questions found"
 
+msgid "Quitter l'outil"
+msgstr "Quit the tool"
+
 msgid "Radical"
 msgstr "Stem"
 
@@ -2031,6 +2057,9 @@ msgstr "See exactly what would be sent (nothing is sent)"
 
 msgid "Voir la liste…"
 msgstr "See the list…"
+
+msgid "Vous pouvez fermer cette fenêtre. Vos décisions sont enregistrées."
+msgstr "You can close this window. Your decisions are saved."
 
 msgid "Vérifier de nouveau"
 msgstr "Check again"
