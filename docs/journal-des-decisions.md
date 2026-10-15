@@ -695,3 +695,17 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   5. Réécrire l'interface en logiciel classique.
 - **Justification :** la seule option où fermer la fenêtre arrête l'outil, comme pour tout logiciel, sans rien qui tourne en arrière-plan. Essai concluant de l'auteur avant la décision : fenêtre « Ouvrir » au premier plan, téléchargements, export et ouverture du dossier fonctionnent ; l'outil s'arrête entièrement à la fermeture. Licences BSD et MIT, compatibles.
 - **Conséquences :** nouvelle dépendance de l'option « revision », sous Windows seulement (`docs/dependances.md`). Sur Mac, une vraie application reste à faire, faute de pouvoir l'essayer ailleurs que sur un Mac de GitHub ; le bouton « Quitter l'outil » y sert déjà.
+
+### D-056 — Décider des noms dans le tableau ; « nom de base » au lieu de « radical »
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** sur la page « Noms », les décisions se prennent dans le tableau : une colonne « Décision » (vide, Accepter, Rejeter) à côté de la colonne « Nouveau nom », un seul bouton « Enregistrer ». Le bouton « Choisir « Accepter » pour les N noms proposés » remplit la colonne pour les noms proposés sans problème ; rien n'est enregistré avant que la personne ait relu et cliqué « Enregistrer ». La partie « Une variable » et l'acceptation en lot par grille ou par question sont retirées. La partie commune des noms d'une question s'appelle « nom de base » (« base name »), plus « radical ».
+- **Options considérées :**
+  1. Colonne « Décision » avec un menu par ligne (ce choix).
+  2. Case « Accepter » par ligne, le rejet en effaçant le nom.
+  3. Garder les décisions sous le tableau et le lot par grille.
+  - Pour le mot : « nom de base » (ce choix), « préfixe » comme pour les grilles, « racine ».
+- **Justification :** choix de l'auteur, pour un travail plus direct : tout se voit et se décide au même endroit. La règle de D-029 est tenue : la colonne remplie d'avance est la liste exacte, relue et modifiable ligne par ligne avant tout enregistrement. « Nom de base » se comprend sans vocabulaire de grammaire et reste juste pour une question seule, dont il est le nom entier.
+- **Conséquences :** un nom écrit et « Rejeter » sur la même ligne sont refusés ensemble ; une ligne fautive empêche tout l'enregistrement, sans rien changer. Le reste de D-053 tient (pas de lot pour les rattachements par la structure).

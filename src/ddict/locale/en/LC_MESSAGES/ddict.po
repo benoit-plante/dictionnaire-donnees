@@ -71,11 +71,11 @@ msgstr "## Groups of variables"
 msgid "## Libellés et descriptions"
 msgstr "## Labels and descriptions"
 
+msgid "## Noms de base des questions (v0.7)"
+msgstr "## Base names of the questions (v0.7)"
+
 msgid "## Plusieurs candidates"
 msgstr "## Several candidates"
-
-msgid "## Radicaux des noms (v0.7)"
-msgstr "## Stems of the names (v0.7)"
 
 msgid "## Rattachements aux questions"
 msgstr "## Links to questions"
@@ -183,19 +183,12 @@ msgid "Accepter ce préfixe"
 msgstr "Accept this prefix"
 
 #, python-brace-format
-msgid "Accepter ces {n} noms"
-msgstr "Accept these {n} names"
-
-#, python-brace-format
 msgid "Accepter ces {n} rattachements"
 msgstr "Accept these {n} links"
 
 #, python-brace-format
 msgid "Accepter ces {n} étiquetages"
 msgstr "Accept these {n} sets of labels"
-
-msgid "Accepter en lot les noms proposés de"
-msgstr "Accept at once the proposed names of"
 
 #, python-brace-format
 msgid "Accepter les rattachements où le modèle et le calcul s'accordent ({n})…"
@@ -207,10 +200,6 @@ msgstr "Accept the labels"
 #, python-brace-format
 msgid "Accepter les étiquettes de valeurs de ce groupe ({n})…"
 msgstr "Accept the value labels of this group ({n})…"
-
-#, python-brace-format
-msgid "Accepter {name}"
-msgstr "Accept {name}"
 
 msgid "Accueil"
 msgstr "Home"
@@ -326,9 +315,6 @@ msgstr "No variable in this filter."
 msgid "Aucune variable à envoyer."
 msgstr "No variable to send."
 
-msgid "Autres variables"
-msgstr "Other variables"
-
 msgid "Avec le modèle"
 msgstr "With the model"
 
@@ -442,6 +428,10 @@ msgstr "Choose a project file…"
 
 msgid "Choisir une base…"
 msgstr "Choose a database…"
+
+#, python-brace-format
+msgid "Choisir « Accepter » pour les {n} noms proposés"
+msgstr "Choose \"Accept\" for the {n} proposed names"
 
 msgid "Choisir…"
 msgstr "Choose…"
@@ -652,8 +642,20 @@ msgstr "Folder where the report is written (default: the current folder)."
 msgid "Durée"
 msgstr "Duration"
 
+msgid ""
+"Décidez dans le tableau : choisissez « Accepter » ou « Rejeter » dans la colonne « Décision », ou"
+" écrivez un autre nom dans « Nouveau nom » (il est alors décidé, et vérifié). Puis « Enregistrer "
+"». Effacer un nom rend son nom d'origine à la variable."
+msgstr ""
+"Decide in the table: choose \"Accept\" or \"Reject\" in the \"Decision\" column, or write another"
+" name in \"New name\" (it is then decided, and checked). Then \"Save\". Clearing a name gives the"
+" variable back its original name."
+
 msgid "Décidés"
 msgstr "Decided"
+
+msgid "Décision"
+msgstr "Decision"
 
 #, python-brace-format
 msgid "Décision impossible : {detail}"
@@ -741,11 +743,8 @@ msgstr "Save the prefix"
 msgid "Enregistrer les items inversés"
 msgstr "Save the reversed items"
 
-msgid "Enregistrer les noms modifiés"
-msgstr "Save the changed names"
-
-msgid "Enregistrer les radicaux"
-msgstr "Save the stems"
+msgid "Enregistrer les noms de base"
+msgstr "Save the base names"
 
 msgid "Enregistrer références et notes"
 msgstr "Save references and notes"
@@ -1237,13 +1236,6 @@ msgstr ""
 "question (identifier, date of completion). Uncheck those that do not fit; each checked link will "
 "be accepted as if you had accepted it by hand."
 
-msgid ""
-"Lisez chaque ligne et décochez les noms qui ne conviennent pas ; chaque nom coché sera accepté "
-"comme si vous l'aviez accepté à la main."
-msgstr ""
-"Read each line and untick the names that do not fit; each ticked name will be accepted as if you "
-"had accepted it by hand."
-
 msgid "Liste effacée."
 msgstr "List cleared."
 
@@ -1341,6 +1333,9 @@ msgstr "Name"
 msgid "Nom d'origine"
 msgstr "Original name"
 
+msgid "Nom de base"
+msgstr "Base name"
+
 msgid "Nom de l'instrument : réservé aux personnes, avec une source documentée."
 msgstr "Name of the instrument: for people only, with a documented source."
 
@@ -1357,6 +1352,13 @@ msgstr "Number of variables per message (default: {n})."
 
 msgid "Noms"
 msgstr "Names"
+
+#, python-brace-format
+msgid "Noms de base des questions ({n})"
+msgstr "Base names of the questions ({n})"
+
+msgid "Noms de base valides"
+msgstr "Valid base names"
 
 msgid "Noms des variables"
 msgstr "Names of the variables"
@@ -1544,10 +1546,6 @@ msgstr "Question in the questionnaire"
 msgid "Question inconnue : {id}"
 msgstr "Unknown question: {id}"
 
-#, python-brace-format
-msgid "Question {key}"
-msgstr "Question {key}"
-
 msgid "Question à réponses multiples : une variable par option cochée."
 msgstr "Multiple-response question: one variable per ticked option."
 
@@ -1575,16 +1573,6 @@ msgstr "Questions found"
 
 msgid "Quitter l'outil"
 msgstr "Quit the tool"
-
-msgid "Radical"
-msgstr "Stem"
-
-#, python-brace-format
-msgid "Radicaux des questions ({n})"
-msgstr "Stems of the questions ({n})"
-
-msgid "Radicaux valides"
-msgstr "Valid stems"
 
 #, python-brace-format
 msgid "Rapport : {path}"
@@ -1657,14 +1645,21 @@ msgstr "Replace the questionnaire already read."
 msgid "Remplacer une copie déjà écrite."
 msgstr "Replace a copy already written."
 
+msgid ""
+"Remplit la colonne « Décision » ; rien n'est enregistré avant que vous ayez relu le tableau et "
+"cliqué « Enregistrer »."
+msgstr ""
+"Fills in the \"Decision\" column; nothing is saved before you have read the table and clicked "
+"\"Save\"."
+
 msgid "Renvoyer aussi les blocs déjà enrichis."
 msgstr "Also send the blocks already enriched."
 
 msgid "Renvoyer aussi les blocs déjà traités."
 msgstr "Also send the blocks already processed."
 
-msgid "Renvoyer aussi les questions dont le radical a déjà été proposé par le modèle."
-msgstr "Send again the questions whose stem the model already proposed."
+msgid "Renvoyer aussi les questions dont le nom de base a déjà été proposé par le modèle."
+msgstr "Also send again the questions whose base name the model already proposed."
 
 msgid "Reprendre les noms"
 msgstr "Take the names"
@@ -1837,13 +1832,13 @@ msgid "Structure de l'export {platform} : {n} questions, toutes retrouvées dans
 msgstr "Structure of the {platform} export: {n} questions, all found in this questionnaire."
 
 msgid ""
-"Sur l'export SurveyMonkey fictif : le radical de chaque question, comparé à celui du corrigé (le "
-"choix d'une équipe). Le modèle n'est gardé dans l'interface que s'il fait mieux que les règles "
-"seules (D-051)."
+"Sur l'export SurveyMonkey fictif : le nom de base de chaque question, comparé à celui du corrigé "
+"(le choix d'une équipe). Le modèle n'est gardé dans l'interface que s'il fait mieux que les "
+"règles seules (D-051)."
 msgstr ""
-"On the fictional SurveyMonkey export: the stem of each question, compared with the answer key's "
-"(a team's choice). The model is kept in the interface only if it does better than the rules alone"
-" (D-051)."
+"On the fictional SurveyMonkey export: the base name of each question, compared with that of the "
+"answer key (a team's choice). The model is kept in the interface only if it does better than the "
+"rules alone (D-051)."
 
 msgid "Syntaxe SPSS"
 msgstr "SPSS syntax"
@@ -1910,6 +1905,13 @@ msgstr ""
 "A {format} file holds {lacks}: the tool guesses them, check them. A .sav export, when possible, "
 "gives better results."
 
+msgid ""
+"Un nom de base par question, partagé par ses variables : « taches » donne taches_1, taches_2… et "
+"taches_autre_txt. Corrigez-le ici, une seule fois."
+msgstr ""
+"One base name per question, shared by its variables: \"taches\" gives taches_1, taches_2… and "
+"taches_autre_txt. Correct it here, once."
+
 #, python-brace-format
 msgid ""
 "Un projet existe déjà pour cette base : {name}. Ouvrez-le pour reprendre votre travail, ou "
@@ -1917,13 +1919,6 @@ msgid ""
 msgstr ""
 "A project already exists for this database: {name}. Open it to resume your work, or replace it "
 "(its decisions will be lost)."
-
-msgid ""
-"Un radical par question, partagé par ses variables : « taches » donne taches_1, taches_2… et "
-"taches_autre_txt. Corrigez-le ici, une seule fois."
-msgstr ""
-"One stem per question, shared by its variables: \"taches\" gives taches_1, taches_2… and "
-"taches_autre_txt. Correct it here, once."
 
 msgid ""
 "Une nouvelle copie de votre base au format SPSS (.sav), avec ce que vous avez accepté. Avant de "
@@ -1946,9 +1941,6 @@ msgstr ""
 
 msgid "Une source documentée est obligatoire."
 msgstr "A documented source is required."
-
-msgid "Une variable"
-msgstr "One variable"
 
 msgid "Unité"
 msgstr "Unit"
@@ -2054,9 +2046,6 @@ msgstr "Version"
 
 msgid "Voir exactement ce qui serait envoyé (rien n'est envoyé)"
 msgstr "See exactly what would be sent (nothing is sent)"
-
-msgid "Voir la liste…"
-msgstr "See the list…"
 
 msgid "Vous pouvez fermer cette fenêtre. Vos décisions sont enregistrées."
 msgstr "You can close this window. Your decisions are saved."
@@ -2414,8 +2403,8 @@ msgid "{base} : libellés et descriptions…"
 msgstr "{base}: labels and descriptions…"
 
 #, python-brace-format
-msgid "{base} : radicaux des noms proposés par le modèle…"
-msgstr "{base}: stems of the names proposed by the model…"
+msgid "{base} : noms de base proposés par le modèle…"
+msgstr "{base}: base names proposed by the model…"
 
 #, python-brace-format
 msgid "{base} : rattachements proposés par le modèle…"
@@ -2438,8 +2427,12 @@ msgid "{done} variables sur {total} sans proposition en attente"
 msgstr "{done} of {total} variables without a pending proposal"
 
 #, python-brace-format
-msgid "{key} : radical refusé ({why})."
-msgstr "{key}: stem refused ({why})."
+msgid "{key} : nom de base refusé ({why})."
+msgstr "{key}: base name refused ({why})."
+
+#, python-brace-format
+msgid "{names} : nom modifié et « Rejeter » choisi ; gardez l'un ou l'autre."
+msgstr "{names}: name changed and \"Reject\" chosen; keep one or the other."
 
 #, python-brace-format
 msgid "{name} : nom refusé ({why})."
@@ -2480,8 +2473,8 @@ msgid "{n} items"
 msgstr "{n} items"
 
 #, python-brace-format
-msgid "{n} noms acceptés."
-msgstr "{n} names accepted."
+msgid "{n} noms de base enregistrés."
+msgstr "{n} base names saved."
 
 #, python-brace-format
 msgid "{n} noms enregistrés."
@@ -2494,10 +2487,6 @@ msgstr "{n} checkbox options"
 #, python-brace-format
 msgid "{n} questions : {counts}{grids}."
 msgstr "{n} questions: {counts}{grids}."
-
-#, python-brace-format
-msgid "{n} radicaux enregistrés."
-msgstr "{n} stems saved."
 
 #, python-brace-format
 msgid "{n} rattachements acceptés."

@@ -33,6 +33,8 @@ FILTERS = Texts(
         "decided": N_("Décidés"),
     }
 )
+# The decision column of the table (v0.7.1, D-056).
+DECISIONS = Texts({"accept": N_("Accepter"), "reject": N_("Rejeter")})
 PROBLEMS = Texts(
     {
         "style": N_("minuscules, chiffres et « _ », en commençant par une lettre"),
@@ -63,6 +65,7 @@ class NameRow:
     origin: str
     status: str
     problem: str
+    waiting: bool  # a proposed name without a problem: "Accept" can apply
 
 
 def _question(project: Project, entry: VariableEntry, sure: dict[str, str]) -> str:
@@ -109,6 +112,7 @@ def rows(project: Project, which: NameFilter = "all") -> list[NameRow]:
                 origin=w.ORIGINS[tracked.origin] if tracked.value else "",
                 status=w.status_text(tracked) if tracked.value else _("à nommer"),
                 problem=problem_text(problems),
+                waiting=tracked.status == "proposed" and not problems,
             )
         )
     return found
@@ -149,68 +153,45 @@ def apply_edits(project: Project, edits: dict[str, str], *, now: str) -> int:
     return changed
 
 
-# --- Grouped decisions: the proposals of a group or of a question. ---
-
-
-def scopes(project: Project) -> dict[str, list[str]]:
-    """The groups and questions with names waiting for a decision: scope -> variables.
-    A group is "G3"; a question, its key ("q0005", "Q5")."""
-    found: dict[str, list[str]] = {}
-    in_groups: set[str] = set()
-    for group in project.groups:
-        members = [
-            n
-            for n in group.members.value or []
-            if project.variable(n).new_name.status == "proposed"
-        ]
-        members += [n for n in group.attached if project.variable(n).new_name.status == "proposed"]
-        if members:
-            found[group.group_id] = members
-        in_groups.update(group.members.value or [])
-        in_groups.update(group.attached)
-    for question in naming.stem_questions(project):
-        names = [
-            n
-            for n in (question.single, *(n for n, _r in question.options), question.other)
-            if n and n not in in_groups and project.variable(n).new_name.status == "proposed"
-        ]
-        if names:
-            found[question.key] = names
-    others = [
-        e.name
-        for e in project.variables
-        if e.new_name.status == "proposed"
-        and e.name not in {n for names in found.values() for n in names}
-    ]
-    if others:
-        found["*"] = others  # the rest: platform variables, variables alone
-    return found
-
-
-def scope_text(project: Project, scope: str) -> str:
-    if scope == "*":
-        return _("Autres variables")
-    group = next((g for g in project.groups if g.group_id == scope), None)
-    if group is not None:
-        return f"{group.group_id} — {w.group_description(group, 'work')}"
-    stem = naming.usable_stem(project, scope)
-    return _("Question {key}").format(key=scope) + (f" ({stem})" if stem else "")
-
-
-def accept_names(project: Project, names: list[str], *, now: str) -> None:
-    """Accept the proposed names of these variables, one decision each."""
-    if not names:
-        raise ReviewError(_("Aucune variable cochée."))
-    outside = [n for n in names if project.variable(n).new_name.status != "proposed"]
-    if outside:
+def apply_table(
+    project: Project, edits: dict[str, str], decisions: dict[str, str], *, now: str
+) -> int:
+    """What a person did in the table (v0.7.1, D-056): names written, and "accept" or
+    "reject" chosen on rows. A written name is a decision already ("accept" with it changes
+    nothing); "reject" with it is contradictory and refused. Everything is checked before
+    anything changes. Returns how many names changed."""
+    written = {
+        name
+        for name, value in edits.items()
+        if (value or "").strip() != (project.variable(name).new_name.value or "")
+    }
+    chosen = {name: action for name, action in decisions.items() if action and name not in written}
+    both = sorted(n for n in written if decisions.get(n) == "reject")
+    if both:
         raise ReviewError(
-            _("Ces noms n'attendent plus de décision : {names}.").format(names=", ".join(outside))
+            _("{names} : nom modifié et « Rejeter » choisi ; gardez l'un ou l'autre.").format(
+                names=", ".join(both)
+            )
         )
-    for name in names:
-        decide(project, name, "accept", now=now)
+    done = sorted(n for n in chosen if project.variable(n).new_name.status != "proposed")
+    if done:
+        raise ReviewError(
+            _("Ces noms n'attendent plus de décision : {names}.").format(names=", ".join(done))
+        )
+    changed = apply_edits(project, edits, now=now)
+    for name, action in chosen.items():
+        try:
+            naming.decide(project, name, action, now=now)
+        except naming.NamingError as error:
+            raise ReviewError(
+                _("{name} : nom refusé ({why}).").format(
+                    name=name, why=problem_text(error.problems)
+                )
+            ) from error
+    return changed + len(chosen)
 
 
-# --- Rules: prefixes, stems, the wave mark. ---
+# --- Rules: prefixes, base names (stems), the wave mark. ---
 
 
 def set_group_prefix(project: Project, group_id: str, prefix: str, *, now: str) -> None:
@@ -248,7 +229,7 @@ def stem_rows(project: Project) -> list[tuple[str, str, str, str]]:
 
 
 def apply_stems(project: Project, edits: dict[str, str], *, now: str) -> int:
-    """The stems a person wrote in the table; then the rules propose again."""
+    """The base names (stems) a person wrote in the table; then the rules propose again."""
     changed = 0
     for key, value in edits.items():
         text = (value or "").strip()
@@ -259,7 +240,7 @@ def apply_stems(project: Project, edits: dict[str, str], *, now: str) -> int:
             naming.decide_stem(project, key, "correct", now=now, value=text)
         except naming.NamingError as error:
             raise ReviewError(
-                _("{key} : radical refusé ({why}).").format(
+                _("{key} : nom de base refusé ({why}).").format(
                     key=key, why=problem_text(error.problems)
                 )
             ) from error

@@ -671,7 +671,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _model_arguments(
         rename_command,
-        _("Renvoyer aussi les questions dont le radical a déjà été proposé par le modèle."),
+        _("Renvoyer aussi les questions dont le nom de base a déjà été proposé par le modèle."),
         DEFAULT_STEM_BLOCK_SIZE,
     )
     rename_command.add_argument(

@@ -1,7 +1,8 @@
 """The "Names" page (v0.7): new names for the variables, decided by a person.
 
-The rules propose (platform variables, the prefix of a group, the stem of a question), an
-earlier wave may give its names; a person accepts, corrects in the table, or rejects. The
+The rules propose (platform variables, the prefix of a group, the base name of a question),
+an earlier wave may give its names; a person decides in the table itself (v0.7.1, D-056):
+writes a name, or chooses "Accept" or "Reject" on a row. The
 original name stays the key; the original file is never changed. The logic is in
 `review.names`.
 """
@@ -18,8 +19,8 @@ from ddict.project import save_project
 from ddict.project.model import Project
 from ddict.review import names
 from ddict.review.logic import ReviewError
-from ddict.review.ui import bulk_view, dialog
 from ddict.review.ui import common as c
+from ddict.review.ui import dialog
 from ddict.workflow import naming_summary, wave_summary, write_wave_report
 
 FILTER = "names-filter"
@@ -29,7 +30,7 @@ LENGTH = "names-max-length"
 REFERENCE = "names-reference"
 TABLE = "names-table"
 STEMS = "names-stems"
-CHOSEN = "names-chosen"
+PREFILL = "names-prefill-filter"  # the filter whose proposed rows show "Accept" already
 POSITIONS = Texts({"suffix": N_("À la fin (k6_1_t2)"), "prefix": N_("Au début (t2_k6_1)")})
 
 
@@ -75,16 +76,36 @@ def _edited(key: str, rows: list, column: str) -> dict[str, str]:
     }
 
 
-def _save_table(rows: list[tuple], table_key: str) -> None:
+def _final(key: str, names_: list[str], shown: list[str], column: str) -> dict[str, str]:
+    """A column as the person leaves it: what was shown, with the cells they changed."""
+    values = dict(zip(names_, shown, strict=True))
+    for index, cells in st.session_state.get(key, {}).get("edited_rows", {}).items():
+        if column in cells:
+            values[names_[int(index)]] = cells[column] or ""
+    return values
+
+
+def _save_table(rows: list[names.NameRow], shown: list[str], table_key: str) -> None:
     key = "names-table-save"
+    labels = {names.DECISIONS[code]: code for code in names.DECISIONS}
+    listed = [r.name for r in rows]
+    chosen = _final(table_key, listed, shown, "decision")
+    decisions = {name: labels[text] for name, text in chosen.items() if text in labels}
+    edits = _edited(table_key, [(r.name,) for r in rows], "new_name")
     try:
-        n = names.apply_edits(c.project(), _edited(table_key, rows, "new_name"), now=c.now())
+        n = names.apply_table(c.project(), edits, decisions, now=c.now())
     except ReviewError as error:
         st.session_state.message = ("error", str(error), key)
         return
     save_project(c.project(), c.project_path())
     st.session_state.pop(table_key, None)
+    st.session_state.pop(PREFILL, None)
     st.session_state.message = ("success", _("{n} noms enregistrés.").format(n=n), key)
+
+
+def _prefill(which: str, table_key: str) -> None:
+    st.session_state[PREFILL] = which
+    st.session_state.pop(table_key, None)  # the table starts again from the filled column
 
 
 def _save_stems(rows: list[tuple]) -> None:
@@ -96,7 +117,7 @@ def _save_stems(rows: list[tuple]) -> None:
         return
     save_project(c.project(), c.project_path())
     st.session_state.pop(STEMS, None)
-    st.session_state.message = ("success", _("{n} radicaux enregistrés.").format(n=n), key)
+    st.session_state.message = ("success", _("{n} noms de base enregistrés.").format(n=n), key)
 
 
 def _settings(project: Project) -> None:
@@ -168,13 +189,34 @@ def _table(project: Project) -> None:
     if not rows:
         st.info(_("Aucune variable dans ce filtre."))
         return
-    table = [(r.name, r.label, r.question, r.new_name, r.origin, r.status, r.problem) for r in rows]
-    frame = pd.DataFrame(
-        table,
-        columns=["name", "label", "question", "new_name", "origin", "status", "problem"],
+    st.caption(
+        _(
+            "Décidez dans le tableau : choisissez « Accepter » ou « Rejeter » dans la colonne "
+            "« Décision », ou écrivez un autre nom dans « Nouveau nom » (il est alors décidé, "
+            "et vérifié). Puis « Enregistrer ». Effacer un nom rend son nom d'origine à la "
+            "variable."
+        )
     )
     # One table per filter: changes typed under one filter never land on another's rows.
     table_key = f"{TABLE}-{which}"
+    accept = names.DECISIONS["accept"]
+    shown = [accept if st.session_state.get(PREFILL) == which and r.waiting else "" for r in rows]
+    frame = pd.DataFrame(
+        [
+            (r.name, r.label, r.question, r.new_name, d, r.origin, r.status, r.problem)
+            for r, d in zip(rows, shown, strict=True)
+        ],
+        columns=[
+            "name",
+            "label",
+            "question",
+            "new_name",
+            "decision",
+            "origin",
+            "status",
+            "problem",
+        ],
+    )
     st.data_editor(
         frame,
         key=table_key,
@@ -186,46 +228,45 @@ def _table(project: Project) -> None:
             "label": _("Étiquette"),
             "question": _("Question"),
             "new_name": _("Nouveau nom"),
+            "decision": st.column_config.SelectboxColumn(
+                _("Décision"), options=["", *(names.DECISIONS[k] for k in names.DECISIONS)]
+            ),
             "origin": _("Origine"),
             "status": _("Statut"),
             "problem": _("Problème"),
         },
     )
-    st.button(
-        _("Enregistrer les noms modifiés"),
+    waiting = sum(r.waiting for r in rows)
+    left, right = st.columns(2)
+    left.button(
+        _("Enregistrer"),
         key="names-table-save",
+        type="primary",
         on_click=_save_table,
-        args=(table, table_key),
+        args=(rows, shown, table_key),
     )
+    if waiting:
+        right.button(
+            _("Choisir « Accepter » pour les {n} noms proposés").format(n=waiting),
+            key="names-prefill",
+            on_click=_prefill,
+            args=(which, table_key),
+            help=_(
+                "Remplit la colonne « Décision » ; rien n'est enregistré avant que vous ayez "
+                "relu le tableau et cliqué « Enregistrer »."
+            ),
+        )
     c.show_message("names-table-save")
-
-    st.markdown(f"**{_('Une variable')}**")
-    chosen = st.selectbox(_("Variable"), [r.name for r in rows], key=CHOSEN)
-    entry = project.variable(chosen)
-    if entry.new_name.status == "proposed":
-        left, right = st.columns(2)
-        with left:
-            c.button(
-                _("Accepter {name}").format(name=entry.new_name.value),
-                "names-accept",
-                names.decide,
-                chosen,
-                "accept",
-                timed=True,
-                primary=True,
-            )
-        with right:
-            c.button(_("Rejeter"), "names-reject", names.decide, chosen, "reject", timed=True)
 
 
 def _stems(project: Project) -> None:
     rows = names.stem_rows(project)
     if not rows:
         return
-    with st.expander(_("Radicaux des questions ({n})").format(n=len(rows))):
+    with st.expander(_("Noms de base des questions ({n})").format(n=len(rows))):
         st.caption(
             _(
-                "Un radical par question, partagé par ses variables : « taches » donne "
+                "Un nom de base par question, partagé par ses variables : « taches » donne "
                 "taches_1, taches_2… et taches_autre_txt. Corrigez-le ici, une seule fois."
             )
         )
@@ -239,12 +280,12 @@ def _stems(project: Project) -> None:
             column_config={
                 "key": _("Question"),
                 "text": _("Texte"),
-                "stem": _("Radical"),
+                "stem": _("Nom de base"),
                 "status": _("Statut"),
             },
         )
         st.button(
-            _("Enregistrer les radicaux"),
+            _("Enregistrer les noms de base"),
             key="names-stems-save",
             on_click=_save_stems,
             args=(rows,),
@@ -268,6 +309,5 @@ def page(project: Project) -> None:
     _settings(project)
     _earlier_wave()
     c.button(_("Proposer les noms par les règles"), "names-propose", names.propose)
-    bulk_view.names_panel(project)
     _table(project)
     _stems(project)

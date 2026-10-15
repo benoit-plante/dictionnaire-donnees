@@ -69,21 +69,29 @@ def test_corrections_in_the_table(project):
         names.apply_edits(project, {"q0007": "Pauses"}, now=NOW)
 
 
-def test_grouped_decisions_by_group_or_question(project):
+def test_decisions_in_the_table(project):
+    """v0.7.1 (D-056): accept or reject on a row, next to written names."""
     names.propose(project)
-    scopes = names.scopes(project)
-    group = next(g for g in project.groups if "q0005_0001" in g.members.value)
-    assert scopes[group.group_id][-1] == "q0005_other"  # its "other" text with it
-    assert scopes["q0001"] == ["q0001"]
-    assert "respondent_id" in scopes["*"]
-    assert names.scope_text(project, "q0001") == "Question q0001 (secteur)"
-    names.accept_names(project, scopes[group.group_id], now=NOW)
-    assert all(project.variable(n).new_name.status == "validated" for n in scopes[group.group_id])
-    assert group.group_id not in names.scopes(project)
-    with pytest.raises(ReviewError, match="n'attendent plus"):
-        names.accept_names(project, ["q0005_0001"], now=NOW)
-    with pytest.raises(ReviewError, match="Aucune variable cochée"):
-        names.accept_names(project, [], now=NOW)
+    waiting = {r.name for r in names.rows(project) if r.waiting}
+    assert "q0001" in waiting
+    assert not waiting & {r.name for r in names.rows(project, "to_name")}
+    done = names.apply_table(
+        project,
+        {"q0001": "domaine"},
+        {"q0001": "accept", "q0006": "accept", "q0007": "reject", "q0002": ""},
+        now=NOW,
+    )
+    assert done == 3
+    assert project.variable("q0001").new_name.status == "corrected"  # the written name
+    assert project.variable("q0006").new_name.status == "validated"
+    assert project.variable("q0007").new_name.status == "rejected"
+    # Nothing changes when one row is wrong.
+    before = project.variable("q0008_0001").new_name.status
+    with pytest.raises(ReviewError, match="n'attendent plus de décision : q0006"):
+        names.apply_table(project, {}, {"q0008_0001": "accept", "q0006": "accept"}, now=NOW)
+    assert project.variable("q0008_0001").new_name.status == before
+    with pytest.raises(ReviewError, match="nom modifié et « Rejeter »"):
+        names.apply_table(project, {"q0008_0002": "consignes_2"}, {"q0008_0002": "reject"}, now=NOW)
 
 
 def test_the_prefix_of_a_group(project):
@@ -101,7 +109,7 @@ def test_stems_and_settings(project):
     assert rows["q0005"] == "taches_semaine"
     assert names.apply_stems(project, {"q0005": "taches", "q0001": ""}, now=NOW) == 1
     assert project.variable("q0005_0002").new_name.value == "taches_2"
-    with pytest.raises(ReviewError, match="radical refusé"):
+    with pytest.raises(ReviewError, match="nom de base refusé"):
         names.apply_stems(project, {"q0005": "Tâches"}, now=NOW)
     names.set_settings(project, "t2", "prefix", 32)
     assert project.variable("q0005_0002").new_name.value == "t2_taches_2"
@@ -161,19 +169,18 @@ def test_the_names_page(project_path):
     assert project.variable("q0001").new_name.value == "secteur_t2"
     assert any("37 noms proposés" in m.value for m in app.markdown)
 
-    # Grouped decision: the list is shown first, then accepted.
-    app.selectbox(key="bulk-names-scope").select("q0001").run()
-    app.button(key="bulk-names-open").click().run()
-    assert any("secteur_t2" in box.label for box in app.checkbox)
-    app.button(key="bulk-names-accept").click().run()
-    assert not app.exception, app.exception
-    assert load_project(project_path).variable("q0001").new_name.status == "validated"
-
-    # One variable, rejected.
+    # In the table: "Accept" filled in for the proposed names, read, then saved.
     app.radio(key="names-filter").set_value("proposed").run()
-    app.selectbox(key="names-chosen").select("q0007").run()
-    app.button(key="names-reject").click().run()
-    assert load_project(project_path).variable("q0007").new_name.status == "rejected"
+    assert not app.exception, app.exception
+    app.button(key="names-prefill").click().run()
+    assert not app.exception, app.exception
+    assert load_project(project_path).variable("q0001").new_name.status == "proposed"  # not yet
+    app.button(key="names-table-save").click().run()
+    assert not app.exception, app.exception
+    project = load_project(project_path)
+    assert project.variable("q0001").new_name.status == "validated"
+    assert not names.rows(project, "proposed")
+    assert any("37 noms enregistrés" in s.value for s in app.success)
 
 
 @pytest.mark.allow_hosts(["127.0.0.1"])

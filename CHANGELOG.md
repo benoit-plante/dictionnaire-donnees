@@ -2,6 +2,7 @@
 
 ## Non publié
 
+- **Noms décidés dans le tableau** (D-056) : colonne « Décision » (Accepter, Rejeter) à côté du nom, un seul bouton « Enregistrer », et « Choisir « Accepter » pour les N noms proposés » qui remplit la colonne pour relecture. « Radical » devient « nom de base ».
 - **Plus de fenêtre noire sous Windows** (D-055) : l'icône ouvre l'outil dans sa propre fenêtre, et fermer cette fenêtre arrête l'outil. Bouton « Quitter l'outil » en bas de la barre latérale, partout (aussi dans le navigateur et sur Mac). Sans le moteur d'Edge, l'outil s'ouvre dans le navigateur comme avant ; ses messages de démarrage vont dans `journal.txt`, à côté de la liste des projets récents.
 
 ## 0.7.0 — 2026-10-15

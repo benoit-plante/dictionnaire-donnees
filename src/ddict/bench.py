@@ -257,7 +257,7 @@ def run_naming(
     alone = project()
     naming.propose(alone)
     result.computed = _stems(alone, result.expected)
-    yield _("{base} : radicaux des noms proposés par le modèle…").format(base=result.name)
+    yield _("{base} : noms de base proposés par le modèle…").format(base=result.name)
     with_model = project()
     start = clock()
     events = list(propose_stems(with_model, client, now=now))
@@ -296,15 +296,15 @@ def _naming_section(result: NamingResult) -> list[str]:
     n = len(result.expected)
     lines = [
         "",
-        _("## Radicaux des noms (v0.7)"),
+        _("## Noms de base des questions (v0.7)"),
         "",
         _(
-            "Sur l'export SurveyMonkey fictif : le radical de chaque question, comparé à celui "
+            "Sur l'export SurveyMonkey fictif : le nom de base de chaque question, comparé à celui "
             "du corrigé (le choix d'une équipe). Le modèle n'est gardé dans l'interface que "
             "s'il fait mieux que les règles seules (D-051)."
         ),
         "",
-        f"| | {_('Radicaux valides')} | {_('Égaux au corrigé')} | "
+        f"| | {_('Noms de base valides')} | {_('Égaux au corrigé')} | "
         f"{_('Proposés par le modèle')} | {_('Sigle possible')} | {_('Blocs en échec')} | "
         f"{_('Durée')} |",
         "|---|---|---|---|---|---|---|",
