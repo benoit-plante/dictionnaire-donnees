@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.2.0",
+  "schema_version": "0.3.0",
   "source": {
     "name": "etude-sommeil.sav",
     "format": "sav",
@@ -94,6 +94,14 @@
         "updated_at": null
       },
       "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "measure_level": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -220,6 +228,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Courriel",
         "origin": "file",
@@ -329,6 +345,14 @@
         "updated_at": null
       },
       "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "measure_level": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -455,6 +479,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "DDN",
         "origin": "file",
@@ -566,6 +598,14 @@
         "updated_at": null
       },
       "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "measure_level": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -732,6 +772,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Genre",
         "origin": "file",
@@ -854,6 +902,14 @@
         "updated_at": null
       },
       "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "measure_level": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -1024,6 +1080,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Q1 endormissement",
         "origin": "file",
@@ -1180,6 +1244,14 @@
         "updated_at": null
       },
       "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "measure_level": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -1359,6 +1431,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Q3 reveils nocturnes",
         "origin": "file",
@@ -1515,6 +1595,14 @@
         "updated_at": null
       },
       "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "measure_level": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -1685,6 +1773,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Q5 energie matin",
         "origin": "file",
@@ -1841,6 +1937,14 @@
         "updated_at": null
       },
       "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "measure_level": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -2011,6 +2115,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": null,
         "origin": "human",
@@ -2167,6 +2279,14 @@
         "updated_at": null
       },
       "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "measure_level": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -2342,6 +2462,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "ANX inquiet",
         "origin": "file",
@@ -2503,6 +2631,14 @@
         "updated_at": null
       },
       "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "measure_level": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -2678,6 +2814,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "ANX controle inquietude",
         "origin": "file",
@@ -2846,6 +2990,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "ANX agite",
         "origin": "file",
@@ -2955,6 +3107,14 @@
         "updated_at": null
       },
       "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "measure_level": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -3073,6 +3233,14 @@
         "updated_at": null
       },
       "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "measure_level": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -3234,6 +3402,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Nb reveils / nuit",
         "origin": "file",
@@ -3351,6 +3527,14 @@
         "updated_at": null
       },
       "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "measure_level": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -3482,6 +3666,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Aide sommeil: produit naturel",
         "origin": "file",
@@ -3606,6 +3798,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Aide sommeil: TCC",
         "origin": "file",
@@ -3723,6 +3923,14 @@
         "updated_at": null
       },
       "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "measure_level": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -3898,6 +4106,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "ANX irritable",
         "origin": "file",
@@ -4066,6 +4282,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "ANX peur",
         "origin": "file",
@@ -4227,6 +4451,14 @@
         "updated_at": null
       },
       "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "measure_level": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -4421,6 +4653,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Satisfaction globale 0-10",
         "origin": "file",
@@ -4539,6 +4779,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Taille (cm)",
         "origin": "file",
@@ -4650,6 +4898,14 @@
         "updated_at": null
       },
       "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "measure_level": {
         "value": null,
         "origin": "human",
         "status": "none",
@@ -4804,6 +5060,14 @@
         "ai_run": null,
         "updated_at": null
       },
+      "measure_level": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
       "label": {
         "value": "Langue maison",
         "origin": "file",
@@ -4916,6 +5180,14 @@
         "updated_at": null
       },
       "value_labels": {
+        "value": null,
+        "origin": "human",
+        "status": "none",
+        "proposed_value": null,
+        "ai_run": null,
+        "updated_at": null
+      },
+      "measure_level": {
         "value": null,
         "origin": "human",
         "status": "none",

@@ -287,6 +287,9 @@ msgstr "No group found."
 msgid "Aucun item inversé"
 msgstr "No reversed item"
 
+msgid "Aucun niveau de mesure proposé."
+msgstr "No measure level proposed."
+
 msgid "Aucun projet récent."
 msgstr "No recent project."
 
@@ -391,6 +394,10 @@ msgid "Ce fichier projet est introuvable."
 msgstr "This project file cannot be found."
 
 #, python-brace-format
+msgid "Ces niveaux n'attendent plus de décision : {names}."
+msgstr "These levels no longer wait for a decision: {names}."
+
+#, python-brace-format
 msgid "Ces noms n'attendent plus de décision : {names}."
 msgstr "These names no longer wait for a decision: {names}."
 
@@ -431,6 +438,10 @@ msgstr "Choose a project file…"
 
 msgid "Choisir une base…"
 msgstr "Choose a database…"
+
+#, python-brace-format
+msgid "Choisir « Accepter » pour les {n} niveaux proposés"
+msgstr "Choose \"Accept\" for the {n} proposed levels"
 
 #, python-brace-format
 msgid "Choisir « Accepter » pour les {n} noms proposés"
@@ -1331,11 +1342,24 @@ msgstr ""
 "Do not reproduce the text of the questions of these groups (e.g. G3), for an instrument protected"
 " by copyright (D-014)."
 
+msgid "Niveau"
+msgstr "Level"
+
 msgid "Niveau de mesure"
 msgstr "Measurement level"
 
+msgid "Niveau de mesure retenu"
+msgstr "Measure level kept"
+
 msgid "Niveau de mesure « échelle » douteux : chaque valeur observée a une étiquette (ordinal probable)"
 msgstr "Doubtful \"scale\" measurement level: every observed value has a label (probably ordinal)"
+
+msgid "Niveaux de mesure"
+msgstr "Measure levels"
+
+#, python-brace-format
+msgid "Niveaux de mesure proposés : {n}"
+msgstr "Proposed measure levels: {n}"
 
 msgid "Nom"
 msgstr "Name"
@@ -1525,6 +1549,15 @@ msgid ""
 msgstr ""
 "Proposed after the right links and the questionnaire's acronyms were accepted. A flagged variable"
 " may contain an invention, to be checked by a person; the fewer, the better."
+
+msgid ""
+"Proposés par des règles quand le fichier n'en donne pas, ou quand celui du fichier est douteux. "
+"Choisissez « Accepter » ou « Rejeter » dans la colonne « Décision », ou un autre niveau dans « "
+"Niveau » (il est alors décidé), puis « Enregistrer »."
+msgstr ""
+"Proposed by rules when the file gives none, or when the file's is doubtful. Choose \"Accept\" or "
+"\"Reject\" in the \"Decision\" column, or another level in \"Level\" (it is then decided), then "
+"\"Save\"."
 
 msgid "Proposés par le modèle"
 msgstr "Proposed by the model"
@@ -2126,6 +2159,9 @@ msgstr "guessed: the variable has no label in the file"
 msgid "donne le sens d'un sigle absent du glossaire"
 msgstr "gives the meaning of an acronym missing from the glossary"
 
+msgid "du fichier"
+msgstr "from the file"
+
 msgid "décimal"
 msgstr "decimal"
 
@@ -2314,8 +2350,8 @@ msgstr "looks like a threshold"
 msgid "ressemble à une citation"
 msgstr "looks like a citation"
 
-msgid "règle de nommage"
-msgstr "naming rule"
+msgid "règle"
+msgstr "rule"
 
 msgid "réponse invalide"
 msgstr "invalid answer"
@@ -2441,8 +2477,16 @@ msgid "{key} : nom de base refusé ({why})."
 msgstr "{key}: base name refused ({why})."
 
 #, python-brace-format
+msgid "{names} : niveau modifié et « Rejeter » choisi ; gardez l'un ou l'autre."
+msgstr "{names}: level changed and \"Reject\" chosen; keep one or the other."
+
+#, python-brace-format
 msgid "{names} : nom modifié et « Rejeter » choisi ; gardez l'un ou l'autre."
 msgstr "{names}: name changed and \"Reject\" chosen; keep one or the other."
+
+#, python-brace-format
+msgid "{name} : niveau de mesure inconnu."
+msgstr "{name}: unknown measure level."
 
 #, python-brace-format
 msgid "{name} : nom refusé ({why})."
@@ -2481,6 +2525,10 @@ msgstr "{n} rare categories removed (privacy)"
 #, python-brace-format
 msgid "{n} items"
 msgstr "{n} items"
+
+#, python-brace-format
+msgid "{n} niveaux enregistrés."
+msgstr "{n} levels saved."
 
 #, python-brace-format
 msgid "{n} noms de base enregistrés."

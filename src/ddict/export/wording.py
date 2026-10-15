@@ -15,6 +15,7 @@ from ddict import glossary
 from ddict.i18n import N_, Texts, _, decimal, quoted
 from ddict.profile.compute import is_missing_label
 from ddict.profile.variants import spelling_variants
+from ddict.project import measure
 from ddict.project.build import GROUP_PARTS
 from ddict.project.decisions import is_accepted
 from ddict.project.model import (
@@ -75,7 +76,7 @@ ORIGINS = Texts(
         "computed": N_("calcul"),
         "ai": N_("IA"),
         "questionnaire": N_("questionnaire"),
-        "rule": N_("règle de nommage"),
+        "rule": N_("règle"),
         "reference": N_("vague précédente"),
         "human": N_("humain"),
     }
@@ -280,12 +281,26 @@ def confirmed_missing(entry: VariableEntry) -> list[Code]:
 
 
 def entry_anomalies(entry: VariableEntry) -> list[str]:
-    """The anomalies of a variable, without the suspect codes the team settled."""
+    """The anomalies of a variable, without the suspect codes the team settled, nor a
+    doubtful measure level the team decided (v0.8)."""
+    profile = entry.profile
+    if entry.measure_level.status != "proposed" and entry.measure_level.value:
+        flags = [f for f in profile.flags if f != "measure_level_doubtful"]
+        profile = profile.model_copy(update={"flags": flags})
     return anomalies(
-        entry.profile,
+        profile,
         frozenset(d.code for d in entry.sentinel_decisions),
         {item.code: item.label for item in entry.file.value_labels},
     )
+
+
+def level_text(entry: VariableEntry, kind: ExportKind) -> str:
+    """The measure level shown: the one in force; in a work export, a proposal, marked."""
+    tracked = entry.measure_level
+    if kind == "work" and tracked.status == "proposed" and tracked.value:
+        return f"{MEASURES[tracked.value]} [{_('proposé')}]"
+    found = measure.level(entry)
+    return MEASURES[found] if found else ""
 
 
 def sentinel_notes_for(decision: SentinelDecision) -> str:

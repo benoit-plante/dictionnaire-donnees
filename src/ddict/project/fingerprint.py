@@ -41,6 +41,7 @@ def _variable(entry: VariableEntry) -> dict:
             "value_labels": _dump(file.value_labels),
             "declared_missing": _dump(file.declared_missing),
         },
+        "measure_level": _accepted(entry.measure_level),
         "privacy_class": _accepted(entry.privacy.privacy_class),
         "question": _accepted(entry.question),
         "new_name": _accepted(entry.new_name),

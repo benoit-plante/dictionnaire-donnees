@@ -23,6 +23,7 @@ import pyreadstat
 from ddict.export import wording as w
 from ddict.io import ReadError, read_database
 from ddict.io.sav import file_sha256
+from ddict.project import measure as measure_level
 from ddict.project.model import Code, Project, VariableEntry
 from ddict.questionnaire.labels import accepted_labels
 
@@ -114,8 +115,8 @@ def _metadata(project: Project, columns: list[str]) -> tuple[dict, list[str]]:
             codes = _missing(entry, confirmed=False)
         if codes:
             missing[name] = codes
-        if entry.file.measure_level:
-            measure[name] = entry.file.measure_level
+        if measure_level.level(entry):
+            measure[name] = measure_level.level(entry)
     return {
         "column_labels": labels,
         "variable_value_labels": value_labels,

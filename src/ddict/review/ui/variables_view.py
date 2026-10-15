@@ -259,6 +259,11 @@ def _file_and_computed(entry: VariableEntry) -> None:
         st.write(f"{field_label('Étiquette')}{entry.file.label or _('(aucune)')}")
         if entry.file.measure_level:
             st.write(f"{field_label('Niveau de mesure')}{w.MEASURES[entry.file.measure_level]}")
+        if entry.measure_level.value:  # v0.8: decided or proposed on the "Base" page
+            st.write(
+                f"{field_label('Niveau de mesure retenu')}"
+                f"{w.MEASURES[entry.measure_level.value]} ({w.status_text(entry.measure_level)})"
+            )
         if entry.file.display_format:
             st.write(f"{field_label('Format')}{entry.file.display_format}")
         if w.missing_codes(entry):

@@ -8,6 +8,7 @@ from pathlib import Path
 from pydantic import ValidationError
 
 from ddict.io.model import LoadedData
+from ddict.project import measure
 from ddict.project.model import SCHEMA_VERSION, Project
 
 PROJECT_SUFFIX = ".dd.json"
@@ -58,6 +59,9 @@ def load_project(path: Path | str) -> Project:
     except ValidationError as error:
         raise ProjectError(f"{path.name} is not a valid project file: {error}") from error
     # An older format reads as it is (new fields have defaults) and is saved in this one.
+    # Before 0.3.0 (D-061), the rules propose the measure levels it did not have.
+    if _version(version) < (0, 3, 0):
+        measure.propose(project)
     project.schema_version = SCHEMA_VERSION
     return project
 

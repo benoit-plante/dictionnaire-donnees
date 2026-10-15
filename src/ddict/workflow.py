@@ -366,6 +366,9 @@ def tasks(project: Project) -> list[Task]:
         found.append(
             Task(labels, _("Étiquettes de valeurs à vérifier : {n}"), "variables", "to_review")
         )
+    levels = sum(1 for e in project.variables if e.measure_level.status == "proposed")
+    if levels:  # v0.8 (D-063): decided on the "Base" page
+        found.append(Task(levels, _("Niveaux de mesure proposés : {n}"), "base"))
     # New names (v0.7): only once the team has begun to rename.
     if any(e.new_name.value for e in project.variables):
         grids = sum(

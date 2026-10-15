@@ -25,6 +25,7 @@ from importlib import resources
 
 from ddict import glossary, i18n
 from ddict.export.wording import code_text, confirmed_missing, group_description
+from ddict.project import measure
 from ddict.project.decisions import is_accepted
 from ddict.project.model import Group, Project, VariableEntry
 from ddict.questionnaire import link
@@ -152,8 +153,8 @@ def variable_payload(
         payload["note"] = sensitive_note(privacy_class, language)
         return payload
 
-    if entry.file.measure_level:
-        payload["measure_level"] = entry.file.measure_level
+    if measure.level(entry):  # the level in force (v0.8, D-063)
+        payload["measure_level"] = measure.level(entry)
     labels = accepted_labels(entry)  # the file's, or those a person accepted (D-016)
     if labels:
         payload["value_labels"] = {code_text(v.code): v.label for v in labels}

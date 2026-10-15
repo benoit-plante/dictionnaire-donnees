@@ -3,7 +3,7 @@
 One file per program: SPSS syntax and an R script (haven); no Stata do-file, which could
 not be tried in Stata (D-030). They hold only
 decisions: variable labels, value labels (from the file or accepted), missing codes
-(declared in the file or confirmed by the team, D-028), measure levels from the file.
+(declared in the file or confirmed by the team, D-028), measure levels in force (v0.8).
 Nothing proposed, no participant value. Values are never recoded; the reversed items the
 team confirmed are only suggested in comments. The new names a person accepted (v0.7) are
 applied first; everything after is written with them. Renaming is not recoding (D-025).
@@ -20,7 +20,7 @@ from pathlib import Path
 from ddict import __version__
 from ddict.export import wording as w
 from ddict.i18n import _, in_language
-from ddict.project import fingerprint
+from ddict.project import fingerprint, measure
 from ddict.project.model import Code, Project, VariableEntry
 from ddict.questionnaire.labels import accepted_labels
 
@@ -57,7 +57,7 @@ def decisions(entry: VariableEntry) -> Decisions:
         labels=[(lab.code, _one_line(lab.label)) for lab in accepted_labels(entry)],
         missing=singles,
         missing_range=ranges[0] if ranges else None,
-        measure=entry.file.measure_level,
+        measure=measure.level(entry),
     )
 
 

@@ -825,3 +825,15 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   1. Objet `_ddict`, selon la convention du standard (ce choix).
   2. Espace de noms `ddict:`, comme D-058.
 - **Justification :** suivre la convention publiée rend le fichier plus prévisible pour les outils Frictionless ; un seul objet regroupe tout ce qui n'est pas standard. Spécification v2 vérifiée le 2026-10-15 ; les exemples sont valides selon ses schémas. Choix validés par l'auteur à la fin de l'étape 1 de la v0.8.
+
+### D-067 — L'origine « règle » pour toute règle de l'outil qui propose
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** — (élargit D-048)
+- **Décision :** l'origine `rule`, créée pour les noms proposés par les règles de nommage (D-048), sert à toute règle déterministe de l'outil qui fait une proposition ; d'abord les niveaux de mesure (D-063). Elle s'affiche « règle ».
+- **Options considérées :**
+  1. Élargir `rule` (ce choix).
+  2. Une origine nouvelle pour les niveaux de mesure.
+- **Justification :** une proposition par le calcul a les mêmes propriétés quelle que soit la règle (déterministe, à accepter par une personne) ; une origine de plus ajouterait un cas sans rien apporter. `computed` reste une valeur acquise, jamais une proposition.
+- **Conséquences :** l'export et la page « Noms » écrivent « règle » au lieu de « règle de nommage ». Règles des niveaux (étape 3 de la v0.8) : item d'un groupe d'échelle, étiqueté ou à peu de valeurs entières → ordinal ; option de case à cocher, code étiqueté, ou au plus deux valeurs → nominal ; texte de catégories → nominal ; nombre sans étiquettes → échelle ; au plus 10 entiers sans étiquettes hors groupe → aucune proposition (des codes que seule l'équipe connaît) ; jamais pour un identifiant, un texte libre, une date de naissance, une date, une variable vide ou de types mélangés.

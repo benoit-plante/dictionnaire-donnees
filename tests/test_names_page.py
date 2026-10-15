@@ -42,7 +42,7 @@ def test_the_table_of_names_and_its_filters(project):
     row = next(r for r in names.rows(project) if r.name == "q0008_0001")
     assert (row.new_name, row.origin, row.status) == (
         "consignes_securite_1",
-        "règle de nommage",
+        "règle",
         "proposé",
     )
     assert row.question == "" and row.label  # no questionnaire yet

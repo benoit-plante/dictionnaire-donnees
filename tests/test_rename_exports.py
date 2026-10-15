@@ -79,7 +79,7 @@ def test_the_codebook_shows_the_new_and_the_original_names(project, tmp_path):
     assert names["q0001"] == "q0001"  # only proposed: not applied in a final export
     correspondence = _sheet(path, "Correspondance")
     assert correspondence[0] == ("Nom d'origine", "Nouveau nom", "Statut", "Origine")
-    assert ("q0006", "formation_t2", "corrigé", "règle de nommage") in correspondence
+    assert ("q0006", "formation_t2", "corrigé", "règle") in correspondence
     assert not any(row[0] == "q0001" for row in correspondence)
     # The other sheets name the variables as the data now does.
     assert any(row[0] == "eft_1_t2" for row in _sheet(path, "Valeurs")[1:])
@@ -110,7 +110,7 @@ def test_the_markdown_report(project):
     assert "### `eft_1_t2`" in text
     assert "Nom d'origine : `q0003_0001`" in text
     assert "## Correspondance des noms" in text
-    assert "| `q0006` | `formation_t2` | corrigé | règle de nommage |" in text
+    assert "| `q0006` | `formation_t2` | corrigé | règle |" in text
     assert "### `q0001`" in text  # not renamed in a final export
     assert "### `secteur_t2 [proposé]`" in render_markdown(project, kind="work")
 

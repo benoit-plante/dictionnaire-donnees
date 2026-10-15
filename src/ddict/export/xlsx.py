@@ -119,7 +119,7 @@ def _variables(project: Project, kind: w.ExportKind, omitted: set[str]) -> list[
                 else reference.value + (f" [{_('proposé')}]" if reference.pending else ""),
                 w.question_text(project, e, kind, omitted),
                 w.TYPES.get(p.inferred_type, p.inferred_type),
-                w.MEASURES.get(e.file.measure_level or "", ""),
+                w.level_text(e, kind),
                 e.file.display_format,
                 w.text(e.unit, kind),
                 p.n_valid,

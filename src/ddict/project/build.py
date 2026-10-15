@@ -10,6 +10,7 @@ from ddict.io.model import LoadedData
 from ddict.privacy import MIN_CELL_COUNT, SafeVariable, classify_database, safe_database
 from ddict.profile import profile_database
 from ddict.profile.compute import MAX_OBSERVED_VALUES
+from ddict.project import measure
 from ddict.project.model import (
     FileMetadata,
     Group,
@@ -223,4 +224,5 @@ def build_project(data: LoadedData, *, min_cell_count: int = MIN_CELL_COUNT) -> 
     for entry in project.variables:
         if doubtful_scale_level(entry):
             entry.profile.flags = [*entry.profile.flags, "measure_level_doubtful"]
+    measure.propose(project)  # v0.8 (D-063)
     return project

@@ -9,6 +9,7 @@ import pytest
 from ddict.io import read_database
 from ddict.platforms import SURVEYMONKEY, Place, recognize, split_header
 from ddict.project import build_project
+from ddict.project.model import SCHEMA_VERSION
 from ddict.project.store import ProjectError, dumps, load_project
 from ddict.workflow import format_note, platform_notes
 
@@ -132,14 +133,17 @@ def test_the_platform_is_kept_in_the_project():
     assert platform_notes(build_project(read_database(EXAMPLES / "etude-sommeil.sav"))) == []
 
 
-def test_a_project_of_format_0_1_0_reads_without_conversion():
-    old = REFERENCE / "etude-sommeil-0.1.0.dd.json"
+@pytest.mark.parametrize("version", ["0.1.0", "0.2.0"])
+def test_an_older_project_keeps_everything(version):
+    """Converted on opening (v0.8, D-061): only new fields are added, the measure levels
+    the rules propose where nothing was decided; everything the old file said stays."""
+    old = REFERENCE / f"etude-sommeil-{version}.dd.json"
     project = load_project(old)
     assert project.source.platform is None
-    # Saved again, it says 0.2.0, and keeps everything the old file said, as it said it.
     new = json.loads(dumps(project))
     previous = json.loads(old.read_text(encoding="utf-8"))
-    assert new["schema_version"] == "0.2.0" and new["source"]["platform"] is None
+    assert previous["schema_version"] == version
+    assert new["schema_version"] == SCHEMA_VERSION and new["source"]["platform"] is None
     del new["schema_version"], previous["schema_version"]
     assert _contains(new, previous)
 
@@ -158,7 +162,7 @@ def _contains(new, old) -> bool:
 def test_a_project_of_a_more_recent_version_is_refused_clearly(tmp_path):
     text = (REFERENCE / "etude-sommeil.dd.json").read_text(encoding="utf-8")
     path = tmp_path / "futur.dd.json"
-    path.write_text(text.replace('"0.2.0"', '"0.9.0"', 1), encoding="utf-8")
+    path.write_text(text.replace(f'"{SCHEMA_VERSION}"', '"0.9.0"', 1), encoding="utf-8")
     with pytest.raises(ProjectError, match="more recent version"):
         load_project(path)
 

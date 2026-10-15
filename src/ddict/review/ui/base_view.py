@@ -10,8 +10,10 @@ import streamlit as st
 from ddict import i18n
 from ddict.export import wording as w
 from ddict.i18n import _, field_label, quoted
+from ddict.project import save_project
 from ddict.project.model import Project
-from ddict.review import logic
+from ddict.review import levels, logic
+from ddict.review.logic import ReviewError
 from ddict.review.ui import common as c
 from ddict.workflow import format_note, platform_notes, profile_summary
 
@@ -25,6 +27,9 @@ FORMATS = {
 
 
 STUDY_LANGUAGE = "study-language"
+LEVEL_FILTER = "levels-filter"
+LEVEL_TABLE = "levels-table"
+LEVEL_PREFILL = "levels-prefill-filter"  # the filter whose proposals show "Accept" already
 
 
 def _study_language(project: Project) -> None:
@@ -44,6 +49,120 @@ def _study_language(project: Project) -> None:
         ),
     )
     c.show_message(STUDY_LANGUAGE)
+
+
+def _final(key: str, names: list[str], shown: list[str], column: str) -> dict[str, str]:
+    """A column as the person leaves it: what was shown, with the cells they changed."""
+    values = dict(zip(names, shown, strict=True))
+    for index, cells in st.session_state.get(key, {}).get("edited_rows", {}).items():
+        if column in cells:
+            values[names[int(index)]] = cells[column] or ""
+    return values
+
+
+def _save_levels(rows: list[levels.LevelRow], levels_shown: list[str], decisions_shown: list[str],
+                 table_key: str) -> None:  # fmt: skip
+    key = "levels-save"
+    names = [r.name for r in rows]
+    by_text = {w.MEASURES[code]: code for code in w.MEASURES}
+    by_decision = {levels.DECISIONS[code]: code for code in levels.DECISIONS}
+    chosen = _final(table_key, names, levels_shown, "level")
+    original = dict(zip(names, levels_shown, strict=True))
+    new_levels = {
+        n: by_text[text] for n, text in chosen.items() if text in by_text and text != original[n]
+    }
+    decisions = {
+        n: by_decision[text]
+        for n, text in _final(table_key, names, decisions_shown, "decision").items()
+        if text in by_decision
+    }
+    try:
+        n = levels.apply_table(c.project(), new_levels, decisions, now=c.now())
+    except ReviewError as error:
+        st.session_state.message = ("error", str(error), key)
+        return
+    save_project(c.project(), c.project_path())
+    st.session_state.pop(table_key, None)
+    st.session_state.pop(LEVEL_PREFILL, None)
+    st.session_state.message = ("success", _("{n} niveaux enregistrés.").format(n=n), key)
+
+
+def _prefill_levels(which: str, table_key: str) -> None:
+    st.session_state[LEVEL_PREFILL] = which
+    st.session_state.pop(table_key, None)
+
+
+def _levels(project: Project) -> None:
+    """The measure levels (v0.8, D-063): proposed by rules, decided in the table."""
+    st.subheader(_("Niveaux de mesure"))
+    st.caption(
+        _(
+            "Proposés par des règles quand le fichier n'en donne pas, ou quand celui du fichier "
+            "est douteux. Choisissez « Accepter » ou « Rejeter » dans la colonne « Décision », "
+            "ou un autre niveau dans « Niveau » (il est alors décidé), puis « Enregistrer »."
+        )
+    )
+    which = st.radio(
+        _("Afficher"), list(levels.FILTERS), key=LEVEL_FILTER,
+        format_func=levels.FILTERS.__getitem__, horizontal=True,
+    )  # fmt: skip
+    rows = levels.rows(project, which)
+    if not rows:
+        st.info(_("Aucun niveau de mesure proposé."))
+        return
+    table_key = f"{LEVEL_TABLE}-{which}"
+    accept = levels.DECISIONS["accept"]
+    prefilled = st.session_state.get(LEVEL_PREFILL) == which
+    levels_shown = [w.MEASURES[r.level] if r.level else "" for r in rows]
+    decisions_shown = [accept if prefilled and r.waiting else "" for r in rows]
+    frame = pd.DataFrame(
+        [
+            (r.name, r.label, r.kind, r.file_level, lv, d, r.status)
+            for r, lv, d in zip(rows, levels_shown, decisions_shown, strict=True)
+        ],
+        columns=["name", "label", "kind", "file_level", "level", "decision", "status"],
+    )
+    st.data_editor(
+        frame,
+        key=table_key,
+        hide_index=True,
+        use_container_width=True,
+        disabled=["name", "label", "kind", "file_level", "status"],
+        column_config={
+            "name": _("Variable"),
+            "label": _("Libellé"),
+            "kind": _("Type"),
+            "file_level": _("Dans le fichier"),
+            "level": st.column_config.SelectboxColumn(
+                _("Niveau"), options=["", *(w.MEASURES[k] for k in w.MEASURES)]
+            ),
+            "decision": st.column_config.SelectboxColumn(
+                _("Décision"), options=["", *(levels.DECISIONS[k] for k in levels.DECISIONS)]
+            ),
+            "status": _("Statut"),
+        },
+    )
+    left, right = st.columns(2)
+    left.button(
+        _("Enregistrer"),
+        key="levels-save",
+        type="primary",
+        on_click=_save_levels,
+        args=(rows, levels_shown, decisions_shown, table_key),
+    )
+    waiting = sum(r.waiting for r in rows)
+    if waiting:
+        right.button(
+            _("Choisir « Accepter » pour les {n} niveaux proposés").format(n=waiting),
+            key="levels-prefill",
+            on_click=_prefill_levels,
+            args=(which, table_key),
+            help=_(
+                "Remplit la colonne « Décision » ; rien n'est enregistré avant que vous ayez "
+                "relu le tableau et cliqué « Enregistrer »."
+            ),
+        )
+    c.show_message("levels-save")
 
 
 def page(project: Project) -> None:
@@ -89,6 +208,7 @@ def page(project: Project) -> None:
         pd.DataFrame(sorted(types.items()), columns=[_("Type"), _("Variables")]),
         hide_index=True,
     )
+    _levels(project)
     if sensitive:
         st.subheader(_("Variables sensibles"))
         st.caption(

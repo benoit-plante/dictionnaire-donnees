@@ -12,13 +12,16 @@ from typing import Annotated, Generic, Literal, TypeVar
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
 # 0.2.0 (v0.7, D-048): new fields only, all with a default; a 0.1.0 file reads as it is.
-SCHEMA_VERSION = "0.2.0"
+# 0.3.0 (v0.8, D-061): the measure level a person decides; older files are converted on
+# opening (the rules propose their levels), and a 0.3.0 file no longer opens in v0.7.
+SCHEMA_VERSION = "0.3.0"
 
 Code = int | float | str
 # "questionnaire": computed from the questionnaire under a strict rule, and like an AI value
 # only a proposal until a person accepts it (value labels from the options, D-016).
 # "rule" and "reference" (v0.7, D-048): a new name given by the naming rules, or taken from
-# an earlier wave; proposals too, never a name without a person.
+# an earlier wave; proposals too, never a name without a person. Since v0.8 (D-067), "rule"
+# is any deterministic rule of the tool that proposes (names, measure levels).
 Origin = Literal["file", "computed", "ai", "questionnaire", "rule", "reference", "human"]
 PROPOSING_ORIGINS = ("ai", "questionnaire", "rule", "reference")
 Status = Literal["none", "proposed", "validated", "corrected", "rejected"]
@@ -181,6 +184,10 @@ class VariableEntry(Strict):
     # Value labels proposed from the options of the linked question (D-016), when the file
     # has none: "questionnaire" origin, to be accepted by a person.
     value_labels: TrackedValue[list[ValueLabel]] = TrackedValue[list[ValueLabel]](origin="human")
+    # The measure level decided by the team (v0.8, D-063): empty while the file's stands; a
+    # "rule" proposal where the file has none or a doubtful one; "nominal", "ordinal" or
+    # "scale". The level in force is `ddict.project.measure.level`.
+    measure_level: TrackedValue[str] = TrackedValue[str](origin="human")
     label: TrackedValue[str]
     description: TrackedValue[str]
     issues: list[TrackedValue[str]] = []

@@ -90,8 +90,9 @@ def _variable(
     facts = [
         f"{field_label('Type')}{w.TYPES.get(p.inferred_type, p.inferred_type)}",
     ]
-    if entry.file.measure_level:
-        facts.append(f"{field_label('Niveau de mesure')}{w.MEASURES[entry.file.measure_level]}")
+    level = w.level_text(entry, kind)
+    if level:
+        facts.append(f"{field_label('Niveau de mesure')}{level}")
     unit = w.text(entry.unit, kind)
     if unit:
         facts.append(f"{field_label('Unité')}{_inline(unit)}")
