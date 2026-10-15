@@ -33,6 +33,9 @@ if TYPE_CHECKING:
     from ddict.llm.run import BlockResult
 
 LINK_PROMPT_VERSION = "link-v2"
+# Only for the variables offered neighbour questions, in blocks of their own (v0.6,
+# D-040): the rule about neighbours, given to all, led the model astray elsewhere.
+NEIGHBOUR_PROMPT_VERSION = "link-v3"
 # Ollama keeps 4,096 tokens of context by default: 12 variables with 5 candidates each
 # already took 3,654 tokens on the fictional base (trial of 2026-10-14).
 DEFAULT_LINK_BLOCK_SIZE = 6
@@ -125,6 +128,7 @@ def _payload(
     previous: dict,
     language: str = "fr",
     no_question_first: bool = False,
+    neighbour: bool = False,
 ) -> dict:
     payload: dict = {"name": entry.name}
     if entry.file.label:
@@ -136,6 +140,9 @@ def _payload(
     elif entry.file.value_labels:
         payload["value_labels"] = {code_text(v.code): v.label for v in entry.file.value_labels}
     payload["candidates"] = [_candidate(t, previous) for t in found]
+    if neighbour:  # no word in common: from its place in the questionnaire (D-040)
+        for candidate in payload["candidates"]:
+            candidate["neighbour"] = True
     if no_question_first:
         payload["candidates"].insert(0, _no_question_candidate(entry, language))
     return payload
@@ -150,7 +157,9 @@ def is_decided(entry: VariableEntry) -> bool:
 
 
 def build_link_blocks(project: Project, *, size: int) -> tuple[Block, ...]:
-    """Blocks of the variables that have candidates and no decision yet, in file order."""
+    """Blocks of the variables that have candidates and no decision yet, in file order; then
+    the blocks of the variables offered neighbour questions (D-040), with their own
+    instructions."""
     if size < 1:
         raise ValueError("Block size must be at least 1")
     if project.questionnaire is None:
@@ -158,35 +167,44 @@ def build_link_blocks(project: Project, *, size: int) -> tuple[Block, ...]:
     by_id = {t.target_id: t for t in link.targets(project.questionnaire)}
     previous = _needing_context(project.questionnaire)
     found = link.candidates(project)
-    waiting = [e for e in project.variables if found.get(e.name) and not is_decided(e)]
+    near = link.neighbours(project, found)
+    offered = {**near, **{name: ids for name, ids in found.items() if ids}}
+    waiting = [e for e in project.variables if offered.get(e.name) and not is_decided(e)]
     language = project.settings.language
-    system = system_prompt(LINK_PROMPT_VERSION, language)
+    groups = (
+        (LINK_PROMPT_VERSION, [e for e in waiting if found.get(e.name)]),
+        (NEIGHBOUR_PROMPT_VERSION, [e for e in waiting if not found.get(e.name)]),
+    )
     blocks = []
-    for start in range(0, len(waiting), size):
-        block_id = f"l-{start // size + 1:03d}"
-        chunk = waiting[start : start + size]
-        payloads = [
-            _payload(
-                e,
-                [by_id[i] for i in found[e.name] if i != link.NO_QUESTION],
-                previous,
-                language,
-                no_question_first=found[e.name][0] == link.NO_QUESTION,
+    for version, entries in groups:
+        system = system_prompt(version, language)
+        for start in range(0, len(entries), size):
+            block_id = f"l-{len(blocks) + 1:03d}"
+            chunk = entries[start : start + size]
+            payloads = [
+                _payload(
+                    e,
+                    [by_id[i] for i in offered[e.name] if i != link.NO_QUESTION],
+                    previous,
+                    language,
+                    no_question_first=offered[e.name][0] == link.NO_QUESTION,
+                    neighbour=version == NEIGHBOUR_PROMPT_VERSION,
+                )
+                for e in chunk
+            ]
+            content = {"block": block_id, "variables": payloads}
+            user = json.dumps(content, ensure_ascii=False, indent=2)
+            blocks.append(
+                Block(
+                    block_id=block_id,
+                    names=tuple(e.name for e in chunk),
+                    messages=(
+                        {"role": "system", "content": system},
+                        {"role": "user", "content": user},
+                    ),
+                    prompt_version=recorded_version(version, language),
+                )
             )
-            for e in chunk
-        ]
-        user = json.dumps({"block": block_id, "variables": payloads}, ensure_ascii=False, indent=2)
-        blocks.append(
-            Block(
-                block_id=block_id,
-                names=tuple(e.name for e in chunk),
-                messages=(
-                    {"role": "system", "content": system},
-                    {"role": "user", "content": user},
-                ),
-                prompt_version=recorded_version(LINK_PROMPT_VERSION, language),
-            )
-        )
     return tuple(blocks)
 
 

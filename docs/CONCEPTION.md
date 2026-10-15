@@ -327,6 +327,7 @@ La logique (changer un statut, valider une source) vit dans `project` et se test
 
 ### 7.6 Des rattachements plus complets (v0.6)
 
+- **Questions voisines** (D-040, étape 4) : `link.neighbours` donne, pour une variable sans candidate (ni vide ni constante), les questions situées entre les cibles des variables sûres qui l'encadrent (les ancres), au plus 6, les plus proches de sa place attendue. Le calcul seul ne choisit pas parmi elles (`best_guess` reste « aucune ») ; le modèle les reçoit marquées `neighbour`, dans des blocs à part avec la consigne `link-v3` (la règle, donnée à toutes les variables, dérangeait le modèle ailleurs) ; l'interface les met en tête de liste.
 - **« Aucune question » proposée** (D-039, étape 3) : `link.no_question_reason` reconnaît un identifiant (nom d'identifiant, sans valeurs de courriel ni de téléphone), une date de passation (dates étalées sur au plus 400 jours, hors date de naissance) ou un score calculé (nom en `total`, `score`, `moyenne`… hors d'un groupe, ou `profile.sum_of_group` : la somme exacte des items d'un groupe, vérifiée au profilage, dont seul le fait est gardé). La candidate « aucune » passe alors en tête ; le modèle la reçoit avec la raison (« (identifiant) ») ; l'interface la montre en tête de liste.
 
 ## 8. Exports

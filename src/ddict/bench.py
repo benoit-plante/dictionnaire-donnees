@@ -22,7 +22,7 @@ from pathlib import Path
 from ddict import __version__
 from ddict.i18n import N_, Texts, _, colon, field_label, semicolon
 from ddict.io import read_database
-from ddict.llm.link import DEFAULT_LINK_BLOCK_SIZE, LINK_PROMPT_VERSION
+from ddict.llm.link import DEFAULT_LINK_BLOCK_SIZE, LINK_PROMPT_VERSION, NEIGHBOUR_PROMPT_VERSION
 from ddict.llm.messages import DEFAULT_BLOCK_SIZE, PROMPT_VERSION
 from ddict.project import build_project
 from ddict.project.model import Project
@@ -163,6 +163,7 @@ def run_base(
     computed = link.best_guess(project)
     result.computed_right = sum(1 for n, t in key.items() if computed.get(n) == t)
     offered = link.candidates(project)
+    offered = {**link.neighbours(project, offered), **{n: i for n, i in offered.items() if i}}
 
     yield _("{base} : rattachements proposés par le modèle…").format(base=base["name"])
     start = clock()
@@ -228,7 +229,7 @@ def render_report(results: list[BaseResult], *, model: str, endpoint: str, date:
         f"- {field_label('Date')}{date}",
         f"- {field_label('Serveur local')}{endpoint}",
         f"- {field_label('Outil')}dictionnaire-donnees {__version__} ; prompts "
-        f"{LINK_PROMPT_VERSION} {_('et')} {PROMPT_VERSION}",
+        f"{LINK_PROMPT_VERSION}, {NEIGHBOUR_PROMPT_VERSION} {_('et')} {PROMPT_VERSION}",
         "- "
         + _(
             "Bases fictives seulement : rien de réel n'a été envoyé au modèle. Les durées "

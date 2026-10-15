@@ -568,6 +568,13 @@ msgstr "SHA-256 fingerprint of the questionnaire"
 msgid "En tête de liste : les questions candidates calculées, puis « aucune »."
 msgstr "At the top of the list: the computed candidate questions, then \"none\"."
 
+msgid ""
+"En tête de liste : les questions voisines, autour de sa place dans le questionnaire (aucun mot ne"
+" les relie au nom de la variable), puis « aucune »."
+msgstr ""
+"At the top of the list: the neighbouring questions, around its place in the questionnaire (no "
+"word links them to the variable's name), then \"none\"."
+
 msgid "Encodage"
 msgstr "Encoding"
 

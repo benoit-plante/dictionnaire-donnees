@@ -164,6 +164,9 @@ def _question(project: Project, entry: VariableEntry) -> None:
         c.show_message(f"reject-{key}")
 
     found = link.candidates(project).get(name, [])
+    near = not found
+    if near:  # questions around its place in the questionnaire (D-040)
+        found = link.neighbours(project).get(name, [])
     # "none" may already be first (v0.6, D-039): each choice once.
     choices = list(dict.fromkeys([*found, link.NO_QUESTION, *by_id]))
 
@@ -174,7 +177,15 @@ def _question(project: Project, entry: VariableEntry) -> None:
         return found[0] if found else link.NO_QUESTION
 
     st.selectbox(_("Rattacher à"), choices, format_func=option_text, key=c.field(key, start))
-    st.caption(_("En tête de liste : les questions candidates calculées, puis « aucune »."))
+    if near and found:
+        st.caption(
+            _(
+                "En tête de liste : les questions voisines, autour de sa place dans le "
+                "questionnaire (aucun mot ne les relie au nom de la variable), puis « aucune »."
+            )
+        )
+    else:
+        st.caption(_("En tête de liste : les questions candidates calculées, puis « aucune »."))
     c.button(
         _("Rattacher"),
         f"save-{key}",

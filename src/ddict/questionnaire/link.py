@@ -258,9 +258,21 @@ def _sizes(all_targets: list[Target]) -> dict[str, int]:
 
 def scores(project: Project) -> dict[str, list[float]]:
     """Score of every target for every variable, in the order of `targets()`."""
-    questionnaire = project.questionnaire
-    if questionnaire is None:
+    if project.questionnaire is None:
         return {}
+    result, excluded, all_targets = _raw_scores(project)
+    ordered = _with_order(project, result, len(all_targets))
+    for name, positions in excluded.items():
+        for position in positions:
+            ordered[name][position] = 0.0
+    return ordered
+
+
+def _raw_scores(project: Project) -> tuple[dict[str, list[float]], dict[str, set[int]], list]:
+    """The scores from words and series alone, before the order of the questionnaire; the
+    targets each variable cannot be (an option of a single-choice question, for a lone
+    variable); and the targets."""
+    questionnaire = project.questionnaire
     all_targets = targets(questionnaire)
     weighted = _target_words(questionnaire, all_targets)
     variable_words = {e.name: _variable_words(project, e) for e in project.variables}
@@ -302,11 +314,7 @@ def scores(project: Project) -> dict[str, list[float]]:
                 score *= LONE_PART_FACTOR  # in a family, an option rather than its question
             row.append(score)
         result[entry.name] = row
-    ordered = _with_order(project, result, len(all_targets))
-    for name, positions in excluded.items():
-        for position in positions:
-            ordered[name][position] = 0.0
-    return ordered
+    return result, excluded, all_targets
 
 
 def _best(row: list[float]) -> tuple[int, float, float]:
@@ -316,13 +324,19 @@ def _best(row: list[float]) -> tuple[int, float, float]:
     return first, (row[first] if ranked else 0.0), second
 
 
-def _with_order(project: Project, result: dict[str, list[float]], n: int) -> dict[str, list[float]]:
-    anchors: dict[int, int] = {}  # variable index -> target position
-    names = [e.name for e in project.variables]
-    for index, name in enumerate(names):
-        position, best, second = _best(result[name])
+def _anchors(project: Project, result: dict[str, list[float]]) -> dict[int, int]:
+    """The variables whose best target is clear: variable index -> target position."""
+    anchors: dict[int, int] = {}
+    for index, entry in enumerate(project.variables):
+        position, best, second = _best(result[entry.name])
         if best >= ANCHOR_SCORE and best >= ANCHOR_MARGIN * second:
             anchors[index] = position
+    return anchors
+
+
+def _with_order(project: Project, result: dict[str, list[float]], n: int) -> dict[str, list[float]]:
+    anchors = _anchors(project, result)
+    names = [e.name for e in project.variables]
     ordered: dict[str, list[float]] = {}
     for index, name in enumerate(names):
         row = list(result[name])
@@ -385,6 +399,52 @@ def candidates(project: Project, *, limit: int = MAX_CANDIDATES) -> dict[str, li
         if no_question_reason(project.variable(name)):
             found[name] = [NO_QUESTION, *found[name][: limit - 1]]
     return found
+
+
+MAX_NEIGHBOURS = 6
+
+
+def neighbours(project: Project, found: dict[str, list[str]] | None = None) -> dict[str, list[str]]:
+    """For a variable without candidates, the questions around where it should be (D-040).
+
+    Between the targets of the clear variables before and after it in the file, those not
+    taken by a clear variable, at most MAX_NEIGHBOURS, the nearest to where its place in the
+    file would put it; in the order of the questionnaire. Not for an empty or constant
+    variable: nothing in it could tell which. `found`: the candidates, when computed."""
+    if project.questionnaire is None:
+        return {}
+    found = candidates(project) if found is None else found
+    result, excluded, all_targets = _raw_scores(project)
+    anchors = _anchors(project, result)
+    taken = set(anchors.values())
+    names = [e.name for e in project.variables]
+    near: dict[str, list[str]] = {}
+    for index, name in enumerate(names):
+        entry = project.variables[index]
+        if (
+            found.get(name)
+            or entry.profile.inferred_type == "empty"
+            or ("constant" in entry.profile.flags)
+        ):
+            continue
+        before = [i for i in anchors if i < index]
+        after = [i for i in anchors if i > index]
+        if not before and not after:
+            continue
+        first, last = (max(before) if before else -1), (min(after) if after else len(names))
+        low = anchors[first] if before else -1
+        high = anchors[last] if after else len(all_targets)
+        window = [
+            t
+            for t in all_targets[low + 1 : high]
+            if t.position not in taken and t.position not in excluded[name]
+        ]
+        expected = low + (index - first) / (last - first) * (high - low)
+        chosen = sorted(window, key=lambda t: (abs(t.position - expected), t.position))
+        near[name] = [
+            t.target_id for t in sorted(chosen[:MAX_NEIGHBOURS], key=lambda t: t.position)
+        ]
+    return {name: ids for name, ids in near.items() if ids}
 
 
 def best_guess(project: Project) -> dict[str, str]:
