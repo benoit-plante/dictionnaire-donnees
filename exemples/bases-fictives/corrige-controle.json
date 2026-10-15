@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "bases": [
+    {
+      "name": "etude-activite",
+      "data": "etude-activite.csv",
+      "questionnaire": "questionnaire-activite.pdf",
+      "links": {
+        "annee_naissance": "Q2",
+        "club_seances": "Q9",
+        "forme_satisfaction": "Q11",
+        "horodatage": "none",
+        "id_repondant": "none",
+        "jours_actifs": "Q5",
+        "membre_club": "Q8",
+        "minutes_assis": "Q6",
+        "motiv_1": "Q10.r1",
+        "motiv_2": "Q10.r2",
+        "motiv_3": "Q10.r3",
+        "motiv_4": "Q10.r4",
+        "motiv_5": "Q10.r5",
+        "poids_kg": "Q3",
+        "pratique_autre": "Q7.o5",
+        "pratique_marche": "Q7.o1",
+        "pratique_natation": "Q7.o3",
+        "pratique_velo": "Q7.o2",
+        "pratique_yoga": "Q7.o4",
+        "remarques": "Q12",
+        "score_motivation": "none",
+        "taille_m": "Q4",
+        "vague": "none"
+      }
+    }
+  ]
+}

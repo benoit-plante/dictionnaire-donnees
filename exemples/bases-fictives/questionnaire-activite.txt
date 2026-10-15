@@ -1,0 +1,67 @@
+Étude fictive sur l'activité physique au quotidien
+
+Information et consentement
+
+Cette étude est entièrement fictive : elle sert à vérifier un outil de documentation des données. Elle comprend l'Échelle fictive de motivation (EFM).
+
+Responsable : M. Léo ZQXACTQUEST-Exemple, Laboratoire fictif du mouvement. Pour nous joindre : zqxactquest@exemple.org.
+
+Consentez-vous à répondre à ce questionnaire ?
+Oui
+Non
+
+Vous
+
+En quelle année êtes-vous né·e ?
+
+Combien pesez-vous, en kilogrammes ?
+
+Combien mesurez-vous, en mètres (par exemple 1,68) ?
+
+Votre semaine
+
+Au cours des sept derniers jours, combien de jours avez-vous bougé au moins 30 minutes d'affilée ?
+
+Un jour de semaine habituel, combien de temps restez-vous sur une chaise ou un fauteuil, en minutes ?
+
+Lesquelles de ces activités faites-vous au moins une fois par mois ? (Cochez toutes les réponses applicables)
+La marche
+Le vélo
+La natation
+Le yoga ou l'étirement
+Une autre activité
+
+Êtes-vous inscrit·e dans un club ou une association sportive ?
+Oui
+Non
+
+Si oui, combien de fois par semaine y allez-vous ?
+
+Pourquoi vous bougez
+
+Les énoncés suivants forment l'Échelle fictive de motivation (EFM).
+
+Dans quelle mesure êtes-vous d'accord avec les énoncés suivants ?
+	Pas du tout d'accord	Plutôt pas d'accord	Neutre	Plutôt d'accord	Tout à fait d'accord
+1. Je bouge parce que cela me fait du bien.					
+2. Je bouge pour rencontrer d'autres personnes.					
+3. Je bouge parce que mon médecin me l'a conseillé.					
+4. Je bouge pour avoir plus d'énergie au travail.					
+5. Je me sentirais coupable de ne pas bouger.					
+
+Sur une échelle de 0 à 10, à quel point êtes-vous content·e de votre forme physique ?
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+
+Voulez-vous ajouter quelque chose ?
+
+Merci !

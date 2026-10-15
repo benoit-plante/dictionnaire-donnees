@@ -16,6 +16,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 import generer_base_anglaise as english  # noqa: E402
+import generer_base_controle as control  # noqa: E402
 import generer_bases_fictives as sleep  # noqa: E402
 import generer_enquete_familles as families  # noqa: E402
 
@@ -48,6 +49,17 @@ BASES = [
         english.TRAPS["variables_without_question"],
     ),
 ]
+# The control base of v0.6 (D-042): set aside, not in the bench until the end of v0.6.
+CONTROL_OUTPUT = EXAMPLES / "corrige-controle.json"
+CONTROL = [
+    (
+        "etude-activite",
+        "etude-activite.csv",
+        "questionnaire-activite.pdf",
+        control.answer_key,
+        control.TRAPS["variables_without_question"],
+    ),
+]
 
 
 def resolve(questionnaire_path: Path, key: dict, not_asked: list[str]) -> dict[str, str]:
@@ -64,7 +76,7 @@ def resolve(questionnaire_path: Path, key: dict, not_asked: list[str]) -> dict[s
     return dict(sorted(links.items()))
 
 
-def build(folder: Path = EXAMPLES) -> dict:
+def build(folder: Path = EXAMPLES, bases: list = BASES) -> dict:
     return {
         "version": 1,
         "bases": [
@@ -74,16 +86,17 @@ def build(folder: Path = EXAMPLES) -> dict:
                 "questionnaire": questionnaire,
                 "links": resolve(folder / questionnaire, key(), not_asked),
             }
-            for name, data, questionnaire, key, not_asked in BASES
+            for name, data, questionnaire, key, not_asked in bases
         ],
     }
 
 
-def write(path: Path = OUTPUT, folder: Path = EXAMPLES) -> Path:
-    text = json.dumps(build(folder), ensure_ascii=False, indent=2) + "\n"
+def write(path: Path = OUTPUT, folder: Path = EXAMPLES, bases: list = BASES) -> Path:
+    text = json.dumps(build(folder, bases), ensure_ascii=False, indent=2) + "\n"
     path.write_text(text, encoding="utf-8", newline="\n")
     return path
 
 
 if __name__ == "__main__":
     print(write())
+    print(write(CONTROL_OUTPUT, bases=CONTROL))
