@@ -1,0 +1,839 @@
+{
+  "$schema": "https://datapackage.org/profiles/2.0/datapackage.json",
+  "name": "etude-sommeil",
+  "title": "Etude sommeil (fictive)",
+  "resources": [
+    {
+      "name": "etude-sommeil",
+      "path": "etude-sommeil.sav",
+      "type": "table",
+      "format": "sav",
+      "mediatype": "application/x-spss-sav",
+      "hash": "sha256:a189e6bd7c313c8d06d56881042e0db32d66b9ecc1e48c3e06d36b0af7570f25",
+      "schema": {
+        "$schema": "https://datapackage.org/profiles/2.0/tableschema.json",
+        "fields": [
+          {
+            "name": "id_participant",
+            "title": "Identifiant participant",
+            "type": "string",
+            "_ddict": {
+              "question": null,
+              "privacy": "likely_identifier"
+            }
+          },
+          {
+            "name": "courriel",
+            "title": "Courriel",
+            "type": "string",
+            "_ddict": {
+              "question": "Q5",
+              "privacy": "likely_identifier"
+            }
+          },
+          {
+            "name": "date_passation",
+            "title": "Date passation",
+            "type": "datetime",
+            "_ddict": {
+              "question": null
+            }
+          },
+          {
+            "name": "date_naissance",
+            "title": "DDN",
+            "type": "date",
+            "_ddict": {
+              "question": "Q2",
+              "privacy": "quasi_identifier"
+            }
+          },
+          {
+            "name": "age",
+            "title": "Age",
+            "type": "integer",
+            "missingValues": [
+              {
+                "value": "999"
+              }
+            ],
+            "_ddict": {
+              "measure_level": "scale",
+              "question": "Q3"
+            }
+          },
+          {
+            "name": "genre",
+            "title": "Genre",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Femme"
+              },
+              {
+                "value": 2,
+                "label": "Homme"
+              },
+              {
+                "value": 3,
+                "label": "Autre identité"
+              }
+            ],
+            "categoriesOrdered": false,
+            "missingValues": [
+              {
+                "value": "9",
+                "label": "Préfère ne pas répondre"
+              }
+            ],
+            "_ddict": {
+              "measure_level": "nominal",
+              "question": "Q4"
+            }
+          },
+          {
+            "name": "vague",
+            "title": "Vague",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Vague 1"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "measure_level": "nominal",
+              "question": null
+            }
+          },
+          {
+            "name": "sommeil_q1",
+            "title": "Q1 endormissement",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Pas du tout"
+              },
+              {
+                "value": 2,
+                "label": "Un peu"
+              },
+              {
+                "value": 3,
+                "label": "Moyennement"
+              },
+              {
+                "value": 4,
+                "label": "Beaucoup"
+              },
+              {
+                "value": 5,
+                "label": "Extrêmement"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "measure_level": "ordinal",
+              "question": "Q7.r1",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "sommeil_q2",
+            "title": "Q2 sommeil reparateur",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Pas du tout"
+              },
+              {
+                "value": 2,
+                "label": "Un peu"
+              },
+              {
+                "value": 3,
+                "label": "Moyennement"
+              },
+              {
+                "value": 4,
+                "label": "Beaucoup"
+              },
+              {
+                "value": 5,
+                "label": "Extrêmement"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "measure_level": "ordinal",
+              "question": "Q7.r2",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "sommeil_q3",
+            "title": "Q3 reveils nocturnes",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Pas du tout"
+              },
+              {
+                "value": 2,
+                "label": "Un peu"
+              },
+              {
+                "value": 3,
+                "label": "Moyennement"
+              },
+              {
+                "value": 4,
+                "label": "Beaucoup"
+              },
+              {
+                "value": 5,
+                "label": "Extrêmement"
+              }
+            ],
+            "categoriesOrdered": true,
+            "missingValues": [
+              {
+                "value": "9"
+              }
+            ],
+            "_ddict": {
+              "measure_level": "ordinal",
+              "question": "Q7.r3",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "sommeil_q4",
+            "title": "Q4 satisf sommeil",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Pas du tout"
+              },
+              {
+                "value": 2,
+                "label": "Un peu"
+              },
+              {
+                "value": 3,
+                "label": "Moyennement"
+              },
+              {
+                "value": 4,
+                "label": "Beaucoup"
+              },
+              {
+                "value": 5,
+                "label": "Extrêmement"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "measure_level": "ordinal",
+              "question": "Q7.r4",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "sommeil_q5",
+            "title": "Q5 energie matin",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Pas du tout"
+              },
+              {
+                "value": 2,
+                "label": "Un peu"
+              },
+              {
+                "value": 3,
+                "label": "Moyennement"
+              },
+              {
+                "value": 4,
+                "label": "Beaucoup"
+              },
+              {
+                "value": 5,
+                "label": "Extrêmement"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "measure_level": "ordinal",
+              "question": "Q7.r5",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "sommeil_q6",
+            "title": "Q6 somnolence jour",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Pas du tout"
+              },
+              {
+                "value": 2,
+                "label": "Un peu"
+              },
+              {
+                "value": 3,
+                "label": "Moyennement"
+              },
+              {
+                "value": 4,
+                "label": "Beaucoup"
+              },
+              {
+                "value": 5,
+                "label": "Extrêmement"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "measure_level": "ordinal",
+              "question": "Q7.r6",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "sommeil_q7",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Pas du tout"
+              },
+              {
+                "value": 2,
+                "label": "Un peu"
+              },
+              {
+                "value": 3,
+                "label": "Moyennement"
+              },
+              {
+                "value": 4,
+                "label": "Beaucoup"
+              },
+              {
+                "value": 5,
+                "label": "Extrêmement"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "measure_level": "ordinal",
+              "question": "Q7.r7",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "sommeil_q8",
+            "title": "Q8 routine",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Pas du tout"
+              },
+              {
+                "value": 2,
+                "label": "Un peu"
+              },
+              {
+                "value": 3,
+                "label": "Moyennement"
+              },
+              {
+                "value": 4,
+                "label": "Beaucoup"
+              },
+              {
+                "value": 5,
+                "label": "Extrêmement"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "measure_level": "ordinal",
+              "question": "Q7.r8",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "anx1",
+            "title": "ANX inquiet",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 0,
+                "label": "Jamais"
+              },
+              {
+                "value": 1,
+                "label": "Parfois"
+              },
+              {
+                "value": 2,
+                "label": "Souvent"
+              },
+              {
+                "value": 3,
+                "label": "Presque toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "missingValues": [
+              {
+                "value": "-9",
+                "label": "Refus"
+              }
+            ],
+            "_ddict": {
+              "measure_level": "ordinal",
+              "question": "Q12.r1",
+              "group": "G2"
+            }
+          },
+          {
+            "name": "anx2",
+            "title": "ANX tendu",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 0,
+                "label": "Jamais"
+              },
+              {
+                "value": 1,
+                "label": "Parfois"
+              },
+              {
+                "value": 2,
+                "label": "Souvent"
+              },
+              {
+                "value": 3,
+                "label": "Presque toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "missingValues": [
+              {
+                "value": "-9",
+                "label": "Refus"
+              }
+            ],
+            "_ddict": {
+              "measure_level": "ordinal",
+              "question": "Q12.r2",
+              "group": "G2"
+            }
+          },
+          {
+            "name": "anx3",
+            "title": "ANX controle inquietude",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 0,
+                "label": "Jamais"
+              },
+              {
+                "value": 1,
+                "label": "Parfois"
+              },
+              {
+                "value": 2,
+                "label": "Souvent"
+              },
+              {
+                "value": 3,
+                "label": "Presque toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "missingValues": [
+              {
+                "value": "-9",
+                "label": "Refus"
+              }
+            ],
+            "_ddict": {
+              "measure_level": "ordinal",
+              "question": "Q12.r3",
+              "group": "G2"
+            }
+          },
+          {
+            "name": "anx4",
+            "title": "ANX agite",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 0,
+                "label": "Jamais"
+              },
+              {
+                "value": 1,
+                "label": "Parfois"
+              },
+              {
+                "value": 2,
+                "label": "Souvent"
+              },
+              {
+                "value": 3,
+                "label": "Presque toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "missingValues": [
+              {
+                "value": "-9",
+                "label": "Refus"
+              }
+            ],
+            "_ddict": {
+              "measure_level": "ordinal",
+              "question": "Q12.r4",
+              "group": "G2"
+            }
+          },
+          {
+            "name": "heures_sommeil",
+            "title": "Nb heures sommeil (moy)",
+            "type": "number",
+            "_ddict": {
+              "measure_level": "scale",
+              "question": "Q8"
+            }
+          },
+          {
+            "name": "heures_sommeil_2",
+            "title": "Nb heures sommeil (moy)",
+            "type": "number",
+            "_ddict": {
+              "measure_level": "scale",
+              "question": "Q8"
+            }
+          },
+          {
+            "name": "nb_reveils",
+            "title": "Nb reveils / nuit",
+            "type": "integer",
+            "missingValues": [
+              {
+                "value": "-9"
+              }
+            ],
+            "_ddict": {
+              "measure_level": "scale",
+              "question": "Q9"
+            }
+          },
+          {
+            "name": "aide_medicament",
+            "title": "Aide sommeil: medicament",
+            "type": "integer",
+            "_ddict": {
+              "measure_level": "nominal",
+              "question": "Q10.o1"
+            }
+          },
+          {
+            "name": "aide_naturel",
+            "title": "Aide sommeil: produit naturel",
+            "type": "integer",
+            "_ddict": {
+              "measure_level": "nominal",
+              "question": "Q10.o2"
+            }
+          },
+          {
+            "name": "aide_tcc",
+            "title": "Aide sommeil: TCC",
+            "type": "integer",
+            "_ddict": {
+              "measure_level": "nominal",
+              "question": "Q10.o3"
+            }
+          },
+          {
+            "name": "aide_aucune",
+            "title": "Aide sommeil: aucune",
+            "type": "integer",
+            "_ddict": {
+              "measure_level": "nominal",
+              "question": "Q10.o4"
+            }
+          },
+          {
+            "name": "anx5",
+            "title": "ANX irritable",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 0,
+                "label": "Jamais"
+              },
+              {
+                "value": 1,
+                "label": "Parfois"
+              },
+              {
+                "value": 2,
+                "label": "Souvent"
+              },
+              {
+                "value": 3,
+                "label": "Presque toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "missingValues": [
+              {
+                "value": "-9",
+                "label": "Refus"
+              }
+            ],
+            "_ddict": {
+              "measure_level": "ordinal",
+              "question": "Q12.r5",
+              "group": "G2"
+            }
+          },
+          {
+            "name": "anx6",
+            "title": "ANX peur",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 0,
+                "label": "Jamais"
+              },
+              {
+                "value": 1,
+                "label": "Parfois"
+              },
+              {
+                "value": 2,
+                "label": "Souvent"
+              },
+              {
+                "value": 3,
+                "label": "Presque toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "missingValues": [
+              {
+                "value": "-9",
+                "label": "Refus"
+              }
+            ],
+            "_ddict": {
+              "measure_level": "ordinal",
+              "question": "Q12.r6",
+              "group": "G2"
+            }
+          },
+          {
+            "name": "anx7",
+            "title": "ANX difficulte relaxer",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 0,
+                "label": "Jamais"
+              },
+              {
+                "value": 1,
+                "label": "Parfois"
+              },
+              {
+                "value": 2,
+                "label": "Souvent"
+              },
+              {
+                "value": 3,
+                "label": "Presque toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "missingValues": [
+              {
+                "value": "-9",
+                "label": "Refus"
+              }
+            ],
+            "_ddict": {
+              "measure_level": "ordinal",
+              "question": "Q12.r7",
+              "group": "G2"
+            }
+          },
+          {
+            "name": "satisfaction_globale",
+            "title": "Satisfaction globale 0-10",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 0,
+                "label": "Pas du tout satisfait"
+              },
+              {
+                "value": 10,
+                "label": "Tout à fait satisfait"
+              },
+              {
+                "value": 99,
+                "label": "Ne sait pas"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "measure_level": "scale",
+              "question": "Q11"
+            }
+          },
+          {
+            "name": "taille_cm",
+            "title": "Taille (cm)",
+            "type": "string",
+            "_ddict": {
+              "question": "Q6"
+            }
+          },
+          {
+            "name": "q_retiree",
+            "title": "Question retiree v2",
+            "type": "any",
+            "_ddict": {
+              "question": null
+            }
+          },
+          {
+            "name": "langue_maison",
+            "title": "Langue maison",
+            "type": "string",
+            "_ddict": {
+              "measure_level": "nominal",
+              "question": "Q14"
+            }
+          },
+          {
+            "name": "commentaire",
+            "title": "Commentaires",
+            "type": "string",
+            "_ddict": {
+              "question": "Q13",
+              "privacy": "free_text"
+            }
+          }
+        ]
+      },
+      "_ddict": {
+        "rows": 200
+      }
+    }
+  ],
+  "_ddict": {
+    "tool": "ddict 0.8.0",
+    "codebook_fingerprint": "019400d58ede",
+    "language": "fr",
+    "dataset": {
+      "unit_of_observation": "participant",
+      "structure": "cross_sectional",
+      "design_variables": {},
+      "description": "Étude fictive sur le sommeil, une seule passation."
+    },
+    "rules": [
+      "missing_values_excluded",
+      "reverse_items_before_scores",
+      "sensitive_never_in_outputs",
+      "undocumented_is_unknown"
+    ],
+    "completeness": {
+      "question": 34,
+      "label": 33,
+      "value_labels": 17,
+      "value_labels_applicable": 21,
+      "measure_level": 27,
+      "scoring": 1,
+      "scoring_applicable": 2
+    },
+    "groups": [
+      {
+        "id": "G1",
+        "kind": "scale",
+        "items": [
+          "sommeil_q1",
+          "sommeil_q2",
+          "sommeil_q3",
+          "sommeil_q4",
+          "sommeil_q5",
+          "sommeil_q6",
+          "sommeil_q7",
+          "sommeil_q8"
+        ],
+        "scoring": {
+          "items": [
+            "sommeil_q1",
+            "sommeil_q2",
+            "sommeil_q3",
+            "sommeil_q4",
+            "sommeil_q5",
+            "sommeil_q6",
+            "sommeil_q7",
+            "sommeil_q8"
+          ],
+          "reverse_items": [
+            "sommeil_q3",
+            "sommeil_q6"
+          ],
+          "reverse_rule": "max_plus_min_minus_x",
+          "scale_min": 1,
+          "scale_max": 5,
+          "aggregation": "sum",
+          "min_items_answered": 7,
+          "score_range": {
+            "min": 8,
+            "max": 40
+          },
+          "score_name": "sommeil_total",
+          "source": "Manuel fictif de l'échelle de sommeil, p. 4 (référence inventée pour l'exemple)"
+        }
+      },
+      {
+        "id": "G2",
+        "kind": "scale",
+        "items": [
+          "anx1",
+          "anx2",
+          "anx3",
+          "anx4",
+          "anx5",
+          "anx6",
+          "anx7"
+        ]
+      }
+    ]
+  }
+}

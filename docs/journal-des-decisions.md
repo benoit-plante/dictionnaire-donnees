@@ -814,3 +814,14 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   1. Projet distinct (ce choix).
   2. L'intégrer à l'outil.
 - **Justification :** l'outil reste un outil de documentation ; la v0.8 ne dépend pas de cet assistant, qui n'est qu'une piste.
+
+### D-066 — Propriétés de l'outil dans un objet `_ddict` ; format du contexte d'analyse validé
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** — (précise D-058)
+- **Décision :** dans le `datapackage.json`, les propriétés propres à l'outil sont réunies dans un objet `_ddict` (paquet, ressource, champ), selon la convention publiée du standard (préfixe `_`, recette « Private Properties »), et non dans un espace de noms `ddict:` comme D-058 l'écrivait. Le format du contexte d'analyse est celui des exemples de `docs/exemples-contexte/` et de `CONCEPTION.md` § 8.1 : aucune valeur observée (une variante d'écriture est dite, pas citée) ; pour une question à cocher, la question une fois en tête du groupe et l'option sur chaque ligne ; une règle explicite sur le sens d'une case vide.
+- **Options considérées :**
+  1. Objet `_ddict`, selon la convention du standard (ce choix).
+  2. Espace de noms `ddict:`, comme D-058.
+- **Justification :** suivre la convention publiée rend le fichier plus prévisible pour les outils Frictionless ; un seul objet regroupe tout ce qui n'est pas standard. Spécification v2 vérifiée le 2026-10-15 ; les exemples sont valides selon ses schémas. Choix validés par l'auteur à la fin de l'étape 1 de la v0.8.

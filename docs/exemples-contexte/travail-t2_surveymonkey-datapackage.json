@@ -1,0 +1,1353 @@
+{
+  "$schema": "https://datapackage.org/profiles/2.0/datapackage.json",
+  "name": "travail-t2_surveymonkey",
+  "title": "travail-t2_surveymonkey",
+  "resources": [
+    {
+      "name": "travail-t2_surveymonkey",
+      "path": "travail-t2_surveymonkey-documente.sav",
+      "type": "table",
+      "format": "sav",
+      "mediatype": "application/x-spss-sav",
+      "schema": {
+        "$schema": "https://datapackage.org/profiles/2.0/tableschema.json",
+        "fields": [
+          {
+            "name": "nom_collecteur_t2",
+            "title": "CollectorNm",
+            "type": "string",
+            "_ddict": {
+              "original_name": "CollectorNm",
+              "measure_level": "nominal",
+              "question": null
+            }
+          },
+          {
+            "name": "respondent_id_t2",
+            "title": "respondent_id",
+            "type": "integer",
+            "_ddict": {
+              "original_name": "respondent_id",
+              "question": null,
+              "privacy": "likely_identifier"
+            }
+          },
+          {
+            "name": "collector_id_t2",
+            "title": "collector_id",
+            "type": "integer",
+            "_ddict": {
+              "original_name": "collector_id",
+              "measure_level": "nominal",
+              "question": null
+            }
+          },
+          {
+            "name": "date_debut_t2",
+            "title": "date_created",
+            "type": "datetime",
+            "_ddict": {
+              "original_name": "date_created",
+              "question": null
+            }
+          },
+          {
+            "name": "date_fin_t2",
+            "title": "date_modified",
+            "type": "datetime",
+            "_ddict": {
+              "original_name": "date_modified",
+              "question": null
+            }
+          },
+          {
+            "name": "adresse_ip_t2",
+            "title": "ip_address",
+            "type": "string",
+            "_ddict": {
+              "original_name": "ip_address",
+              "question": null,
+              "privacy": "likely_identifier"
+            }
+          },
+          {
+            "name": "courriel_t2",
+            "title": "email_address",
+            "type": "string",
+            "_ddict": {
+              "original_name": "email_address",
+              "question": null,
+              "privacy": "likely_identifier"
+            }
+          },
+          {
+            "name": "prenom_t2",
+            "title": "first_name",
+            "type": "string",
+            "_ddict": {
+              "original_name": "first_name",
+              "question": null,
+              "privacy": "likely_identifier"
+            }
+          },
+          {
+            "name": "nom_famille_t2",
+            "title": "last_name",
+            "type": "string",
+            "_ddict": {
+              "original_name": "last_name",
+              "question": null,
+              "privacy": "likely_identifier"
+            }
+          },
+          {
+            "name": "donnees_personnalisees_1_t2",
+            "title": "custom_1",
+            "type": "any",
+            "_ddict": {
+              "original_name": "custom_1",
+              "question": null
+            }
+          },
+          {
+            "name": "secteur_t2",
+            "title": "Dans quel secteur travaillez-vous ?",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Santé et services sociaux"
+              },
+              {
+                "value": 2,
+                "label": "Éducation"
+              },
+              {
+                "value": 3,
+                "label": "Commerce"
+              },
+              {
+                "value": 4,
+                "label": "Industrie"
+              },
+              {
+                "value": 5,
+                "label": "Administration"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0001",
+              "measure_level": "nominal",
+              "question": "Q1"
+            }
+          },
+          {
+            "name": "anciennete_t2",
+            "title": "Depuis combien de temps occupez-vous votre emploi actuel ?",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Moins d'un an"
+              },
+              {
+                "value": 2,
+                "label": "De 1 à 5 ans"
+              },
+              {
+                "value": 3,
+                "label": "De 6 à 10 ans"
+              },
+              {
+                "value": 4,
+                "label": "Plus de 10 ans"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0002",
+              "measure_level": "nominal",
+              "question": "Q2"
+            }
+          },
+          {
+            "name": "eft_1_t2",
+            "title": "J'ai eu trop de tâches à accomplir en peu de temps.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Jamais"
+              },
+              {
+                "value": 2,
+                "label": "Rarement"
+              },
+              {
+                "value": 3,
+                "label": "Parfois"
+              },
+              {
+                "value": 4,
+                "label": "Souvent"
+              },
+              {
+                "value": 5,
+                "label": "Toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "original_name": "q0003_0001",
+              "measure_level": "ordinal",
+              "question": "Q3.r1",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "eft_2_t2",
+            "title": "J'ai pu prendre mes pauses comme prévu.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Jamais"
+              },
+              {
+                "value": 2,
+                "label": "Rarement"
+              },
+              {
+                "value": 3,
+                "label": "Parfois"
+              },
+              {
+                "value": 4,
+                "label": "Souvent"
+              },
+              {
+                "value": 5,
+                "label": "Toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "original_name": "q0003_0002",
+              "measure_level": "ordinal",
+              "question": "Q3.r2",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "eft_3_t2",
+            "title": "Je me suis senti·e soutenu·e par mes collègues.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Jamais"
+              },
+              {
+                "value": 2,
+                "label": "Rarement"
+              },
+              {
+                "value": 3,
+                "label": "Parfois"
+              },
+              {
+                "value": 4,
+                "label": "Souvent"
+              },
+              {
+                "value": 5,
+                "label": "Toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "original_name": "q0003_0003",
+              "measure_level": "ordinal",
+              "question": "Q3.r3",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "eft_4_t2",
+            "title": "J'ai eu de la difficulté à décrocher après le travail.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Jamais"
+              },
+              {
+                "value": 2,
+                "label": "Rarement"
+              },
+              {
+                "value": 3,
+                "label": "Parfois"
+              },
+              {
+                "value": 4,
+                "label": "Souvent"
+              },
+              {
+                "value": 5,
+                "label": "Toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "original_name": "q0003_0004",
+              "measure_level": "ordinal",
+              "question": "Q3.r4",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "eft_5_t2",
+            "title": "J'ai pu identifier les sources de tension dans mon équipe.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Jamais"
+              },
+              {
+                "value": 2,
+                "label": "Rarement"
+              },
+              {
+                "value": 3,
+                "label": "Parfois"
+              },
+              {
+                "value": 4,
+                "label": "Souvent"
+              },
+              {
+                "value": 5,
+                "label": "Toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "original_name": "q0003_0005",
+              "measure_level": "ordinal",
+              "question": "Q3.r5",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "eft_6_t2",
+            "title": "J'ai reçu des consignes contradictoires.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Jamais"
+              },
+              {
+                "value": 2,
+                "label": "Rarement"
+              },
+              {
+                "value": 3,
+                "label": "Parfois"
+              },
+              {
+                "value": 4,
+                "label": "Souvent"
+              },
+              {
+                "value": 5,
+                "label": "Toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "original_name": "q0003_0006",
+              "measure_level": "ordinal",
+              "question": "Q3.r6",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "eft_7_t2",
+            "title": "Je me suis senti·e reconnu·e pour mon travail.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Jamais"
+              },
+              {
+                "value": 2,
+                "label": "Rarement"
+              },
+              {
+                "value": 3,
+                "label": "Parfois"
+              },
+              {
+                "value": 4,
+                "label": "Souvent"
+              },
+              {
+                "value": 5,
+                "label": "Toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "original_name": "q0003_0007",
+              "measure_level": "ordinal",
+              "question": "Q3.r7",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "eft_8_t2",
+            "title": "J'ai manqué d'information pour bien faire mon travail.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Jamais"
+              },
+              {
+                "value": 2,
+                "label": "Rarement"
+              },
+              {
+                "value": 3,
+                "label": "Parfois"
+              },
+              {
+                "value": 4,
+                "label": "Souvent"
+              },
+              {
+                "value": 5,
+                "label": "Toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "original_name": "q0003_0008",
+              "measure_level": "ordinal",
+              "question": "Q3.r8",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "eft_9_t2",
+            "title": "J'ai eu le sentiment de bien faire mon travail.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Jamais"
+              },
+              {
+                "value": 2,
+                "label": "Rarement"
+              },
+              {
+                "value": 3,
+                "label": "Parfois"
+              },
+              {
+                "value": 4,
+                "label": "Souvent"
+              },
+              {
+                "value": 5,
+                "label": "Toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "original_name": "q0003_0009",
+              "measure_level": "ordinal",
+              "question": "Q3.r9",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "eft_11_t2",
+            "title": "J'ai été interrompu·e souvent dans mes tâches.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Jamais"
+              },
+              {
+                "value": 2,
+                "label": "Rarement"
+              },
+              {
+                "value": 3,
+                "label": "Parfois"
+              },
+              {
+                "value": 4,
+                "label": "Souvent"
+              },
+              {
+                "value": 5,
+                "label": "Toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "original_name": "q0003_0010",
+              "measure_level": "ordinal",
+              "question": "Q3.r10",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "eft_12_t2",
+            "title": "J'ai eu assez d'autonomie dans l'organisation de mon travail.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Jamais"
+              },
+              {
+                "value": 2,
+                "label": "Rarement"
+              },
+              {
+                "value": 3,
+                "label": "Parfois"
+              },
+              {
+                "value": 4,
+                "label": "Souvent"
+              },
+              {
+                "value": 5,
+                "label": "Toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "original_name": "q0003_0011",
+              "measure_level": "ordinal",
+              "question": "Q3.r11",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "eft_13_t2",
+            "title": "J'ai pensé à quitter mon emploi.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Jamais"
+              },
+              {
+                "value": 2,
+                "label": "Rarement"
+              },
+              {
+                "value": 3,
+                "label": "Parfois"
+              },
+              {
+                "value": 4,
+                "label": "Souvent"
+              },
+              {
+                "value": 5,
+                "label": "Toujours"
+              }
+            ],
+            "categoriesOrdered": true,
+            "_ddict": {
+              "original_name": "q0003_0012",
+              "measure_level": "ordinal",
+              "question": "Q3.r12",
+              "group": "G1"
+            }
+          },
+          {
+            "name": "milieu_1_t2",
+            "title": "Êtes-vous satisfait·e de l'éclairage ?",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Très insatisfait·e"
+              },
+              {
+                "value": 2,
+                "label": "Plutôt insatisfait·e"
+              },
+              {
+                "value": 3,
+                "label": "Ni l'un ni l'autre"
+              },
+              {
+                "value": 4,
+                "label": "Plutôt satisfait·e"
+              },
+              {
+                "value": 5,
+                "label": "Très satisfait·e"
+              }
+            ],
+            "categoriesOrdered": true,
+            "missingValues": [
+              {
+                "value": "6",
+                "label": "Ne sais pas"
+              },
+              {
+                "value": "7",
+                "label": "Préfère ne pas répondre"
+              }
+            ],
+            "_ddict": {
+              "original_name": "q0004_0001",
+              "measure_level": "ordinal",
+              "question": "Q4.r1",
+              "group": "G2"
+            }
+          },
+          {
+            "name": "milieu_2_t2",
+            "title": "Êtes-vous satisfait·e du niveau de bruit ?",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Très insatisfait·e"
+              },
+              {
+                "value": 2,
+                "label": "Plutôt insatisfait·e"
+              },
+              {
+                "value": 3,
+                "label": "Ni l'un ni l'autre"
+              },
+              {
+                "value": 4,
+                "label": "Plutôt satisfait·e"
+              },
+              {
+                "value": 5,
+                "label": "Très satisfait·e"
+              }
+            ],
+            "categoriesOrdered": true,
+            "missingValues": [
+              {
+                "value": "6",
+                "label": "Ne sais pas"
+              },
+              {
+                "value": "7",
+                "label": "Préfère ne pas répondre"
+              }
+            ],
+            "_ddict": {
+              "original_name": "q0004_0002",
+              "measure_level": "ordinal",
+              "question": "Q4.r2",
+              "group": "G2"
+            }
+          },
+          {
+            "name": "milieu_3_t2",
+            "title": "Êtes-vous satisfait·e de la température ?",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Très insatisfait·e"
+              },
+              {
+                "value": 2,
+                "label": "Plutôt insatisfait·e"
+              },
+              {
+                "value": 3,
+                "label": "Ni l'un ni l'autre"
+              },
+              {
+                "value": 4,
+                "label": "Plutôt satisfait·e"
+              },
+              {
+                "value": 5,
+                "label": "Très satisfait·e"
+              }
+            ],
+            "categoriesOrdered": true,
+            "missingValues": [
+              {
+                "value": "6",
+                "label": "Ne sais pas"
+              },
+              {
+                "value": "7",
+                "label": "Préfère ne pas répondre"
+              }
+            ],
+            "_ddict": {
+              "original_name": "q0004_0003",
+              "measure_level": "ordinal",
+              "question": "Q4.r3",
+              "group": "G2"
+            }
+          },
+          {
+            "name": "milieu_4_t2",
+            "title": "Êtes-vous satisfait·e de l'équipement fourni ?",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Très insatisfait·e"
+              },
+              {
+                "value": 2,
+                "label": "Plutôt insatisfait·e"
+              },
+              {
+                "value": 3,
+                "label": "Ni l'un ni l'autre"
+              },
+              {
+                "value": 4,
+                "label": "Plutôt satisfait·e"
+              },
+              {
+                "value": 5,
+                "label": "Très satisfait·e"
+              }
+            ],
+            "categoriesOrdered": true,
+            "missingValues": [
+              {
+                "value": "6",
+                "label": "Ne sais pas"
+              },
+              {
+                "value": "7",
+                "label": "Préfère ne pas répondre"
+              }
+            ],
+            "_ddict": {
+              "original_name": "q0004_0004",
+              "measure_level": "ordinal",
+              "question": "Q4.r4",
+              "group": "G2"
+            }
+          },
+          {
+            "name": "milieu_5_t2",
+            "title": "Êtes-vous satisfait·e de l'espace de rangement ?",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Très insatisfait·e"
+              },
+              {
+                "value": 2,
+                "label": "Plutôt insatisfait·e"
+              },
+              {
+                "value": 3,
+                "label": "Ni l'un ni l'autre"
+              },
+              {
+                "value": 4,
+                "label": "Plutôt satisfait·e"
+              },
+              {
+                "value": 5,
+                "label": "Très satisfait·e"
+              }
+            ],
+            "categoriesOrdered": true,
+            "missingValues": [
+              {
+                "value": "6",
+                "label": "Ne sais pas"
+              },
+              {
+                "value": "7",
+                "label": "Préfère ne pas répondre"
+              }
+            ],
+            "_ddict": {
+              "original_name": "q0004_0005",
+              "measure_level": "ordinal",
+              "question": "Q4.r5",
+              "group": "G2"
+            }
+          },
+          {
+            "name": "taches_1_t2",
+            "title": "Quelles tâches faites-vous dans une semaine habituelle ? (Cochez toutes les réponses qui s'appliquent)",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Accueil de la clientèle"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0005_0001",
+              "measure_level": "nominal",
+              "question": "Q5.o1",
+              "group": "G3"
+            }
+          },
+          {
+            "name": "taches_2_t2",
+            "title": "Quelles tâches faites-vous dans une semaine habituelle ? (Cochez toutes les réponses qui s'appliquent)",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Travail à l'ordinateur"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0005_0002",
+              "measure_level": "nominal",
+              "question": "Q5.o2",
+              "group": "G3"
+            }
+          },
+          {
+            "name": "taches_3_t2",
+            "title": "Quelles tâches faites-vous dans une semaine habituelle ? (Cochez toutes les réponses qui s'appliquent)",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Manutention"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0005_0003",
+              "measure_level": "nominal",
+              "question": "Q5.o3",
+              "group": "G3"
+            }
+          },
+          {
+            "name": "taches_4_t2",
+            "title": "Quelles tâches faites-vous dans une semaine habituelle ? (Cochez toutes les réponses qui s'appliquent)",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Entretien ménager"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0005_0004",
+              "measure_level": "nominal",
+              "question": "Q5.o4",
+              "group": "G3"
+            }
+          },
+          {
+            "name": "taches_5_t2",
+            "title": "Quelles tâches faites-vous dans une semaine habituelle ? (Cochez toutes les réponses qui s'appliquent)",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Supervision d'une équipe"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0005_0005",
+              "measure_level": "nominal",
+              "question": "Q5.o5",
+              "group": "G3"
+            }
+          },
+          {
+            "name": "taches_6_t2",
+            "title": "Quelles tâches faites-vous dans une semaine habituelle ? (Cochez toutes les réponses qui s'appliquent)",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Autre (veuillez préciser)"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0005_0006",
+              "measure_level": "nominal",
+              "question": "Q5.o6",
+              "group": "G3"
+            }
+          },
+          {
+            "name": "taches_autre_txt_t2",
+            "title": "Other (please specify)",
+            "type": "string",
+            "_ddict": {
+              "original_name": "q0005_other",
+              "question": "Q5.o6",
+              "group": "G3"
+            }
+          },
+          {
+            "name": "formation_sst_t2",
+            "title": "Avez-vous reçu une formation en santé et sécurité au travail au cours de la dernière année ?",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Oui"
+              },
+              {
+                "value": 2,
+                "label": "Non"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0006",
+              "measure_level": "nominal",
+              "question": "Q6"
+            }
+          },
+          {
+            "name": "pauses_t2",
+            "title": "Combien de pauses prenez-vous dans une journée de travail habituelle ?",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Aucune"
+              },
+              {
+                "value": 2,
+                "label": "Une"
+              },
+              {
+                "value": 3,
+                "label": "Deux"
+              },
+              {
+                "value": 4,
+                "label": "Trois ou plus"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0007",
+              "measure_level": "nominal",
+              "question": "Q7"
+            }
+          },
+          {
+            "name": "consignes_securite_1_t2",
+            "title": "Cochez les consignes de sécurité que vous avez reçues à votre arrivée.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Plan d'évacuation"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0008_0001",
+              "measure_level": "nominal",
+              "question": "Q8.o1",
+              "group": "G4"
+            }
+          },
+          {
+            "name": "consignes_securite_2_t2",
+            "title": "Cochez les consignes de sécurité que vous avez reçues à votre arrivée.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Port de l'équipement de protection"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0008_0002",
+              "measure_level": "nominal",
+              "question": "Q8.o2",
+              "group": "G4"
+            }
+          },
+          {
+            "name": "consignes_securite_3_t2",
+            "title": "Cochez les consignes de sécurité que vous avez reçues à votre arrivée.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Utilisation des produits dangereux"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0008_0003",
+              "measure_level": "nominal",
+              "question": "Q8.o3",
+              "group": "G4"
+            }
+          },
+          {
+            "name": "consignes_securite_4_t2",
+            "title": "Cochez les consignes de sécurité que vous avez reçues à votre arrivée.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Premiers soins"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0008_0004",
+              "measure_level": "nominal",
+              "question": "Q8.o4",
+              "group": "G4"
+            }
+          },
+          {
+            "name": "consignes_securite_5_t2",
+            "title": "Cochez les consignes de sécurité que vous avez reçues à votre arrivée.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Signalement des accidents"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0008_0005",
+              "measure_level": "nominal",
+              "question": "Q8.o5",
+              "group": "G4"
+            }
+          },
+          {
+            "name": "consignes_securite_6_t2",
+            "title": "Cochez les consignes de sécurité que vous avez reçues à votre arrivée.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Ergonomie du poste de travail"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0008_0006",
+              "measure_level": "nominal",
+              "question": "Q8.o6",
+              "group": "G4"
+            }
+          },
+          {
+            "name": "consignes_securite_7_t2",
+            "title": "Cochez les consignes de sécurité que vous avez reçues à votre arrivée.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Autre (veuillez préciser)"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0008_0007",
+              "measure_level": "nominal",
+              "question": "Q8.o7",
+              "group": "G4"
+            }
+          },
+          {
+            "name": "consignes_securite_autre_txt_t2",
+            "title": "Other (please specify)",
+            "type": "string",
+            "_ddict": {
+              "original_name": "q0008_other",
+              "question": "Q8.o7",
+              "group": "G4"
+            }
+          },
+          {
+            "name": "situation_danger_t2",
+            "title": "Décrivez une situation récente où vous vous êtes senti·e en danger au travail.",
+            "type": "string",
+            "_ddict": {
+              "original_name": "q0009",
+              "question": "Q9",
+              "privacy": "free_text"
+            }
+          },
+          {
+            "name": "transport_1_t2",
+            "title": "Coche les moyens de transport que tu utilises pour te rendre au travail.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Voiture"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0010_0001",
+              "measure_level": "nominal",
+              "question": "Q10.o1",
+              "group": "G5"
+            }
+          },
+          {
+            "name": "transport_2_t2",
+            "title": "Coche les moyens de transport que tu utilises pour te rendre au travail.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Transport en commun"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0010_0002",
+              "measure_level": "nominal",
+              "question": "Q10.o2",
+              "group": "G5"
+            }
+          },
+          {
+            "name": "transport_3_t2",
+            "title": "Coche les moyens de transport que tu utilises pour te rendre au travail.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Vélo"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0010_0003",
+              "measure_level": "nominal",
+              "question": "Q10.o3",
+              "group": "G5"
+            }
+          },
+          {
+            "name": "transport_4_t2",
+            "title": "Coche les moyens de transport que tu utilises pour te rendre au travail.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Marche"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0010_0004",
+              "measure_level": "nominal",
+              "question": "Q10.o4",
+              "group": "G5"
+            }
+          },
+          {
+            "name": "transport_5_t2",
+            "title": "Coche les moyens de transport que tu utilises pour te rendre au travail.",
+            "type": "integer",
+            "categories": [
+              {
+                "value": 1,
+                "label": "Autre (veuillez préciser)"
+              }
+            ],
+            "categoriesOrdered": false,
+            "_ddict": {
+              "original_name": "q0010_0005",
+              "measure_level": "nominal",
+              "question": "Q10.o5",
+              "group": "G5"
+            }
+          },
+          {
+            "name": "transport_autre_txt_t2",
+            "title": "Other (please specify)",
+            "type": "string",
+            "_ddict": {
+              "original_name": "q0010_other",
+              "question": "Q10.o5",
+              "group": "G5"
+            }
+          },
+          {
+            "name": "commentaires_t2",
+            "title": "Avez-vous d'autres commentaires ?",
+            "type": "string",
+            "_ddict": {
+              "original_name": "q0011",
+              "question": "Q11",
+              "privacy": "free_text"
+            }
+          },
+          {
+            "name": "id_participant_t2",
+            "title": "id",
+            "type": "string",
+            "_ddict": {
+              "original_name": "q0012",
+              "question": null,
+              "privacy": "likely_identifier"
+            }
+          }
+        ]
+      },
+      "_ddict": {
+        "rows": 110,
+        "renamed_from": {
+          "path": "travail-t2_surveymonkey.sav",
+          "hash": "sha256:777728a6c1385424f5529928d15e95afe7246de6729b2edf49d5bb767132839b"
+        }
+      }
+    }
+  ],
+  "_ddict": {
+    "tool": "ddict 0.8.0",
+    "codebook_fingerprint": "922f416e71a1",
+    "language": "fr",
+    "dataset": {
+      "unit_of_observation": "participant",
+      "structure": "one_wave_per_file",
+      "wave": "t2",
+      "design_variables": {
+        "id": "id_participant_t2"
+      },
+      "description": "Enquête fictive sur le travail, deuxième vague."
+    },
+    "rules": [
+      "missing_values_excluded",
+      "reverse_items_before_scores",
+      "sensitive_never_in_outputs",
+      "undocumented_is_unknown",
+      "multiple_response_empty_is_unchecked"
+    ],
+    "completeness": {
+      "question": 55,
+      "label": 55,
+      "value_labels": 39,
+      "value_labels_applicable": 40,
+      "measure_level": 41,
+      "scoring": 0,
+      "scoring_applicable": 2
+    },
+    "groups": [
+      {
+        "id": "G1",
+        "kind": "scale",
+        "items": [
+          "eft_1_t2",
+          "eft_2_t2",
+          "eft_3_t2",
+          "eft_4_t2",
+          "eft_5_t2",
+          "eft_6_t2",
+          "eft_7_t2",
+          "eft_8_t2",
+          "eft_9_t2",
+          "eft_11_t2",
+          "eft_12_t2",
+          "eft_13_t2"
+        ]
+      },
+      {
+        "id": "G2",
+        "kind": "scale",
+        "items": [
+          "milieu_1_t2",
+          "milieu_2_t2",
+          "milieu_3_t2",
+          "milieu_4_t2",
+          "milieu_5_t2"
+        ]
+      },
+      {
+        "id": "G3",
+        "kind": "multiple_response",
+        "items": [
+          "taches_1_t2",
+          "taches_2_t2",
+          "taches_3_t2",
+          "taches_4_t2",
+          "taches_5_t2",
+          "taches_6_t2"
+        ],
+        "attached": [
+          "taches_autre_txt_t2"
+        ]
+      },
+      {
+        "id": "G4",
+        "kind": "multiple_response",
+        "items": [
+          "consignes_securite_1_t2",
+          "consignes_securite_2_t2",
+          "consignes_securite_3_t2",
+          "consignes_securite_4_t2",
+          "consignes_securite_5_t2",
+          "consignes_securite_6_t2",
+          "consignes_securite_7_t2"
+        ],
+        "attached": [
+          "consignes_securite_autre_txt_t2"
+        ]
+      },
+      {
+        "id": "G5",
+        "kind": "multiple_response",
+        "items": [
+          "transport_1_t2",
+          "transport_2_t2",
+          "transport_3_t2",
+          "transport_4_t2",
+          "transport_5_t2"
+        ],
+        "attached": [
+          "transport_autre_txt_t2"
+        ]
+      }
+    ]
+  }
+}
