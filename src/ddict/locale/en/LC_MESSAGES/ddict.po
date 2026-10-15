@@ -2129,6 +2129,9 @@ msgstr "human"
 msgid "identifiant probable"
 msgstr "likely identifier"
 
+msgid "lue comme un paragraphe, retrouvée par la structure de la base"
+msgstr "read as a paragraph, found by the structure of the database"
+
 msgid "masqué"
 msgstr "masked"
 

@@ -12,6 +12,7 @@ import pytest
 
 from ddict.io import read_database
 from ddict.project import build_project
+from ddict.project.model import QuestionnaireText
 from ddict.questionnaire import link
 from ddict.questionnaire.read import Line
 from ddict.questionnaire.segment import segment
@@ -308,3 +309,54 @@ def test_no_check_without_a_platform():
     assert platform_summary(project) == []
     codes = {c for q in project.questionnaire.questions for c in q.to_check}
     assert not codes & set(link.PLATFORM_CHECKS)
+
+
+def test_the_instructions_of_the_next_grid_are_not_a_row():
+    # A real PDF: a grid going on over the page, then the next grid's instructions and its
+    # column titles; those instructions are not a last row of the first grid.
+    lines = pdf(
+        (1, 0, "À quelle fréquence avez-vous vécu ces situations ?"),
+        (1, [(60, "Jamais"), (80, "Parfois"), (100, "Souvent")]),
+        (1, 1, "J'ai eu trop de travail."),
+        (1, 1, "J'ai manqué de temps."),
+        (2, 0, "J'ai été interrompu·e."),
+        (3, 0, "Les énoncés suivants portent sur votre équipe."),
+        (3, 0, "Indiquez votre accord avec chacun."),
+        (3, [(60, "Pas du tout"), (80, "Un peu"), (100, "Beaucoup")]),
+        (3, 1, "Mon équipe m'aide."),
+        (3, 1, "Mon équipe m'écoute."),
+    )
+    questions, _texts = segment(lines, use_indent=True)
+    assert [len(q.rows) for q in questions] == [3, 2]
+
+
+def test_the_structure_finds_what_the_layout_hides():
+    project = _project("questionnaire-travail.pdf")
+    questionnaire = project.questionnaire
+    # As in a real PDF: an open question without "?" read as a paragraph, and the last
+    # row of a grid read as the paragraph before the next question.
+    situation = next(q for q in questionnaire.questions if q.text.startswith("Décrivez"))
+    questionnaire.questions.remove(situation)
+    questionnaire.texts.append(QuestionnaireText(page=situation.page, text=situation.text))
+    grid = questionnaire.questions[2]
+    last = grid.rows.pop()
+    questionnaire.texts.append(QuestionnaireText(page=grid.page, text=last.text))
+    link.check_against_platform(project)
+    found = next(q for q in questionnaire.questions if q.text == situation.text)
+    assert found.kind == "open" and found.to_check == ["found_by_platform"]
+    assert [q.question_id for q in questionnaire.questions] == [
+        f"Q{k}" for k in range(1, len(questionnaire.questions) + 1)
+    ]
+    assert grid.rows[-1].text == last.text and "found_by_platform" in grid.to_check
+    assert grid.rows[-1].row_id == f"{grid.question_id}.r{len(grid.rows)}"
+    assert link.platform_coverage(project) == (11, 0)
+    assert link.platform_choices(project)["q0009"] == found.question_id
+
+
+def test_no_repair_without_an_agreeing_paragraph():
+    project = _project("questionnaire-travail.pdf")
+    questionnaire = project.questionnaire
+    removed = questionnaire.questions.pop(8)  # gone, and no paragraph says it
+    link.check_against_platform(project)
+    assert all(q.text != removed.text for q in questionnaire.questions)
+    assert link.platform_coverage(project) == (11, 1)

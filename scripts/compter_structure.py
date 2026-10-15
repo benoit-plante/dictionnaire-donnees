@@ -254,25 +254,60 @@ def _guarded(counts: dict, step: str, function, *args) -> None:
         counts[f"erreur_{step}"] = type(error).__name__
 
 
-def count_base(folder: Path) -> dict[str, float | int | str]:
-    """All the counts of one base (a folder with one .sav file)."""
-    counts: dict[str, float | int | str] = {}
+def main_database(folder: Path) -> Path | None:
+    """The .sav of a base: the one with an Excel export of the same name, else the last by
+    name (a folder may hold an earlier wave too)."""
     savs = sorted(folder.glob("*.sav"))
-    if len(savs) != 1:
-        return {"erreur": "un_fichier_sav_attendu", "fichiers_sav": len(savs)}
-    _guarded(counts, "sav", count_database, savs[0])
-    for xlsx in sorted(folder.glob("*.xlsx"))[:1]:
+    paired = [s for s in savs if s.with_suffix(".xlsx").is_file()]
+    return (paired or savs or [None])[-1]
+
+
+def _coverage(sav: Path, questionnaire: Path) -> tuple[int, int]:
+    """How well a questionnaire fits a base: (questions of the base without a match,
+    minus structural links), lower is better."""
+    project = build_project(read_database(sav))
+    add_questionnaire(project, questionnaire)
+    _asked, unmatched = link.platform_coverage(project)
+    return unmatched, -len(link.platform_choices(project))
+
+
+def questionnaire_of(sav: Path, paths: list[Path]) -> Path | None:
+    """The questionnaire that fits the base best, among several (one per wave)."""
+    if len(paths) <= 1:
+        return paths[0] if paths else None
+    scored = []
+    for path in paths:
         try:
-            sav_names = {v.name for v in read_database(savs[0]).variables}
+            scored.append((_coverage(sav, path), path))
+        except Exception:  # an unreadable file fits nothing
+            continue
+    return min(scored)[1] if scored else None
+
+
+def count_base(folder: Path) -> dict[str, float | int | str]:
+    """All the counts of one base: its .sav, its Excel export, its questionnaires."""
+    counts: dict[str, float | int | str] = {}
+    sav = main_database(folder)
+    if sav is None:
+        return {"erreur": "aucun_fichier_sav"}
+    counts["fichiers_sav"] = len(list(folder.glob("*.sav")))
+    _guarded(counts, "sav", count_database, sav)
+    xlsx = sav.with_suffix(".xlsx")
+    if not xlsx.is_file():
+        xlsx = next(iter(sorted(folder.glob("*.xlsx"))), None)
+    if xlsx is not None:
+        try:
+            sav_names = {v.name for v in read_database(sav).variables}
         except Exception as error:
             counts["erreur_xlsx"] = type(error).__name__
         else:
             _guarded(counts, "xlsx", count_excel, xlsx, counts.get("lignes", 0), sav_names)
-        _guarded(counts, "liens_xlsx", count_links, savs[0], xlsx, "entete")
+        _guarded(counts, "liens_xlsx", count_links, sav, xlsx, "entete")
     for suffix in ("pdf", "txt"):
-        for path in sorted(folder.glob(f"*.{suffix}"))[:1]:
+        path = questionnaire_of(sav, sorted(folder.glob(f"*.{suffix}")))
+        if path is not None:
             _guarded(counts, suffix, count_questionnaire, path, suffix)
-            _guarded(counts, f"liens_{suffix}", count_links, savs[0], path, suffix)
+            _guarded(counts, f"liens_{suffix}", count_links, sav, path, suffix)
     return counts
 
 

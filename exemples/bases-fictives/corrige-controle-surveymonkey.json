@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "description": "Base de contrôle de la v0.7 : export SurveyMonkey fictif en anglais, avec des types de questions supposés (coordonnées, classement, curseur, zones de texte, menus déroulants). Tout est inventé.",
+  "sav": "trajets_surveymonkey.sav",
+  "xlsx": "trajets_surveymonkey.xlsx",
+  "questionnaire_txt": "questionnaire-trajets.txt",
+  "n_rows": 95,
+  "groups": [
+    {
+      "kind": "scale",
+      "members": [
+        "q0004_0001",
+        "q0004_0002",
+        "q0004_0003",
+        "q0004_0004",
+        "q0004_0005"
+      ]
+    },
+    {
+      "kind": "multiple_response",
+      "members": [
+        "q0008_0001",
+        "q0008_0002",
+        "q0008_0003",
+        "q0008_0004",
+        "q0008_0005",
+        "q0008_0006"
+      ],
+      "attached": [
+        "q0008_other"
+      ]
+    },
+    {
+      "kind": "scale",
+      "members": [
+        "q0009_0001",
+        "q0009_0002",
+        "q0009_0003",
+        "q0009_0004"
+      ]
+    }
+  ],
+  "links": {
+    "CollectorNm": "none",
+    "respondent_id": "none",
+    "collector_id": "none",
+    "date_created": "none",
+    "date_modified": "none",
+    "ip_address": "none",
+    "email_address": "none",
+    "first_name": "none",
+    "last_name": "none",
+    "custom_1": "none",
+    "q0001": "Q1",
+    "q0002": "Q2",
+    "q0002_other": "Q2.o5",
+    "q0003_0001": null,
+    "q0003_0002": null,
+    "q0003_0003": null,
+    "q0003_0004": null,
+    "q0004_0001": "Q4.r1",
+    "q0004_0002": "Q4.r2",
+    "q0004_0003": "Q4.r3",
+    "q0004_0004": "Q4.r4",
+    "q0004_0005": "Q4.r5",
+    "q0005_0001": null,
+    "q0005_0002": null,
+    "q0005_0003": null,
+    "q0005_0004": null,
+    "q0006": "Q6",
+    "q0007_0001": null,
+    "q0007_0002": null,
+    "q0008_0001": "Q8.o1",
+    "q0008_0002": "Q8.o2",
+    "q0008_0003": "Q8.o3",
+    "q0008_0004": "Q8.o4",
+    "q0008_0005": "Q8.o5",
+    "q0008_0006": "Q8.o6",
+    "q0008_other": "Q8.o6",
+    "q0009_0001": "Q9.r1",
+    "q0009_0002": "Q9.r2",
+    "q0009_0003": "Q9.r3",
+    "q0009_0004": "Q9.r4",
+    "q0009_other": null,
+    "q0010_0001_0001": null,
+    "q0010_0001_0002": null,
+    "q0010_0002_0001": null,
+    "q0010_0002_0002": null,
+    "q0011": "Q11"
+  },
+  "stems": {
+    "q0001": "age_group",
+    "q0002": "commute_mode",
+    "q0003": "contact",
+    "q0004": "cs",
+    "q0005": "rank",
+    "q0006": "commute_satisfaction",
+    "q0007": "minutes",
+    "q0008": "activities",
+    "q0009": "events",
+    "q0010": "trip",
+    "q0011": "comments"
+  },
+  "likely_identifiers": [
+    "q0003_0001",
+    "q0003_0003",
+    "q0003_0004"
+  ],
+  "kinds": {
+    "q0001": "single",
+    "q0002": "single_with_other",
+    "q0003": "contact",
+    "q0004": "grid",
+    "q0005": "ranking",
+    "q0006": "slider",
+    "q0007": "textboxes",
+    "q0008": "checkbox",
+    "q0009": "grid_with_comment",
+    "q0010": "dropdowns",
+    "q0011": "open"
+  },
+  "canary": "ZQXCTRL"
+}

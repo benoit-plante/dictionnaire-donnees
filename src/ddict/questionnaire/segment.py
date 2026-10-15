@@ -321,6 +321,16 @@ def _goes_on_grid(lines: list[Line], index: int, grid: Question, use_indent: boo
         return True  # the end of a row cut by the page
     if _has_own_options(lines, index, use_indent) or _header_follows(lines, index, use_indent):
         return False
+    # The instructions of the next grid: its column titles come with the next line, or the
+    # one after when both are on this page (a row ends a page; instructions start one).
+    if index + 1 < len(lines) and _header_follows(lines, index + 1, use_indent):
+        return False
+    if (
+        index + 2 < len(lines)
+        and lines[index + 1].page == line.page
+        and _header_follows(lines, index + 2, use_indent)
+    ):
+        return False
     rows_ask = all(bool(_QUESTION_END.search(row.text)) for row in grid.rows)
     if _is_question(lines, index, use_indent) != rows_ask:
         return False

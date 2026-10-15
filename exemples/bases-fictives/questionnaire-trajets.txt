@@ -1,0 +1,66 @@
+Fictional study on commuting and wellbeing
+
+This study is entirely fictional: it serves to check a data documentation tool. Contact: Dr. Sam ZQXCTRL-Example, Fictional Mobility Lab.
+
+1. What is your age group?
+18-24
+25-34
+35-49
+50-64
+65 or older
+
+2. What is your main way of getting to work?
+Car
+Bus or train
+Bicycle
+On foot
+Other (please specify)
+
+3. Please give your contact information.
+Name
+City/Town
+Email Address
+Phone Number
+
+4. How much do you agree with the following statements about your commute?
+	Strongly disagree	Disagree	Neutral	Agree	Strongly agree
+My commute is stressful.					
+I use my commute time well.					
+My commute makes me tired.					
+I would like a shorter commute.					
+My commute is a pleasant part of my day.					
+
+5. Rank the following in order of importance when choosing how to commute.
+Cost
+Speed
+Comfort
+Environment
+
+6. How satisfied are you with your commute, from 0 to 100?
+
+7. On a usual day, how many minutes do you spend commuting:
+In the morning
+In the evening
+
+8. Which of these do you do while commuting? (Select all that apply)
+Read
+Listen to music
+Work
+Sleep
+Talk on the phone
+Other (please specify)
+
+9. How often do the following happen on your commute?
+	Never	Sometimes	Often	Always
+Delays				
+Crowding				
+Unsafe situations				
+Bad weather				
+Comments
+
+10. For each trip, choose your usual departure time and mode.
+Morning trip
+Evening trip
+
+11. Is there anything else you would like to tell us?
+

@@ -36,7 +36,15 @@ from difflib import SequenceMatcher
 
 from ddict import glossary, platforms
 from ddict.i18n import _, colon
-from ddict.project.model import Project, Question, Questionnaire, TrackedValue, VariableEntry
+from ddict.project.model import (
+    GridRow,
+    Project,
+    Question,
+    Questionnaire,
+    QuestionnaireText,
+    TrackedValue,
+    VariableEntry,
+)
 
 NO_QUESTION = "none"  # a decision: the variable comes from no question of the questionnaire
 MAX_CANDIDATES = 5
@@ -577,6 +585,84 @@ PLATFORM_CHECKS = (
 )
 
 
+def repair_from_platform(project: Project) -> None:
+    """Read again, with the structure of the export, what the cutting of a questionnaire
+    could not tell (v0.7, a real PDF): a paragraph whose words agree with a question of the
+    export the questionnaire lacks becomes that question (an open question without "?",
+    a field alone on its line); one that agrees with the missing item of a grid becomes its
+    row. Only when exactly one paragraph agrees; its words are kept, it is marked
+    `found_by_platform`, and the questions are numbered again (Q1, Q2... in reading order).
+    """
+    questionnaire = project.questionnaire
+    matched = {found.rank: question for found, question in matched_questions(project)}
+    changed = False
+    for found in project_questions(project):
+        question = matched.get(found.rank)
+        if question is None and found.single and not found.items:
+            entry = project.variable(found.single)
+            paragraph = _one_agreeing(questionnaire, entry.file.label)
+            if paragraph is not None:
+                kind = "single" if entry.file.value_labels else "open"
+                promoted = Question(
+                    question_id="Q0",
+                    page=paragraph.page,
+                    text=paragraph.text,
+                    kind=kind,
+                    to_check=["found_by_platform"],
+                )
+                questionnaire.texts.remove(paragraph)
+                _insert(questionnaire, promoted, found.rank, matched)
+                matched[found.rank] = promoted
+                changed = True
+        elif (
+            question is not None and found.kind == "grid" and len(question.rows) < len(found.items)
+        ):
+            rows = [row.text for row in question.rows]
+            for name in found.items:
+                label = project.variable(name).file.label
+                if any(texts_agree(label, text) for text in rows):
+                    continue
+                paragraph = _one_agreeing(questionnaire, label)
+                if paragraph is None:
+                    continue
+                questionnaire.texts.remove(paragraph)
+                question.rows.append(GridRow(row_id="Q0.r0", number=None, text=paragraph.text))
+                rows.append(paragraph.text)
+                if "found_by_platform" not in question.to_check:
+                    question.to_check = [*question.to_check, "found_by_platform"]
+                changed = True
+    if changed:
+        _number_again(questionnaire)
+
+
+def _one_agreeing(questionnaire: Questionnaire, label: str | None) -> QuestionnaireText | None:
+    found = [t for t in questionnaire.texts if label and texts_agree(label, t.text)]
+    return found[0] if len(found) == 1 else None
+
+
+def _insert(
+    questionnaire: Questionnaire, question: Question, rank: int, matched: dict[int, Question]
+) -> None:
+    """Before the question matched with the next question of the export, else at the end."""
+    after = [matched[r] for r in sorted(matched) if r > rank]
+    position = questionnaire.questions.index(after[0]) if after else len(questionnaire.questions)
+    questionnaire.questions.insert(position, question)
+
+
+def _number_again(questionnaire: Questionnaire) -> None:
+    for number, question in enumerate(questionnaire.questions, start=1):
+        qid = f"Q{number}"
+        question.question_id = qid
+        question.rows = [
+            row.model_copy(update={"row_id": f"{qid}.r{k}"})
+            for k, row in enumerate(question.rows, start=1)
+        ]
+        question.options = [
+            option.model_copy(update={"option_id": f"{qid}.o{k}"})
+            for k, option in enumerate(question.options, start=1)
+        ]
+
+
 def check_against_platform(project: Project) -> None:
     """Compare the questionnaire with the structure of a platform export, and say so in
     each question's points to check: a grid with another number of rows, a set of
@@ -589,6 +675,7 @@ def check_against_platform(project: Project) -> None:
         return
     for question in questionnaire.questions:
         question.to_check = [c for c in question.to_check if c not in PLATFORM_CHECKS]
+    repair_from_platform(project)
     pairs = matched_questions(project)
     for found, question in pairs:
         if found.kind == "grid" and len(question.rows) != len(found.items):

@@ -225,6 +225,36 @@ def _statistics(
     return _alpha(matrix), reversed_alpha, tuple(items)
 
 
+# In an Excel or CSV export, the answers of a grid are its options as text: a few of them.
+MAX_GRID_OPTIONS = 12
+
+
+def _rated(items, data: LoadedData, profiles: dict[str, VariableProfile]) -> bool:
+    """Whether the items of a grid are rated on labelled options, as a scale's are: value
+    labels in a .sav file, a few texts in an Excel or CSV export. Not text fields
+    (contact information), nor numbers without labels (a ranking, minutes): their grid is
+    a question with several fields, not a scale (v0.7, control export)."""
+    variables = [data.variable(n) for n in items]
+    if all(len(v.value_labels) >= 2 for v in variables):
+        return True
+    if any(v.value_labels for v in variables):
+        return False
+    if not all(
+        profiles[v.name].inferred_type in ("text", "mixed")
+        and (profiles[v.name].n_distinct or 0) <= MAX_GRID_OPTIONS
+        for v in variables
+    ):
+        return False
+    # The items of a scale share their options; the columns of a matrix of drop-down menus
+    # (a departure time, a mode of transport) do not.
+    seen = [{str(o.code) for o in profiles[v.name].observed_values or []} for v in variables]
+    for index, mine in enumerate(seen):
+        others = set().union(*(s for k, s in enumerate(seen) if k != index))
+        if mine and len(mine & others) * 2 < len(mine):
+            return False
+    return True
+
+
 def _platform_sets(
     data: LoadedData, profiles: dict[str, VariableProfile]
 ) -> tuple[list[tuple], set[str]]:
@@ -244,7 +274,11 @@ def _platform_sets(
     for question in platforms.survey_questions(platform, names, ticked):
         covered.update(question.variables)
         prefix = platform.item_format.format(question=question.rank, item=0)[:-4]
-        if question.kind == "grid" and len(question.items) >= MIN_ITEMS:
+        if (
+            question.kind == "grid"
+            and len(question.items) >= MIN_ITEMS
+            and _rated(question.items, data, profiles)
+        ):
             found.append((list(question.items), ("platform_structure",), prefix, "scale", ()))
         elif question.kind == "checkbox" and len(question.items) >= MIN_OPTIONS:
             attached = (question.other,) if question.other else ()

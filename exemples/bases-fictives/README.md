@@ -136,3 +136,7 @@ Une étude fictive sur la vie au travail, exportée comme le fait SurveyMonkey, 
 | Question ajoutée en vague 2, qui décale la numérotation `qNNNN` | `q0002` (ancienneté) |
 | Item retiré de la grille de Likert | 10ᵉ item de la vague 1 (`q0002_0010`) |
 | Étiquette de valeur changée | `q0007` : « Plus de deux » devient « Trois ou plus » |
+
+## Base de contrôle SurveyMonkey (v0.7)
+
+`trajets_surveymonkey.sav` (et `.xlsx`), `questionnaire-trajets.txt` et le corrigé `corrige-controle-surveymonkey.json`, écrits par `scripts/generer_controle_surveymonkey.py` (graine fixe) : une étude fictive en anglais sur les trajets domicile-travail, mesurée une seule fois avant les corrections qu'elle a fait trouver (`docs/essais/2026-10-15-controle-surveymonkey.md`). Elle contient des types de questions que les deux exports réels de l'essai n'avaient pas : coordonnées, choix unique avec « autre », classement, curseur, zones de texte, grille avec colonne de commentaire, grille de menus déroulants. **Pour ces types, les conventions de SurveyMonkey sont supposées, pas observées** : la base vérifie que l'outil échoue proprement là où il ne sait pas.

@@ -101,6 +101,7 @@ TO_CHECK = Texts(
         "platform_options_differ": N_("pas le même nombre d'options que dans la base"),
         "kind_from_platform": N_("cases à cocher d'après la base"),
         "not_in_platform_structure": N_("aucune question correspondante dans la base"),
+        "found_by_platform": N_("lue comme un paragraphe, retrouvée par la structure de la base"),
     }
 )
 KINDS = Texts(

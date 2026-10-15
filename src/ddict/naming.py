@@ -43,7 +43,10 @@ STEM_STOP_WORDS = frozenset(
         "travaillez", "occupez", "recu", "recue", "autres", "autre", "dernier", "derniere", "cours",
         "votre", "vos", "dans", "pour", "chez", "tres", "plus", "moins", "depuis",
         "how", "many", "much", "which", "what", "please", "describe", "check", "select",
-        "indicate", "other", "last", "during", "about",
+        "indicate", "other", "last", "during", "about", "there", "anything", "else", "would",
+        "like", "tell", "us", "while", "usual", "usually", "give", "following", "each",
+        "choose", "rank", "order", "main", "way", "getting", "get", "go", "going", "satisfied",
+        "agree", "often", "apply", "applies",
     }
 )  # fmt: skip
 MAX_STEM = 20  # characters of a stem, before any rank or wave
@@ -176,12 +179,14 @@ class StemQuestion:
 
 
 def stem_questions(project: Project) -> list[StemQuestion]:
-    """Questions needing a stem: from the platform's structure (not grids, which take a
-    prefix), else from the accepted links to the questionnaire."""
+    """Questions needing a stem: from the platform's structure (not the grids of a scale,
+    which take a prefix; a grid of fields, a ranking, takes a stem), else from the accepted
+    links to the questionnaire."""
     found: list[StemQuestion] = []
     if platforms.by_name(project.source.platform) is not None:
+        scales = {m for g in project.groups if g.kind == "scale" for m in g.members.value or []}
         for question in link.project_questions(project):
-            if question.kind == "grid":
+            if question.kind == "grid" and set(question.items) & scales:
                 continue
             options = tuple((name, k) for k, name in enumerate(question.items, start=1))
             key = f"q{question.rank:04d}"
@@ -223,10 +228,11 @@ def question_text(
         found = link.target(project.questionnaire, target_id) if target_id else None
         if found is not None:
             return found.question.text
-    for name in names:
-        label = project.variable(name).file.label
-        if label:
-            return label
+    # The file label tells the question only when its variables share it (a checkbox in a
+    # .sav repeats the question); different labels are the items' own (a grid of fields).
+    labels = {project.variable(name).file.label for name in names}
+    if len(labels) == 1:
+        return labels.pop() or None
     return None
 
 
