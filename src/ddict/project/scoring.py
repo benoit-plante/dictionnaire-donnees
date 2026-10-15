@@ -30,6 +30,16 @@ def score_range(scoring: Scoring) -> tuple[float, float] | None:
     return n * scoring.scale_min, n * scoring.scale_max
 
 
+def partial_sum(scoring: Scoring) -> bool:
+    """A sum that allows missing items: its rule for them matters (D-068)."""
+    return (
+        structured(scoring)
+        and scoring.aggregation == "sum"
+        and scoring.min_items_answered is not None
+        and scoring.min_items_answered < len(scoring.items)
+    )
+
+
 def reversed_items(group: Group, scoring: Scoring) -> list[str]:
     """The confirmed reversed items of the group that the score uses."""
     return [name for name in group.reverse_items if name in scoring.items]

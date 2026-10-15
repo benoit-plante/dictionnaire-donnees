@@ -506,6 +506,15 @@ def questionnaire_facts(project: Project) -> list[tuple[str, str]]:
 # --- v0.8, step 4: the scoring of a group and the description of the database. ---
 
 AGGREGATIONS = Texts({"sum": N_("somme"), "mean": N_("moyenne")})
+MISSING_RULES = Texts(
+    {
+        "prorate": N_(
+            "items manquants : somme proportionnelle (moyenne des items répondus "
+            "multipliée par {n})"
+        ),
+        "sum_answered": N_("items manquants : somme des items répondus"),
+    }
+)
 UNITS = Texts(
     {
         "participant": N_("un participant"),
@@ -558,6 +567,8 @@ def scoring_text(project: Project, group: Group) -> str:
             parts.append(
                 _("au moins {n} items répondus, sinon manquant").format(n=found.min_items_answered)
             )
+        if scoring.partial_sum(found):
+            parts.append(MISSING_RULES[found.missing_rule].format(n=len(found.items)))
         parts.append(_("étendue {low} – {high}").format(low=number(low), high=number(high)))
     if found.note:
         parts.append(found.note)

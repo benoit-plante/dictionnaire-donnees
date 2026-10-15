@@ -23,11 +23,18 @@ msgstr " ({n} pages)"
 msgid " ; {n} énoncés de grille"
 msgstr "; {n} grid items"
 
+#, python-brace-format
+msgid " écarts entre {score} et {existing}, déjà dans la base."
+msgstr " differences between {score} and {existing}, already in the database."
+
 msgid "# Après : haven::write_sav(donnees, \"copie-documentee.sav\") pour une copie."
 msgstr "# Afterwards: haven::write_sav(donnees, \"copie-documentee.sav\") for a copy."
 
 msgid "# Avant : chargez vos données dans un objet nommé « donnees », par exemple"
 msgstr "# Before: load your data into an object named \"donnees\", for example"
+
+msgid "# Avant : « donnees » chargées, puis le fichier de commandes appliqué."
+msgstr "# Before: \"donnees\" loaded, then the command file applied."
 
 #, python-brace-format
 msgid "# Banc d'essai : {model}"
@@ -50,12 +57,20 @@ msgstr "# Measurement levels are not applied: haven does not write them."
 msgid "# Nouveaux noms acceptés, en premier : la suite porte sur ces noms."
 msgstr "# Accepted new names, first: what follows uses these names."
 
+#, python-brace-format
+msgid "# Score de {group}."
+msgstr "# Score of {group}."
+
 msgid ""
 "# user_na = TRUE garde les codes manquants déjà déclarés dans le fichier ; sans lui, haven les "
 "remplace par NA."
 msgstr ""
 "# user_na = TRUE keeps the missing codes already declared in the file; without it, haven turns "
 "them into NA."
+
+#, python-brace-format
+msgid "# {name} inversé ({total} - x ; bornes : {source})."
+msgstr "# {name} reversed ({total} - x; ends: {source})."
 
 msgid "# Écarts entre les vagues"
 msgstr "# Differences between the waves"
@@ -149,11 +164,19 @@ msgstr "(not linked yet)"
 msgid "(vide)"
 msgstr "(empty)"
 
+#, python-brace-format
+msgid "* Comparaison avec {existing}, déjà dans la base : écarts comptés."
+msgstr "* Comparison with {existing}, already in the database: differences counted."
+
 msgid "* Items inversés selon l'équipe : non recodés. Suggestion, à faire vous-même."
 msgstr "* Items reversed according to the team: not recoded. Suggestion, to do yourself."
 
 msgid "* Nouveaux noms acceptés, en premier : la suite porte sur ces noms."
 msgstr "* Accepted new names, first: what follows uses these names."
+
+#, python-brace-format
+msgid "* Score de {group}."
+msgstr "* Score of {group}."
 
 #, python-brace-format
 msgid "* {name} : SPSS accepte au plus {n} codes manquants ; à déclarer à la main : {codes}."
@@ -166,6 +189,10 @@ msgstr "* {name}: a range of missing codes is impossible for a text variable."
 #, python-brace-format
 msgid "* {name} : nom de variable non valide pour SPSS, omise."
 msgstr "* {name}: variable name not valid for SPSS, left out."
+
+#, python-brace-format
+msgid "* {name} inversé ({total} - x ; bornes : {source})."
+msgstr "* {name} reversed ({total} - x; ends: {source})."
 
 #, python-brace-format
 msgid ", après inversion de {items} ({total} - x)"
@@ -692,6 +719,13 @@ msgid ""
 "navigateur."
 msgstr "Data dictionaries, made locally. Run alone, ddict opens the interface in the browser."
 
+msgid ""
+"Crée de nouvelles variables (items inversés, scores) selon les décisions de l'équipe ; aucune "
+"variable d'origine n'est modifiée."
+msgstr ""
+"Creates new variables (reversed items, scores) from the team's decisions; no original variable is"
+" changed."
+
 msgid "Créer le projet"
 msgstr "Create the project"
 
@@ -857,6 +891,10 @@ msgstr "Encoding"
 
 msgid "Encodage : UTF-8."
 msgstr "Encoding: UTF-8."
+
+#, python-brace-format
+msgid "Encodage : UTF-8. Empreinte du codebook : {fingerprint}."
+msgstr "Encoding: UTF-8. Codebook fingerprint: {fingerprint}."
 
 msgid "Enregistrer"
 msgstr "Save"
@@ -1774,6 +1812,17 @@ msgstr "Prefix refused: {why}."
 msgid "Préfixe repris de la vague précédente : {prefix}"
 msgstr "Prefix taken from the earlier wave: {prefix}"
 
+msgid ""
+"Préparation : crée les items inversés et les scores de vos cotations, dans de nouvelles variables"
+" ; à exécuter après le fichier de commandes."
+msgstr ""
+"Preparation: creates the reversed items and the scores of your scorings, in new variables; to run"
+" after the command file."
+
+#, python-brace-format
+msgid "Préparation de {name}, produite par dictionnaire-donnees {version} le {date}."
+msgstr "Preparation of {name}, made by dictionnaire-donnees {version} on {date}."
+
 msgid "Préparation des bases fictives…"
 msgstr "Preparing the fictional databases…"
 
@@ -2014,6 +2063,13 @@ msgstr ""
 "team), measurement levels."
 
 msgid ""
+"Seulement pour une somme qui accepte des items manquants : la règle du manuel de l'instrument, "
+"avec la même source."
+msgstr ""
+"Only for a sum that allows missing items: the rule of the instrument's manual, with the same "
+"source."
+
+msgid ""
 "Seules leurs métadonnées sont utilisées : aucune statistique sur leurs valeurs, et rien d'elles "
 "n'est envoyé au modèle."
 msgstr ""
@@ -2061,6 +2117,9 @@ msgstr "Flags"
 
 msgid "Signification"
 msgstr "Meaning"
+
+msgid "Somme avec des items manquants"
+msgstr "Sum with missing items"
 
 msgid ""
 "Son fichier projet (.dd.json, le plus complet), sa copie documentée (.sav) ou sa table de noms "
@@ -2329,6 +2388,9 @@ msgstr "Variables"
 msgid "Variables : {names}"
 msgstr "Variables: {names}"
 
+msgid "Variables absentes (appliquez d'abord le fichier de commandes) : "
+msgstr "Variables missing (apply the command file first): "
+
 msgid "Variables de plan"
 msgstr "Design variables"
 
@@ -2423,6 +2485,9 @@ msgstr "codes from {low} to {high}"
 msgid "corrigé"
 msgstr "corrected"
 
+msgid "cotation du groupe"
+msgstr "the group's scoring"
+
 msgid "datapackage.json"
 msgstr "datapackage.json"
 
@@ -2507,6 +2572,13 @@ msgstr "likely identifier"
 
 msgid "incomplète"
 msgstr "incomplete"
+
+msgid "items manquants : somme des items répondus"
+msgstr "missing items: sum of the items answered"
+
+#, python-brace-format
+msgid "items manquants : somme proportionnelle (moyenne des items répondus multipliée par {n})"
+msgstr "missing items: prorated sum (mean of the items answered times {n})"
 
 msgid "la structure"
 msgstr "the structure"
@@ -2841,6 +2913,14 @@ msgid "{done} variables sur {total} sans proposition en attente"
 msgstr "{done} of {total} variables without a pending proposal"
 
 #, python-brace-format
+msgid "{group} : cotation décrite en note seulement, score non calculé."
+msgstr "{group}: scoring described in a note only, score not computed."
+
+#, python-brace-format
+msgid "{group} : un item inversé n'a pu être créé, score non calculé."
+msgstr "{group}: a reversed item could not be created, score not computed."
+
+#, python-brace-format
 msgid "{key} : nom de base refusé ({why})."
 msgstr "{key}: base name refused ({why})."
 
@@ -2851,6 +2931,14 @@ msgstr "{names}: level changed and \"Reject\" chosen; keep one or the other."
 #, python-brace-format
 msgid "{names} : nom modifié et « Rejeter » choisi ; gardez l'un ou l'autre."
 msgstr "{names}: name changed and \"Reject\" chosen; keep one or the other."
+
+#, python-brace-format
+msgid "{name} : bornes de l'échelle inconnues, non inversé."
+msgstr "{name}: ends of the scale unknown, not reversed."
+
+#, python-brace-format
+msgid "{name} : le nom {new} est déjà pris ou invalide, non inversé."
+msgstr "{name}: the name {new} is taken or invalid, not reversed."
 
 #, python-brace-format
 msgid "{name} : niveau de mesure inconnu."
@@ -2867,6 +2955,10 @@ msgstr "{name} already exists: replace it"
 #, python-brace-format
 msgid "{name} existe déjà. Rien n'a été écrit ; confirmez pour le remplacer."
 msgstr "{name} already exists. Nothing was written; confirm to replace it."
+
+#, python-brace-format
+msgid "{name} inversé"
+msgstr "{name} reversed"
 
 #, python-brace-format
 msgid "{name} n'est plus le fichier d'où vient le projet : son contenu a changé. Rien n'a été écrit."
@@ -2961,6 +3053,10 @@ msgid "{old} n'est plus dans ce filtre ; voici la variable suivante : {new}."
 msgstr "{old} is no longer in this filter; here is the next variable: {new}."
 
 #, python-brace-format
+msgid "{program} : préparation"
+msgstr "{program}: preparation"
+
+#, python-brace-format
 msgid "{proposed} noms proposés, {accepted} acceptés, {to_name} variables à nommer."
 msgstr "{proposed} names proposed, {accepted} accepted, {to_name} variables to name."
 
@@ -2999,6 +3095,13 @@ msgstr "\"{token}\" read as empty ({n})"
 
 msgid "À documenter"
 msgstr "To document"
+
+msgid ""
+"À exécuter après le fichier de commandes (ou sur la copie documentée) : il porte sur les noms "
+"finaux, et les codes manquants déclarés sont exclus des calculs."
+msgstr ""
+"To run after the command file (or on the documented copy): it uses the final names, and the "
+"declared missing codes are left out of the computations."
 
 msgid "À faire"
 msgstr "To do"
@@ -3154,12 +3257,18 @@ msgstr "grid items not numbered"
 msgid "étendue observée"
 msgstr "observed range"
 
+msgid "étendue théorique"
+msgstr "theoretical range"
+
 #, python-brace-format
 msgid "étendue {low} – {high}"
 msgstr "range {low} – {high}"
 
 msgid "étiquette semblable"
 msgstr "similar label"
+
+msgid "étiquettes de valeurs"
+msgstr "value labels"
 
 msgid "étiquettes proposées à partir des options, ordre supposé, à vérifier"
 msgstr "labels proposed from the options, assumed order, to check"

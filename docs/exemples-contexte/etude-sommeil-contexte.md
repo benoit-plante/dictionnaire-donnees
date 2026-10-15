@@ -1,7 +1,7 @@
 # Contexte d'analyse : etude-sommeil.sav
 
 - Base : `etude-sommeil.sav` (SPSS), 200 lignes, 34 variables. Empreinte du fichier : `a189e6bd7c31`.
-- Codebook : empreinte `168c4c19a2b4`, dictionnaire-donnees 0.7.1. Seules les décisions acceptées par l'équipe y figurent.
+- Codebook : empreinte `e32f2238c27f`, dictionnaire-donnees 0.7.1. Seules les décisions acceptées par l'équipe y figurent.
 - Une ligne représente : un participant
 - Structure : transversale
 - Description de la base : Étude fictive sur le sommeil, une seule passation.
@@ -22,7 +22,7 @@ Non documenté : Libellé : sommeil_q7 ; Étiquettes de valeurs (variables codé
 
 **G1** (échelle, 8 variables) : `sommeil_q1`, `sommeil_q2`, `sommeil_q3`, `sommeil_q4`, `sommeil_q5`, `sommeil_q6`, `sommeil_q7`, `sommeil_q8`.
 Valeurs de tous ses items : 1 Pas du tout ; 2 Un peu ; 3 Moyennement ; 4 Beaucoup ; 5 Extrêmement.
-Cotation : sommeil_total = somme des 8 items, après inversion de sommeil_q3, sommeil_q6 (6 - x) ; au moins 7 items répondus, sinon manquant ; étendue 8 – 40 (source : Manuel fictif de l'échelle de sommeil, p. 4 (référence inventée pour l'exemple)).
+Cotation : sommeil_total = somme des 8 items, après inversion de sommeil_q3, sommeil_q6 (6 - x) ; au moins 7 items répondus, sinon manquant ; items manquants : somme proportionnelle (moyenne des items répondus multipliée par 8) ; étendue 8 – 40 (source : Manuel fictif de l'échelle de sommeil, p. 4 (référence inventée pour l'exemple)).
 
 **G2** (échelle, 7 variables) : `anx1`, `anx2`, `anx3`, `anx4`, `anx5`, `anx6`, `anx7`.
 Valeurs de tous ses items : 0 Jamais ; 1 Parfois ; 2 Souvent ; 3 Presque toujours.

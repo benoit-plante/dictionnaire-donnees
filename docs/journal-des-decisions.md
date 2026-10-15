@@ -837,3 +837,15 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   2. Une origine nouvelle pour les niveaux de mesure.
 - **Justification :** une proposition par le calcul a les mêmes propriétés quelle que soit la règle (déterministe, à accepter par une personne) ; une origine de plus ajouterait un cas sans rien apporter. `computed` reste une valeur acquise, jamais une proposition.
 - **Conséquences :** l'export et la page « Noms » écrivent « règle » au lieu de « règle de nommage ». Règles des niveaux (étape 3 de la v0.8) : item d'un groupe d'échelle, étiqueté ou à peu de valeurs entières → ordinal ; option de case à cocher, code étiqueté, ou au plus deux valeurs → nominal ; texte de catégories → nominal ; nombre sans étiquettes → échelle ; au plus 10 entiers sans étiquettes hors groupe → aucune proposition (des codes que seule l'équipe connaît) ; jamais pour un identifiant, un texte libre, une date de naissance, une date, une variable vide ou de types mélangés.
+
+### D-068 — La règle d'une somme avec des items manquants, dans la cotation
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** — (précise D-060)
+- **Décision :** une cotation par somme qui accepte des items manquants (nombre minimal d'items répondus inférieur au nombre d'items) dit sa règle pour eux : **somme proportionnelle** (moyenne des items répondus multipliée par le nombre d'items, par défaut) ou **somme des items répondus**. Choisie par l'équipe avec la source de la cotation ; dite dans la phrase de cotation, le contexte d'analyse et appliquée par le script de préparation (`MEAN.k(...) * n` ou `SUM.k(...)` en SPSS, `rowMeans(...) * n` ou `rowSums(...)` en R).
+- **Options considérées :**
+  1. Un champ de la cotation, somme proportionnelle par défaut (ce choix).
+  2. Toujours la somme proportionnelle.
+  3. Toujours la somme des items répondus.
+- **Justification :** les manuels d'échelles diffèrent ; la règle d'un instrument est une information sourcée, que ni l'outil ni le modèle ne doivent deviner (principe 4). La somme proportionnelle, la plus courante, garde l'étendue du score quel que soit le nombre de réponses.

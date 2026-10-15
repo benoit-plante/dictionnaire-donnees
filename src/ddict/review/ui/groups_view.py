@@ -88,7 +88,7 @@ def _scoring(project: Project, group_id: str) -> None:
 
     bounds = scoring.scale_bounds(project.variable(members[0])) if members else None
     keys = {part: f"scoring-{part}-{group_id}" for part in
-            ("items", "how", "min", "max", "least", "name", "source", "note")}  # fmt: skip
+            ("items", "how", "min", "max", "least", "rule", "name", "source", "note")}  # fmt: skip
     with st.form(f"form-scoring-{group_id}", border=False):
         st.multiselect(
             _("Items du score"),
@@ -118,6 +118,16 @@ def _scoring(project: Project, group_id: str) -> None:
             key=c.field(keys["least"], lambda: current("min_items_answered", 0)),
             help=_("0 : le score exige tous les items."),
         )
+        st.radio(
+            _("Somme avec des items manquants"),
+            list(w.MISSING_RULES),
+            format_func=lambda r: w.MISSING_RULES[r].format(n="N"),
+            key=c.field(keys["rule"], lambda: current("missing_rule", "prorate")),
+            help=_(
+                "Seulement pour une somme qui accepte des items manquants : la règle du "
+                "manuel de l'instrument, avec la même source."
+            ),
+        )
         st.text_input(
             _("Nom du score"), key=c.field(keys["name"], lambda: current("score_name", ""))
         )
@@ -136,6 +146,7 @@ def _scoring(project: Project, group_id: str) -> None:
             c.state(keys["name"]),
             c.state(keys["source"]),
             c.state(keys["note"]),
+            c.state(keys["rule"]),
             reset=tuple(keys.values()),
             submit=True,
         )

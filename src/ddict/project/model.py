@@ -99,6 +99,9 @@ class Scoring(Strict):
     scale_min: float | None = None
     scale_max: float | None = None
     min_items_answered: int | None = Field(default=None, ge=1)
+    # A sum with items missing (D-068): the mean of the items answered times their number
+    # ("prorate", the range stays), or the sum of the items answered.
+    missing_rule: Literal["prorate", "sum_answered"] = "prorate"
     score_name: str | None = None
     source: SourceText
     note: str | None = None

@@ -756,7 +756,7 @@
   ],
   "_ddict": {
     "tool": "dictionnaire-donnees 0.7.1",
-    "codebook_fingerprint": "168c4c19a2b4b5f30b87858cab4e0584149f7b2d93ce5e0f2ca055cecc004a86",
+    "codebook_fingerprint": "e32f2238c27fb02e707f9a5736f926b0181175b5fc269a5986b4789f30a3934e",
     "language": "fr",
     "statistics": false,
     "dataset": {
@@ -851,6 +851,7 @@
           "scale_max": 5.0,
           "aggregation": "sum",
           "min_items_answered": 7,
+          "missing_rule": "prorate",
           "score_range": {
             "min": 8.0,
             "max": 40.0

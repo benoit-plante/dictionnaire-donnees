@@ -9,6 +9,8 @@ from ddict import naming, platforms, waves
 from ddict.export import write_markdown, write_xlsx
 from ddict.export.context import write_context
 from ddict.export.documented import CopyError, CopyResult, find_database, write_documented_copy
+from ddict.export.preparation import needed as preparation_needed
+from ddict.export.preparation import write_preparation
 from ddict.export.syntax import SUFFIXES, write_syntax
 from ddict.export.wording import entry_anomalies
 from ddict.glossary import propose_from_questionnaire, undefined_acronyms
@@ -508,13 +510,24 @@ def syntax_paths(project_path: Path) -> dict[str, Path]:
     return {program: project_path.with_name(stem + suffix) for program, suffix in SUFFIXES.items()}
 
 
+def preparation_paths(project_path: Path) -> dict[str, Path]:
+    """The preparation scripts (v0.8): "etude-preparation.sps" and ".R"."""
+    stem = project_stem(project_path) + "-preparation"
+    return {program: project_path.with_name(stem + suffix) for program, suffix in SUFFIXES.items()}
+
+
 def export_syntax(
     project: Project, project_path: Path, *, language: str | None = None
 ) -> dict[str, Path]:
-    """Write the SPSS and R command files: accepted decisions only (D-025, D-030)."""
+    """Write the SPSS and R command files: accepted decisions only (D-025, D-030); and, when
+    the project has reversed items or a scoring, the preparation scripts (v0.8, D-062)."""
     paths = syntax_paths(project_path)
     write_syntax(project, paths, language=language)
-    return paths
+    if not preparation_needed(project):
+        return paths
+    preparation = preparation_paths(project_path)
+    write_preparation(project, preparation, language=language)
+    return {**paths, **{f"{p}-preparation": path for p, path in preparation.items()}}
 
 
 def documented_copy(

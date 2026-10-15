@@ -34,6 +34,7 @@ def set_scoring(
     score_name: str,
     source: str,
     note: str,
+    missing_rule: str = "prorate",
 ) -> None:
     """The scoring a person wrote (D-060): structured when items are chosen, else a note.
     The source is required either way."""
@@ -61,6 +62,7 @@ def set_scoring(
         scale_min=scale_min if items else None,
         scale_max=scale_max if items else None,
         min_items_answered=(min_items or None) if items else None,
+        missing_rule=missing_rule if missing_rule in ("prorate", "sum_answered") else "prorate",
         score_name=score_name.strip() if items else None,
         source=source.strip(),
         note=note or None,

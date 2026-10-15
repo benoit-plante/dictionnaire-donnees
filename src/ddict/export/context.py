@@ -559,6 +559,7 @@ def _scoring(project: Project, group: Group) -> dict:
             "scale_max": found.scale_max,
             "aggregation": found.aggregation,
             "min_items_answered": found.min_items_answered,
+            "missing_rule": found.missing_rule if scoring.partial_sum(found) else None,
             "score_range": {"min": low, "max": high},
             "score_name": found.score_name,
         }

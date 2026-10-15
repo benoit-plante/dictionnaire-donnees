@@ -18,6 +18,8 @@ from ddict import i18n
 from ddict.export import render_markdown, write_xlsx
 from ddict.export.context import context_package, package_text, render_context
 from ddict.export.documented import CopyError, default_copy_path, find_database
+from ddict.export.preparation import needed as preparation_needed
+from ddict.export.preparation import render_preparation
 from ddict.export.syntax import render_syntax
 from ddict.i18n import N_, Texts, _
 from ddict.project.model import Project
@@ -33,6 +35,7 @@ from ddict.workflow import (
     export_name_table,
     export_paths,
     export_syntax,
+    preparation_paths,
     syntax_paths,
 )
 
@@ -368,6 +371,24 @@ def page(project: Project) -> None:
             mime="text/plain",
             key=f"export-download-{program}",
         )
+    if preparation_needed(project):
+        # v0.8 (D-062): new variables, reversed items and scores, from the team's decisions.
+        st.caption(
+            _(
+                "Préparation : crée les items inversés et les scores de vos cotations, dans de "
+                "nouvelles variables ; à exécuter après le fichier de commandes."
+            )
+        )
+        prepared = preparation_paths(c.project_path())
+        columns = st.columns(len(PROGRAMS))
+        for column, (program, title) in zip(columns, PROGRAMS.items(), strict=True):
+            column.download_button(
+                _("{program} : préparation").format(program=title),
+                data=render_preparation(project, program, language=language).encode("utf-8"),
+                file_name=prepared[program].name,
+                mime="text/plain",
+                key=f"export-download-preparation-{program}",
+            )
 
     _context_section(project, omit, language)
     _copy_section(project)
