@@ -127,6 +127,8 @@ The codebook documents; your data itself has not changed. To bring into it what 
 
 It works the same with your file: SPSS (`.sav`), CSV (including those of Excel in French, with semicolons and decimal commas), Stata (`.dta`), SAS (`.sas7bdat`) or Excel (`.xlsx`: the first sheet, with the names of the variables in the first row). And with your questionnaire, as PDF or text, in French or in English: check on the **Database** page that the language of the study is the right one.
 
+**The format that gives the best results: `.sav`.** An SPSS file holds what other formats leave the tool to guess: the value labels ("1 = Never"), the declared missing-value codes and the level of measurement. If your survey platform (SurveyMonkey, Qualtrics, LimeSurvey…) or your software can export to `.sav`, choose that format, even if you do not use SPSS: the tool reads it without it. With another format everything works, but check the proposed missing codes and value labels more carefully. A platform's Excel export remains useful next to the `.sav`: choose it as the questionnaire, on the **Questionnaire** page, if you have no PDF.
+
 - Work in a folder meant for this data, following the rules of your team and of your research ethics board. The project file, the codebooks and the `.dd-envois` folder (what was sent to the model) stay next to the data.
 - The tool never changes your data file.
 - Variables that look like identifiers, free text or dates of birth are found automatically: only their metadata is used, and counts below 5 are masked.

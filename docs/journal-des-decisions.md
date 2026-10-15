@@ -667,3 +667,16 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   3. Permettre le lot pour tous les choix sûrs du calcul.
 - **Justification :** choix de l'auteur, par prudence : un rattachement entre dans le codebook par la décision d'une personne, variable par variable, sauf quand deux méthodes indépendantes s'accordent.
 - **Conséquences :** l'étape 9 de la v0.7 n'ajoute pas de décision groupée pour les rattachements ; l'acceptation groupée des noms (par groupe ou par question), prévue au plan, reste.
+
+### D-054 — Le `.sav` comme format de référence
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** le `.sav` devient le format de référence de l'outil : les guides recommandent de l'exporter quand c'est possible, et les efforts d'amélioration portent sur lui et sur la lecture du questionnaire. Les autres formats (CSV, Excel, Stata, SAS) restent lus comme avant, sans nouvelle règle qui leur soit propre.
+- **Options considérées :**
+  1. Ne lire que le `.sav`.
+  2. `.sav` comme référence, les autres formats gardés (ce choix).
+  3. Tous les formats au même rang, comme dans la conception.
+- **Justification :** le `.sav` contient ce que les autres formats obligent à deviner (étiquettes de valeurs, codes manquants déclarés, niveaux de mesure). Retirer les autres formats ne rendrait pas la lecture d'un `.sav` plus juste : les deux chemins sont séparés, et les erreurs relevées sur les vraies bases venaient de la lecture du questionnaire, des groupes et des noms, pas du format. Les garder sert les équipes sans SPSS et les plateformes qui exportent surtout en CSV ; l'en-tête d'un export Excel aide même à côté du `.sav` (D-045).
+- **Conséquences :** l'interface signalera, pour une base qui n'est pas un `.sav`, que certaines informations sont devinées plutôt que lues et sont à vérifier (étape 11 de la v0.7). Une règle propre au CSV ou à Excel ne s'ajoute plus que pour corriger une erreur.

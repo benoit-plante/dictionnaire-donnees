@@ -125,6 +125,8 @@ Le codebook documente ; vos données, elles, n'ont pas changé. Pour y faire ent
 
 La démarche est la même avec votre fichier : SPSS (`.sav`), CSV (y compris ceux d'Excel en français, avec point-virgule et virgule décimale), Stata (`.dta`), SAS (`.sas7bdat`) ou Excel (`.xlsx` : la première feuille, avec les noms des variables sur la première ligne). Et avec votre questionnaire, en PDF ou en texte, en français ou en anglais : pour une étude menée en anglais, vérifiez sur la page **Base** que la langue de l'étude est « English ».
 
+**Le format qui donne les meilleurs résultats : le `.sav`.** Un fichier SPSS contient ce que les autres formats obligent l'outil à deviner : les étiquettes des valeurs (« 1 = Jamais »), les codes de valeurs manquantes déclarés et le niveau de mesure. Si votre plateforme de sondage (SurveyMonkey, Qualtrics, LimeSurvey…) ou votre logiciel peut exporter en `.sav`, choisissez ce format, même si vous n'utilisez pas SPSS : l'outil le lit sans lui. Avec un autre format, tout fonctionne, mais vérifiez avec plus de soin les codes manquants et les étiquettes de valeurs proposés. L'export Excel d'une plateforme reste utile à côté du `.sav` : choisissez-le comme questionnaire, sur la page **Questionnaire**, si vous n'avez pas de PDF.
+
 - Travaillez dans un dossier prévu pour ces données, selon les règles de votre équipe et de votre comité d'éthique. Le fichier projet, les codebooks et le dossier `.dd-envois` (ce qui a été envoyé au modèle) restent à côté des données.
 - L'outil ne modifie jamais votre fichier de données.
 - Les variables qui ressemblent à des identifiants, à du texte libre ou à des dates de naissance sont repérées automatiquement : seules leurs métadonnées sont utilisées, et les effectifs de moins de 5 sont masqués.
