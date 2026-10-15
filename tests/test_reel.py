@@ -9,8 +9,10 @@ which never returns a value, a label, a text nor a file name, and reports an err
 type only; assertions compare numbers, so a failure shows numbers. Tests are named base1,
 base2, never after the files.
 
-The findings of the trial are strict xfail, as in test_surveymonkey.py: the step that fixes
-one turns its test into a plain one.
+The findings of the trial are xfail, as in test_surveymonkey.py, but not strict: a finding
+may not show in every base (a base without grids cannot have one cut in two). A test
+without object in a base is skipped. The step that fixes a finding turns its test into a
+plain one.
 """
 
 import os
@@ -27,7 +29,7 @@ _COUNTER = load_counter()
 BASES = _COUNTER.bases(Path(_FOLDER)) if _FOLDER and Path(_FOLDER).is_dir() else {}
 _CACHE: dict[str, dict] = {}
 
-FINDING = pytest.mark.xfail(strict=True, reason="v0.6: finding of the trial, fixed in v0.7")
+FINDING = pytest.mark.xfail(strict=False, reason="v0.6: finding of the trial, fixed in v0.7")
 
 
 def _params():
@@ -45,6 +47,11 @@ def counts(request) -> dict:
     return _CACHE[name]
 
 
+def _needs(counts: dict, key: str) -> None:
+    if not counts.get(key):
+        pytest.skip(f"sans objet : {key} = 0")
+
+
 def test_the_base_is_read(counts):
     assert sorted(k for k in counts if k.startswith("erreur")) == []
     assert counts["variables_plateforme"] > 0
@@ -58,7 +65,7 @@ def test_the_platform_is_recognized(counts):
 @FINDING
 def test_the_second_header_row_is_not_a_participant(counts):
     if "xlsx_lignes_en_trop" not in counts:
-        pytest.xfail("pas d'export .xlsx")
+        pytest.skip("pas d'export .xlsx")
     assert counts["xlsx_lignes_en_trop"] == 0
     assert counts["xlsx_colonnes_sans_nom"] == 0
     assert counts["xlsx_noms_absents_du_sav"] == 0
@@ -71,17 +78,20 @@ def test_single_questions_do_not_make_a_group(counts):
 
 @FINDING
 def test_a_grid_is_one_group(counts):
+    _needs(counts, "grilles")
     assert counts["grilles_coupees"] == 0
     assert counts["grilles_entieres"] == counts["grilles"]
 
 
 @FINDING
 def test_a_checkbox_set_is_a_multiple_response_group(counts):
+    _needs(counts, "ensembles_a_cocher")
     assert counts["ensembles_a_cocher_groupes"] == counts["ensembles_a_cocher"]
 
 
 @FINDING
 def test_no_grid_item_is_an_identifier(counts):
+    _needs(counts, "grilles")
     assert counts["items_de_grille_identifiant_probable"] == 0
 
 
@@ -93,6 +103,7 @@ def test_the_survey_dates_are_read_as_dates(counts):
 
 @FINDING
 def test_dont_know_codes_are_suspect_missing_codes(counts):
+    _needs(counts, "codes_a_etiquette_de_manquant")
     assert (
         counts["codes_a_etiquette_de_manquant_signales"] == counts["codes_a_etiquette_de_manquant"]
     )
@@ -100,13 +111,14 @@ def test_dont_know_codes_are_suspect_missing_codes(counts):
 
 @FINDING
 def test_the_scale_level_of_labelled_items_is_flagged(counts):
+    _needs(counts, "items_de_grille_niveau_scale")
     assert counts["items_niveau_scale_signales"] == counts["items_de_grille_niveau_scale"]
 
 
 @FINDING
 def test_the_questionnaire_has_the_grids_of_the_base(counts):
     if not any(f"{p}_questions" in counts for p in ("pdf", "txt")):
-        pytest.xfail("pas de questionnaire")
+        pytest.skip("pas de questionnaire")
     for prefix in ("pdf", "txt"):
         if f"{prefix}_questions" in counts:
             assert counts[f"{prefix}_grilles"] == counts["grilles"]

@@ -28,4 +28,27 @@ Chaque ligne est un test en échec attendu (`tests/test_surveymonkey.py`) ; l'é
 
 ## Vraies bases
 
-À mesurer avec `tests/test_reel.py` et `scripts/compter_structure.py` quand le dossier `DDICT_DONNEES_REELLES` sera disponible. Seuls des décomptes seront consignés ici.
+Deux exports SurveyMonkey réels, gardés hors du dépôt (D-046), mesurés le 2026-10-15 par `scripts/compter_structure.py` et `tests/test_reel.py`. Chacun a son `.sav`, son `.xlsx` et son questionnaire PDF ; aucun `.txt`. Seuls des décomptes sont donnés.
+
+| | Base 1 | Base 2 |
+|---|---|---|
+| Variables, lignes | 114, 69 | 50, 22 |
+| Variables de plateforme | 10 (noms anciens) | 10 |
+| Questions de plateforme (d'après les noms) | 11 : 7 grilles, 4 simples | 13 : 4 ensembles à cocher, 9 simples |
+| Groupes trouvés par la v0.6 | 8 : 6 grilles entières, 1 grille coupée en deux | 1, qui mêle des questions simples (préfixe `q`) |
+| Ensembles à cocher regroupés | — | 0 sur 4 |
+| Items de grille classés « identifiant probable » | 1 | — |
+| Items de grille au niveau `scale`, signalés | 100, 0 | — |
+| Dates de passation lues comme dates | 0 sur 2 (classées texte libre) | 0 sur 2 (classées texte libre) |
+| Valeurs de date lisibles, et leur format | 100 %, `MM/JJ/AAAA hh:mm:ss AM` | 100 %, même format |
+| Codes à étiquette « Ne sais pas »… signalés | 0 sur 14 | 0 sur 2 |
+| `.xlsx` : lignes en trop, colonnes sans nom, noms absents du `.sav` | 1, 93, 113 | 1, 23, 36 |
+| Questionnaire PDF : questions trouvées | 15 (7 ouvertes, 4 à choix unique, 4 grilles de 35 énoncés en tout, 3 à vérifier) | 0 |
+| Questionnaire PDF : lignes lues, lignes numérotées | 479, 0 | 70, 13 |
+
+Ce que la mesure précise par rapport à l'essai de l'auteur :
+
+- Les « 8 grilles » de la base 1 sont 7 grilles d'après les noms. La v0.6 en fait 8 groupes parce qu'une grille est coupée en deux.
+- Le format des dates de passation est le même dans les deux bases, et c'est celui de la base fictive : toutes les valeurs sont lisibles.
+- Le questionnaire PDF de la base 2 a des **questions numérotées** (13 lignes numérotées, autant que de questions de plateforme), et la v0.6 n'y trouve aucune question, comme dans le `.txt` numéroté de l'essai. L'étape 5 doit donc accepter les questions numérotées dans un PDF aussi, et la base fictive recevra un PDF numéroté.
+- La base 1 n'a pas de faux groupe par le préfixe et la base 2 n'a pas de grille : ces constats ne valent que pour l'autre base. Pour les vraies bases, les tests de constats ne sont donc pas « stricts » : un test sans objet est sauté, un constat absent d'une base n'est pas une erreur.

@@ -29,8 +29,9 @@ import pandas as pd
 
 from ddict.io import read_database
 from ddict.project import build_project
-from ddict.questionnaire import load_questionnaire
+from ddict.questionnaire import load_questionnaire, read_questionnaire
 
+NUMBERED_LINE = re.compile(r"\s*(?:Q\s?)?\d{1,3}\s?[.)]\s", re.IGNORECASE)
 ITEM_NAME = re.compile(r"q(\d{4})(?:_(\d{4}|other))?", re.IGNORECASE)
 PLATFORM_NAMES = {
     "collectornm",
@@ -85,20 +86,23 @@ def _structure(variables) -> dict[str, dict[int, list]]:
             kinds["single"][rank] = [v for v, _part in members]
         elif all(len(v.value_labels) == 1 for v in items):
             kinds["checkbox"][rank] = items
-        elif len(items) >= 3:
+        else:
             kinds["grid"][rank] = items
     return kinds
 
 
-def _date_rate(column: pd.Series) -> float:
+def _date_rate(column: pd.Series) -> tuple[float, int | None]:
+    """The share of values read by the best of DATE_FORMATS, and that format's rank (a
+    pattern, not a value)."""
     texts = [str(v).strip() for v in column if isinstance(v, str) and str(v).strip()]
     if not texts:
-        return 100.0
-    best = 0
-    for fmt in DATE_FORMATS:
+        return 100.0, None
+    best, rank = 0, None
+    for number, fmt in enumerate(DATE_FORMATS):
         parsed = pd.to_datetime(pd.Series(texts), format=fmt, errors="coerce")
-        best = max(best, int(parsed.notna().sum()))
-    return round(100 * best / len(texts), 1)
+        if int(parsed.notna().sum()) > best:
+            best, rank = int(parsed.notna().sum()), number
+    return round(100 * best / len(texts), 1), rank
 
 
 def count_database(sav: Path) -> dict[str, float | int]:
@@ -162,8 +166,11 @@ def count_database(sav: Path) -> dict[str, float | int]:
     counts["dates_classees_texte_libre"] = sum(
         by_name[n].privacy.privacy_class.value == "free_text" for n in dates
     )
-    counts["taux_min_valeurs_de_date_lisibles_pct"] = min(
-        (_date_rate(data.table[n]) for n in dates), default=100.0
+    rates = [_date_rate(data.table[n]) for n in dates]
+    counts["taux_min_valeurs_de_date_lisibles_pct"] = min((r for r, _f in rates), default=100.0)
+    formats = {f for _r, f in rates if f is not None}
+    counts["format_des_dates"] = (
+        DATE_FORMATS[formats.pop()] if len(formats) == 1 else f"{len(formats)} formats"
     )
 
     labelled_missing = [
@@ -180,6 +187,8 @@ def count_database(sav: Path) -> dict[str, float | int]:
 
 
 def count_questionnaire(path: Path, prefix: str) -> dict[str, int]:
+    lines = read_questionnaire(path).lines
+    numbered = sum(bool(NUMBERED_LINE.match(line.text)) for line in lines)
     questionnaire = load_questionnaire(path)
     kinds = Counter(q.kind for q in questionnaire.questions)
     return {
@@ -188,6 +197,8 @@ def count_questionnaire(path: Path, prefix: str) -> dict[str, int]:
         f"{prefix}_grilles": kinds.get("grid", 0),
         f"{prefix}_enonces_de_grille": sum(len(q.rows) for q in questionnaire.questions),
         f"{prefix}_a_verifier": sum(bool(q.to_check) for q in questionnaire.questions),
+        f"{prefix}_lignes_lues": len(lines),
+        f"{prefix}_lignes_numerotees": numbered,
     }
 
 
