@@ -48,8 +48,16 @@ BASES = [
         english.answer_key,
         english.TRAPS["variables_without_question"],
     ),
+    # The control base of v0.6 (D-042), in the bench once measured (step 6).
+    (
+        "etude-activite",
+        "etude-activite.csv",
+        "questionnaire-activite.pdf",
+        control.answer_key,
+        control.TRAPS["variables_without_question"],
+    ),
 ]
-# The control base of v0.6 (D-042): set aside, not in the bench until the end of v0.6.
+# The control base of v0.6 (D-042): its own key, kept for the record of step 6.
 CONTROL_OUTPUT = EXAMPLES / "corrige-controle.json"
 CONTROL = [
     (

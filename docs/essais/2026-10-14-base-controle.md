@@ -15,6 +15,19 @@ Manqués par le modèle : les trois variables administratives (`horodatage`, `va
 
 Libellés : 22 variables enrichies sur 23, aucun signalement.
 
-## Après : version 0.6
+## Après : version 0.6 (étape 6, 2026-10-14)
 
-À mesurer une seule fois, à la fin de la v0.6 (étape 6), avec le même modèle.
+Mesurée une seule fois après les étapes 3 à 5, sans aucun réglage sur cette base. Pour juger de la variation du modèle, trois passages de la 0.6 et trois de la 0.5.0 (extraite à part de l'historique, `git worktree`), même modèle, même poste.
+
+| Rattachements justes | 0.5.0 | 0.6 |
+|---|---|---|
+| Modèle, passage 1 | 17 / 23 | 20 / 23 |
+| Modèle, passage 2 | 17 / 23 | 20 / 23 |
+| Modèle, passage 3 | 17 / 23 | 20 / 23 |
+| Calcul seul | 15 / 23 | 16 / 23 |
+
+- **Gagnés** : `horodatage` et `score_motivation` (« aucune question » proposée, D-039 : date de passation, et somme exacte des items de l'Échelle fictive de motivation), `remarques`.
+- **Encore manqués** : `poids_kg` (« Combien pesez-vous ? ») et `taille_m` (« Combien mesurez-vous ? ») : le calcul leur trouve des candidates, mais pas la bonne, et les questions voisines (D-040) ne s'appliquent qu'aux variables sans candidate ; `vague`, variable constante, reste sans proposition.
+- Libellés : 22 variables enrichies sur 23, aucun signalement, comme avec la 0.5.
+
+**Conclusion** : la 0.6 fait mieux que la 0.5 sur une base qui n'a servi à aucun réglage (20 contre 17 sur 23, stable sur trois passages). Conformément à D-042, la base de contrôle rejoint ensuite le banc d'essai.

@@ -91,8 +91,9 @@ def test_the_answer_key_matches_the_generators():
 def test_measures(fictional_files):
     server = Server()
     progress, results = _run(server)
-    assert len(progress) == 6
-    sleep, families, english = results
+    assert len(progress) == 8
+    sleep, families, english, control = results
+    assert (control.name, control.n_key) == ("etude-activite", 23)
     assert english.name == "sleep-study" and english.n_key == 34
     # The English study gets the English instructions (v0.5).
     assert any(s.startswith("You help a research team") for s in server.systems)

@@ -61,6 +61,8 @@ packages = ["src/ddict"]
 "exemples/bases-fictives/questionnaire-familles.pdf" = "ddict/banc/questionnaire-familles.pdf"
 "exemples/bases-fictives/sleep-study.csv" = "ddict/banc/sleep-study.csv"
 "exemples/bases-fictives/questionnaire-sleep.pdf" = "ddict/banc/questionnaire-sleep.pdf"
+"exemples/bases-fictives/etude-activite.csv" = "ddict/banc/etude-activite.csv"
+"exemples/bases-fictives/questionnaire-activite.pdf" = "ddict/banc/questionnaire-activite.pdf"
 
 [tool.pytest.ini_options]
 # Network access is forbidden in every test (CONCEPTION.md, principle 5).

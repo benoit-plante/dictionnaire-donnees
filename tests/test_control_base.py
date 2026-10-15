@@ -51,7 +51,9 @@ def test_the_score_is_the_sum_of_its_items():
     assert (df[items].sum(axis=1) == df["score_motivation"]).all()
 
 
-def test_set_aside_from_the_bench():
-    """Not in the bench during v0.6 (D-042)."""
+def test_in_the_bench_once_measured():
+    """Set aside during v0.6, in the bench since its final measure (D-042, step 6)."""
     bench = json.loads((EXAMPLES / "corrige-banc.json").read_text(encoding="utf-8"))
-    assert "etude-activite" not in [b["name"] for b in bench["bases"]]
+    control = json.loads((EXAMPLES / "corrige-controle.json").read_text(encoding="utf-8"))
+    in_bench = next(b for b in bench["bases"] if b["name"] == "etude-activite")
+    assert in_bench == control["bases"][0]
