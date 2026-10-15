@@ -536,3 +536,121 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   2. Mesurer seulement sur les trois bases du banc.
 - **Justification :** les bases du banc ont servi à régler l'outil depuis la v0.2 ; un progrès mesuré sur elles seules pourrait n'être qu'un réglage sur mesure.
 - **Conséquences :** si la 0.6 ne fait pas mieux sur la base de contrôle, les changements sont revus.
+
+### D-043 — Périmètre de la v0.7
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** la v0.7 lit juste les exports de plateforme de sondage (SurveyMonkey : `.sav`, `.csv`, `.xlsx`), tire parti de leur structure, et ajoute le renommage des variables, y compris la reprise des noms d'une vague précédente. Les corrections de lecture passent en premier. Le contrat d'analyse passe à la v0.8 ; LimeSurvey, Qualtrics et REDCap sont seulement rendus possibles.
+- **Options considérées :**
+  1. Exports de plateforme et renommage (ce choix).
+  2. Contrat d'analyse d'abord.
+- **Justification :** un essai de la v0.6 sur deux exports SurveyMonkey réels montre des erreurs de lecture (en-tête lu comme un participant, faux groupes, faux identifiant, dates en texte, questionnaires mal découpés) et une structure plus fiable que le questionnaire PDF ; beaucoup d'équipes partent de ces exports bruts.
+- **Conséquences :** plan en 11 étapes (`docs/plan-v0.7.md`).
+
+### D-044 — Plateformes décrites par leurs conventions
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** une plateforme est une description de ses conventions (variables de plateforme et leurs variantes, motif des noms d'items, en-tête, option « autre », noms fixes) dans `ddict.platforms` ; seule SurveyMonkey est décrite. La plateforme reconnue est gardée dans `source.platform`. Un ensemble de cases à cocher devient un groupe de nature « réponses multiples » (`Group.kind`), sa variable « autre » rattachée hors des membres.
+- **Options considérées :**
+  1. Une description par plateforme (ce choix).
+  2. Du code propre à SurveyMonkey.
+- **Justification :** une autre plateforme pourra s'ajouter par une description et ses tests, sans toucher au reste.
+- **Conséquences :** quand la structure existe, elle remplace les règles de préfixe et d'étiquettes partagées pour les variables qu'elle couvre ; le rang de plateforme ne fait un rattachement sûr qu'avec la concordance des textes.
+
+### D-045 — L'en-tête du `.xlsx` comme troisième format de questionnaire
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** l'en-tête d'un export `.xlsx` de SurveyMonkey (ses deux premières lignes seulement, jamais les réponses) peut être lu comme questionnaire, au même titre qu'un PDF ou un `.txt` ; il reste la source unique du questionnaire du projet.
+- **Options considérées :**
+  1. Un troisième format, source unique (ce choix).
+  2. Un complément fusionné au PDF.
+- **Justification :** l'en-tête est exact là où le PDF est incertain (énoncés, options, consigne des grilles) et ses identifiants coïncident avec les noms des variables ; une fusion ajouterait un appariement incertain. Ce qui lui manque (pages, consentement) n'est pas exporté de toute façon (D-012).
+- **Conséquences :** `Questionnaire.format` accepte `xlsx` ; les options des questions à choix restent les étiquettes de valeurs du `.sav`.
+
+### D-046 — Données réelles hors du dépôt
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** des tests marqués `reel` lisent de vrais exports dans un dossier donné par `DDICT_DONNEES_REELLES`, hors du dépôt ; ils sont sautés sans cette variable et exclus de l'intégration continue. Ils ne vérifient que des décomptes et des taux, jamais une valeur, une étiquette ni un texte, et leurs identifiants sont `base1`, `base2`. Les essais les décrivent par des faits de structure, sans nommer d'instrument.
+- **Options considérées :**
+  1. Tests `reel` à décomptes seulement (ce choix).
+  2. Aucun test sur données réelles.
+- **Justification :** la base fictive est écrite d'après le cahier des charges et pourrait être plus facile que les vraies ; un message d'échec de pytest montre les valeurs comparées, d'où des assertions sur des nombres seulement.
+- **Conséquences :** rien du dossier n'entre dans le dépôt, les tests, les exemples ni les messages de commit ; son chemin n'apparaît nulle part.
+
+### D-047 — Codes manquants probables par leur étiquette ; niveau `scale` douteux
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** élargit D-028
+- **Décision :** un code dont l'étiquette dit « Ne sais pas », « Préfère ne pas répondre », « Refus », « Sans objet » ou un équivalent anglais devient un code manquant probable, décidé par une personne comme les autres, et écarté du calcul de l'alpha comme les autres codes suspects. Le niveau de mesure `scale` d'un item étiqueté d'une grille est signalé comme douteux, sans être changé.
+- **Options considérées :**
+  1. Proposer par l'étiquette, signaler le niveau (ce choix).
+  2. Garder la détection par les valeurs seulement.
+- **Justification :** dans les exports SurveyMonkey, ces codes suivent l'échelle (6 et 7 après 1-5) et la détection par les valeurs ne les voit pas ; le niveau de mesure relève d'une décision de la v0.8.
+
+### D-048 — Le nouveau nom d'une variable et la version du format
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** `new_name` est une valeur suivie ; le nom d'origine reste la clé de la variable. Deux origines nouvelles peuvent être proposées : `rule` (règles de nommage) et `reference` (vague précédente, table de correspondance). Le préfixe d'un groupe et le radical d'une question sont aussi des valeurs suivies. `schema_version` passe à 0.2.0, sans conversion : tous les champs nouveaux ont une valeur par défaut.
+- **Options considérées :**
+  1. Origines nouvelles `rule` et `reference` (ce choix).
+  2. Permettre les propositions d'origine `computed`.
+  3. Remplacer le nom d'origine par le nouveau nom.
+- **Justification :** une valeur calculée est tenue pour acquise ; un nom ne l'est jamais sans une personne. Le nom d'origine sert à relire et reconnaître la base.
+- **Conséquences :** une version 0.6 ne lit pas un projet 0.2.0 ; l'inverse fonctionne. Le fichier d'origine n'est jamais modifié : les noms acceptés s'appliquent dans le codebook, les fichiers de commandes et la copie documentée (D-025, D-026).
+
+### D-049 — Marque de vague par défaut
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** aucune marque tant que la personne ne donne pas de vague ; ensuite, un suffixe `_t<N>` (`k6_1_t2`), le préfixe `t2_` restant au choix. La marque de la vague précédente est retirée avant d'ajouter la nouvelle.
+- **Options considérées :**
+  1. Suffixe par défaut (ce choix).
+  2. Préfixe par défaut.
+- **Justification :** le suffixe garde ensemble, dans une liste triée, les variables d'un même concept, et laisse le début du nom au concept.
+
+### D-050 — Noms fixes des variables de plateforme
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** en français, `respondent_id`, `collector_id`, `nom_collecteur`, `date_debut`, `date_fin`, `adresse_ip`, `courriel`, `prenom`, `nom_famille`, `donnees_personnalisees_1` ; en anglais, `respondent_id`, `collector_id`, `collector_name`, `start_date`, `end_date`, `ip_address`, `email`, `first_name`, `last_name`, `custom_data_1`. La classe de confidentialité reste visible à côté.
+- **Options considérées :**
+  1. Ces noms (ce choix).
+  2. `nom` et `donnees_perso_1`, de la demande initiale.
+- **Justification :** `respondent_id` et `collector_id` sont les noms de la plateforme et de ses autres exports, utiles pour joindre des fichiers ; `nom` est ambigu ; « perso » se lit « personnelles », alors que ce sont les données personnalisées de SurveyMonkey.
+
+### D-051 — Place du modèle dans le renommage
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** le modèle peut proposer, facultativement et après le calcul, le radical des questions seulement, jamais un préfixe de groupe, le nom d'une variable de plateforme ni un rang ; il ne remplace qu'un radical non décidé. Schéma strict, prompts `rename-v1`, signal « instrument » sur un sigle absent de la question et du glossaire.
+- **Options considérées :**
+  1. Radicaux seulement, gardé si le banc le justifie (ce choix).
+  2. Tous les noms.
+  3. Pas de modèle.
+- **Justification :** le sigle d'un instrument est un nom d'instrument (principe 4) ; le calcul couvre déjà la plupart des cas.
+- **Conséquences :** comme pour D-013, si le banc ne montre pas plus de noms acceptés tels quels qu'avec le calcul seul, la proposition par le modèle n'est pas offerte dans l'interface.
+
+### D-052 — Vague précédente et table de correspondance
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** les noms d'une vague précédente se reprennent depuis son fichier projet (recommandé), sa copie documentée `.sav` ou une table CSV : UTF-8, séparateur `,` ou `;`, en-tête `nom_origine,nouveau_nom` (ou `original_name,new_name`). L'outil écrit la même table à l'export. L'appariement se fait par le calcul, avec un score lisible, et ne propose qu'un appariement net ; un rapport donne les variables ajoutées, retirées et les étiquettes de valeurs changées.
+- **Options considérées :**
+  1. Trois sources, table au format de l'export (ce choix).
+  2. Fichier projet seulement.
+- **Justification :** la sortie d'une vague sert d'entrée à la suivante ; une table ne contient que des noms et n'apparie que par nom d'origine identique, fragile quand la plateforme renumérote ses questions, ce que le rapport signale.
