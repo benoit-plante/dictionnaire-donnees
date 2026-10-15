@@ -43,6 +43,9 @@ SIGNALS = Texts(
             "présente l'étendue observée comme celle de l'échelle : à vérifier dans le manuel"
         ),
         "no_file_label": N_("deviné : la variable n'a pas d'étiquette dans le fichier"),
+        "computed_disagrees": N_(
+            "s'écarte du choix sûr du calcul : comparez avec la première question de la liste"
+        ),
     }
 )
 FIELD_NAMES = Texts(
@@ -176,6 +179,8 @@ def link_question(project: Project, name: str, target_id: str, *, now: str) -> N
         entry.question = enter(tracked, target_id, now=now)
     else:
         entry.question = correct(tracked, target_id, now=now)
+    # A person decided: the signals on the link are settled (D-041).
+    entry.ai_signals = [s for s in entry.ai_signals if not s.startswith("question:")]
     propose_value_labels(project)
 
 

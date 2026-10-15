@@ -129,6 +129,7 @@ def _payload(
     language: str = "fr",
     no_question_first: bool = False,
     neighbour: bool = False,
+    sure: str | None = None,
 ) -> dict:
     payload: dict = {"name": entry.name}
     if entry.file.label:
@@ -145,6 +146,11 @@ def _payload(
             candidate["neighbour"] = True
     if no_question_first:
         payload["candidates"].insert(0, _no_question_candidate(entry, language))
+    # The computation's sure choice (D-041), as a fact the model may weigh.
+    sure_id = NO_QUESTION_IDS.get(language, NONE_ANSWER) if sure == link.NO_QUESTION else sure
+    for candidate in payload["candidates"]:
+        if sure_id is not None and candidate["id"] == sure_id:
+            candidate["computed"] = "sure"
     return payload
 
 
@@ -168,6 +174,7 @@ def build_link_blocks(project: Project, *, size: int) -> tuple[Block, ...]:
     previous = _needing_context(project.questionnaire)
     found = link.candidates(project)
     near = link.neighbours(project, found)
+    sure = link.sure_choices(project)
     offered = {**near, **{name: ids for name, ids in found.items() if ids}}
     waiting = [e for e in project.variables if offered.get(e.name) and not is_decided(e)]
     language = project.settings.language
@@ -189,6 +196,7 @@ def build_link_blocks(project: Project, *, size: int) -> tuple[Block, ...]:
                     language,
                     no_question_first=offered[e.name][0] == link.NO_QUESTION,
                     neighbour=version == NEIGHBOUR_PROMPT_VERSION,
+                    sure=sure.get(e.name),
                 )
                 for e in chunk
             ]
@@ -244,7 +252,11 @@ def _may_replace(tracked: TrackedValue) -> bool:
     return tracked.value is None
 
 
+DISAGREES = "question:computed_disagrees"  # the model left the computation's sure choice
+
+
 def apply_links(project: Project, result: BlockResult) -> None:
+    sure = link.sure_choices(project)
     for choice in result.proposals:
         answer = choice.question.strip()
         entry = project.variable(choice.name)
@@ -254,6 +266,11 @@ def apply_links(project: Project, result: BlockResult) -> None:
         entry.question = TrackedValue[str](
             value=value, origin="ai", status="proposed", ai_run=result.run.run_id
         )
+        # Kept, never replaced in silence, but flagged (D-041).
+        signals = [s for s in entry.ai_signals if s != DISAGREES]
+        if choice.name in sure and value != sure[choice.name]:
+            signals.append(DISAGREES)
+        entry.ai_signals = sorted(signals)
 
 
 def propose_links(

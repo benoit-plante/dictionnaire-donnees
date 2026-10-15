@@ -1846,6 +1846,9 @@ msgstr "invalid answer"
 msgid "réussi"
 msgstr "succeeded"
 
+msgid "s'écarte du choix sûr du calcul : comparez avec la première question de la liste"
+msgstr "departs from the computation's sure choice: compare with the first question of the list"
+
 msgid "sens d'un sigle"
 msgstr "meaning of an acronym"
 

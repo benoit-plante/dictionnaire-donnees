@@ -58,7 +58,11 @@ def test_the_model_sees_none_first(bases):
         for b in build_link_blocks(project, size=40)
         for v in json.loads(b.messages[1]["content"])["variables"]
     }
-    assert sent["id_participant"]["candidates"][0] == {"id": "aucune", "question": "(identifiant)"}
+    assert sent["id_participant"]["candidates"][0] == {
+        "id": "aucune",
+        "question": "(identifiant)",
+        "computed": "sure",
+    }
     assert (
         sent["date_passation"]["candidates"][0]["question"] == "(date de passation ou de réponse)"
     )
@@ -68,7 +72,11 @@ def test_the_model_sees_none_first(bases):
         for b in build_link_blocks(english, size=40)
         for v in json.loads(b.messages[1]["content"])["variables"]
     }
-    assert sent["participant_id"]["candidates"][0] == {"id": "none", "question": "(identifier)"}
+    assert sent["participant_id"]["candidates"][0] == {
+        "id": "none",
+        "question": "(identifier)",
+        "computed": "sure",
+    }
 
 
 def test_best_guess_is_none(bases):

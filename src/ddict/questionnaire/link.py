@@ -401,6 +401,23 @@ def candidates(project: Project, *, limit: int = MAX_CANDIDATES) -> dict[str, li
     return found
 
 
+def sure_choices(project: Project) -> dict[str, str]:
+    """The computation's sure choices (D-041): the clear best target of a variable (the
+    rule of the anchors), or "none" on strong evidence (D-039)."""
+    if project.questionnaire is None:
+        return {}
+    result, excluded, all_targets = _raw_scores(project)
+    sure = {}
+    for index, position in _anchors(project, result).items():
+        name = project.variables[index].name
+        if position not in excluded[name]:
+            sure[name] = all_targets[position].target_id
+    for entry in project.variables:
+        if no_question_reason(entry):
+            sure[entry.name] = NO_QUESTION
+    return sure
+
+
 MAX_NEIGHBOURS = 6
 
 
