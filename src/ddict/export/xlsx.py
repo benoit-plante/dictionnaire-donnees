@@ -13,6 +13,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 
 from ddict.export import wording as w
 from ddict.i18n import N_, TextList, _, colon, in_language
+from ddict.project import fingerprint
 from ddict.project.model import Project, TrackedValue
 
 MAX_WIDTH = 60
@@ -68,6 +69,7 @@ def _about(project: Project, kind: w.ExportKind, omit_groups: tuple[str, ...]) -
             ).format(n=project.settings.min_cell_count),
         ],
         [_("Format du projet"), project.schema_version],
+        [_("Empreinte du codebook"), fingerprint.short(project)],
         *_questionnaire_rows(project, omit_groups),
     ]
 

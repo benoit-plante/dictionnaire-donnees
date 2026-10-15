@@ -7,6 +7,7 @@ from pathlib import Path
 
 from ddict.export import wording as w
 from ddict.i18n import _, colon, field_label, in_language, semicolon
+from ddict.project import fingerprint
 from ddict.project.model import Project, VariableEntry
 
 
@@ -36,6 +37,8 @@ def _overview(project: Project, kind: w.ExportKind) -> list[str]:
         f"- {field_label('Lignes')}{source.n_rows}{semicolon()}"
         f"{field_label('variables')}{source.n_columns}",
         f"- {field_label('Version')}{kind_text}",
+        f"- {field_label('Empreinte du codebook')}`{fingerprint.short(project)}` "
+        + _("(décisions acceptées)"),
         "- "
         + _(
             "Effectifs inférieurs à {n} masqués, ainsi qu'un second effectif quand le "

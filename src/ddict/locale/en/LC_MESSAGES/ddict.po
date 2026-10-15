@@ -112,6 +112,9 @@ msgstr "(correlation with the rest: {r})"
 msgid "(corrélation avec le reste du groupe : {r})"
 msgstr "(correlation with the rest of the group: {r})"
 
+msgid "(décisions acceptées)"
+msgstr "(accepted decisions)"
+
 msgid "(pas encore rattachée)"
 msgstr "(not linked yet)"
 
@@ -694,6 +697,13 @@ msgstr "SHA-256 fingerprint"
 
 msgid "Empreinte SHA-256 du questionnaire"
 msgstr "SHA-256 fingerprint of the questionnaire"
+
+msgid "Empreinte du codebook"
+msgstr "Codebook fingerprint"
+
+#, python-brace-format
+msgid "Empreinte du codebook : {fingerprint}."
+msgstr "Codebook fingerprint: {fingerprint}."
 
 msgid "En conflit"
 msgstr "In conflict"

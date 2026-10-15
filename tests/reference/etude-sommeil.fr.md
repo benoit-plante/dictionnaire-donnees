@@ -4,6 +4,7 @@
 - Empreinte SHA-256 : `a189e6bd7c313c8d06d56881042e0db32d66b9ecc1e48c3e06d36b0af7570f25`
 - Lignes : 200 ; variables : 34
 - Version : finale
+- Empreinte du codebook : `861532b0b226` (décisions acceptées)
 - Effectifs inférieurs à 5 masqués, ainsi qu'un second effectif quand le premier pourrait être recalculé par soustraction.
 - Questionnaire : questionnaire-sommeil.txt
 - Empreinte SHA-256 du questionnaire : 307165d2eb4185449fdf95d1a387d5503aafbe76b789e743a50a6c26c300571c

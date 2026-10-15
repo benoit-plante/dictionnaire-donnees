@@ -20,6 +20,7 @@ from pathlib import Path
 from ddict import __version__
 from ddict.export import wording as w
 from ddict.i18n import _, in_language
+from ddict.project import fingerprint
 from ddict.project.model import Code, Project, VariableEntry
 from ddict.questionnaire.labels import accepted_labels
 
@@ -84,7 +85,11 @@ def _header(project: Project, comment: str, today: str) -> list[str]:
         _("Métadonnées de {name}, produites par dictionnaire-donnees {version} le {date}.").format(
             name=project.source.name, version=__version__, date=today
         ),
-        _("Encodage : UTF-8."),
+        _("Encodage : UTF-8.")
+        + " "
+        + _("Empreinte du codebook : {fingerprint}.").format(
+            fingerprint=fingerprint.short(project)
+        ),
         _(
             "Seulement les décisions acceptées : libellés, étiquettes de valeurs, codes "
             "manquants (déclarés ou confirmés par l'équipe), niveaux de mesure."
