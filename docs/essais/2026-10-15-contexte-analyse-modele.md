@@ -40,3 +40,21 @@ Les erreurs d'exécution sont surtout des erreurs de programmation R, les mêmes
 ## Suite
 
 Un banc d'analyse automatisé (bases fictives aux effets connus) ne vaut pas la peine avec un modèle de cette taille : ses erreurs de programmation masqueraient l'effet du document. À refaire avec un modèle plus grand, en local si le matériel le permet, et en donnant les variables préparées. Le script `scripts/essai_contexte_modele.py` refait l'essai avec un autre modèle (`--modele`).
+
+## Complément : un assistant en ligne, utilisé à la main
+
+**Protocole :** la consigne de la condition B (contexte d'analyse et même tâche, écrite par `scripts/essai_contexte_modele.py --consigne`) collée par l'auteur dans une nouvelle conversation d'un assistant en ligne, **Claude Opus 5.5** ; le code rapporté est vérifié par `--code`, exécuté dans R sur la base fictive et noté avec la même grille. L'outil n'a rien envoyé : c'est une personne qui a copié un document de métadonnées d'une étude fictive. Un seul essai ; l'assistant est de la même famille que celui qui a écrit l'outil, mais il ne disposait que de la consigne.
+
+| Vérification | Résultat |
+|---|---|
+| Le script s'exécute sans erreur | oui |
+| Score de chaque participant | juste (égal au calcul indépendant) |
+| Moyennes par genre | justes, les trois étiquettes, sans groupe « 9 » |
+| Corrélation avec l'âge | juste |
+| Inversion, code 9 de `sommeil_q3`, règle des 7 items et somme proportionnelle | appliqués |
+| Codes 9 du genre et 999 de l'âge | exclus (`haven::zap_missing`, comme le demandait la règle 1) |
+| Variable sensible, invention | aucune |
+
+Le code ajoute de lui-même un contrôle des valeurs hors des codes documentés, qui n'affiche qu'un nombre, conformément à la consigne de ne montrer aucune donnée individuelle.
+
+**Constat :** avec un modèle capable d'écrire du code R, le contexte d'analyse suffit à une analyse entièrement juste, codes manquants compris, sans la règle propre à R envisagée plus haut. La limite observée avec qwen2.5 7B tenait au modèle, pas au document. Cela reste un seul essai, sur une base fictive ; un code produit par un assistant se vérifie toujours avant d'être exécuté sur de vraies données.
