@@ -14,7 +14,7 @@ In English: [`en/installation-macos.md`](en/installation-macos.md).
 
 ## 1. Installer
 
-1. Téléchargez l'archive de l'outil depuis la page des versions du projet sur GitHub : le lien **Source code (zip)**, par exemple `dictionnaire-donnees-0.7.0.zip`.
+1. Téléchargez l'archive de l'outil depuis la page des versions du projet sur GitHub : le lien **Source code (zip)**, par exemple `dictionnaire-donnees-0.7.1.zip`.
 2. Dans le Finder, double-cliquez sur le fichier téléchargé : macOS le décompresse à côté. Ouvrez le dossier obtenu : c'est **le dossier de l'outil**, avec `installer.command`, `docs` et `exemples`.
 3. Double-cliquez sur **`installer.command`**. La première fois, macOS refuse de l'ouvrir, avec un message comme « Apple n'a pas pu confirmer que “installer.command” ne contient pas de logiciel malveillant » ou « provient d'un développeur non identifié ». C'est normal : ce message apparaît pour tout script téléchargé qui n'est pas signé par un éditeur payant ; l'installateur est un simple fichier texte, lisible dans n'importe quel éditeur.
    - Cliquez sur **Terminé** (ou **OK**), puis ouvrez **Réglages Système > Confidentialité et sécurité**. Plus bas, un message parle de `installer.command` : cliquez sur **Ouvrir quand même**, confirmez avec votre mot de passe ou Touch ID, puis **Ouvrir**.
