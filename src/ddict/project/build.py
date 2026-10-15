@@ -146,6 +146,20 @@ def _with_group(entry: VariableEntry, groups: tuple[GroupCandidate, ...]) -> Var
     return entry
 
 
+def doubtful_scale_level(entry: VariableEntry) -> bool:
+    """An item of a group declared at the "scale" level although every observed value has
+    a label: Likert answers are ordinal (v0.7, D-047). Flagged, never changed."""
+    labels = {item.code for item in entry.file.value_labels}
+    observed = entry.profile.observed_values
+    return (
+        entry.group_id.value is not None
+        and entry.file.measure_level == "scale"
+        and len(labels) >= 2
+        and bool(observed)
+        and all(o.code in labels for o in observed if not o.declared_missing)
+    )
+
+
 MIN_SUM_ROWS = 10  # fewer complete rows: no conclusion
 
 
@@ -200,4 +214,7 @@ def build_project(data: LoadedData, *, min_cell_count: int = MIN_CELL_COUNT) -> 
     )
     for name, group_id in sums.items():
         project.variable(name).profile.sum_of_group = group_id
+    for entry in project.variables:
+        if doubtful_scale_level(entry):
+            entry.profile.flags = [*entry.profile.flags, "measure_level_doubtful"]
     return project

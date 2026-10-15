@@ -46,9 +46,24 @@ Deux exports SurveyMonkey réels, gardés hors du dépôt (D-046), mesurés le 2
 | Questionnaire PDF : questions trouvées | 15 (7 ouvertes, 4 à choix unique, 4 grilles de 35 énoncés en tout, 3 à vérifier) | 0 |
 | Questionnaire PDF : lignes lues, lignes numérotées | 479, 0 | 70, 13 |
 
+Après les étapes 2 et 3 de la v0.7 :
+
+| | Base fictive | Base 1 | Base 2 |
+|---|---|---|---|
+| Plateforme reconnue ; `.xlsx` lu comme le `.sav` | oui ; oui | oui ; oui | oui ; oui |
+| Groupes qui mêlent des questions | 0 | 0 | 0 (1 avant) |
+| Grilles entières, coupées | 2, 0 | 7, 0 (6, 1 avant) | — |
+| Items de grille « identifiant probable » | 0 | 0 (1 avant) | — |
+| Dates de passation lues comme dates, classées texte libre | 2, 0 | 2, 0 | 2, 0 |
+| Codes « Ne sais pas »… observés, signalés | 10, 10 | 6, 6 | 0, 0 |
+| Items `scale` de grille signalés | 12 sur 12 | 100 sur 100 | — |
+
+Restent pour les étapes 4 et 5 : les ensembles à cocher en groupes « réponses multiples », et la lecture des questionnaires.
+
 Ce que la mesure précise par rapport à l'essai de l'auteur :
 
 - Les « 8 grilles » de la base 1 sont 7 grilles d'après les noms. La v0.6 en fait 8 groupes parce qu'une grille est coupée en deux.
 - Le format des dates de passation est le même dans les deux bases, et c'est celui de la base fictive : toutes les valeurs sont lisibles.
 - Le questionnaire PDF de la base 2 a des **questions numérotées** (13 lignes numérotées, autant que de questions de plateforme), et la v0.6 n'y trouve aucune question, comme dans le `.txt` numéroté de l'essai. L'étape 5 doit donc accepter les questions numérotées dans un PDF aussi, et la base fictive recevra un PDF numéroté.
+- Les codes « Ne sais pas »… comptés plus haut comprenaient des étiquettes jamais choisies et, dans la base 2, des faux positifs du script de décompte (« na » au milieu d'un mot, « refus » dans une longue phrase d'option). Le décompte ne retient plus que les étiquettes courtes de codes observés : 6 dans la base 1, 0 dans la base 2.
 - La base 1 n'a pas de faux groupe par le préfixe et la base 2 n'a pas de grille : ces constats ne valent que pour l'autre base. Pour les vraies bases, les tests de constats ne sont donc pas « stricts » : un test sans objet est sauté, un constat absent d'une base n'est pas une erreur.

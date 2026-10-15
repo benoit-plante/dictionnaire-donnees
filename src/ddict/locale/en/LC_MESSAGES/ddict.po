@@ -389,6 +389,10 @@ msgid "Code suspect {code}"
 msgstr "Suspect code {code}"
 
 #, python-brace-format
+msgid "Code {code} ({label}) probablement manquant, non déclaré"
+msgstr "Code {code} ({label}) probably missing, not declared"
+
+#, python-brace-format
 msgid "Code {code} confirmé comme manquant par l'équipe"
 msgstr "Code {code} confirmed as missing by the team"
 
@@ -1109,6 +1113,9 @@ msgstr ""
 
 msgid "Niveau de mesure"
 msgstr "Measurement level"
+
+msgid "Niveau de mesure « échelle » douteux : chaque valeur observée a une étiquette (ordinal probable)"
+msgstr "Doubtful \"scale\" measurement level: every observed value has a label (probably ordinal)"
 
 msgid "Nom"
 msgstr "Name"

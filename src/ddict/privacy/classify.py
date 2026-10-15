@@ -52,6 +52,15 @@ _IDENTIFIER_PARTS = (
     "adresse",
     "address",
 )
+# A file label of at most this many words, small words aside, names what the variable is.
+SHORT_LABEL_WORDS = 3
+_LABEL_SMALL_WORDS = {
+    "le", "la", "les", "l", "un", "une", "de", "du", "des", "d", "votre", "vos", "ton", "ta",
+    "quel", "quelle", "quels", "quelles", "est", "sont", "the", "a", "an", "of", "your",
+    "what", "is", "are", "please", "veuillez", "indiquer", "indiquez", "inscrire", "inscrivez",
+}  # fmt: skip
+# Verbs that hold an identifier word ("identif") and start a sentence, not a name.
+_IDENTIFIER_VERBS = {"identifier", "identify", "identifiez", "identifie"}
 _FREE_TEXT_WORDS = {"autre", "precisez", "precision", "texte", "text", "notes"}
 _FREE_TEXT_PARTS = ("comment", "remarque", "verbatim", "precise", "observation")
 _BIRTH_WORDS = {"ddn", "dob", "dn"}
@@ -114,10 +123,28 @@ def _share(values: list[str], pattern: re.Pattern) -> float:
     return sum(1 for v in values if pattern.fullmatch(v)) / len(values) if values else 0.0
 
 
+def _label_names_identifier(label: str | None) -> bool:
+    """Whether a file label *designates* an identifier (v0.7): "Identifiant", "ID",
+    "Numéro de participant", "Quel est votre nom ?"; not a sentence that merely holds such a
+    word ("J'ai pu identifier les sources de tension"). A short label (once the small words
+    are set aside) counts by any identifier word; a longer one by its first word only, and
+    never by the verb "identifier"."""
+    words = [w for w in _words(label) if w not in _LABEL_SMALL_WORDS]
+    if not words:
+        return False
+    if len(words) <= SHORT_LABEL_WORDS:
+        return _matches(words, _IDENTIFIER_WORDS, _IDENTIFIER_PARTS)
+    first = words[0]
+    return first not in _IDENTIFIER_VERBS and _matches(
+        [first], _IDENTIFIER_WORDS, _IDENTIFIER_PARTS
+    )
+
+
 def classify_variable(
     variable: VariableMetadata, profile: VariableProfile, column: pd.Series
 ) -> PrivacyClassification:
     words = _words(variable.name) + _words(variable.label)
+    name_words = _words(variable.name)
     is_text = profile.inferred_type in ("text", "mixed")
     texts = [str(v).strip() for v in column if isinstance(v, str) and v.strip()]
 
@@ -130,7 +157,8 @@ def classify_variable(
         and profile.n_distinct is not None
         and profile.n_distinct < IDENTIFIER_NAME_MIN_DISTINCT
     )
-    if _matches(words, _IDENTIFIER_WORDS, _IDENTIFIER_PARTS) and not checkbox:
+    identifier_words = _matches(name_words, _IDENTIFIER_WORDS, _IDENTIFIER_PARTS)
+    if (identifier_words or _label_names_identifier(variable.label)) and not checkbox:
         identifier.append("identifier_name")
     if is_text and _share(texts, _EMAIL) >= FORMAT_SHARE:
         identifier.append("email_values")
@@ -142,7 +170,8 @@ def classify_variable(
     free_text: list[Reason] = []
     if is_text and _matches(words, _FREE_TEXT_WORDS, _FREE_TEXT_PARTS):
         free_text.append("free_text_name")
-    if texts:
+    # Dates written as text ("10/02/2026 09:15:23 AM") are long and spaced, but are dates.
+    if texts and profile.inferred_type not in ("date", "datetime"):
         with_space = sum(1 for t in texts if re.search(r"\s", t)) / len(texts)
         mean_length = sum(len(t) for t in texts) / len(texts)
         long_texts = with_space >= FREE_TEXT_SPACE_SHARE and mean_length >= FREE_TEXT_MEAN_LENGTH

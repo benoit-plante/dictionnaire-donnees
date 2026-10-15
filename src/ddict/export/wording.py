@@ -13,6 +13,7 @@ from typing import Literal
 
 from ddict import glossary
 from ddict.i18n import N_, Texts, _, decimal, quoted
+from ddict.profile.compute import is_missing_label
 from ddict.profile.variants import spelling_variants
 from ddict.project.build import GROUP_PARTS
 from ddict.project.decisions import is_accepted
@@ -148,14 +149,26 @@ def codes(values: list[Code]) -> str:
     return ", ".join(code_text(c) for c in values)
 
 
-def anomalies(profile: Profile, decided: frozenset = frozenset()) -> list[str]:
+def anomalies(
+    profile: Profile, decided: frozenset = frozenset(), labels: dict | None = None
+) -> list[str]:
     """Deterministic findings, in plain French. `decided`: suspect missing codes the team
-    already settled (D-028), no longer anomalies."""
+    already settled (D-028), no longer anomalies. `labels`: the value labels of the file,
+    to say which suspect codes are such by their label (v0.7, D-047)."""
+    labels = labels or {}
     found = []
     for code in profile.unlabeled_codes:
         found.append(_("Code {code} observé sans étiquette").format(code=code_text(code)))
     for code in profile.suspect_missing_codes:
         if code in decided:
+            continue
+        label = labels.get(code)
+        if label is not None and is_missing_label(label):
+            found.append(
+                _("Code {code} ({label}) probablement manquant, non déclaré").format(
+                    code=code_text(code), label=quoted(label)
+                )
+            )
             continue
         found.append(
             _("Valeur {code} probablement manquante, non déclarée").format(code=code_text(code))
@@ -166,6 +179,13 @@ def anomalies(profile: Profile, decided: frozenset = frozenset()) -> list[str]:
         found.append(_("Variable entièrement vide"))
     if "constant" in profile.flags:
         found.append(_("Variable constante"))
+    if "measure_level_doubtful" in profile.flags:
+        found.append(
+            _(
+                "Niveau de mesure « échelle » douteux : chaque valeur observée a une étiquette "
+                "(ordinal probable)"
+            )
+        )
     if "mixed_types" in profile.flags:
         found.append(
             _("Types mélangés ({n} valeurs non numériques)").format(n=profile.n_non_numeric)
@@ -212,7 +232,11 @@ def confirmed_missing(entry: VariableEntry) -> list[Code]:
 
 def entry_anomalies(entry: VariableEntry) -> list[str]:
     """The anomalies of a variable, without the suspect codes the team settled."""
-    return anomalies(entry.profile, frozenset(d.code for d in entry.sentinel_decisions))
+    return anomalies(
+        entry.profile,
+        frozenset(d.code for d in entry.sentinel_decisions),
+        {item.code: item.label for item in entry.file.value_labels},
+    )
 
 
 def sentinel_notes_for(decision: SentinelDecision) -> str:

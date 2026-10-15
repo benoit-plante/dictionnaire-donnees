@@ -31,6 +31,9 @@ DECIMALS = 3
 
 Basis = Literal["common_prefix", "shared_value_labels", "contiguous"]
 
+# Letters in the stem of a numbered item without a separator (see item_prefix).
+MIN_STEM_LETTERS = 3
+
 _NUMBERED = re.compile(r"(.*?[A-Za-z])[_.\-]?(\d+)")
 
 
@@ -56,8 +59,21 @@ class GroupCandidate:
 
 
 def item_prefix(name: str) -> str | None:
+    """The stem of a numbered item: `sommeil_q` for `sommeil_q3`, `anx` for `anx3`.
+
+    A meaningful stem only (v0.7): two letters or more before a separator (`ab_1`), three
+    or more without one (`anx3`). `q1`, `q0001` or `q_2` are numbered questions, not items
+    of a scale: their stem says nothing.
+    """
     match = _NUMBERED.fullmatch(name)
-    return match.group(1) if match else None
+    if match is None:
+        return None
+    stem = match.group(1)
+    letters = sum(character.isalpha() for character in stem)
+    separated = name[len(stem)] in "_.-"
+    if letters < 2 or (letters < MIN_STEM_LETTERS and not separated):
+        return None
+    return stem
 
 
 def _eligible(profile: VariableProfile, classification: PrivacyClassification) -> bool:
@@ -77,11 +93,16 @@ def _labels_key(variable: VariableMetadata) -> tuple | None:
 
 
 def _member_sets(
-    variables: list[VariableMetadata],
+    variables: list[VariableMetadata], eligible: set[str]
 ) -> list[tuple[list[str], tuple[Basis, ...], str | None]]:
+    """Members of the probable scales, among the eligible variables. A variable left out
+    (by its privacy class, or being constant...) with the same value labels as the run it
+    sits in does not cut that run in two (v0.7): the run goes on without it."""
     groups = []
     by_prefix: dict[str, list[VariableMetadata]] = {}
     for variable in variables:
+        if variable.name not in eligible:
+            continue
         prefix = item_prefix(variable.name)
         if prefix:
             by_prefix.setdefault(prefix.lower(), []).append(variable)
@@ -100,6 +121,7 @@ def _member_sets(
         grouped.update(m.name for m in members)
 
     run: list[VariableMetadata] = []
+    last_position = 0  # of the run's last variable, member or left out
 
     def close_run() -> None:
         if len(run) >= MIN_ITEMS:
@@ -111,8 +133,16 @@ def _member_sets(
             run
             and key is not None
             and key == _labels_key(run[-1])
-            and variable.position == run[-1].position + 1
+            and variable.position == last_position + 1
         )
+        if variable.name not in eligible:
+            if follows:
+                last_position = variable.position
+                continue
+            close_run()
+            run = []
+            continue
+        last_position = variable.position
         if variable.name in grouped or key is None:
             close_run()
             run = []
@@ -191,12 +221,15 @@ def find_groups(
 ) -> tuple[GroupCandidate, ...]:
     """Probable scales, in the order of their first item in the file."""
     by_name = {p.name: p for p in profiles}
-    eligible = [
-        v
+    eligible = {
+        v.name
         for v, p, c in zip(data.variables, profiles, classifications, strict=True)
         if _eligible(p, c)
-    ]
-    found = sorted(_member_sets(eligible), key=lambda g: data.variable(g[0][0]).position)
+    }
+    found = sorted(
+        _member_sets(list(data.variables), eligible),
+        key=lambda g: data.variable(g[0][0]).position,
+    )
     candidates = []
     for number, (members, basis, prefix) in enumerate(found, start=1):
         matrix = _item_matrix(data, members, by_name)

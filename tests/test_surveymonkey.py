@@ -193,12 +193,10 @@ def test_the_second_header_row_is_not_a_participant(counts):
     assert counts["xlsx_noms_absents_du_sav"] == 0
 
 
-@FINDING
 def test_single_questions_do_not_make_a_group(counts):
     assert counts["groupes_melant_des_questions"] == 0
 
 
-@FINDING
 def test_a_grid_is_one_group(counts):
     assert counts["grilles_coupees"] == 0
     assert counts["grilles_entieres"] == counts["grilles"]
@@ -209,25 +207,21 @@ def test_a_checkbox_set_is_a_multiple_response_group(counts):
     assert counts["ensembles_a_cocher_groupes"] == counts["ensembles_a_cocher"]
 
 
-@FINDING
 def test_the_verb_identifier_does_not_make_an_identifier(counts):
     assert counts["items_de_grille_identifiant_probable"] == 0
 
 
-@FINDING
 def test_the_survey_dates_are_read_as_dates(counts):
     assert counts["dates_lues_comme_dates"] == counts["dates_de_passation"]
     assert counts["dates_classees_texte_libre"] == 0
 
 
-@FINDING
 def test_dont_know_codes_are_suspect_missing_codes(counts):
     assert (
         counts["codes_a_etiquette_de_manquant_signales"] == counts["codes_a_etiquette_de_manquant"]
     )
 
 
-@FINDING
 def test_the_scale_level_of_labelled_items_is_flagged(counts):
     assert counts["items_niveau_scale_signales"] == counts["items_de_grille_niveau_scale"]
 

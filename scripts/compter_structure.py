@@ -65,9 +65,11 @@ DATE_FORMATS = (
     "%m/%d/%Y",
     "%Y-%m-%d",
 )
+MAX_MISSING_LABEL_WORDS = 6
+# A label that is a non-answer as a whole: short, and starting with one of these.
 MISSING_LABEL = re.compile(
-    r"ne (le )?sai[st] pas|je ne sais pas|\bnsp\b|pr[ée]f[èe]re ne pas|refus|sans objet"
-    r"|ne s'applique pas|don'?t know|prefer not|refused|not applicable|\bn/?a\b",
+    r"\s*((je )?ne (le )?sai[st] pas|nsp|pr[ée]f[èe]re ne pas|refus|sans objet"
+    r"|ne s'applique pas|(i )?don'?t know|prefer not|refused|not applicable|n/?a)(\W|$)",
     re.IGNORECASE,
 )
 
@@ -173,11 +175,14 @@ def count_database(sav: Path) -> dict[str, float | int]:
         DATE_FORMATS[formats.pop()] if len(formats) == 1 else f"{len(formats)} formats"
     )
 
+    # Codes chosen by at least one person: a code never observed is not a suspect value.
     labelled_missing = [
         (v.name, code)
         for v in data.variables
         for code, label in v.value_labels.items()
-        if MISSING_LABEL.search(str(label))
+        if MISSING_LABEL.match(str(label))
+        and len(str(label).split()) <= MAX_MISSING_LABEL_WORDS
+        and code in {o.code for o in by_name[v.name].profile.observed_values or []}
     ]
     counts["codes_a_etiquette_de_manquant"] = len(labelled_missing)
     counts["codes_a_etiquette_de_manquant_signales"] = sum(
