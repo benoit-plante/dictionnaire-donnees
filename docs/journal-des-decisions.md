@@ -1123,3 +1123,96 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   1. Garder les deux (ce choix).
   2. Remplacer les fichiers d'une analyse par le carnet.
 - **Justification :** Une analyse seule reste utile pour essayer ; le carnet donne le document de l'article.
+
+### D-093 — Les règles d'exclusion
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Les exclusions de participants sont des décisions du projet (format 0.4.0), écrites par une personne, chacune avec une raison en clair et un rang. Cinq sortes : condition sur une variable (`eq`, `ne`, `lt`, `le`, `gt`, `ge`, `in`, `missing`), complétude d'un groupe, durée de passation, réponse en ligne droite dans une grille, doublons. Les variables sont désignées par leur nom d'origine, un score par son groupe. Une condition qui nomme une valeur d'un identifiant ou d'un texte libre est refusée ; seule la règle des doublons compare des identifiants entre eux, sans nommer de valeur. Un seuil de durée exige une source.
+- **Options considérées :**
+  1. Des règles générales dans le projet (ce choix).
+  2. Une liste des personnes à retirer.
+  3. Laisser les exclusions aux scripts de l'équipe.
+- **Justification :** Une règle se lit dans la Méthode, s'applique pareil partout et se compte ; une liste de personnes ferait entrer des données individuelles dans le projet.
+- **Références :** `docs/plan-v0.12.md`, § 3.
+
+### D-094 — Où et quand s'appliquent les exclusions
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Les règles s'appliquent dans leur rang, après les codes manquants, les noms, les items inversés et les scores (une règle peut porter sur un score) ; une personne n'est comptée que par la première règle qui la retire. Elles s'appliquent en mémoire avant chaque analyse, dans les scripts de préparation SPSS et R (variable `ddict_exclusion`, puis sélection) et dans le script R maître ; jamais dans la copie documentée, qui reste identique à l'original. Elles entrent dans l'empreinte du codebook.
+- **Options considérées :**
+  1. Après les autres décisions, partout sauf la copie documentée (ce choix).
+  2. Avant les autres décisions.
+  3. Aussi dans la copie documentée.
+- **Justification :** Une règle doit pouvoir porter sur un score ; la copie documentée est garantie identique à l'original case par case (D-026) ; l'empreinte fait voir au carnet ce que change une exclusion.
+
+### D-095 — Les signaux de qualité de passation
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** La durée de passation, la réponse en ligne droite et les doublons probables sont calculés par des règles et montrés avec le nombre de personnes qu'ils toucheraient, au seuil choisi par l'équipe. Aucun seuil par défaut ; aucun signal n'est appliqué seul : il devient une exclusion quand l'équipe l'ajoute comme règle.
+- **Options considérées :**
+  1. Signaux montrés, appliqués seulement comme règles (ce choix).
+  2. Seuils par défaut, appliqués automatiquement.
+- **Justification :** Un seuil de qualité est un choix de l'équipe, à justifier dans la Méthode (principe 4).
+
+### D-096 — La fidélité dans la Méthode
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** L'alpha de Cronbach est recalculé sur l'échantillon analysé (après les exclusions, les codes manquants et les items inversés, sur les personnes qui ont répondu à tous les items du score), avec son intervalle de confiance à 95 % selon Feldt (1965), vérifiés en R de base. L'oméga est reporté au moteur R facultatif (D-071) ou au catalogue élargi.
+- **Options considérées :**
+  1. Alpha et son intervalle de Feldt (ce choix).
+  2. Alpha, son intervalle et l'oméga total d'un modèle à un facteur.
+- **Justification :** L'oméga demanderait une analyse factorielle (une nouvelle dépendance ou un code d'estimation à écrire) et, pour le vérifier, un paquet R qui n'est pas installé ; l'intervalle de Feldt est une formule fermée, vérifiable avec `qf`.
+
+### D-097 — Les gabarits de la Méthode
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Les paragraphes Participants, Instruments et Analyses sont rédigés par des phrases fixes, en français et en anglais, traduites d'un bloc. Tout champ manquant donne un trou « [à compléter : …] », surligné en jaune dans Word ; une phrase n'est jamais tronquée ni devinée. Aucune formulation qui juge. Chaque fait du texte a une origine dans le codebook ou le carnet, vérifiée par un test.
+- **Options considérées :**
+  1. Phrases fixes à trous signalés (ce choix).
+  2. Texte rédigé par le modèle local.
+- **Justification :** La v0.12 n'ajoute aucun usage de l'IA ; un gabarit validé ne peut rien inventer.
+
+### D-098 — Le diagramme de flux
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Le diagramme de flux des participants est une figure APA dessinée (image dans Word, comme les autres figures), accompagnée du tableau de ses effectifs, modifiable dans Word et dans Excel. Pas de graphique Excel natif.
+- **Options considérées :**
+  1. Image et tableau des effectifs (ce choix).
+  2. Formes Word dessinées une à une.
+  3. Graphique Excel natif.
+- **Justification :** Excel n'a pas de type de graphique pour un diagramme de flux ; le tableau garde les chiffres modifiables.
+
+### D-099 — Le document « Méthode et Résultats »
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Les fichiers du carnet restent `<projet>-resultats.docx`, `-resultats-graphiques.xlsx` et `-resultats-R.zip` (D-092). Le Word reçoit une section Méthode (Participants et diagramme de flux, Instruments, Analyses) avant les Résultats, avec une numérotation continue des tableaux et des figures sur tout le document. Un nom de fichier d'article viendra avec le squelette IMRaD de la v0.13.
+- **Options considérées :**
+  1. Les mêmes fichiers, enrichis (ce choix).
+  2. Un nouveau fichier `-methode-resultats.docx`.
+- **Justification :** Ne pas multiplier les fichiers d'une version à l'autre.
+
+### D-100 — Les chiffres de la Méthode, gardés et confirmés
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Le carnet garde aussi les agrégats de la Méthode (effectifs par règle, description de l'échantillon, alphas et leurs intervalles), recalculés, comparés et confirmés comme une analyse (D-089) : aucun chiffre de la Méthode ne change dans le document sans qu'une personne l'ait vu. Le carnet passe en `carnet_version` 1.1.0 ; un carnet 1.0.0 s'ouvre tel quel. La page « Carnet » reçoit un bouton « Tout confirmer ».
+- **Options considérées :**
+  1. Gardés et confirmés dans le carnet (ce choix).
+  2. Recalculés à chaque export sans confirmation.
+- **Justification :** Le même principe pour tout le document : un chiffre ne change pas sans être vu.
+- **Références :** `docs/plan-v0.12.md`, § 2 et § 8.
