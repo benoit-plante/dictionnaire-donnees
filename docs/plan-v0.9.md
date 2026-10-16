@@ -1,6 +1,6 @@
 # Plan de la v0.9
 
-> Statut : **proposé le 2026-10-15, en attente de validation par l'auteur** (décisions D-069 à D-076 au § 10). Remplace deux premières versions du même jour (gardées dans l'historique Git) : l'une centrée sur du code écrit par une IA, l'autre sur des analyses calculées par R en arrière-plan. À la demande de l'auteur : des analyses toujours les mêmes, sans IA, **calculées dans l'outil sans rien installer d'autre**, que l'IA peut seulement aider à choisir.
+> Statut : **validé par l'auteur le 2026-10-15**, avec toutes les recommandations du § 10 (D-069 à D-076). Remplace deux premières versions du même jour (gardées dans l'historique Git) : l'une centrée sur du code écrit par une IA, l'autre sur des analyses calculées par R en arrière-plan. À la demande de l'auteur : des analyses toujours les mêmes, sans IA, **calculées dans l'outil sans rien installer d'autre**, que l'IA peut seulement aider à choisir.
 
 ## 1. Pourquoi cette version
 

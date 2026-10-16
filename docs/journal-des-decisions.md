@@ -849,3 +849,96 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   2. Toujours la somme proportionnelle.
   3. Toujours la somme des items répondus.
 - **Justification :** les manuels d'échelles diffèrent ; la règle d'un instrument est une information sourcée, que ni l'outil ni le modèle ne doivent deviner (principe 4). La somme proportionnelle, la plus courante, garde l'étendue du score quel que soit le nombre de réponses.
+
+### D-069 — Périmètre de la v0.9
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** la v0.9 ajoute un catalogue d'analyses courantes (Tableau 1, test t, ANOVA, khi-carré, corrélation, régression linéaire, avec leurs versions non paramétriques et leurs tailles d'effet), écrites et testées, calculées dans l'outil, avec un script R équivalent, et une IA conseillère locale et facultative qui aide à les choisir.
+- **Options considérées :**
+  1. Un catalogue d'analyses calculées dans l'outil (ce choix).
+  2. Le même catalogue calculé par R en arrière-plan.
+  3. Du code écrit par une IA, locale ou en ligne, vérifié puis exécuté (première version du plan).
+- **Justification :** choix de l'auteur, après l'essai de la v0.8 : des analyses toujours les mêmes et toujours justes, sans dépendre d'un modèle, dans l'esprit de l'outil (le calcul déterministe d'abord, l'IA propose, une personne décide) ; rien d'autre à installer pour une équipe qui ne programme pas.
+- **Conséquences :** plan en 9 étapes (`docs/plan-v0.9.md`).
+
+### D-070 — Calculer des analyses dans l'outil
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** D-065 en partie
+- **Décision :** l'outil calcule les analyses de son catalogue, écrites et testées, sur les données lues en mémoire, les décisions acceptées appliquées ; le fichier d'origine n'est jamais modifié. Il n'exécute jamais de code écrit par une IA.
+- **Options considérées :**
+  1. Les analyses du catalogue seulement (ce choix).
+  2. Aucune analyse dans l'outil (D-065 tel quel).
+  3. Le code écrit par une IA, après vérification et approbation.
+- **Justification :** le code exécuté est celui de l'outil, vérifié par des tests sur des bases aux effets connus ; le risque d'exécuter un code inconnu disparaît.
+- **Conséquences :** D-065 tient pour tout le reste : pas d'exécution de code d'analyse écrit ailleurs ; un assistant d'analyse plus large reste une piste.
+
+### D-071 — Bibliothèques des analyses
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** SciPy et statsmodels (licences BSD) pour le calcul, nouvelles dépendances d'exécution ; Tableau 1 et tailles d'effet calculés dans l'outil ; pour chaque analyse, un script R équivalent (R de base et effectsize) à télécharger, exécuté par le R de l'utilisateur, jamais par l'outil. Les analyses avancées (multiniveaux, équations structurelles, analyses factorielles) viendront plus tard, en Python quand une bibliothèque est assez éprouvée, ou par un moteur R facultatif.
+- **Options considérées :**
+  1. Calcul en Python, script R équivalent (ce choix).
+  2. Calcul par R en arrière-plan (R de base, effectsize, gtsummary).
+  3. Calcul par R avec `jmv` (résultats identiques à jamovi).
+- **Justification :** choix de l'auteur : tout se fait dans l'outil sans installer R ; R reste la référence pour la reproduction et pour les analyses avancées, d'où le script équivalent et la porte laissée à un moteur R.
+- **Conséquences :** les licences sont vérifiées à l'étape 1 et notées dans `docs/dependances.md` ; des tests comparent les résultats de l'outil à ceux du script R, là où R est installé.
+
+### D-072 — Résultats et reproductibilité des analyses
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** les résultats s'affichent dans l'outil ; un rapport et le script R équivalent se téléchargent ensemble, avec l'empreinte du codebook, la date et les versions de l'outil et des bibliothèques ; rien n'est envoyé à un modèle ; les effectifs sous 5 sont signalés.
+- **Options considérées :**
+  1. Rapport et script ensemble (ce choix).
+  2. Résultats affichés seulement.
+- **Justification :** une analyse se refait hors de l'outil et se rattache aux décisions sur lesquelles elle repose.
+
+### D-073 — L'IA conseillère des analyses
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** facultative et locale (la règle « Rien ne quitte le poste » reste entière), l'IA reçoit par la porte de confidentialité l'objectif de l'équipe, le catalogue et les variables (libellé, niveau, groupe), et propose des analyses du catalogue et des variables du projet, dans un schéma strict ; elle n'écrit jamais de code ; toute proposition est confirmée, changée ou rejetée par une personne.
+- **Options considérées :**
+  1. Locale, choix dans le catalogue (ce choix).
+  2. Modèles en ligne permis sur option.
+  3. Pas d'IA pour les analyses.
+- **Justification :** choisir dans une liste est à la portée d'un modèle local, comme pour les rattachements ; un banc le mesurera.
+
+### D-074 — Conditions d'application des analyses
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** une analyse inadaptée selon le codebook (niveau de mesure, nombre de groupes, mesures répétées, identifiant ou texte) est refusée avec sa raison ; une hypothèse fragile (normalité, égalité des variances, petits groupes) est un avertissement, la personne décide.
+- **Options considérées :**
+  1. Refus et avertissements (ce choix).
+  2. Avertissements seulement.
+- **Justification :** le codebook sait ce que chaque variable permet ; une analyse juste sur une variable mal choisie reste une erreur.
+
+### D-075 — Bases fictives aux effets connus
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** des bases fictives, générées avec une graine fixe, contiennent des différences, associations et corrélations plantées à l'avance ; chaque analyse du catalogue doit les retrouver, et son script R équivalent aussi.
+- **Options considérées :**
+  1. Bases aux effets connus (ce choix).
+  2. Comparaison avec R seulement.
+- **Justification :** le corrigé des analyses, comme celui des rattachements depuis la v0.2.
+
+### D-076 — Reportés après la v0.9
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** sont reportés : les modèles en ligne, l'exécution de code écrit par une IA, la base synthétique, le vérificateur de scripts, les analyses avancées (multiniveaux, équations structurelles, analyses factorielles) et les filtres du questionnaire.
+- **Options considérées :** sans objet.
+- **Justification :** garder la v0.9 centrée sur un catalogue juste et utile seul.
