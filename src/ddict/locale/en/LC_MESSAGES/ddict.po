@@ -321,6 +321,9 @@ msgstr "Add the statistics (counts below {n} masked)"
 msgid "Ajouter un sigle"
 msgstr "Add an acronym"
 
+msgid "Ajoutez --modele, ou --apercu pour voir le message sans rien envoyer."
+msgstr "Add --model, or --preview to see the message without sending anything."
+
 msgid "Ajoutez d'abord le questionnaire de l'étude (page « Questionnaire »)."
 msgstr "First add the study questionnaire (\"Questionnaire\" page)."
 
@@ -406,6 +409,10 @@ msgstr "None"
 
 msgid "Aucune nouvelle proposition."
 msgstr "No new proposal."
+
+#, python-brace-format
+msgid "Aucune proposition ({detail})."
+msgstr "No proposal ({detail})."
 
 #, python-brace-format
 msgid "Aucune proposition du questionnaire pour {term}."
@@ -718,6 +725,10 @@ msgstr "Completeness"
 msgid "Complétude : {element}"
 msgstr "Completeness: {element}"
 
+#, python-brace-format
+msgid "Condition non remplie : {reason}"
+msgstr "Condition not met: {reason}"
+
 msgid "Confidentialité"
 msgstr "Privacy"
 
@@ -851,6 +862,19 @@ msgstr ""
 
 msgid "De travail : avec les propositions en attente, marquées comme telles"
 msgstr "Working: with the pending proposals, marked as such"
+
+msgid ""
+"Demander au modèle local des analyses du catalogue pour un objectif : des propositions à "
+"vérifier, jamais de code, rien n'est calculé."
+msgstr ""
+"Ask the local model for analyses of the catalogue for an objective: proposals to check, never "
+"code, nothing is computed."
+
+msgid "Demander une proposition"
+msgstr "Ask for a proposal"
+
+msgid "Demander une proposition à l'IA locale (facultatif)"
+msgstr "Ask the local AI for a proposal (optional)"
 
 #, python-brace-format
 msgid "Dernier rapport : {name}"
@@ -1314,6 +1338,17 @@ msgid "L'interface n'a pas démarré : voir les messages ci-dessus."
 msgstr "The interface did not start: see the messages above."
 
 msgid ""
+"L'objectif de l'analyse, en une ou deux phrases, envoyé tel quel au modèle local. N'y écrivez "
+"aucune donnée de participant."
+msgstr ""
+"The objective of the analysis, in one or two sentences, sent as is to the local model. Do not "
+"write any participant data in it."
+
+#, python-brace-format
+msgid "L'objectif est trop long : {n} caractères au plus."
+msgstr "The objective is too long: {n} characters at most."
+
+msgid ""
 "L'option IA n'est pas installée. Réinstallez l'outil avec ses options (voir docs/installation-"
 "windows.md)."
 msgstr ""
@@ -1480,10 +1515,22 @@ msgstr ""
 "The model explained {pct}% of the variance of {outcome}, F({df1}, {df2}) = {f}, {p}, adjusted R² "
 "= {adj} (n = {n})."
 
+msgid "Le modèle local réfléchit ; cela peut prendre quelques minutes…"
+msgstr "The local model is thinking; this may take a few minutes…"
+
+#, python-brace-format
+msgid ""
+"Le modèle n'a pas donné de réponse valable ({detail}). Réessayez, ou choisissez l'analyse vous-"
+"même."
+msgstr "The model did not give a valid answer ({detail}). Try again, or choose the analysis yourself."
+
 msgid ""
 "Le modèle n'a pas répondu à temps. Sur un ordinateur sans carte graphique, réduisez la taille des"
 " blocs."
 msgstr "The model did not answer in time. On a computer without a graphics card, make the blocks smaller."
+
+msgid "Le modèle ne propose aucune analyse du catalogue pour cet objectif."
+msgstr "The model proposes no analysis of the catalogue for this objective."
 
 msgid ""
 "Le modèle propose un libellé et une description pour chaque variable, à partir de ses "
@@ -1500,6 +1547,17 @@ msgid ""
 msgstr ""
 "The model runs on this computer. It never receives the participants' answers: only names, labels,"
 " proportions and, for the links, a few candidate questions."
+
+#, python-brace-format
+msgid ""
+"Le modèle {model}, sur cet ordinateur, reçoit cet objectif tel quel, le catalogue et la liste des"
+" variables (nom, libellé, niveau de mesure, groupe) : aucune donnée, aucune statistique. "
+"N'écrivez aucune donnée de participant dans l'objectif. Le modèle se choisit sur la page IA "
+"locale."
+msgstr ""
+"The model {model}, on this computer, receives this objective as is, the catalogue and the list of"
+" variables (name, label, measure level, group): no data, no statistic. Do not write any "
+"participant data in the objective. The model is chosen on the Local AI page."
 
 #, python-brace-format
 msgid ""
@@ -1767,6 +1825,10 @@ msgstr "Metadata of {name}, produced by dictionnaire-donnees {version} on {date}
 msgid "Méthode"
 msgstr "Method"
 
+#, python-brace-format
+msgid "Méthode : {method}"
+msgstr "Method: {method}"
+
 msgid ""
 "Ne pas reproduire le texte des questions de ce groupe dans le codebook (instrument protégé par le"
 " droit d'auteur)"
@@ -1882,6 +1944,9 @@ msgstr "New name"
 msgid "Nouveau projet"
 msgstr "New project"
 
+msgid "Objectif de l'analyse"
+msgstr "Objective of the analysis"
+
 msgid "Observations retenues"
 msgstr "Observations used"
 
@@ -1917,6 +1982,9 @@ msgstr "Open a project"
 
 msgid "Page"
 msgstr "Page"
+
+msgid "Par exemple : comparer le bien-être entre les deux groupes de l'étude."
+msgstr "For example: compare well-being between the two groups of the study."
 
 #, python-brace-format
 msgid "Pas dans le groupe : {names}"
@@ -1956,6 +2024,10 @@ msgstr ""
 "the bench measures the correct links, the labels that may invent something (citation, threshold, "
 "instrument name, meaning of an acronym, range, meaning of codes) and the duration. Your data is "
 "not used, and no model is downloaded."
+
+#, python-brace-format
+msgid "Pour lancer une analyse : ddict analyser {path} <analyse> …"
+msgstr "To run an analysis: ddict analyser {path} <analysis> …"
 
 msgid ""
 "Pour les en-têtes, les notes et les commentaires des fichiers de commandes. Ce que l'équipe a "
@@ -2005,9 +2077,19 @@ msgstr "Propose new names for the variables, by the naming rules; the original f
 msgid "Proposer les noms par les règles"
 msgstr "Propose names by the rules"
 
+msgid "Propositions du modèle, à vérifier : rien n'est calculé sans vous."
+msgstr "Proposals of the model, to check: nothing is computed without you."
+
+msgid "Propositions du modèle, à vérifier ; rien n'est calculé :"
+msgstr "Proposals of the model, to check; nothing is computed:"
+
 #, python-brace-format
 msgid "Propositions enregistrées dans {path}, à réviser."
 msgstr "Proposals saved in {path}, to review."
+
+#, python-brace-format
+msgid "Propositions pour l'objectif précédent : {goal}"
+msgstr "Proposals for the previous objective: {goal}"
 
 #, python-brace-format
 msgid "Proposé : {v}"
@@ -2134,6 +2216,14 @@ msgstr "Quit the tool"
 msgid "R de base et haven seulement ; à exécuter dans le dossier du projet."
 msgstr "Base R and haven only; to run in the project's folder."
 
+#, python-brace-format
+msgid "Raison : {reason}"
+msgstr "Reason: {reason}"
+
+#, python-brace-format
+msgid "Raison donnée par le modèle : {reason}"
+msgstr "Reason given by the model: {reason}"
+
 msgid "Rapport (Markdown)"
 msgstr "Report (Markdown)"
 
@@ -2236,6 +2326,9 @@ msgstr "Also send the blocks already processed."
 
 msgid "Renvoyer aussi les questions dont le nom de base a déjà été proposé par le modèle."
 msgstr "Also send again the questions whose base name the model already proposed."
+
+msgid "Reprendre cette proposition"
+msgstr "Take up this proposal"
 
 msgid "Reprendre les noms"
 msgstr "Take the names"
@@ -2784,6 +2877,9 @@ msgstr "Version"
 
 msgid "Versions"
 msgstr "Versions"
+
+msgid "Voir ce qui serait envoyé"
+msgstr "See what would be sent"
 
 msgid "Voir exactement ce qui serait envoyé (rien n'est envoyé)"
 msgstr "See exactly what would be sent (nothing is sent)"
@@ -3632,6 +3728,9 @@ msgstr "Write the codebook and the report"
 msgid "Écrire le contexte à côté du projet"
 msgstr "Write the context next to the project"
 
+msgid "Écrire le message qui serait envoyé, sans rien envoyer."
+msgstr "Write the message that would be sent, without sending anything."
+
 msgid "Écrire les fichiers de commandes à côté du projet"
 msgstr "Write the command files next to the project"
 
@@ -3647,6 +3746,9 @@ msgstr ""
 
 msgid "Écrire à côté du projet"
 msgstr "Write next to the project"
+
+msgid "Écrivez d'abord l'objectif de l'analyse."
+msgstr "Write the objective of the analysis first."
 
 msgid "Égaux au corrigé"
 msgstr "Equal to the answer key"

@@ -1,0 +1,55 @@
+"""Bench of the local model's advice (v0.9, step 7): each objective of
+`exemples/bases-fictives/objectifs-analyses.json` sent to an installed local model, and its
+proposals compared with the expected analysis and variables.
+
+    uv run python scripts/banc_conseil.py qwen2.5:7b-instruct-q4_K_M [autre-modele ...]
+
+Prints one line per objective and a summary per model; the exchanges are kept in a
+temporary folder, given at the end. Nothing leaves this computer (local server only).
+"""
+
+from __future__ import annotations
+
+import sys
+import tempfile
+import time
+from datetime import datetime
+from pathlib import Path
+
+from ddict.llm.advice_bench import bench_project, load_objectives, run_advice_bench, summary
+from ddict.llm.client import LocalModelClient
+
+FOLDER = Path(__file__).resolve().parent.parent / "exemples" / "bases-fictives"
+
+
+def main(models: list[str]) -> int:
+    objectives = load_objectives(FOLDER)["objectives"]
+    project = bench_project(FOLDER)
+    log_dir = Path(tempfile.mkdtemp(prefix="banc-conseil-"))
+    for model in models:
+        with LocalModelClient(model, timeout=600) as client:
+            scores = run_advice_bench(
+                project,
+                client,
+                objectives,
+                now=lambda: datetime.now().isoformat(timespec="seconds"),
+                clock=time.monotonic,
+                log_dir=log_dir / model.replace(":", "_"),
+            )
+        print(f"## {model}")
+        for s in scores:
+            marks = "".join(
+                "x" if v else "." for v in (s.first_analysis, s.first_right, s.any_right)
+            )
+            method = (
+                "" if s.method_right is None else f" méthode {'ok' if s.method_right else 'non'}"
+            )
+            print(f"{s.objective} {s.outcome:<17} {marks} conditions {s.refused_conditions}"
+                  f"{method} {s.seconds:.0f} s")  # fmt: skip
+        print(summary(scores), flush=True)
+    print(f"Échanges : {log_dir}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

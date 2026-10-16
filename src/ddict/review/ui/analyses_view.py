@@ -3,7 +3,8 @@ options, its conditions checked before the computation, its result, and its repo
 script, as `ddict analyser` writes them.
 
 The database is read in memory for the session, never written in the project (D-070); only
-the last analysis run is kept, in memory too (D-078).
+the last analysis run is kept, in memory too (D-078). The local model may propose analyses
+(step 7, `advice_view`): a person takes them up or not.
 """
 
 from __future__ import annotations
@@ -31,8 +32,9 @@ from ddict.i18n import _
 from ddict.io import read_database
 from ddict.project import fingerprint
 from ddict.project.model import Project
+from ddict.review.ui import advice_view, dialog
 from ddict.review.ui import common as c
-from ddict.review.ui import dialog
+from ddict.review.ui.advice_view import option_key, role_key
 from ddict.workflow import analysis_files, copy_error_text, project_stem
 
 ANALYSIS = "analysis-key"
@@ -73,14 +75,6 @@ def _prepared(project: Project) -> PreparedData | None:
     return prepared[1]
 
 
-def _role_key(key: str, role: str) -> str:
-    return f"analysis-{key}-{role}"
-
-
-def _option_key(key: str, option: str) -> str:
-    return f"analysis-{key}-option-{option}"
-
-
 def _choose_variables(project: Project, key: str, book: Codebook) -> dict[str, list[str]]:
     analysis = CATALOGUE[key]
     chosen: dict[str, list[str]] = {}
@@ -91,7 +85,7 @@ def _choose_variables(project: Project, key: str, book: Codebook) -> dict[str, l
 
     for role in analysis.roles:
         names = conditions.candidates(project, analysis, role.key)
-        widget = _role_key(key, role.key)
+        widget = role_key(key, role.key)
         if not names:
             st.info(
                 _(
@@ -132,7 +126,7 @@ def _choose_options(
         options[option] = st.radio(
             OPTIONS[option],
             list(values),
-            key=_option_key(key, option),
+            key=option_key(key, option),
             format_func=CHOICES.__getitem__,
             horizontal=True,
         )
@@ -144,7 +138,7 @@ def _choose_options(
             picked = st.multiselect(
                 OPTIONS["levels"],
                 codes,
-                key=_option_key(key, f"levels-{group}"),
+                key=option_key(key, f"levels-{group}"),
                 max_selections=2,
                 format_func=lambda code: book.category(group, code),
                 placeholder=_("Choisir les deux groupes à comparer"),
@@ -270,6 +264,7 @@ def page(project: Project) -> None:
     prepared = _prepared(project)
     if prepared is None:
         return
+    advice_view.panel(project)
     book = Codebook(project, prepared)
     key = st.selectbox(_("Analyse"), list(CATALOGUE), key=ANALYSIS, format_func=TITLES.__getitem__)
     st.caption(PURPOSES[key])

@@ -964,3 +964,14 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   1. Dernière analyse en mémoire seulement (ce choix).
   2. Un historique des analyses dans le projet.
 - **Justification :** le projet reste un dictionnaire de données, qui ne garde que des agrégats et des décisions (règle 2) ; des résultats calculés sur les données n'y ont pas leur place. Un historique pourra venir plus tard si le besoin se présente.
+
+### D-079 — L'IA conseillère : l'objectif envoyé tel quel, les propositions en mémoire
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** — (précise D-073)
+- **Décision :** l'objectif d'analyse écrit par l'équipe est envoyé tel quel au modèle local, avec le catalogue et la liste des variables utilisables (nom final, libellé, niveau de mesure, groupe), sans aucune donnée ni statistique ; identifiants, textes libres et dates en sont exclus, comme des analyses. Une mise en garde demande de n'écrire aucune donnée de participant dans l'objectif, limité à 1 000 caractères. Les propositions du modèle restent en mémoire, comme les résultats (D-078), et ne sont pas enregistrées dans le projet ; le message envoyé et la réponse reçue sont gardés dans le dossier des envois à côté du projet, comme pour les autres usages de l'IA.
+- **Options considérées :**
+  1. Objectif envoyé tel quel, propositions en mémoire, échange gardé (ce choix).
+  2. Propositions enregistrées dans le projet, avec les autres exécutions de l'IA.
+- **Justification :** l'objectif est un texte de l'équipe, non une donnée de participant ; c'est toutefois le premier texte libre envoyé tel quel, d'où la mise en garde et la trace complète de l'échange. Garder les propositions hors du projet le laisse un dictionnaire de données.

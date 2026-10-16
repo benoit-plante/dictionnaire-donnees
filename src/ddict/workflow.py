@@ -614,3 +614,12 @@ def failure_advice(detail: str | None, endpoint: str, model: str) -> str | None:
             "réduisez la taille des blocs."
         )
     return None
+
+
+def advice_error_text(error) -> str:
+    """Why the objective was not sent to the model (v0.9, D-079)."""
+    if error.reason == "empty":
+        return _("Écrivez d'abord l'objectif de l'analyse.")
+    from ddict.llm.advise import MAX_OBJECTIVE_CHARS
+
+    return _("L'objectif est trop long : {n} caractères au plus.").format(n=MAX_OBJECTIVE_CHARS)

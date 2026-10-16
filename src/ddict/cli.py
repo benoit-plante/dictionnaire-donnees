@@ -1,5 +1,5 @@
 """Command line: `ddict profiler`, `exporter`, `documenter`, `questionnaire`, `enrichir`,
-`rattacher`, `evaluer`, `analyser`, `reviser`."""
+`rattacher`, `evaluer`, `analyser`, `conseiller`, `reviser`."""
 
 from __future__ import annotations
 
@@ -39,6 +39,7 @@ from ddict.workflow import (
     UnknownGroups,
     acronym_summary,
     add_questionnaire,
+    advice_error_text,
     analysis_files,
     copy_error_text,
     documented_copy,
@@ -226,6 +227,88 @@ def cmd_analyse(args: argparse.Namespace) -> int:
     today = datetime.now().date().isoformat()
     for path in write_report(project, prepared, result, files, project_stem(project_path), today):
         print(_("Fichier écrit : {path}").format(path=path))
+    return 0
+
+
+def advice_lines(proposals) -> list[str]:
+    """The model's proposals as the command line prints them (v0.9, D-079)."""
+    from ddict.analysis.catalogue import ROLES, TITLES
+    from ddict.llm.advise import method_text
+
+    lines = []
+    for number, proposal in enumerate(proposals, start=1):
+        lines.append(f"{number}. {TITLES[proposal.analysis]}")
+        for role, names in proposal.chosen.items():
+            lines.append(f"   {ROLES[role]} : {', '.join(names)}")
+        if proposal.options:
+            lines.append("   " + _("Méthode : {method}").format(method=method_text(proposal)))
+        lines.append("   " + _("Raison : {reason}").format(reason=proposal.reason))
+        for reason in proposal.check.refusals:
+            lines.append("   " + _("Condition non remplie : {reason}").format(reason=reason))
+    return lines
+
+
+def cmd_advise(args: argparse.Namespace) -> int:
+    from ddict.llm.advise import AdviceError, build_advice_block
+
+    project_path = Path(args.projet)
+    project = load_project(project_path)
+    try:
+        block = build_advice_block(project, args.objectif)
+    except AdviceError as error:
+        print(advice_error_text(error), file=sys.stderr)
+        return EXIT_ERROR
+    if args.apercu:
+        return _preview(project_path, [block])
+    if not args.modele:
+        print(_("Ajoutez --modele, ou --apercu pour voir le message sans rien envoyer."))
+        return EXIT_ERROR
+    try:
+        from ddict.llm.advise import advise
+        from ddict.llm.client import EndpointRefused, LocalModelClient
+    except ImportError:
+        print(
+            _(
+                "L'option IA n'est pas installée. Réinstallez l'outil avec ses options : "
+                'uv tool install --reinstall ".[ia,revision]" (voir docs/installation-windows.md).'
+            ),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
+    try:
+        client = LocalModelClient(args.modele, endpoint=args.adresse)
+    except EndpointRefused as error:
+        print(
+            _("Adresse refusée : seul un serveur sur cet ordinateur est permis ({detail}).").format(
+                detail=error
+            ),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
+    with client:
+        found = advise(
+            project,
+            client,
+            args.objectif,
+            now=datetime.now().isoformat(timespec="seconds"),
+            log_dir=exchange_dir(project_path),
+        )
+    if found.proposals is None:
+        run = found.result.run
+        print(_("Aucune proposition ({detail}).").format(detail=run.detail), file=sys.stderr)
+        advice = failure_advice(run.detail, client.endpoint, args.modele)
+        if advice:
+            print(advice, file=sys.stderr)
+        return EXIT_ERROR
+    if not found.proposals:
+        print(_("Le modèle ne propose aucune analyse du catalogue pour cet objectif."))
+        return 0
+    print(_("Propositions du modèle, à vérifier ; rien n'est calculé :"))
+    for line in advice_lines(found.proposals):
+        print(line)
+    print(
+        _("Pour lancer une analyse : ddict analyser {path} <analyse> …").format(path=project_path)
+    )
     return 0
 
 
@@ -791,6 +874,43 @@ def build_parser() -> argparse.ArgumentParser:
         "--base", "--database", help=_("La base d'origine, si elle n'est pas à côté du projet.")
     )
     analyse.set_defaults(handler=cmd_analyse)
+
+    advise_command = commands.add_parser(
+        "conseiller",
+        aliases=["advise"],
+        help=_(
+            "Demander au modèle local des analyses du catalogue pour un objectif : des "
+            "propositions à vérifier, jamais de code, rien n'est calculé."
+        ),
+    )
+    advise_command.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    advise_command.add_argument(
+        "objectif",
+        help=_(
+            "L'objectif de l'analyse, en une ou deux phrases, envoyé tel quel au modèle local. "
+            "N'y écrivez aucune donnée de participant."
+        ),
+    )
+    advise_command.add_argument(
+        "--apercu",
+        "--preview",
+        action="store_true",
+        help=_("Écrire le message qui serait envoyé, sans rien envoyer."),
+    )
+    advise_command.add_argument(
+        "--modele",
+        "--model",
+        help=_("Nom du modèle dans le serveur local, p. ex. qwen2.5:7b-instruct-q4_K_M."),
+    )
+    advise_command.add_argument(
+        "--adresse",
+        "--address",
+        default=DEFAULT_ENDPOINT,
+        help=_("Adresse du serveur local compatible OpenAI (défaut : Ollama, {default}).").format(
+            default=DEFAULT_ENDPOINT
+        ),
+    )
+    advise_command.set_defaults(handler=cmd_advise)
 
     questionnaire = commands.add_parser(
         "questionnaire",

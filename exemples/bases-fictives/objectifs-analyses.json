@@ -1,0 +1,71 @@
+{
+  "about": "Objectifs écrits pour la base fictive des analyses (etude-analyses.sav), avec l'analyse et les variables attendues : le corrigé du banc de l'IA conseillère (v0.9, étape 7). Rôles sans ordre pour la corrélation, le khi-carré et le Tableau 1 ; « method » attendue seulement quand elle compte.",
+  "sav": "etude-analyses.sav",
+  "objectives": [
+    {
+      "id": "o01",
+      "objective": "Comparer le bien-être entre le groupe intervention et le groupe contrôle.",
+      "expected": {"analysis": "t_test", "roles": {"outcome": ["bienetre_total"], "group": ["groupe"]}}
+    },
+    {
+      "id": "o02",
+      "objective": "Le niveau de stress diffère-t-il selon le plus haut niveau d'études ?",
+      "expected": {"analysis": "anova", "roles": {"outcome": ["stress"], "group": ["niveau_etudes"]}}
+    },
+    {
+      "id": "o03",
+      "objective": "Le télétravail est-il plus fréquent dans certains secteurs d'emploi ?",
+      "expected": {"analysis": "chi_square", "roles": {"variables": ["teletravail", "secteur"]}}
+    },
+    {
+      "id": "o04",
+      "objective": "Le stress augmente-t-il avec le nombre d'heures de travail ?",
+      "expected": {"analysis": "correlation", "roles": {"variables": ["heures_travail", "stress"]}}
+    },
+    {
+      "id": "o05",
+      "objective": "Expliquer la satisfaction au travail par le soutien des collègues et la charge de travail.",
+      "expected": {"analysis": "regression", "roles": {"outcome": ["satisfaction"], "predictors": ["soutien", "charge"]}}
+    },
+    {
+      "id": "o06",
+      "objective": "Décrire l'échantillon : âge, sexe, région et secteur d'emploi.",
+      "expected": {"analysis": "table1", "roles": {"variables": ["age", "sexe", "region", "secteur"]}}
+    },
+    {
+      "id": "o07",
+      "objective": "Les hommes et les femmes ont-ils le même niveau de bien-être ?",
+      "expected": {"analysis": "t_test", "roles": {"outcome": ["bienetre_total"], "group": ["sexe"]}}
+    },
+    {
+      "id": "o08",
+      "objective": "La satisfaction au travail varie-t-elle selon la région ?",
+      "expected": {"analysis": "anova", "roles": {"outcome": ["satisfaction"], "group": ["region"]}}
+    },
+    {
+      "id": "o09",
+      "objective": "La fréquence de l'activité physique est-elle liée au stress ?",
+      "expected": {"analysis": "correlation", "roles": {"variables": ["sport", "stress"]}, "method": "spearman"}
+    },
+    {
+      "id": "o10",
+      "objective": "La proportion de personnes en télétravail diffère-t-elle entre le groupe intervention et le groupe contrôle ?",
+      "expected": {"analysis": "chi_square", "roles": {"variables": ["groupe", "teletravail"]}}
+    },
+    {
+      "id": "o11",
+      "objective": "Décrire l'âge et le bien-être des participants selon leur groupe.",
+      "expected": {"analysis": "table1", "roles": {"variables": ["age", "bienetre_total"], "group": ["groupe"]}}
+    },
+    {
+      "id": "o12",
+      "objective": "L'âge est-il relié à la satisfaction au travail ?",
+      "expected": {"analysis": "correlation", "roles": {"variables": ["age", "satisfaction"]}}
+    },
+    {
+      "id": "o13",
+      "objective": "Suivre l'évolution du stress de chaque personne sur trois temps de mesure.",
+      "expected": null
+    }
+  ]
+}
