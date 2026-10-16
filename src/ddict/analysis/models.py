@@ -95,7 +95,8 @@ def t_test(project, prepared, chosen, options) -> AnalysisResult:
     if options["method"] == "mann_whitney":
         test = stats.mannwhitneyu(a, b, alternative=alternative, method="asymptotic")
         rb = 2 * test.statistic / (len(a) * len(b)) - 1
-        stats_found |= {"U": float(test.statistic), "p": float(test.pvalue), "rb": float(rb)}
+        stats_found |= {"U": float(test.statistic), "p": float(test.pvalue), "rb": float(rb),
+                        "mdn1": float(np.median(a)), "mdn2": float(np.median(b))}  # fmt: skip
         sentence = _(
             "{outcome} : médiane de {m1} pour {g1} et de {m2} pour {g2}, U = {u}, {p}, "
             "r = {r} (n = {n})."
@@ -274,6 +275,8 @@ def anova(project, prepared, chosen, options) -> AnalysisResult:
             )
             found[f"tukey_{int(g2)}_{int(g1)}"] = float(diff)
             found[f"tukey_p_{int(g2)}_{int(g1)}"] = float(padj)
+            found[f"tukey_low_{int(g2)}_{int(g1)}"] = float(low)
+            found[f"tukey_high_{int(g2)}_{int(g1)}"] = float(high)
         tables.append(
             Table(
                 _("Comparaisons deux à deux (Tukey)"),
@@ -345,6 +348,7 @@ def regression(project, prepared, chosen, options) -> AnalysisResult:
     ).fit()
     vif = [float(variance_inflation_factor(exog, i)) for i in range(1, exog.shape[1])]
     ci = fit.conf_int().to_numpy()
+    beta_ci = standard.conf_int().to_numpy()
     n = int(fit.nobs)
     found: dict[str, float] = {
         "n": n,
@@ -364,10 +368,13 @@ def regression(project, prepared, chosen, options) -> AnalysisResult:
             f"p_{i}": float(fit.pvalues.iloc[i]),
             f"low_{i}": float(ci[i, 0]),
             f"high_{i}": float(ci[i, 1]),
+            f"t_{i}": float(fit.tvalues.iloc[i]),
         }
         beta = ""
         if i:
             found[f"beta_{i}"] = float(standard.params.iloc[i])
+            found[f"beta_low_{i}"] = float(beta_ci[i, 0])
+            found[f"beta_high_{i}"] = float(beta_ci[i, 1])
             found[f"vif_{i}"] = vif[i - 1]
             beta = number(standard.params.iloc[i])
         rows.append(

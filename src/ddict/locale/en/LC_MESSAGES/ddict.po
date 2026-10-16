@@ -19,9 +19,15 @@ msgstr ""
 msgid " ({n} pages)"
 msgstr " ({n} pages)"
 
+msgid " ; "
+msgstr "; "
+
 #, python-brace-format
 msgid " ; {n} énoncés de grille"
 msgstr "; {n} grid items"
+
+msgid " et "
+msgstr " and "
 
 #, python-brace-format
 msgid " écarts entre {score} et {existing}, déjà dans la base."
@@ -520,6 +526,16 @@ msgstr "Computation alone"
 msgid "Calculé"
 msgstr "Computed"
 
+msgid "Caractéristique"
+msgstr "Characteristic"
+
+msgid "Caractéristiques des participants"
+msgstr "Characteristics of the participants"
+
+#, python-brace-format
+msgid "Caractéristiques des participants selon {group}"
+msgstr "Characteristics of the participants by {group}"
+
 msgid ""
 "Case à cocher probable : une seule valeur observée, les cases vides veulent sans doute dire « non"
 " coché »"
@@ -565,6 +581,10 @@ msgstr "Field"
 
 msgid "Champs documentés : étendue théorique, seuils, références, notes"
 msgstr "Documented fields: theoretical range, thresholds, references, notes"
+
+#, python-brace-format
+msgid "Chaque corrélation est calculée sur les personnes qui ont les deux valeurs ({n} de {a} à {b})."
+msgstr "Each correlation is computed on the people who have both values ({n} from {a} to {b})."
 
 #, python-brace-format
 msgid "Choisir de {least} à {most} variables"
@@ -702,11 +722,25 @@ msgstr "Suspect codes"
 msgid "Codes suspects à confirmer : {n}"
 msgstr "Suspect codes to confirm: {n}"
 
+msgid "Coefficient standardisé (β)"
+msgstr "Standardized coefficient (β)"
+
+#, python-brace-format
+msgid "Coefficients standardisés de la régression de {outcome}"
+msgstr "Standardized coefficients of the regression of {outcome}"
+
+msgid "Comparaison"
+msgstr "Comparison"
+
 msgid "Comparaisons deux à deux"
 msgstr "Pairwise comparisons"
 
 msgid "Comparaisons deux à deux (Tukey)"
 msgstr "Pairwise comparisons (Tukey)"
+
+#, python-brace-format
+msgid "Comparaisons deux à deux de {outcome} (Tukey)"
+msgstr "Pairwise comparisons of {outcome} (Tukey)"
 
 msgid ""
 "Compare la moyenne d'une variable continue entre deux groupes, par exemple intervention et "
@@ -799,6 +833,12 @@ msgstr "Correlation with the rest of the group"
 
 msgid "Corrélations"
 msgstr "Correlations"
+
+msgid "Corrélations de Pearson ; entre crochets, l'IC 95 %."
+msgstr "Pearson correlations; in brackets, the 95% CI."
+
+msgid "Corrélations de Spearman."
+msgstr "Spearman correlations."
 
 msgid "Cotation"
 msgstr "Scoring"
@@ -913,6 +953,10 @@ msgstr "Data dictionary"
 
 msgid "Différence"
 msgstr "Difference"
+
+#, python-brace-format
+msgid "Différences de moyennes ; intervalles et {p} ajustés par la méthode de Tukey."
+msgstr "Mean differences; intervals and {p} adjusted by Tukey's method."
 
 #, python-brace-format
 msgid "Distribution peu normale pour {group} (Shapiro-Wilk {p}) avec moins de {n} personnes."
@@ -1227,6 +1271,14 @@ msgstr "95% CI"
 #, python-brace-format
 msgid "IC 95 % [{low} ; {high}]"
 msgstr "95% CI [{low}, {high}]"
+
+#, python-brace-format, python-format
+msgid "IC 95 % de {stat}"
+msgstr "95% CI of {stat}"
+
+#, python-brace-format
+msgid "IC 95 % {ci}"
+msgstr "95% CI {ci}"
 
 #, python-brace-format
 msgid "Identique à {name}"
@@ -1671,6 +1723,14 @@ msgstr ""
 msgid "Lecture de la base…"
 msgstr "Reading the database…"
 
+#, python-brace-format, python-format
+msgid "Les barres d'erreur représentent l'IC 95 % de β. {N} = {n}."
+msgstr "Error bars represent the 95% CI of β. {N} = {n}."
+
+#, python-brace-format, python-format
+msgid "Les barres d'erreur représentent l'intervalle de confiance à 95 % de la moyenne. {N} = {n}."
+msgstr "Error bars represent the 95% confidence interval of the mean. {N} = {n}."
+
 msgid "Les choix ont changé depuis la dernière analyse : relancez-la."
 msgstr "The choices have changed since the last analysis: run it again."
 
@@ -1701,6 +1761,10 @@ msgstr "Labels and descriptions"
 #, python-brace-format
 msgid "Libellés ou descriptions proposés : {n}"
 msgstr "Labels or descriptions proposed: {n}"
+
+#, python-brace-format
+msgid "Ligne {i} : {ps}."
+msgstr "Row {i}: {ps}."
 
 msgid "Lignes"
 msgstr "Rows"
@@ -1816,11 +1880,19 @@ msgid "Modèle local"
 msgstr "Local model"
 
 #, python-brace-format
+msgid "Moins de {n} personnes : {cases}."
+msgstr "Fewer than {n} people: {cases}."
+
+#, python-brace-format
 msgid "Moins de {n} personnes{where} : {cases}."
 msgstr "Fewer than {n} people{where}: {cases}."
 
 msgid "Moyenne"
 msgstr "Mean"
+
+#, python-brace-format
+msgid "Moyenne de {outcome} selon {group}"
+msgstr "Mean of {outcome} by {group}"
 
 msgid "Médiane"
 msgstr "Median"
@@ -2056,6 +2128,20 @@ msgid ""
 msgstr ""
 "For a new version of the file. Links that pointed to the former version are removed; acronyms "
 "already decided are kept."
+
+msgid "Pourcentage de la colonne"
+msgstr "Percentage of the column"
+
+#, python-brace-format
+msgid "Pourcentage de {rows} selon {columns}"
+msgstr "Percentage of {rows} by {columns}"
+
+#, python-brace-format
+msgid "Pourcentages calculés dans chaque colonne. χ²({df}, {N} = {n}) = {chi2}, {p}, {V} de Cramér = {v}."
+msgstr "Percentages computed within each column. χ²({df}, {N} = {n}) = {chi2}, {p}, Cramér's {V} = {v}."
+
+msgid "Pourcentages calculés sur l'effectif de chaque colonne."
+msgstr "Percentages computed on the size of each column."
 
 msgid "Pourquoi les rattachements du modèle ont été manqués :"
 msgstr "Why the model's links were missed:"
@@ -2374,6 +2460,10 @@ msgstr "Rules alone"
 msgid "Référence"
 msgstr "Reference"
 
+#, python-brace-format
+msgid "Référence pour {var} : {cat}."
+msgstr "Reference for {var}: {cat}."
+
 msgid "Références"
 msgstr "References"
 
@@ -2382,6 +2472,10 @@ msgstr "References (one per line)"
 
 msgid "Réglages de nommage"
 msgstr "Naming settings"
+
+#, python-brace-format
+msgid "Régression de {outcome}"
+msgstr "Regression of {outcome}"
 
 msgid "Régression linéaire : prédire une variable continue"
 msgstr "Linear regression: predict a continuous variable"
@@ -2535,6 +2629,9 @@ msgstr "Source of the threshold"
 
 msgid "Spearman"
 msgstr "Spearman"
+
+msgid "Statistiques descriptives et corrélations"
+msgstr "Descriptive statistics and correlations"
 
 msgid "Statut"
 msgstr "Status"
@@ -2899,6 +2996,10 @@ msgstr "Check again"
 
 msgid "Welch (variances inégales permises)"
 msgstr "Welch (unequal variances allowed)"
+
+#, python-brace-format
+msgid "[{low} ; {high}]"
+msgstr "[{low}, {high}]"
 
 #, python-brace-format
 msgid "au moins {n} items répondus, sinon manquant"
@@ -3374,6 +3475,14 @@ msgstr ""
 "first of each analysis)."
 
 #, python-brace-format
+msgid ""
+"{N} = {n}. {R}² = {r2}, {R}² ajusté = {adj}, {F}({df1}, {df2}) = {f}, {p}. {b} : coefficient non "
+"standardisé ; β : coefficient standardisé ; {se} : erreur type."
+msgstr ""
+"{N} = {n}. {R}² = {r2}, adjusted {R}² = {adj}, {F}({df1}, {df2}) = {f}, {p}. {b}: unstandardized "
+"coefficient; β: standardized coefficient; {se}: standard error."
+
+#, python-brace-format
 msgid "{analysis} : script R équivalent, produit par dictionnaire-donnees {version} le {date}."
 msgstr "{analysis}: equivalent R script, made by dictionnaire-donnees {version} on {date}."
 
@@ -3418,12 +3527,20 @@ msgid "{group} : un item inversé n'a pu être créé, score non calculé."
 msgstr "{group}: a reversed item could not be created, score not computed."
 
 #, python-brace-format
+msgid "{group} : {n} = {count}"
+msgstr "{group}: {n} = {count}"
+
+#, python-brace-format
 msgid "{key} : nom de base refusé ({why})."
 msgstr "{key}: base name refused ({why})."
 
 #, python-brace-format
 msgid "{k} effectifs attendus sur {n} sont sous 5 (minimum {m})."
 msgstr "{k} expected counts out of {n} are below 5 (minimum {m})."
+
+#, python-brace-format
+msgid "{label} : {n} valeurs manquantes"
+msgstr "{label}: {n} missing values"
 
 #, python-brace-format
 msgid "{names} : niveau modifié et « Rejeter » choisi ; gardez l'un ou l'autre."
@@ -3552,6 +3669,10 @@ msgid "{n} options à cocher"
 msgstr "{n} checkbox options"
 
 #, python-brace-format
+msgid "{n} personnes sans {group} écartées."
+msgstr "{n} people without {group} excluded."
+
+#, python-brace-format
 msgid "{n} questions : {counts}{grids}."
 msgstr "{n} questions: {counts}{grids}."
 
@@ -3614,6 +3735,10 @@ msgid "{outcome} : médiane de {m1} pour {g1} et de {m2} pour {g2}, U = {u}, {p}
 msgstr "{outcome}: median of {m1} for {g1} and of {m2} for {g2}, U = {u}, {p}, r = {r} (n = {n})."
 
 #, python-brace-format
+msgid "{outcome} selon {group}"
+msgstr "{outcome} by {group}"
+
+#, python-brace-format
 msgid ""
 "{outcome} selon {group} : F({df1}, {df2}) = {f}, {p}, η² = {eta}, ω² = {omega} ; moyennes : "
 "{means}."
@@ -3640,8 +3765,32 @@ msgid "{role} : de {least} à {most} variables."
 msgstr "{role}: {least} to {most} variables."
 
 #, python-brace-format
+msgid "{rows} selon {columns}"
+msgstr "{rows} by {columns}"
+
+#, python-brace-format
 msgid "{score} = {how} des {n} items"
 msgstr "{score} = {how} of the {n} items"
+
+#, python-brace-format
+msgid "{sizes}. Test de Mann-Whitney ; {r} : corrélation bisériale de rang."
+msgstr "{sizes}. Mann-Whitney test; {r}: rank-biserial correlation."
+
+#, python-brace-format
+msgid ""
+"{sizes}. Test {t} de Student (variances égales supposées). {d} de Cohen calculé avec l'écart-type"
+" combiné."
+msgstr ""
+"{sizes}. Student's {t} test (equal variances assumed). Cohen's {d} computed with the pooled "
+"standard deviation."
+
+#, python-brace-format
+msgid ""
+"{sizes}. Test {t} de Welch (variances inégales permises). {d} de Cohen calculé avec l'écart-type "
+"combiné."
+msgstr ""
+"{sizes}. Welch's {t} test (unequal variances allowed). Cohen's {d} computed with the pooled "
+"standard deviation."
 
 #, python-brace-format
 msgid ""
@@ -3664,6 +3813,10 @@ msgstr "{title}: {ok} blocks succeeded, {skipped} already done, {failed} failed.
 #, python-brace-format
 msgid "{used} observations retenues, {excluded} écartées ({why})."
 msgstr "{used} observations used, {excluded} excluded ({why})."
+
+#, python-brace-format
+msgid "{y} selon {x}"
+msgstr "{y} by {x}"
 
 msgid ""
 "« Non documenté » veut dire inconnu : ne pas le deviner. Ne citer aucun seuil, étendue ou "
@@ -3704,6 +3857,9 @@ msgstr "To check"
 #, python-brace-format
 msgid "À vérifier : {qid} ({reasons})."
 msgstr "To check: {qid} ({reasons})."
+
+msgid "ÉT"
+msgstr "SD"
 
 msgid "Écart"
 msgstr "Gap"

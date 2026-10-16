@@ -1,6 +1,6 @@
 # Tableaux et figures APA 7 : les fiches
 
-> Statut : **proposé à l'auteur le 2026-10-16** (v0.10, étape 1), à valider avec le prototype Word. Chiffres : base fictive des analyses (`etude-analyses.sav`), échelle de bien-être cotée comme le dit le corrigé.
+> Statut : **validé par l'auteur le 2026-10-16** (v0.10, étape 1), avec les six points du § 9, après lecture du prototype Word. Chiffres : base fictive des analyses (`etude-analyses.sav`), échelle de bien-être cotée comme le dit le corrigé.
 
 Ce document fixe, une fois pour toutes, ce que chaque analyse du catalogue produit comme tableau et comme figure, et les règles APA 7 retenues. Le code (étapes 2 à 5) suivra ces fiches ; un format futur (D-083) aussi.
 
