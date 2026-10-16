@@ -12,6 +12,7 @@ from streamlit.testing.v1 import AppTest
 
 import ddict.llm.advise as advise_module
 import ddict.llm.client as client_module
+from ddict.analysis.catalogue import CATALOGUE
 from ddict.cli import main
 from ddict.llm.advice_bench import (
     bench_project,
@@ -86,7 +87,8 @@ def _advise(project, content, tmp_path=None):
 def test_the_message_holds_metadata_only(project):
     block = build_advice_block(project, GOAL)
     content = json.loads(block.messages[1]["content"])
-    assert content["objective"] == GOAL
+    assert content["objective"] == content["objective_again"] == GOAL
+    assert list(content)[-1] == "objective_again"  # repeated after the long lists
     assert [a["key"] for a in content["analyses"]] == [
         "table1", "t_test", "anova", "chi_square", "correlation", "regression"
     ]  # fmt: skip
@@ -140,11 +142,32 @@ def test_the_objective_is_checked(project):
     assert error.value.reason == "too_long"
 
 
-def test_the_schema_lists_the_project_variables(project):
+def test_the_schema_ties_roles_and_variables_to_each_analysis(project):
     schema = advice_schema(project)
-    names = schema["$defs"]["RoleChoice"]["properties"]["variables"]["items"]["enum"]
-    assert names == list(usable(project)) and "id_participant" not in names
-    assert schema["$defs"]["AdviceProposal"]["additionalProperties"] is False
+    assert schema["properties"]["block"]["enum"] == ["a-001"]
+    assert schema["properties"]["proposals"]["maxItems"] == 3
+    variants = {
+        v["properties"]["analysis"]["enum"][0]: v
+        for v in schema["properties"]["proposals"]["items"]["anyOf"]
+    }
+    assert list(variants) == list(CATALOGUE)
+    for variant in variants.values():
+        assert variant["additionalProperties"] is False  # no field for code or a threshold
+    t_test = variants["t_test"]["properties"]
+    assert t_test["method"]["enum"] == ["", "welch", "student", "mann_whitney"]
+    roles = {r["properties"]["role"]["enum"][0]: r["properties"]["variables"]
+             for r in t_test["roles"]["prefixItems"]}  # fmt: skip
+    assert list(roles) == ["outcome", "group"]  # each once, in order, both required
+    assert t_test["roles"]["minItems"] == t_test["roles"]["maxItems"] == 2
+    table1 = variants["table1"]["properties"]["roles"]
+    assert (table1["minItems"], table1["maxItems"]) == (1, 2)  # the group is optional
+    assert "stress" in roles["outcome"]["items"]["enum"]
+    assert "groupe" not in roles["outcome"]["items"]["enum"]  # nominal: not an outcome
+    assert "groupe" in roles["group"]["items"]["enum"]
+    assert roles["outcome"]["maxItems"] == 1  # a list that ends
+    every = {n for v in variants.values() for r in v["properties"]["roles"]["prefixItems"]
+             for n in r["properties"]["variables"]["items"]["enum"]}  # fmt: skip
+    assert every == set(usable(project)) and "id_participant" not in every
 
 
 # --- What it may answer. ---

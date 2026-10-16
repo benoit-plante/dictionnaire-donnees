@@ -25,7 +25,7 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints, Validation
 
 from ddict import i18n
 from ddict.analysis import conditions
-from ddict.analysis.catalogue import CATALOGUE, CHOICES, PURPOSES
+from ddict.analysis.catalogue import CATALOGUE, CHOICES, PURPOSES, Analysis, Role
 from ddict.export import wording as w
 from ddict.export.preparation import plan
 from ddict.llm.messages import Block, recorded_version, system_prompt
@@ -42,6 +42,8 @@ MAX_OBJECTIVE_CHARS = 1000
 MAX_PROPOSALS = 3
 MAX_REASON_CHARS = 400
 MAX_LABEL_CHARS = 60
+MAX_ROLES = max(len(a.roles) for a in CATALOGUE.values())
+MAX_ROLE_VARIABLES = max(r.most for a in CATALOGUE.values() for r in a.roles)
 MIN_COMMON_CHARS = 15  # a shorter common start of the items' labels says nothing
 # The local model reads 4,096 tokens by default (Ollama), its answer included: the message
 # keeps about 800 for the answer (D-080). Measured with qwen2.5: 3.6 characters per token
@@ -60,14 +62,15 @@ class RoleChoice(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     role: RoleKey
-    variables: list[str]
+    # Bounded in the schema too: the server's grammar then stops a list that would not end.
+    variables: list[str] = Field(min_length=1, max_length=MAX_ROLE_VARIABLES)
 
 
 class AdviceProposal(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     analysis: AnalysisKey
-    roles: list[RoleChoice]
+    roles: list[RoleChoice] = Field(min_length=1, max_length=MAX_ROLES)
     method: Method
     reason: Reason
 
@@ -116,12 +119,73 @@ def usable(project: Project) -> dict[str, str]:
     return {n: lv for n, lv in conditions.levels(project).items() if n in allowed}
 
 
+def _role_schema(project: Project, analysis: Analysis, role: Role) -> dict | None:
+    names = conditions.candidates(project, analysis, role.key)
+    if not names:
+        return None
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["role", "variables"],
+        "properties": {
+            "role": {"type": "string", "enum": [role.key]},
+            "variables": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": role.most,
+                "items": {"type": "string", "enum": names},
+            },
+        },
+    }
+
+
+def _proposal_schema(project: Project, analysis: Analysis) -> dict | None:
+    """One analysis: its own roles, each with the variables of a fitting level, and its own
+    methods. None when a role it needs has no variable."""
+    roles = {r.key: _role_schema(project, analysis, r) for r in analysis.roles}
+    if any(roles[r.key] is None for r in analysis.roles if r.least):
+        return None
+    # In the catalogue's order, each once; the required roles first (only Table 1's group
+    # is optional, and it comes last).
+    allowed = [roles[r.key] for r in analysis.roles if roles[r.key] is not None]
+    required = sum(1 for r in analysis.roles if r.least)
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["analysis", "roles", "method", "reason"],
+        "properties": {
+            "analysis": {"type": "string", "enum": [analysis.key]},
+            "roles": {
+                "type": "array",
+                "prefixItems": allowed,
+                "minItems": required,
+                "maxItems": len(allowed),
+            },
+            "method": {"type": "string", "enum": ["", *analysis.options.get("method", ())]},
+            "reason": {"type": "string", "maxLength": MAX_REASON_CHARS},
+        },
+    }
+
+
 def advice_schema(project: Project) -> dict:
-    """The schema of the answer; the variables, an enumeration of the project's own."""
-    schema = AdviceResponse.model_json_schema()
-    names = list(usable(project))
-    schema["$defs"]["RoleChoice"]["properties"]["variables"]["items"]["enum"] = names
-    return schema
+    """The schema sent with the message, stricter than the answer's model: each analysis
+    with its own roles and methods, each role with the variables whose level fits it. The
+    server's grammar then cannot write a role an analysis lacks, nor an unfit variable."""
+    proposals = [p for a in CATALOGUE.values() if (p := _proposal_schema(project, a))]
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["block", "proposals"],
+        "properties": {
+            # The one block id: with many groups (G1, G2…), a model may write a group's.
+            "block": {"type": "string", "enum": [BLOCK_ID]},
+            "proposals": {
+                "type": "array",
+                "maxItems": MAX_PROPOSALS,
+                "items": {"anyOf": proposals},
+            },
+        },
+    }
 
 
 def _members(project: Project) -> dict[str, list[str]]:
@@ -193,6 +257,7 @@ def _content(project: Project, objective: str) -> dict:
     }
     if groups:
         content["groups"] = groups
+    content["objective_again"] = objective  # after a long list, the model may lose it
     return content
 
 
