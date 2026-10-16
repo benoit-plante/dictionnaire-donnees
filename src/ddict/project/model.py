@@ -14,7 +14,8 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_vali
 # 0.2.0 (v0.7, D-048): new fields only, all with a default; a 0.1.0 file reads as it is.
 # 0.3.0 (v0.8, D-061): the measure level a person decides; older files are converted on
 # opening (the rules propose their levels), and a 0.3.0 file no longer opens in v0.7.
-SCHEMA_VERSION = "0.3.0"
+# 0.4.0 (v0.12, D-093): the exclusion rules, with a default; a 0.3.0 file reads as it is.
+SCHEMA_VERSION = "0.4.0"
 
 Code = int | float | str
 # "questionnaire": computed from the questionnaire under a strict rule, and like an AI value
@@ -417,6 +418,101 @@ class QuestionStem(Strict):
     ai_signals: list[str] = []
 
 
+# --- Exclusion rules (v0.12, D-093, D-094). ---
+
+Operator = Literal["eq", "ne", "lt", "le", "gt", "ge", "in", "missing"]
+
+
+# A rule decided by the team, never a list of people: `id` (E1, E2...) is never given again
+# after a removal, the rank is the order of the list. Each kind declares `id` and `kind`
+# first, its own fields, then `reason` and `source`: the order of the JSON file.
+
+
+class ConditionRule(Strict):
+    """A condition on a variable (its original name) or on the score of a group's scoring;
+    a missing value never meets it, except with `missing`."""
+
+    id: str
+    kind: Literal["condition"] = "condition"
+    variable: str | None = None
+    score: str | None = None
+    operator: Operator
+    value: Code | list[Code] | None = None
+    reason: NonEmptyText
+    source: str | None = None
+
+    @model_validator(mode="after")
+    def _complete(self) -> ConditionRule:
+        if (self.variable is None) == (self.score is None):
+            raise ValueError("a condition names a variable or a score, not both")
+        if self.operator == "missing" and self.value is not None:
+            raise ValueError("'missing' takes no value")
+        if self.operator == "in" and not (isinstance(self.value, list) and self.value):
+            raise ValueError("'in' takes a list of values")
+        if self.operator not in ("missing", "in") and (
+            self.value is None or isinstance(self.value, list)
+        ):
+            raise ValueError("this operator takes one value")
+        return self
+
+
+class CompletenessRule(Strict):
+    """Fewer than `min_answered` items of a group answered."""
+
+    id: str
+    kind: Literal["completeness"] = "completeness"
+    group: str
+    min_answered: int = Field(ge=1)
+    reason: NonEmptyText
+    source: str | None = None
+
+
+class DurationRule(Strict):
+    """An administration shorter than `min_seconds`, between two date variables; the
+    threshold is the team's choice and needs its source (principle 4)."""
+
+    id: str
+    kind: Literal["duration"] = "duration"
+    start: str
+    end: str
+    min_seconds: float = Field(gt=0)
+    reason: NonEmptyText
+    source: SourceText
+
+
+class StraightliningRule(Strict):
+    """Every item of a grid answered, all with the same value."""
+
+    id: str
+    kind: Literal["straightlining"] = "straightlining"
+    group: str
+    reason: NonEmptyText
+    source: str | None = None
+
+
+class DuplicateRule(Strict):
+    """A later answer repeating an earlier one on these variables (the first is kept); an
+    answer with one of them missing is never a duplicate."""
+
+    id: str
+    kind: Literal["duplicate"] = "duplicate"
+    variables: list[str] = Field(min_length=1)
+    keep: Literal["first"] = "first"
+    reason: NonEmptyText
+    source: str | None = None
+
+
+ExclusionRule = Annotated[
+    ConditionRule | CompletenessRule | DurationRule | StraightliningRule | DuplicateRule,
+    Field(discriminator="kind"),
+]
+
+
+class Exclusions(Strict):
+    next_id: int = 1
+    rules: list[ExclusionRule] = []
+
+
 class Project(Strict):
     schema_version: str = SCHEMA_VERSION
     source: SourceInfo
@@ -428,6 +524,7 @@ class Project(Strict):
     glossary: list[GlossaryEntry] = []
     stems: list[QuestionStem] = []
     dataset: Dataset = Dataset()  # v0.8 (D-064)
+    exclusions: Exclusions = Exclusions()  # v0.12 (D-093)
 
     def variable(self, name: str) -> VariableEntry:
         for entry in self.variables:

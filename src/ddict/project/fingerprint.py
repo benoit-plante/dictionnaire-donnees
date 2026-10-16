@@ -3,7 +3,9 @@
 Two projects that carry the same decisions have the same fingerprint, on any computer;
 any accepted change gives another. In it: what the file says of each variable, the accepted
 values, the team's decisions (suspect codes, sourced ranges and thresholds, notes), the
-groups, the accepted glossary and the questionnaire the question texts come from. Not in it:
+groups, the accepted glossary, the questionnaire the question texts come from and, since
+v0.12, the exclusion rules (only when there are some: a project without rules keeps its
+fingerprint). Not in it:
 proposals waiting or rejected, dates, model calls, settings, statistics computed on the
 data. Exports show its first 12 characters.
 """
@@ -65,7 +67,7 @@ def _glossary_accepted(entry: GlossaryEntry) -> bool:
 
 def decided_content(project: Project) -> dict:
     """What the fingerprint is computed from, in the project's own order."""
-    return {
+    content = {
         "variables": [_variable(e) for e in project.variables],
         "groups": [
             {
@@ -91,6 +93,9 @@ def decided_content(project: Project) -> dict:
             "structure": _accepted(project.dataset.structure),
         },
     }
+    if project.exclusions.rules:
+        content["exclusions"] = [r.model_dump(mode="json") for r in project.exclusions.rules]
+    return content
 
 
 def fingerprint(project: Project) -> str:

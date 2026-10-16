@@ -78,6 +78,7 @@ def test_key_order_follows_the_design(project):
         "glossary",
         "stems",  # v0.7: the stems of the new names
         "dataset",  # v0.8: the description of the database
+        "exclusions",  # v0.12: the exclusion rules (D-093)
     ]
     assert list(data["variables"][0])[:5] == ["name", "position", "file", "profile", "privacy"]
 

@@ -1235,6 +1235,13 @@ msgstr "Estimates how several predictors, together, explain a continuous variabl
 msgid "Excel (graphiques modifiables)"
 msgstr "Excel (editable charts)"
 
+msgid ""
+"Exclusions : règles de l'équipe, dans leur ordre ; ddict_exclusion vaut 0 pour une personne "
+"gardée, sinon le rang de la première règle qui l'exclut."
+msgstr ""
+"Exclusions: the team's rules, in their order; ddict_exclusion is 0 for a person kept, otherwise "
+"the rank of the first rule that excludes them."
+
 msgid "Export"
 msgstr "Export"
 
@@ -1326,6 +1333,9 @@ msgstr "Project format"
 #, python-brace-format
 msgid "Format inconnu : {formats}. Formats : {known}."
 msgstr "Unknown format: {formats}. Formats: {known}."
+
+msgid "Gardée"
+msgstr "Kept"
 
 msgid "Glossaire"
 msgstr "Glossary"
@@ -1686,6 +1696,9 @@ msgstr ""
 "a Markdown file to paste into a model, and a datapackage.json (Frictionless format). Only what is"
 " accepted. What may leave your computer is for your team and the study's ethics approval to "
 "decide, not the tool."
+
+msgid "Le début et la fin sont la même variable."
+msgstr "The start and the end are the same variable."
 
 #, python-brace-format
 msgid ""
@@ -2696,6 +2709,10 @@ msgstr "Nothing waiting."
 
 msgid "Rien à envoyer."
 msgstr "Nothing to send."
+
+#, python-brace-format
+msgid "Règle incomplète : {detail}"
+msgstr "Incomplete rule: {detail}"
 
 msgid "Règles seules"
 msgstr "Rules alone"
@@ -3799,8 +3816,20 @@ msgid "{done} variables sur {total} sans proposition en attente"
 msgstr "{done} of {total} variables without a pending proposal"
 
 #, python-brace-format
+msgid "{group} : aucune cotation structurée, donc aucun score."
+msgstr "{group}: no structured scoring, hence no score."
+
+#, python-brace-format
 msgid "{group} : cotation décrite en note seulement, score non calculé."
 msgstr "{group}: scoring described in a note only, score not computed."
+
+#, python-brace-format
+msgid "{group} : groupe inconnu du projet."
+msgstr "{group}: group unknown to the project."
+
+#, python-brace-format
+msgid "{group} : groupe sans items acceptés."
+msgstr "{group}: group without accepted items."
 
 #, python-brace-format
 msgid "{group} : moins de {n} personnes dans {code}."
@@ -3811,8 +3840,20 @@ msgid "{group} : un item inversé n'a pu être créé, score non calculé."
 msgstr "{group}: a reversed item could not be created, score not computed."
 
 #, python-brace-format
+msgid "{group} : une grille de moins de {n} items ne se juge pas en ligne droite."
+msgstr "{group}: a grid of fewer than {n} items is not judged for straight-lining."
+
+#, python-brace-format
 msgid "{group} : {n} = {count}"
 msgstr "{group}: {n} = {count}"
+
+#, python-brace-format
+msgid "{group} : {n} items exigés, mais le groupe en compte {k}."
+msgstr "{group}: {n} items required, but the group has {k}."
+
+#, python-brace-format
+msgid "{id} : aucune règle ne porte ce numéro."
+msgstr "{id}: no rule has this number."
 
 #, python-brace-format
 msgid "{id} est maintenant au rang {rank}."
@@ -3863,6 +3904,14 @@ msgid "{name} : bornes de l'échelle inconnues, non inversé."
 msgstr "{name}: ends of the scale unknown, not reversed."
 
 #, python-brace-format
+msgid ""
+"{name} : ce n'est pas une date enregistrée comme date dans le fichier ; la durée ne se calcule "
+"que sur deux variables de date."
+msgstr ""
+"{name}: not a date stored as a date in the file; the duration is computed between two date "
+"variables only."
+
+#, python-brace-format
 msgid "{name} : identifiant, texte ou date, exclu des analyses."
 msgstr "{name}: identifier, text or date, left out of the analyses."
 
@@ -3905,6 +3954,18 @@ msgstr "{name}: name refused ({why})."
 #, python-brace-format
 msgid "{name} : un groupe de moins de {n} personnes ({codes})."
 msgstr "{name}: a group of fewer than {n} people ({codes})."
+
+#, python-brace-format
+msgid ""
+"{name} : une condition sur une valeur d'un identifiant ou d'un texte libre nommerait une personne"
+" ; une exclusion décrit une règle, pas une liste."
+msgstr ""
+"{name}: a condition on a value of an identifier or of a free text would name a person; an "
+"exclusion describes a rule, not a list."
+
+#, python-brace-format
+msgid "{name} : une variable texte ne se compare pas par plus petit ou plus grand."
+msgstr "{name}: a text variable is not compared by smaller or greater."
 
 #, python-brace-format
 msgid "{name} : variable inconnue du projet."

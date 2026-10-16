@@ -1,7 +1,8 @@
 """The data ready for an analysis (v0.9, step 3, D-070): the database read in memory, with
 the team's accepted decisions applied in the order of the command files and the
 preparation script (D-062): missing codes removed (declared in the file or confirmed by the
-team), final names, reversed items (`<item>_inv`), scores of the structured scorings.
+team), final names, reversed items (`<item>_inv`), scores of the structured scorings, and
+since v0.12 the exclusion rules (D-094): only the people they keep are analysed.
 
 The original file is never changed, and nothing of the data is written in the project
 (principle 2): the table lives in memory for the time of an analysis.
@@ -15,6 +16,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from ddict.analysis import exclusions
 from ddict.export import wording as w
 from ddict.export.preparation import plan
 from ddict.io import read_database
@@ -36,6 +38,7 @@ class PreparedData:
     table: pd.DataFrame  # columns: final names, then new variables (`_inv`, scores)
     scores: dict[str, str]  # score name -> group id
     reversed: dict[str, str]  # new variable -> final name of the item
+    flow: exclusions.Flow | None = None  # v0.12: who the exclusion rules kept
 
 
 def find_database(project: Project, project_path: Path, given: Path | None = None) -> Path:
@@ -73,7 +76,10 @@ def apply_decisions(project: Project, table: pd.DataFrame) -> PreparedData:
     columns = {}
     for entry in project.variables:
         column = table[entry.name]
-        if entry.file.storage_type == "numeric":
+        # A date stays a date (the duration of an exclusion rule); it enters no analysis.
+        if entry.file.storage_type == "numeric" and not pd.api.types.is_datetime64_any_dtype(
+            column
+        ):
             column = pd.to_numeric(column, errors="coerce")
         columns[names[entry.name]] = _without_missing(column, entry).reset_index(drop=True)
     data = pd.DataFrame(columns)
@@ -92,7 +98,14 @@ def apply_decisions(project: Project, table: pd.DataFrame) -> PreparedData:
             value = items.sum(axis=1, min_count=1)
         data[score.name] = value.where(answered >= score.least, np.nan)
         found_scores[score.name] = score.group
-    return PreparedData(data, found_scores, {r.new: r.name for r in reversals})
+    rank = exclusions.ranks(project, data)
+    kept = data[rank == 0].reset_index(drop=True)
+    return PreparedData(
+        kept,
+        found_scores,
+        {r.new: r.name for r in reversals},
+        exclusions.flow(project, rank) if project.exclusions.rules else None,
+    )
 
 
 def prepare(project: Project, project_path: Path, given: Path | None = None) -> PreparedData:

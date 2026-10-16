@@ -1,6 +1,9 @@
 """The preparation scripts (v0.8, step 7, D-062, D-068): SPSS syntax and an R script that
 create new variables from the team's decisions, without any model: the reversed items
 (`<item>_inv`) and the scores of the structured scorings. No original variable is changed.
+Since v0.12 (D-094), the exclusion rules follow: `ddict_exclusion` (0 for a person kept,
+otherwise the rank of the first rule that excludes them), its counts, then only the people
+kept remain, as in the tool (`ddict.analysis.exclusions`).
 
 They run after the command file of `ddict.export.syntax` (or on the documented copy): on the
 final names, with the missing codes already declared, which every computation leaves out.
@@ -19,7 +22,17 @@ from ddict import __version__
 from ddict.export import wording as w
 from ddict.i18n import _, in_language
 from ddict.project import fingerprint, scoring
-from ddict.project.model import Group, Project, VariableEntry
+from ddict.project.exclusions import members
+from ddict.project.model import (
+    CompletenessRule,
+    ConditionRule,
+    DuplicateRule,
+    DurationRule,
+    Group,
+    Project,
+    StraightliningRule,
+    VariableEntry,
+)
 
 SPSS_NAME = re.compile(r"^[^\W\d_][\w.@#$]{0,63}$")
 SUFFIX = "_inv"
@@ -127,8 +140,11 @@ def plan(project: Project) -> tuple[list[Reversal], list[Score], list[str]]:
 
 
 def needed(project: Project) -> bool:
-    """Whether the project has anything to prepare: a reversed item or a scoring."""
-    return any(g.reverse_items or g.scoring is not None for g in project.groups)
+    """Whether the project has anything to prepare: a reversed item, a scoring or an
+    exclusion rule."""
+    return bool(project.exclusions.rules) or any(
+        g.reverse_items or g.scoring is not None for g in project.groups
+    )
 
 
 def _header(project: Project, comment: str, today: str) -> list[str]:
@@ -197,8 +213,113 @@ def spss(project: Project, today: str) -> str:
                 "DELETE VARIABLES ddict_ecart.",
                 "",
             ]
+    lines += _spss_exclusions(project, scores)
     lines.append("EXECUTE.")
     return "\n".join(lines) + "\n"
+
+
+# --- Exclusions (v0.12, D-094) ----------------------------------------------------------
+
+
+def _final(project: Project, scores: list[Score]) -> dict[str, tuple[str, bool]]:
+    """Original name (or "score:<group>") -> final name, and whether it holds text."""
+    names = w.names_of(project)
+    found = {e.name: (names[e.name], e.file.storage_type != "numeric") for e in project.variables}
+    found |= {f"score:{s.group}": (s.name, False) for s in scores}
+    return found
+
+
+def _group_items(project: Project, group_id: str) -> list[str]:
+    names = w.names_of(project)
+    group = next(g for g in project.groups if g.group_id == group_id)
+    return [names[n] for n in members(group)]
+
+
+def _rule_label(rule) -> str:
+    return f"{rule.id} : {rule.reason}"
+
+
+def _spss_value(value, text: bool) -> str:
+    return _spss_text(str(value)) if text else _number(float(value))
+
+
+def _spss_condition(rule: ConditionRule, name: str, text: bool) -> str:
+    present = f"RTRIM({name}) <> ''" if text else f"NOT MISSING({name})"
+    if rule.operator == "missing":
+        return f"NOT ({present})"
+    if rule.operator == "in":
+        listed = ", ".join(_spss_value(v, text) for v in rule.value)
+        return f"{present} AND ANY({name}, {listed})"
+    symbol = {"eq": "=", "ne": "<>", "lt": "<", "le": "<=", "gt": ">", "ge": ">="}[rule.operator]
+    return f"{present} AND {name} {symbol} {_spss_value(rule.value, text)}"
+
+
+def _spss_exclusions(project: Project, scores: list[Score]) -> list[str]:
+    rules = project.exclusions.rules
+    if not rules:
+        return []
+    final = _final(project, scores)
+    lines = [
+        "* "
+        + _(
+            "Exclusions : règles de l'équipe, dans leur ordre ; ddict_exclusion vaut 0 pour une "
+            "personne gardée, sinon le rang de la première règle qui l'exclut."
+        ),
+        "COMPUTE ddict_ordre = $CASENUM.",
+    ]
+    conditions = []
+    for number, rule in enumerate(rules, start=1):
+        if isinstance(rule, ConditionRule):
+            name, text = final[f"score:{rule.score}" if rule.score else rule.variable]
+            conditions.append(_spss_condition(rule, name, text))
+        elif isinstance(rule, CompletenessRule):
+            items = ", ".join(_group_items(project, rule.group))
+            conditions.append(f"NVALID({items}) < {rule.min_answered}")
+        elif isinstance(rule, DurationRule):
+            start, end = final[rule.start][0], final[rule.end][0]
+            span = f"({end} - {start})"
+            conditions.append(
+                f"NOT MISSING({start}) AND NOT MISSING({end}) AND {span} >= 0 "
+                f"AND {span} < {_number(rule.min_seconds)}"
+            )
+        elif isinstance(rule, StraightliningRule):
+            items = ", ".join(_group_items(project, rule.group))
+            conditions.append(f"NMISS({items}) = 0 AND MIN({items}) = MAX({items})")
+        else:  # DuplicateRule: the first answer of each key, in the order of the file
+            keys = [final[n] for n in rule.variables]
+            complete = " AND ".join(
+                f"RTRIM({n}) <> ''" if text else f"NOT MISSING({n})" for n, text in keys
+            )
+            listed = " ".join(n for n, _text in keys)
+            flag = f"ddict_double{number}"
+            lines += [
+                f"COMPUTE ddict_complet = ({complete}).",
+                f"SORT CASES BY ddict_complet {listed} ddict_ordre.",
+                f"MATCH FILES /FILE = * /BY ddict_complet {listed} /FIRST = ddict_premier.",
+                f"COMPUTE {flag} = (ddict_complet = 1 AND ddict_premier = 0).",
+                "SORT CASES BY ddict_ordre.",
+                "DELETE VARIABLES ddict_complet ddict_premier.",
+            ]
+            conditions.append(f"{flag} = 1")
+    lines.append("COMPUTE ddict_exclusion = 0.")
+    for number, (rule, condition) in enumerate(zip(rules, conditions, strict=True), start=1):
+        lines += [
+            f"* {_rule_label(rule)}.",
+            f"IF (ddict_exclusion = 0 AND {condition}) ddict_exclusion = {number}.",
+        ]
+    labels = " ".join(f"{n} {_spss_text(_rule_label(r))}" for n, r in enumerate(rules, start=1))
+    flags = [
+        f"ddict_double{n}" for n, r in enumerate(rules, start=1) if isinstance(r, DuplicateRule)
+    ]
+    lines += [
+        f"VALUE LABELS ddict_exclusion 0 {_spss_text(_('Gardée'))} {labels}.",
+        "FREQUENCIES VARIABLES = ddict_exclusion.",
+        "SELECT IF (ddict_exclusion = 0).",
+        "EXECUTE.",
+        "DELETE VARIABLES ddict_ordre" + "".join(f" {f}" for f in flags) + ".",
+        "",
+    ]
+    return lines
 
 
 # --- R --------------------------------------------------------------------------------------
@@ -275,8 +396,93 @@ def r_script(project: Project, today: str) -> str:
                 + ")",
                 "",
             ]
+    lines += _r_exclusions(project, scores)
     lines.append('rm(list = ls(pattern = "^ddict_"))')
     return "\n".join(lines) + "\n"
+
+
+def _r_values(name: str, text: bool) -> str:
+    return f"ddict_chaine({_r_column(name)})" if text else f"ddict_valeurs({_r_column(name)})"
+
+
+def _r_value(value, text: bool) -> str:
+    return _r_text(str(value)) if text else _number(float(value))
+
+
+def _r_condition(rule: ConditionRule, name: str, text: bool) -> str:
+    x = _r_values(name, text)
+    if rule.operator == "missing":
+        return f"is.na({x})"
+    if rule.operator == "in":
+        listed = ", ".join(_r_value(v, text) for v in rule.value)
+        return f"ddict_vrai({x} %in% c({listed}))"
+    symbol = {"eq": "==", "ne": "!=", "lt": "<", "le": "<=", "gt": ">", "ge": ">="}[rule.operator]
+    return f"ddict_vrai({x} {symbol} {_r_value(rule.value, text)})"
+
+
+def _r_exclusions(project: Project, scores: list[Score]) -> list[str]:
+    rules = project.exclusions.rules
+    if not rules:
+        return []
+    final = _final(project, scores)
+    lines = [
+        "# "
+        + _(
+            "Exclusions : règles de l'équipe, dans leur ordre ; ddict_exclusion vaut 0 pour une "
+            "personne gardée, sinon le rang de la première règle qui l'exclut."
+        ),
+        "ddict_vrai <- function(x) !is.na(x) & x",
+        "ddict_chaine <- function(x) {",
+        '  x <- as.character(if (inherits(x, "vctrs_vctr")) vctrs::vec_data(x) else x)',
+        '  x[!is.na(x) & trimws(x) == ""] <- NA',
+        "  x",
+        "}",
+        "ddict_exclusion <- integer(nrow(donnees))",
+    ]
+    for number, rule in enumerate(rules, start=1):
+        if isinstance(rule, ConditionRule):
+            name, text = final[f"score:{rule.score}" if rule.score else rule.variable]
+            condition = _r_condition(rule, name, text)
+        elif isinstance(rule, CompletenessRule):
+            items = ", ".join(_r_values(n, False) for n in _group_items(project, rule.group))
+            condition = f"rowSums(!is.na(cbind({items}))) < {rule.min_answered}"
+        elif isinstance(rule, DurationRule):
+            start, end = _r_column(final[rule.start][0]), _r_column(final[rule.end][0])
+            lines.append(
+                f'ddict_secondes <- as.numeric(difftime(as.POSIXct({end}, tz = "UTC"), '
+                f'as.POSIXct({start}, tz = "UTC"), units = "secs"))'
+            )
+            limit = _number(rule.min_seconds)
+            condition = f"ddict_vrai(ddict_secondes >= 0 & ddict_secondes < {limit})"
+        elif isinstance(rule, StraightliningRule):
+            items = ", ".join(_r_values(n, False) for n in _group_items(project, rule.group))
+            lines.append(f"ddict_grille <- cbind({items})")
+            condition = (
+                "rowSums(is.na(ddict_grille)) == 0 & "
+                "apply(ddict_grille, 1, function(r) all(r == r[1]))"
+            )
+        else:  # DuplicateRule: the first answer of each key, in the order of the file
+            keys = ", ".join(_r_values(*final[n]) for n in rule.variables)
+            lines += [
+                f"ddict_cles <- data.frame({keys})",
+                "ddict_complet <- complete.cases(ddict_cles)",
+                "ddict_double <- logical(nrow(donnees))",
+                "ddict_double[ddict_complet] <- "
+                "duplicated(ddict_cles[ddict_complet, , drop = FALSE])",
+            ]
+            condition = "ddict_double"
+        lines += [
+            f"# {_rule_label(rule)}",
+            f"ddict_exclusion[ddict_exclusion == 0 & ({condition})] <- {number}L",
+        ]
+    labels = ", ".join([_r_text(_("Gardée")), *(_r_text(_rule_label(r)) for r in rules)])
+    lines += [
+        f"{_r_column('ddict_exclusion')} <- ddict_exclusion",
+        f"print(table(factor(ddict_exclusion, levels = 0:{len(rules)}, labels = c({labels}))))",
+        f"donnees <- donnees[{_r_column('ddict_exclusion')} == 0, , drop = FALSE]",
+        "",
+    ]
+    return lines
 
 
 WRITERS = {"spss": spss, "r": r_script}
