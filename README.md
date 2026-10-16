@@ -1,6 +1,6 @@
 # dictionnaire-donnees
 
-> Nom de travail. Version 0.7.1 : sous Windows, l'outil s'ouvre dans sa propre fenêtre, sans fenêtre noire, et les noms des variables se décident directement dans le tableau. Depuis la 0.7, les exports bruts de SurveyMonkey sont lus juste et les variables se renomment, avec reprise des noms d'une vague à l'autre. Depuis la 0.5, l'outil existe aussi en anglais et s'installe sur un Mac par double-clic. **L'anglais et macOS sont à l'essai** : la traduction n'a pas encore été relue par une personne anglophone, et l'installation sur Mac n'a été vérifiée que sur un Mac de GitHub. À essayer d'abord sur la base fictive et son questionnaire, fournis.
+> Nom de travail. Version 0.8.0 : du dictionnaire à l'analyse. Cotation des échelles, script de préparation des scores (SPSS et R), niveaux de mesure décidés par l'équipe, et un « contexte d'analyse » compact à donner à une IA qui aide à écrire le code. Depuis la 0.7, les exports bruts de SurveyMonkey sont lus juste et les variables se renomment d'une vague à l'autre. **L'anglais et macOS sont à l'essai** : la traduction n'a pas encore été relue par une personne anglophone, et l'installation sur Mac n'a été vérifiée que sur un Mac de GitHub. À essayer d'abord sur la base fictive et son questionnaire, fournis.
 
 Outil libre et local qui aide les équipes de recherche à produire le **dictionnaire de données** (codebook) d'une base existante (SPSS, CSV, Stata, SAS ou Excel ; le `.sav` de SPSS donne les meilleurs résultats), avec l'aide du questionnaire de l'étude.
 
@@ -25,6 +25,7 @@ ddict rattacher etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M  # IA 
 ddict enrichir etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M   # facultatif
 ddict exporter etude-sommeil.dd.json      # codebook Excel et rapport Markdown
 ddict exporter etude-sommeil.dd.json --syntaxe   # et fichiers de commandes SPSS et R
+ddict exporter etude-sommeil.dd.json --contexte  # et contexte d'analyse pour une IA
 ddict documenter etude-sommeil.dd.json    # copie documentée de la base (.sav)
 ddict renommer etude-t2.dd.json --suffixe _t2 --reference etude-t1.dd.json  # noms
 ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M  # banc d'essai d'un modèle

@@ -1,5 +1,19 @@
 # Changements
 
+## 0.8.0 — 2026-10-15
+
+Du dictionnaire à l'analyse : le codebook devient un contrat d'analyse, utile à une équipe qui analyse elle-même et à une IA qui aide à écrire le code (plan : `docs/plan-v0.8.md`, D-057 à D-068).
+
+- **Contexte d'analyse** (D-058, D-066) : page Export ou `ddict exporter --contexte`, un `-contexte.md` compact à coller dans un assistant (environ 40 tokens par variable, trois fois moins que le rapport) et un `-datapackage.json` au format Frictionless v2, valide selon ses schémas. Valeurs acceptées seulement, aucune valeur observée ; statistiques seulement sur demande (`--avec-statistiques`, D-059). À l'essai, trois assistants en ligne ont écrit une analyse juste à partir du seul contexte ; le petit modèle local, non (`docs/essais/2026-10-15-contexte-analyse-modele.md`).
+- **Cotation des échelles** (D-060, D-068) : sur la page d'un groupe, items, somme ou moyenne, bornes de l'échelle, nombre minimal d'items répondus et règle des items manquants (somme proportionnelle ou somme des items répondus), nom du score, source obligatoire ; l'étendue du score est calculée. Jamais proposée par l'IA.
+- **Script de préparation** (D-062) : avec les fichiers de commandes, un `-preparation.sps` et `.R` qui créent les items inversés (`_inv`) et les scores dans de nouvelles variables, sans modifier les variables d'origine ; un score déjà dans la base est comparé. Vérifié avec R et PSPP.
+- **Niveaux de mesure décidés par l'équipe** (D-063, D-067) : proposés par des règles quand le fichier n'en donne pas ou quand le sien est douteux (item de grille ou texte déclaré « échelle »), décidés dans un tableau sur la page Base ; le niveau en vigueur passe dans les fichiers de commandes, la copie documentée et les codebooks.
+- **Description de la base** (D-064) : ce qu'est une ligne, la structure (transversale, une vague par fichier, format large ou long), les variables de plan ; seule la structure est proposée.
+- **Complétude** en tête des codebooks et sur la page Base : ce qui est décidé, sur ce qui s'applique, et ce qui reste à documenter.
+- **Empreinte du codebook** dans les exports et les fichiers de commandes : un code qui change dès qu'une décision change.
+- **Format du projet 0.3.0** (D-061) : les projets des versions précédentes sont convertis à l'ouverture ; un projet ouvert avec la 0.8 ne s'ouvre plus avec une version plus ancienne.
+- Guides : cotation, niveaux de mesure, description, complétude, contexte d'analyse, script de préparation, et une section « Utiliser le contexte d'analyse avec une IA », en français et en anglais.
+
 ## 0.7.1 — 2026-10-15
 
 - **Noms décidés dans le tableau** (D-056) : colonne « Décision » (Accepter, Rejeter) à côté du nom, un seul bouton « Enregistrer », et « Choisir « Accepter » pour les N noms proposés » qui remplit la colonne pour relecture. « Radical » devient « nom de base ».

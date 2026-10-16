@@ -14,7 +14,7 @@ On a Mac: [`installation-macos.md`](installation-macos.md). En français : [`../
 
 ## 1. Install
 
-1. Download the tool's archive from the releases page of the project on GitHub: the **Source code (zip)** link, for example `dictionnaire-donnees-0.7.1.zip`.
+1. Download the tool's archive from the releases page of the project on GitHub: the **Source code (zip)** link, for example `dictionnaire-donnees-0.8.0.zip`.
 2. In File Explorer, right-click the downloaded file, **Extract All**, then **Extract**. Open the extracted folder; if it holds only one folder of the same name, open that one: it is **the tool's folder**, with `installer.bat`, `docs` and `exemples`.
 3. Double-click **`installer.bat`**.
    - If Windows shows "**Windows protected your PC**", click **More info**, then **Run anyway**. This message appears for any downloaded program that is not signed by a paying publisher; the installer is a plain script, readable in the `windows` folder.
@@ -94,6 +94,10 @@ During a job, **Stop** (or a change of page) interrupts it after the block in pr
 - **Suspect codes** (filter of the same name, or the to-do list): a value such as 999 or −9, isolated far from the others, may be a missing code the file does not declare. Only your team knows: **It is a missing code** or **It is a real value**. The codebook will say so; **Undo this decision** cancels it.
 - **Documented fields**: theoretical range, thresholds, references and notes. They are for people only, and the range and the thresholds require a source (manual, article).
 - **Groups**: the scales found by the tool, their Cronbach's alpha and the items probably reversed. Confirming a reversal **documents** it in the codebook; the tool never recodes the data. For an **instrument protected by copyright** (CBCL, BDI…), check "Do not reproduce the text of this group's questions in the codebook": the codebook will give the reference of each question (`Q12.r3, p. 4`), without its text. Reproducing the items of a protected instrument is up to your team.
+- **Scoring of a scale** (Groups page, "Scoring" section): the items of the score, sum or mean, the scale's minimum and maximum (pre-filled from the labels), the minimum of items answered and, for a sum that allows missing items, the rule (prorated sum or sum of the items answered), the score's name and **a required source**. The reversed items are those confirmed above; the range of the score is computed. A scoring that does not fit this frame is written as a note. The AI never proposes a scoring.
+- **Measure levels** (Database page): when the file gives none (CSV, Excel), or when the file's is doubtful (a grid item declared "scale"), the tool proposes a level. Decide in the table, as for the names: **Accept**, **Reject**, or another level, then **Save**. For a few codes without labels (1, 2, 3, 9), it proposes nothing: only your team knows what they mean.
+- **Description of the database** (Database page): what a row is (a participant, a repeated observation…), the structure (cross-sectional, one wave per file, wide or long format), the design variables and a short description. The tool only proposes the structure (one wave per file when a wave mark is set; wide format when suffixes `_t1`, `_t2` come back).
+- **Completeness** (Database page, and at the head of the codebooks): for each element, what your team decided out of what applies, and the list of what remains to document.
 
 ## 8. Export
 
@@ -104,7 +108,9 @@ During a job, **Stop** (or a change of page) interrupts it after the block in pr
 - **Codebook language**: French or English, by default that of the interface. It applies to the headings, the notes, the provenance, the report and the comments of the command files; what the team wrote (labels, descriptions, question text) is never translated.
 - **Write the codebook and the report** (next to the project), or **Download** (to your downloads folder).
 
-The codebook holds the labels, the text of the linked questions, the glossary ("Glossary" sheet), the accepted value labels and the provenance of every value. Counts below 5 are masked in it.
+The codebook holds the labels, the text of the linked questions, the glossary ("Glossary" sheet), the accepted value labels and the provenance of every value. Counts below 5 are masked in it. The "Information" sheet and the head of the report give the **codebook fingerprint**, a 12-character code that changes as soon as a decision changes: note it with your results.
+
+**The analysis context** (section of that name, at the bottom of the page): the codebook in a compact format, for a program or for an AI that helps write the analysis code. **Write the context next to the project** gives `sleep-study-contexte.md` (to paste into an assistant) and `sleep-study-datapackage.json` (Frictionless standard format, useful for a data deposit too). Only what is accepted; no participant data; the statistics only if you tick the box. See section 12.
 
 ## 9. Apply your decisions to your data
 
@@ -122,6 +128,8 @@ The codebook documents; your data itself has not changed. To bring into it what 
 
   `user_na = TRUE` matters for an SPSS file: without it, haven turns the missing codes already declared into empty cells (a 9 "Prefer not to answer" becomes an empty cell, and the copy loses that information). Measurement levels are not applied by R: haven does not write them.
 - **SPSS**: open the database, then **File > Open > Syntax…**, choose the `.sps` file, and **Run > All**. Then save the database under a new name.
+
+**The preparation script, for your scores.** When you have confirmed reversed items or written a scoring, the same button also writes `sleep-study-preparation.sps` and `.R`. To run **after** the command file: they create **new variables**, the reversed items (`sleep_q3_inv`) and the scores, from your scoring; no original variable is changed, and the missing codes are left out of the computations. If the database already holds a score of the same group, the script counts the differences with the one it computes. In R: `source("sleep-study-preparation.R", encoding = "UTF-8")` right after the command file.
 
 **The documented copy, if you want a ready-to-use file.** **Write the documented copy** writes next to the database `sleep-study-documente.sav`, in SPSS format, with your decisions. It also works from a CSV, Stata, SAS or Excel database. Before announcing it, the tool reads it back and compares it with the original cell by cell; at the slightest difference, it deletes it and tells you. Your original file is never changed, and an existing copy is replaced only if you tick the box. The database must be next to the project; otherwise, **Choose the database…**. The copy holds the participants' data: store it like the original.
 
@@ -154,9 +162,18 @@ A platform export gives names like `q0003_0004`, and a longitudinal study wants 
 
 On the command line: `ddict rename project.dd.json --suffix _t2 --reference wave1.dd.json`.
 
+## 12. Using the analysis context with an AI
+
+The analysis context (section 8) is made to be given as it is to an assistant that writes the code of your analysis. **The model never sees your data**: it receives the description of the database, writes code, and your computer runs that code on the real data.
+
+- **What you send is for your team and your ethics approval to decide**, not the tool. The context without statistics holds metadata only, but the text of the questions, the variable names or the description of the study may be sensitive. The tool itself sends nothing: you copy the file.
+- **Choose an assistant that can write code.** In the trial (fictional database, `docs/essais/2026-10-15-contexte-analyse-modele.md`), three online assistants wrote a correct analysis from the context alone; the tool's small local model (qwen2.5 7B) failed, not knowing how to program in R. The local model remains useful for labels and links, not for writing an analysis.
+- **Give it the scores already computed** when you can: the preparation script (section 9) does without AI what an AI most often gets wrong (reversed items, missing items, missing codes).
+- **Always read and check the code before running it** on your data: in the trial, one assistant kept an empty "Prefer not to answer" group in its results. Note the codebook fingerprint with the code and the results.
+
 ## Update or uninstall
 
-- **Update**: download and extract the new archive, then double-click its `installer.bat`. If the tool is open, the installer offers to close it (answer `y`): it cannot replace it while it runs. Your project files are kept. A project opened with version 0.7 no longer opens with an older version (its format changed); the reverse works.
+- **Update**: download and extract the new archive, then double-click its `installer.bat`. If the tool is open, the installer offers to close it (answer `y`): it cannot replace it while it runs. Your project files are kept. A project opened with version 0.8 no longer opens with an older version (its format changed); the reverse works.
 - **Uninstall**: double-click `desinstaller.bat`, in the tool's folder. It removes the tool and its icons, without touching your projects, codebooks or data; it asks before clearing the list of recent projects. uv and Ollama stay installed.
 
 ## For those who prefer the command line
@@ -172,6 +189,7 @@ ddict enrich sleep-study.dd.json --model qwen2.5:7b-instruct-q4_K_M
 ddict review sleep-study.dd.json              # open a project directly
 ddict export sleep-study.dd.json --language en          # Excel codebook and report
 ddict export sleep-study.dd.json --syntax     # and the SPSS and R command files
+ddict export sleep-study.dd.json --context    # and the analysis context (--with-statistics)
 ddict document sleep-study.dd.json            # documented copy of the database (.sav)
 ddict rename study-t2.dd.json --suffix _t2 --reference study-t1.dd.json   # names
 ddict evaluate --model qwen2.5:7b-instruct-q4_K_M       # model bench

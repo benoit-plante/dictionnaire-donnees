@@ -12,7 +12,7 @@ Sur un Mac : [`installation-macos.md`](installation-macos.md). In English: [`en/
 
 ## 1. Installer
 
-1. Téléchargez l'archive de l'outil depuis la page des versions du projet sur GitHub : le lien **Source code (zip)**, par exemple `dictionnaire-donnees-0.7.1.zip`.
+1. Téléchargez l'archive de l'outil depuis la page des versions du projet sur GitHub : le lien **Source code (zip)**, par exemple `dictionnaire-donnees-0.8.0.zip`.
 2. Dans l'Explorateur, clic droit sur le fichier téléchargé, **Extraire tout**, puis **Extraire**. Ouvrez le dossier extrait ; s'il ne contient qu'un seul dossier du même nom, ouvrez celui-là : c'est **le dossier de l'outil**, avec `installer.bat`, `docs` et `exemples`.
 3. Double-cliquez sur **`installer.bat`**.
    - Si Windows affiche « **Windows a protégé votre ordinateur** », cliquez sur **Informations complémentaires**, puis **Exécuter quand même**. Ce message apparaît pour tout programme téléchargé qui n'est pas signé par un éditeur payant ; l'installateur est un simple script, lisible dans le dossier `windows`.
@@ -92,6 +92,10 @@ Pendant un travail, **Arrêter** (ou un changement de page) l'interrompt après 
 - **Codes suspects** (filtre du même nom, ou le tableau de bord) : une valeur comme 999 ou −9, isolée loin des autres, est peut-être un code manquant que le fichier ne déclare pas. Seule votre équipe le sait : **C'est un code manquant** ou **C'est une vraie valeur**. Le codebook le dira ; **Revenir sur cette décision** l'annule.
 - **Champs documentés** : étendue théorique, seuils, références et notes. Ils sont réservés aux personnes, et l'étendue comme les seuils exigent une source (manuel, article).
 - **Groupes** : les échelles repérées par l'outil, leur alpha de Cronbach et les items probablement inversés. Confirmer une inversion la **documente** dans le codebook ; l'outil ne recode jamais les données. Pour un **instrument protégé par le droit d'auteur** (CBCL, BDI…), cochez « Ne pas reproduire le texte des questions de ce groupe » : le codebook donnera la référence de chaque question (`Q12.r3, p. 4`), sans son texte. Reproduire les items d'un instrument protégé relève de votre équipe.
+- **Cotation d'une échelle** (page « Groupes », section « Cotation ») : les items du score, somme ou moyenne, le minimum et le maximum de l'échelle (pré-remplis d'après les étiquettes), le nombre minimal d'items répondus et, pour une somme qui en accepte de manquants, la règle (somme proportionnelle ou somme des items répondus), le nom du score et **une source obligatoire**. Les items inversés sont ceux confirmés plus haut ; l'étendue du score est calculée. Une cotation qui n'entre pas dans ce cadre s'écrit en note. L'IA ne propose jamais de cotation.
+- **Niveaux de mesure** (page « Base ») : quand le fichier n'en donne pas (CSV, Excel), ou quand celui du fichier est douteux (un item de grille déclaré « échelle »), l'outil propose un niveau. Décidez dans le tableau, comme pour les noms : **Accepter**, **Rejeter**, ou un autre niveau, puis **Enregistrer**. Pour quelques codes sans étiquettes (1, 2, 3, 9), il ne propose rien : seule votre équipe sait ce qu'ils veulent dire.
+- **Description de la base** (page « Base ») : ce qu'est une ligne (un participant, une observation répétée…), la structure (transversale, une vague par fichier, format large ou long), les variables de plan et une description courte. L'outil propose seulement la structure (une vague par fichier quand une marque de vague est réglée ; format large quand des suffixes `_t1`, `_t2` reviennent).
+- **Complétude** (page « Base », et en tête des codebooks) : pour chaque élément, ce que votre équipe a décidé sur ce qui s'applique, et la liste de ce qui reste à documenter.
 
 ## 8. Exporter
 
@@ -102,7 +106,9 @@ Page **Export** :
 - **Langue du codebook** : français ou anglais, par défaut celle de l'interface. Elle vaut pour les en-têtes, les notes, la provenance, le rapport et les commentaires des fichiers de commandes ; ce que l'équipe a écrit (libellés, descriptions, texte des questions) n'est jamais traduit. En ligne de commande : `ddict exporter projet.dd.json --langue en`.
 - **Écrire le codebook et le rapport** (à côté du projet), ou **Télécharger** (dans votre dossier de téléchargements).
 
-Le codebook contient les libellés, le texte des questions rattachées, le glossaire (onglet « Glossaire »), les étiquettes de valeurs acceptées et la provenance de chaque valeur. Les effectifs de moins de 5 y sont masqués.
+Le codebook contient les libellés, le texte des questions rattachées, le glossaire (onglet « Glossaire »), les étiquettes de valeurs acceptées et la provenance de chaque valeur. Les effectifs de moins de 5 y sont masqués. L'onglet « Informations » et l'en-tête du rapport donnent l'**empreinte du codebook**, un code de 12 caractères qui change dès qu'une décision change : notez-la avec vos résultats.
+
+**Le contexte d'analyse** (section du même nom, en bas de la page) : le codebook en format compact, pour un programme ou pour une IA qui aide à écrire le code d'analyse. **Écrire le contexte à côté du projet** donne `etude-sommeil-contexte.md` (à coller dans un assistant) et `etude-sommeil-datapackage.json` (format standard Frictionless, utile aussi pour un dépôt de données). Seulement ce qui est accepté ; aucune donnée des participants ; les statistiques seulement si vous cochez la case. Voir la section 12.
 
 ## 9. Appliquer vos décisions à vos données
 
@@ -120,6 +126,8 @@ Le codebook documente ; vos données, elles, n'ont pas changé. Pour y faire ent
 
   `user_na = TRUE` est important pour un fichier SPSS : sans lui, haven remplace par des cases vides les codes manquants déjà déclarés (un 9 « Préfère ne pas répondre » devient une case vide, et la copie perd cette information). Les niveaux de mesure ne sont pas appliqués par R : haven ne les écrit pas.
 - **SPSS** : ouvrez la base, puis **Fichier > Ouvrir > Syntaxe…**, choisissez le `.sps`, et **Exécuter > Tout**. Enregistrez ensuite la base sous un nouveau nom.
+
+**Le script de préparation, pour vos scores.** Quand vous avez confirmé des items inversés ou écrit une cotation, le même bouton écrit aussi `etude-sommeil-preparation.sps` et `.R`. À exécuter **après** le fichier de commandes : ils créent de **nouvelles variables**, les items inversés (`sommeil_q3_inv`) et les scores (`sommeil_total`), selon votre cotation ; aucune variable d'origine n'est modifiée, et les codes manquants sont exclus des calculs. Si la base contient déjà un score du même groupe, le script compte les écarts avec celui qu'il calcule. En R : `source("etude-sommeil-preparation.R", encoding = "UTF-8")` juste après le fichier de commandes.
 
 **La copie documentée, si vous voulez un fichier prêt à l'emploi.** **Écrire la copie documentée** (ou `ddict documenter etude-sommeil.dd.json`) écrit à côté de la base `etude-sommeil-documente.sav`, au format SPSS, avec vos décisions. Elle fonctionne aussi à partir d'une base CSV, Stata, SAS ou Excel. Avant de l'annoncer, l'outil la relit et la compare à l'original case par case ; au moindre écart, il la supprime et vous le dit. Votre fichier d'origine n'est jamais modifié, et une copie existante n'est remplacée que si vous cochez la case. La base doit se trouver à côté du projet ; sinon, **Choisir la base…** (ou `--base`). La copie contient les données des participants : rangez-la comme l'original.
 
@@ -152,9 +160,18 @@ Un export de plateforme donne des noms comme `q0003_0004`, et une étude longitu
 
 En ligne de commande : `ddict renommer projet.dd.json --suffixe _t2 --reference vague1.dd.json`.
 
+## 12. Utiliser le contexte d'analyse avec une IA
+
+Le contexte d'analyse (section 8) est fait pour être donné tel quel à un assistant qui écrit le code de votre analyse. **Le modèle ne voit jamais vos données** : il reçoit la description de la base, écrit du code, et c'est votre ordinateur qui exécute ce code sur les vraies données.
+
+- **Ce que vous envoyez relève de votre équipe et de votre certificat d'éthique**, pas de l'outil. Le contexte sans statistiques ne contient que des métadonnées, mais le texte des questions, les noms de variables ou la description de l'étude peuvent être sensibles. L'outil, lui, n'envoie rien : c'est vous qui copiez le fichier.
+- **Choisissez un assistant qui sait écrire du code.** À l'essai (base fictive, `docs/essais/2026-10-15-contexte-analyse-modele.md`), trois assistants en ligne ont écrit une analyse juste à partir du seul contexte ; le petit modèle local de l'outil (qwen2.5 7B) a échoué, faute de savoir programmer en R. Le modèle local reste utile pour les libellés et les rattachements, pas pour écrire une analyse.
+- **Donnez-lui les scores déjà calculés** quand c'est possible : le script de préparation (section 9) fait sans IA ce qu'une IA rate le plus souvent (items inversés, items manquants, codes manquants).
+- **Relisez et vérifiez toujours le code avant de l'exécuter** sur vos données : à l'essai, un assistant a gardé un groupe vide « Préfère ne pas répondre » dans ses résultats. Notez l'empreinte du codebook avec le code et les résultats.
+
 ## Mettre à jour ou désinstaller
 
-- **Mettre à jour** : téléchargez et décompressez la nouvelle archive, puis double-cliquez sur son `installer.bat`. Si l'outil est ouvert, l'installateur propose de le fermer (répondez `o`) : il ne peut pas le remplacer pendant qu'il tourne. Vos fichiers projet sont conservés. Un projet ouvert avec la version 0.7 ne s'ouvre plus avec une version plus ancienne (son format a changé) ; l'inverse fonctionne.
+- **Mettre à jour** : téléchargez et décompressez la nouvelle archive, puis double-cliquez sur son `installer.bat`. Si l'outil est ouvert, l'installateur propose de le fermer (répondez `o`) : il ne peut pas le remplacer pendant qu'il tourne. Vos fichiers projet sont conservés. Un projet ouvert avec la version 0.8 ne s'ouvre plus avec une version plus ancienne (son format a changé) ; l'inverse fonctionne.
 - **Désinstaller** : double-cliquez sur `desinstaller.bat`, dans le dossier de l'outil. Il retire l'outil et ses icônes, sans toucher à vos projets, codebooks ou données ; il demande avant d'effacer la liste des projets récents. uv et Ollama restent installés.
 
 ## Pour qui préfère la ligne de commande
@@ -170,6 +187,7 @@ ddict enrichir etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M
 ddict reviser etude-sommeil.dd.json           # ouvrir directement un projet
 ddict exporter etude-sommeil.dd.json          # codebook Excel et rapport
 ddict exporter etude-sommeil.dd.json --syntaxe   # et les fichiers de commandes SPSS et R
+ddict exporter etude-sommeil.dd.json --contexte  # et le contexte d'analyse (--avec-statistiques)
 ddict documenter etude-sommeil.dd.json        # copie documentée de la base (.sav)
 ddict renommer etude-t2.dd.json --suffixe _t2 --reference etude-t1.dd.json   # noms
 ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M   # banc d'essai d'un modèle
