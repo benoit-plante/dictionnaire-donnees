@@ -998,3 +998,60 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   1. Windows seulement (ce choix).
   2. Garder macOS à l'essai, vérifié seulement sur un Mac de GitHub.
 - **Justification :** décision de l'auteur, le 2026-10-16 : on oublie le déploiement hors de Windows. L'installation Mac n'avait jamais été vérifiée par une personne sur son propre Mac, et son entretien (flux, guides, tests) pesait sur chaque version.
+
+### D-082 — Bibliothèques des tableaux et des figures
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** python-docx (MIT) écrit les fichiers Word, matplotlib (licence permissive, fondée sur celle de Python) dessine les figures ; deux nouvelles dépendances d'exécution, notées avec leurs propres dépendances dans `docs/dependances.md`. openpyxl, déjà présent, écrit les graphiques Excel natifs.
+- **Options considérées :**
+  1. Ces bibliothèques (ce choix).
+  2. Écrire le format Word et les images sans bibliothèque.
+- **Justification :** Des bibliothèques libres, éprouvées et très utilisées ; écrire soi-même le format Word ou un moteur de figures serait long et fragile.
+
+### D-083 — Formats extensibles : une description neutre, un module par format
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Chaque tableau et chaque figure d'une analyse est d'abord décrit sans aucun format (`ddict.analysis.apa` : numéro, titre, colonnes, lignes, italiques, notes ; type de figure, séries, axes, barres d'erreur). Chaque format est un module inscrit dans une liste (nom, extension, ce qu'il sait rendre), que la page et `ddict analyser --format` lisent d'elles-mêmes. Un test commun, passé par chaque format, vérifie que tous les chiffres, numéros, titres et notes se retrouvent dans le fichier, et que rien n'est inventé.
+- **Options considérées :**
+  1. Description neutre et modules de format (ce choix).
+  2. Un code par format, chacun lisant les résultats à sa façon.
+- **Justification :** Demande de l'auteur : ajouter facilement d'autres formats plus tard. Un nouveau format devient un module de plus, sans toucher au calcul ni aux autres formats.
+
+### D-084 — Figures éditables
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Dans le fichier Word, chaque figure est une image nette (300 points par pouce), avec son numéro, son titre et sa note en texte modifiable ; à côté, un classeur Excel donne le graphique natif de chaque figure, avec ses données, à modifier puis à coller dans Word, où il reste modifiable.
+- **Options considérées :**
+  1. Image dans Word et graphique Excel natif (ce choix).
+  2. Graphique Word natif dans le fichier.
+  3. Images seulement (PNG, SVG).
+- **Justification :** Choix de l'auteur : un fichier Word simple et sûr, et une figure entièrement modifiable à côté.
+
+### D-085 — Formats de la v0.10
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Word (.docx) seulement, avec le classeur des graphiques natifs ; les autres formats (images seules, Markdown APA, LaTeX, PowerPoint…) viendront comme des modules de plus (D-083).
+- **Options considérées :**
+  1. Word seulement (ce choix).
+  2. Word, Excel, images et Markdown dès la v0.10.
+- **Justification :** Choix de l'auteur : le format le plus utile pour un article ou un mémoire d'abord.
+
+### D-086 — Ce qui se modifie dans l'outil
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Avant l'export, le numéro, le titre et la note de chaque tableau et de chaque figure se modifient dans la page ; jamais les chiffres, qui viennent du calcul. Pas d'astérisques de signification par défaut : les tableaux donnent les *p* exacts.
+- **Options considérées :**
+  1. Numéro, titre et note seulement, sans astérisques (ce choix).
+  2. Tout modifiable dans l'outil.
+  3. Astérisques de signification par défaut.
+- **Justification :** Les chiffres restent ceux du calcul, sans erreur de recopie ; les *p* exacts suivent la phrase de résultat, qui décrit sans juger (D-077).
