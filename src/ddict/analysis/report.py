@@ -19,6 +19,7 @@ from pathlib import Path
 from openpyxl import Workbook
 
 from ddict import __version__
+from ddict.analysis.apa import ApaDocument
 from ddict.analysis.book import Codebook
 from ddict.analysis.catalogue import CATALOGUE, CHOICES, OPTIONS, ROLES, TITLES
 from ddict.analysis.data import PreparedData
@@ -245,5 +246,30 @@ def write_report(
     for name, text in _r_files(project, files, stem, result, today).items():
         path = files.r.with_name(name)
         path.write_text(text, encoding="utf-8", newline="\n")
+        written.append(path)
+    return written
+
+
+def apa_paths(files: AnalysisFiles, document: ApaDocument, keys: list[str] | None = None):
+    """Where each APA format goes, next to the report: "etude-analyse-1.docx",
+    "etude-analyse-1-graphiques.xlsx"; only the formats asked (all by default) that have
+    something to render."""
+    from ddict.analysis.formats import available
+
+    stem = files.markdown.stem
+    return {
+        found.key: (found, files.markdown.with_name(stem + found.suffix))
+        for found in available(document)
+        if keys is None or found.key in keys
+    }
+
+
+def write_apa(
+    files: AnalysisFiles, document: ApaDocument, keys: list[str] | None = None
+) -> list[Path]:
+    """Write the APA tables and figures (v0.10) in each format asked."""
+    written = []
+    for found, path in apa_paths(files, document, keys).values():
+        path.write_bytes(found.render(document))
         written.append(path)
     return written

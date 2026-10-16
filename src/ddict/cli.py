@@ -191,10 +191,24 @@ OPTION_ARGUMENTS = {
 
 def cmd_analyse(args: argparse.Namespace) -> int:
     # Imported here: SciPy and statsmodels load only for an analysis.
+    from ddict.analysis.apa import describe
     from ddict.analysis.compute import AnalysisRefused, run
     from ddict.analysis.data import DataError, prepare
-    from ddict.analysis.report import write_report
+    from ddict.analysis.formats import FORMATS
+    from ddict.analysis.report import write_apa, write_report
 
+    # v0.10: the APA tables and figures, in each format asked (all by default, none with
+    # --format aucun).
+    keys = None if not args.format else [k for k in args.format if k != "aucun"]
+    unknown = [k for k in keys or [] if k not in FORMATS]
+    if unknown:
+        print(
+            _("Format inconnu : {formats}. Formats : {known}.").format(
+                formats=", ".join(unknown), known=", ".join(FORMATS)
+            ),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
     project_path = Path(args.projet)
     project = load_project(project_path)
     key = ANALYSES[args.analyse]
@@ -225,7 +239,9 @@ def cmd_analyse(args: argparse.Namespace) -> int:
         print(_("Avertissement : {text}").format(text=warning))
     files = analysis_files(project_path)
     today = datetime.now().date().isoformat()
-    for path in write_report(project, prepared, result, files, project_stem(project_path), today):
+    written = write_report(project, prepared, result, files, project_stem(project_path), today)
+    written += write_apa(files, describe(project, prepared, result), keys)
+    for path in written:
         print(_("Fichier écrit : {path}").format(path=path))
     return 0
 
@@ -872,6 +888,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     analyse.add_argument(
         "--base", "--database", help=_("La base d'origine, si elle n'est pas à côté du projet.")
+    )
+    analyse.add_argument(
+        "--format",
+        nargs="+",
+        metavar="FORMAT",
+        help=_(
+            "Tableaux et figures APA : docx (Word), xlsx (graphiques Excel modifiables), ou "
+            "aucun ; par défaut, tous ceux qui ont quelque chose à montrer."
+        ),
     )
     analyse.set_defaults(handler=cmd_analyse)
 

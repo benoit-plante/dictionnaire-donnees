@@ -26,13 +26,14 @@ from ddict.analysis.report import (
     r_bundle,
     render_report,
     report_xlsx,
+    write_apa,
 )
 from ddict.analysis.report import write_report as write_files
 from ddict.i18n import _
 from ddict.io import read_database
 from ddict.project import fingerprint
 from ddict.project.model import Project
-from ddict.review.ui import advice_view, dialog
+from ddict.review.ui import advice_view, apa_view, dialog
 from ddict.review.ui import common as c
 from ddict.review.ui.advice_view import option_key, role_key
 from ddict.workflow import analysis_files, copy_error_text, project_stem
@@ -168,17 +169,16 @@ def _run(project: Project, key: str, chosen, options) -> None:
 
 
 def _write(project: Project) -> None:
-    result = st.session_state[RESULT][1]
+    asked, result = st.session_state[RESULT]
+    prepared = st.session_state[PREPARED][1]
     path = c.project_path()
+    files = analysis_files(path)
     try:
         written = write_files(
-            project,
-            st.session_state[PREPARED][1],
-            result,
-            analysis_files(path),
-            project_stem(path),
-            date.today().isoformat(),
+            project, prepared, result, files, project_stem(path), date.today().isoformat()
         )
+        # v0.10: the APA tables and figures, with the numbers, titles and notes of the page.
+        written += write_apa(files, apa_view.current(project, prepared, result, asked))
     except OSError as error:
         st.session_state.message = (
             "error",
@@ -195,7 +195,7 @@ def _write(project: Project) -> None:
     )
 
 
-def _show(project: Project, prepared: PreparedData, result) -> None:
+def _show(project: Project, prepared: PreparedData, asked: tuple, result) -> None:
     st.subheader(_("Résultat"))
     if result.sentence:
         st.markdown(f"> {result.sentence}")
@@ -249,6 +249,7 @@ def _show(project: Project, prepared: PreparedData, result) -> None:
         key="analysis-download-r",
     )
     c.show_message("analysis-write")
+    apa_view.panel(project, prepared, result, asked, files)
 
 
 def page(project: Project) -> None:
@@ -288,6 +289,6 @@ def page(project: Project) -> None:
         args=(project, key, chosen, options),
     )
     if current:
-        _show(project, prepared, last[1])
+        _show(project, prepared, last[0], last[1])
     elif last is not None and last[0][0] == key:
         st.caption(_("Les choix ont changé depuis la dernière analyse : relancez-la."))

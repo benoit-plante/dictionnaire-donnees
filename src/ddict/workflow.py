@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import glob
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -533,12 +534,13 @@ def export_syntax(
 
 def analysis_files(project_path: Path) -> AnalysisFiles:
     """The files of the next analysis (v0.9, D-078): "etude-analyse-1.md", ".xlsx" and ".R",
-    with the first number none of them takes yet; and the R files that script runs."""
+    and its APA tables and figures (v0.10: ".docx", "-graphiques.xlsx"), with the first
+    number none of them takes yet; and the R files that script runs."""
     stem = project_stem(project_path)
     number = 1
+    pattern = glob.escape(stem)  # a project named "étude [2]" stays a plain name
     while any(
-        project_path.with_name(f"{stem}-analyse-{number}{suffix}").exists()
-        for suffix in (".md", ".xlsx", ".R")
+        any(project_path.parent.glob(f"{pattern}-analyse-{number}{tail}*")) for tail in (".", "-")
     ):
         number += 1
     name = f"{stem}-analyse-{number}"

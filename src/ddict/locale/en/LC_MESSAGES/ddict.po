@@ -379,6 +379,15 @@ msgstr "Association between {a} and {b}: χ²({df}) = {chi2}, {p}, V = {v} (n = 
 msgid "Au début (t2_k6_1)"
 msgstr "At the start (t2_k6_1)"
 
+msgid ""
+"Au format APA 7, à télécharger ou à écrire à côté du projet. Le numéro, le titre et la note se "
+"changent ici ; les chiffres viennent du calcul. Dans Word, chaque tableau reste un vrai tableau ;"
+" chaque figure a aussi son graphique Excel natif, à modifier puis à coller dans Word."
+msgstr ""
+"In APA 7 style, to download or to write next to the project. The number, the title and the note "
+"are changed here; the numbers come from the computation. In Word, each table stays a real table; "
+"each figure also has its native Excel chart, to edit then paste into Word."
+
 #, python-brace-format
 msgid "Au moins une case compte moins de {n} personnes."
 msgstr "At least one cell has fewer than {n} people."
@@ -1238,6 +1247,10 @@ msgstr "Format"
 msgid "Format du projet"
 msgstr "Project format"
 
+#, python-brace-format
+msgid "Format inconnu : {formats}. Formats : {known}."
+msgstr "Unknown format: {formats}. Formats: {known}."
+
 msgid "Glossaire"
 msgstr "Glossary"
 
@@ -2044,6 +2057,9 @@ msgstr "New name"
 msgid "Nouveau projet"
 msgstr "New project"
 
+msgid "Numéro"
+msgstr "Number"
+
 msgid "Objectif de l'analyse"
 msgstr "Objective of the analysis"
 
@@ -2713,6 +2729,16 @@ msgstr "Table 1: describe the sample"
 msgid "Tableaux (Excel)"
 msgstr "Tables (Excel)"
 
+msgid "Tableaux et figures APA"
+msgstr "APA tables and figures"
+
+msgid ""
+"Tableaux et figures APA : docx (Word), xlsx (graphiques Excel modifiables), ou aucun ; par "
+"défaut, tous ceux qui ont quelque chose à montrer."
+msgstr ""
+"APA tables and figures: docx (Word), xlsx (editable Excel charts), or aucun (none); by default, "
+"all those that have something to show."
+
 msgid "Test exact de Fisher"
 msgstr "Fisher's exact test"
 
@@ -2751,6 +2777,9 @@ msgid ""
 msgstr ""
 "Taken from the options of each variable's question, in the assumed order of the codes. Uncheck "
 "those that do not fit."
+
+msgid "Titre"
+msgstr "Title"
 
 msgid "Total"
 msgstr "Total"
