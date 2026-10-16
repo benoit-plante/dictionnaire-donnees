@@ -171,6 +171,28 @@ The analysis context (section 8) is made to be given as it is to an assistant th
 - **Give it the scores already computed** when you can: the preparation script (section 9) does without AI what an AI most often gets wrong (reversed items, missing items, missing codes).
 - **Always read and check the code before running it** on your data: in the trial, one assistant kept an empty "Prefer not to answer" group in its results. Note the codebook fingerprint with the code and the results.
 
+## 13. Analyse the database
+
+The **Analyses** page (after **Names** in the sidebar) computes, on your database and with your accepted decisions, six analyses written and checked in advance: **Table 1** (describe the sample), **t test** (compare two groups), **ANOVA** (several groups), **chi-square** (two categorical variables), **correlation** and **linear regression**. Each one is described in detail (conditions, options, formulas, examples, in French) in [`../catalogue-analyses.md`](../catalogue-analyses.md). Nothing is sent outside your computer, and your file is never changed.
+
+**Before you start**, your decisions count: the confirmed missing codes (999, −9) are removed, the new names applied, the reversed items and the scores computed from your scoring (section 7). The **measure level** of each variable (**Database** page) decides which analyses it may enter: a variable without a decided level is offered nowhere. Identifiers, free texts and dates are always left out.
+
+1. **Find the database.** The page looks for the database next to the project and checks that it is the one the project comes from. Otherwise, **Choose the database…**. It is read once, in memory, for the session.
+2. **Choose the analysis**, then its variables, role by role (for example **Dependent variable** and **Grouping variable**): each list offers only the variables whose level fits. With the fictional database: **t test**, dependent variable your sleep score (the name you gave it in the scoring, for example `sleep_total`), grouping variable `gender`. As `gender` has three categories, choose the two to compare in **Levels compared**: Woman and Man.
+3. **The options** have the recommended value by default (for example Welch, which does not assume equal variances); change them only if you know why.
+4. **The conditions show before the computation.** In red, a **refusal**, with its reason (fewer than 2 people in a group, too few observations per predictor…): the button stays greyed out. In yellow, a **warning** (a group of fewer than 5 people, an ordinal variable in a Pearson correlation): the analysis stays allowed, you judge.
+5. **Run the analysis.** The result gives an APA-style sentence that describes without judging (no "significant"): the means and standard deviations of the two groups, t with its degrees of freedom, p, and Cohen's d with its 95% confidence interval. Then the people used and excluded, the warnings and the tables.
+
+**The files of the analysis.** **Write next to the project** gives `sleep-study-analyse-1.md` (the report: variables, options, results, codebook fingerprint, date and library versions), `sleep-study-analyse-1.xlsx` (the tables) and `sleep-study-analyse-1.R` (the equivalent R script), with the command file and the preparation script it runs; the next analysis takes number 2. They can also be **downloaded**; the R script comes as a `.zip` with its two files. Only the last analysis stays on screen: keep the reports you need.
+
+**Redo the analysis in R.** Put the script and its two files in the database's folder, then, in R: `source("sleep-study-analyse-1.R", encoding = "UTF-8")`. It uses only base R and haven, and gives the same results as the tool (checked by tests, within 10⁻⁶).
+
+**These results come from your data**: store the reports as you store the data, and decide before publishing what small counts (flagged below 5) may show.
+
+**Ask the local AI for a proposal (optional).** At the top of the page, the **Ask the local AI for a proposal** box: write your objective in one sentence ("Do women and men have the same sleep quality?"), then **Ask for a proposal**. The model chosen on the **Local AI** page receives this objective as is, the list of the analyses and that of the variables (name, label, level, group): **no data, no statistic**; **See what would be sent** shows the exact message. Do not write any participant data in the objective. It answers within seconds with one to three proposals, each with its reason; **Take up this proposal** fills the page's choices, and nothing is computed before **Run the analysis**.
+
+What to expect (trials `docs/essais/2026-10-16-ia-conseillere.md` and `2026-10-16-essai-analyses.md`, in French): on the fictional database, the right analysis and the right variables 9 times out of 13; on a real database of 250 variables, the right kind of analysis two times out of three, but less reliable variables. The model proposes an analysis even when none fits, and sometimes picks a less fitting method (Student rather than Welch). **It helps to find the kind of analysis; the choice stays yours.** For a very large database, the tool may refuse to send the message, too long for the model: then choose the analysis yourself.
+
 ## Update or uninstall
 
 - **Update**: download and extract the new archive, then double-click its `installer.bat`. If the tool is open, the installer offers to close it (answer `y`): it cannot replace it while it runs. Your project files are kept. A project opened with version 0.8 no longer opens with an older version (its format changed); the reverse works.
@@ -192,10 +214,12 @@ ddict export sleep-study.dd.json --syntax     # and the SPSS and R command files
 ddict export sleep-study.dd.json --context    # and the analysis context (--with-statistics)
 ddict document sleep-study.dd.json            # documented copy of the database (.sav)
 ddict rename study-t2.dd.json --suffix _t2 --reference study-t1.dd.json   # names
+ddict analyse sleep-study.dd.json t_test --outcome sleep_total --group gender --levels 1,2
+ddict advise sleep-study.dd.json "Compare the sleep of women and men." --model qwen2.5:7b-instruct-q4_K_M
 ddict evaluate --model qwen2.5:7b-instruct-q4_K_M       # model bench
 ```
 
-`--preview` (with `link` or `enrich`, without `--model`) writes the messages that would be sent into the `sleep-study.dd-envois\apercu` folder, without sending anything. `ddict export --no-text G2` leaves out the question text of a group for one export.
+`--preview` (with `link` or `enrich`, without `--model`) writes the messages that would be sent into the `sleep-study.dd-envois\apercu` folder, without sending anything. `ddict export --no-text G2` leaves out the question text of a group for one export. `ddict analyse` writes the report, the tables and the R script next to the project (analyses: `table1`, `t_test`, `anova`, `chi_square`, `correlation`, `regression`); `ddict advise` shows the model's proposals without computing anything (`--preview` to see the message only).
 
 ## If something goes wrong
 

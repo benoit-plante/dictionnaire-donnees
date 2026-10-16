@@ -1248,7 +1248,7 @@
     }
   ],
   "_ddict": {
-    "tool": "dictionnaire-donnees 0.8.0",
+    "tool": "dictionnaire-donnees 0.9.0",
     "codebook_fingerprint": "a8d2266ad3df4530ad2eca6eec051078d7a8297fad8264e7c3b7b7d519fb0081",
     "language": "fr",
     "statistics": false,

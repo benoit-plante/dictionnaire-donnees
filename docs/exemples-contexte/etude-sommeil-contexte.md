@@ -1,7 +1,7 @@
 # Contexte d'analyse : etude-sommeil.sav
 
 - Base : `etude-sommeil.sav` (SPSS), 200 lignes, 34 variables. Empreinte du fichier : `a189e6bd7c31`.
-- Codebook : empreinte `e32f2238c27f`, dictionnaire-donnees 0.8.0. Seules les décisions acceptées par l'équipe y figurent.
+- Codebook : empreinte `e32f2238c27f`, dictionnaire-donnees 0.9.0. Seules les décisions acceptées par l'équipe y figurent.
 - Une ligne représente : un participant
 - Structure : transversale
 - Description de la base : Étude fictive sur le sommeil, une seule passation.

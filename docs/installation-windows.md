@@ -169,6 +169,28 @@ Le contexte d'analyse (section 8) est fait pour être donné tel quel à un assi
 - **Donnez-lui les scores déjà calculés** quand c'est possible : le script de préparation (section 9) fait sans IA ce qu'une IA rate le plus souvent (items inversés, items manquants, codes manquants).
 - **Relisez et vérifiez toujours le code avant de l'exécuter** sur vos données : à l'essai, un assistant a gardé un groupe vide « Préfère ne pas répondre » dans ses résultats. Notez l'empreinte du codebook avec le code et les résultats.
 
+## 13. Analyser la base
+
+La page **Analyses** (après **Noms** dans la barre latérale) calcule, sur votre base et avec vos décisions acceptées, six analyses écrites et vérifiées d'avance : **Tableau 1** (décrire l'échantillon), **test t** (comparer deux groupes), **ANOVA** (plusieurs groupes), **khi-carré** (deux variables catégorielles), **corrélation** et **régression linéaire**. Le détail de chacune (conditions, options, formules, exemples) est dans [`catalogue-analyses.md`](catalogue-analyses.md). Rien n'est envoyé hors de votre ordinateur, et votre fichier n'est jamais modifié.
+
+**Avant de commencer**, vos décisions comptent : les codes manquants confirmés (999, −9) sont retirés, les nouveaux noms appliqués, les items inversés et les scores calculés selon votre cotation (section 7). Le **niveau de mesure** de chaque variable (page **Base**) décide des analyses où elle peut entrer : une variable sans niveau décidé n'est proposée nulle part. Les identifiants, les textes libres et les dates sont toujours exclus.
+
+1. **Retrouver la base.** La page cherche la base à côté du projet et vérifie que c'est bien celle d'où vient le projet. Sinon, **Choisir la base…**. Elle est lue une fois, en mémoire, le temps de la séance.
+2. **Choisir l'analyse**, puis ses variables, rôle par rôle (par exemple **Variable dépendante** et **Variable de groupe**) : chaque liste ne propose que les variables dont le niveau convient. Avec la base fictive : **Test t**, variable dépendante `sommeil_total`, variable de groupe `genre`. Comme `genre` a trois modalités, choisissez les deux à comparer dans **Modalités comparées** : Femme et Homme.
+3. **Les options** ont la valeur recommandée par défaut (par exemple Welch, qui ne suppose pas des variances égales) ; changez-les seulement si vous savez pourquoi.
+4. **Les conditions s'affichent avant le calcul.** En rouge, un **refus**, avec sa raison (moins de 2 personnes dans un groupe, trop peu d'observations par prédicteur…) : le bouton reste grisé. En jaune, un **avertissement** (un groupe de moins de 5 personnes, une variable ordinale dans une corrélation de Pearson) : l'analyse reste permise, à vous de juger.
+5. **Lancer l'analyse.** Le résultat donne une phrase au style APA, qui décrit sans juger (pas de « significatif ») ; par exemple : « M = 23,69 (ÉT = 7,86) pour Femme et M = 23,50 (ÉT = 7,18) pour Homme, t(172,26) = 0,18, p = ,861, d = 0,03, IC 95 % [−0,27 ; 0,32] ». Puis les personnes retenues et écartées, les avertissements et les tableaux.
+
+**Les fichiers de l'analyse.** **Écrire à côté du projet** donne `etude-sommeil-analyse-1.md` (le rapport : variables, options, résultats, empreinte du codebook, date et versions des bibliothèques), `etude-sommeil-analyse-1.xlsx` (les tableaux) et `etude-sommeil-analyse-1.R` (le script R équivalent), avec le fichier de commandes et le script de préparation qu'il exécute ; l'analyse suivante prend le numéro 2. On peut aussi les **télécharger** ; le script R se télécharge en `.zip` avec ses deux fichiers. Seule la dernière analyse reste affichée : gardez les rapports qui vous servent.
+
+**Refaire l'analyse dans R.** Placez le script et ses deux fichiers dans le dossier de la base, puis, dans R : `source("etude-sommeil-analyse-1.R", encoding = "UTF-8")`. Il n'utilise que R de base et haven, et donne les mêmes résultats que l'outil (vérifié par des tests, à 10⁻⁶ près).
+
+**Ces résultats viennent de vos données** : rangez les rapports comme les données, et décidez avant de publier ce que peuvent montrer les petits effectifs (signalés sous 5).
+
+**Demander une proposition à l'IA locale (facultatif).** En haut de la page, l'encadré **Demander une proposition à l'IA locale** : écrivez votre objectif en une phrase (« Les hommes et les femmes ont-ils la même qualité de sommeil ? »), puis **Demander une proposition**. Le modèle choisi sur la page **IA locale** reçoit cet objectif tel quel, la liste des analyses et celle des variables (nom, libellé, niveau, groupe) : **aucune donnée, aucune statistique** ; **Voir ce qui serait envoyé** montre le message exact. N'écrivez aucune donnée de participant dans l'objectif. Il répond en quelques secondes par une à trois propositions, chacune avec sa raison ; **Reprendre cette proposition** remplit les choix de la page, et rien n'est calculé avant **Lancer l'analyse**.
+
+Ce qu'il faut en attendre (essais `docs/essais/2026-10-16-ia-conseillere.md` et `2026-10-16-essai-analyses.md`) : sur la base fictive, la bonne analyse et les bonnes variables 9 fois sur 13 ; sur une vraie base de 250 variables, le bon type d'analyse deux fois sur trois, mais des variables moins sûres. Le modèle propose une analyse même quand aucune ne convient, et choisit parfois une méthode moins adaptée (Student plutôt que Welch). **C'est une aide pour retrouver le type d'analyse ; le choix reste le vôtre.** Pour une très grande base, l'outil peut refuser d'envoyer le message, trop long pour le modèle : choisissez alors l'analyse vous-même.
+
 ## Mettre à jour ou désinstaller
 
 - **Mettre à jour** : téléchargez et décompressez la nouvelle archive, puis double-cliquez sur son `installer.bat`. Si l'outil est ouvert, l'installateur propose de le fermer (répondez `o`) : il ne peut pas le remplacer pendant qu'il tourne. Vos fichiers projet sont conservés. Un projet ouvert avec la version 0.8 ne s'ouvre plus avec une version plus ancienne (son format a changé) ; l'inverse fonctionne.
@@ -190,10 +212,12 @@ ddict exporter etude-sommeil.dd.json --syntaxe   # et les fichiers de commandes 
 ddict exporter etude-sommeil.dd.json --contexte  # et le contexte d'analyse (--avec-statistiques)
 ddict documenter etude-sommeil.dd.json        # copie documentée de la base (.sav)
 ddict renommer etude-t2.dd.json --suffixe _t2 --reference etude-t1.dd.json   # noms
+ddict analyser etude-sommeil.dd.json test_t --dependante sommeil_total --groupe genre --modalites 1,2
+ddict conseiller etude-sommeil.dd.json "Comparer le sommeil des femmes et des hommes." --modele qwen2.5:7b-instruct-q4_K_M
 ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M   # banc d'essai d'un modèle
 ```
 
-Les commandes et leurs options ont aussi des noms anglais (`ddict export --work`, `--replace`…). `--apercu` (à `rattacher` ou `enrichir`, sans `--modele`) écrit les messages qui seraient envoyés dans le dossier `etude-sommeil.dd-envois\apercu`, sans rien envoyer. `ddict exporter --sans-texte G2` omet le texte des questions d'un groupe pour un seul export.
+Les commandes et leurs options ont aussi des noms anglais (`ddict export --work`, `--replace`…). `--apercu` (à `rattacher` ou `enrichir`, sans `--modele`) écrit les messages qui seraient envoyés dans le dossier `etude-sommeil.dd-envois\apercu`, sans rien envoyer. `ddict exporter --sans-texte G2` omet le texte des questions d'un groupe pour un seul export. `ddict analyser` écrit le rapport, les tableaux et le script R à côté du projet (analyses : `tableau1`, `test_t`, `anova`, `khi2`, `correlation`, `regression`) ; `ddict conseiller` affiche les propositions du modèle sans rien calculer (`--apercu` pour voir le message seulement).
 
 ## En cas de problème
 

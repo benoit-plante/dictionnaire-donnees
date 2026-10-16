@@ -1,5 +1,18 @@
 # Changements
 
+## 0.9.0 — 2026-10-16
+
+Des analyses dans l'outil : un catalogue d'analyses écrites et testées, calculées sur la base avec les décisions de l'équipe, chacune avec son rapport et un script R équivalent ; une IA locale facultative aide à choisir, sans jamais écrire de code (plan : `docs/plan-v0.9.md`, D-069 à D-081).
+
+- **Six analyses** (D-069, D-070, D-077) : Tableau 1, test t (Welch par défaut, Student, Mann-Whitney), ANOVA (Kruskal-Wallis, comparaisons de Tukey), khi-carré (test exact de Fisher), corrélation (Pearson, Spearman) et régression linéaire ; tailles d'effet avec leur intervalle de confiance ; une phrase de résultat au style APA, qui décrit sans juger. Fiches validées : `docs/catalogue-analyses.md`. Calcul par SciPy et statsmodels, deux nouvelles dépendances (BSD).
+- **Les décisions appliquées en mémoire** : codes manquants confirmés retirés, nouveaux noms, items inversés et scores selon la cotation, dans l'ordre des fichiers de commandes et du script de préparation ; la base n'est jamais modifiée, et rien des données n'entre dans le projet.
+- **Conditions vérifiées avant le calcul** (D-074) : niveau de mesure de chaque rôle, nombre de modalités, au moins 2 personnes par groupe, 10 observations par prédicteur, prédicteurs redondants ; un refus dit sa raison, un avertissement laisse juger (groupe de moins de 5, effectifs attendus faibles, VIF supérieur à 5, normalité, variances).
+- **Page « Analyses » et `ddict analyser`** : le rapport Markdown (variables, options, résultats, empreinte du codebook, versions), les tableaux en Excel et le script R équivalent (R de base et haven), écrits à côté du projet ou téléchargés. Seule la dernière analyse est gardée, en mémoire (D-078).
+- **Mêmes résultats que R** : chaque analyse est vérifiée contre une base fictive aux effets connus (`etude-analyses.sav`, D-075) et contre son script R exécuté dans R, à 10⁻⁶ près. Sur une vraie base de 252 variables, les six analyses se calculent et leurs scripts R donnent les mêmes valeurs (`docs/essais/2026-10-16-essai-analyses.md`).
+- **IA conseillère** (D-073, D-079, D-080) : un objectif écrit en une phrase ; le modèle local propose une à trois analyses du catalogue avec des variables du projet. Il reçoit l'objectif, le catalogue et la liste des variables, jamais une donnée ni une statistique ; sa réponse suit un schéma strict, et les conditions vérifient chaque proposition ; la personne la reprend ou non, et rien n'est calculé sans elle. Au banc de 13 objectifs, qwen2.5 7B propose la bonne analyse et les bonnes variables 9 fois sur 13 ; sur une grande base réelle, il retrouve le type d'analyse deux fois sur trois (`docs/essais/2026-10-16-ia-conseillere.md`). En ligne de commande : `ddict conseiller`.
+- **Windows seulement** (D-081) : l'installation sur macOS, ses guides et sa vérification sur GitHub sont retirés.
+- Guides : nouvelle section « Analyser la base », en français et en anglais.
+
 ## 0.8.0 — 2026-10-15
 
 Du dictionnaire à l'analyse : le codebook devient un contrat d'analyse, utile à une équipe qui analyse elle-même et à une IA qui aide à écrire le code (plan : `docs/plan-v0.8.md`, D-057 à D-068).
