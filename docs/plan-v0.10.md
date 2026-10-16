@@ -52,7 +52,7 @@ Toutes trois s'installent avec l'outil, sans rien d'autre ; à noter dans `docs/
 | 3 | Liste des formats et test commun ; exportateur Word (tableaux, figures en image) | Test commun passé ; mise en forme APA vérifiée dans le fichier (filets, italiques, alignement) |
 | 4 | Graphiques Excel natifs des figures | Test commun passé ; graphique présent et lié à ses données |
 | 5 | Page « Analyses » : aperçu des tableaux et des figures, numéro, titre et note modifiables, téléchargements ; `ddict analyser --format` | Parcours dans le navigateur ; mêmes fichiers que la ligne de commande |
-| 6 | Vérification dans Word et Excel, par l'auteur, sur la base fictive ; corrections | Rendu jugé conforme à l'APA par l'auteur |
+| 6 | Vérification dans Word et Excel, par l'auteur, sur la base fictive ; corrections | Rendu jugé conforme à l'APA par l'auteur. *Le 2026-10-16, l'auteur a demandé de passer à l'étape 7 sans cette vérification ; ses retours restent attendus. Le rendu a été vérifié dans Word et Excel par l'outil (conversion en PDF et export des graphiques) aux étapes 3 à 5.* |
 | 7 | Guides, journal des changements, version 0.10.0 | Scénario refait dans le navigateur ; guides en français et en anglais |
 
 ## 6. Risques

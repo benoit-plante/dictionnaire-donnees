@@ -47,5 +47,8 @@ Le navigateur s'ouvre sur `http://127.0.0.1:8501`. Aucun bouton « Deploy » en 
 | 28 | Modalités comparées : Femme et Homme ; **Lancer l'analyse** | Phrase « … t(172,26) = 0,18, p = ,861, d = 0,03, IC 95 % [−0,27 ; 0,32]. » ; 14 personnes écartées ; tableau des deux groupes |
 | 29 | **Écrire à côté du projet** ; dans R, dans le dossier du projet, `source("etude-sommeil-analyse-1.R", encoding = "UTF-8")` | `-analyse-1.md`, `.xlsx`, `.R`, `-metadonnees.R`, `-preparation.R` écrits ; R affiche le même t |
 | 30 | Encadré de l'IA ; objectif « Les hommes et les femmes dorment-ils aussi bien ? » ; **Demander une proposition** ; **Reprendre cette proposition** | Une à trois propositions avec leur raison, en quelques secondes ; la proposition remplit les choix de la page ; rien n'est calculé avant **Lancer l'analyse** ; l'échange est dans `etude-sommeil.dd-envois` |
+| 31 | Après l'étape 28 : section « Tableaux et figures APA » | Aperçu du **Tableau 1** (en-têtes « Femme » et « Homme » au-dessus de *M* et *ÉT*, *t*(172,26), note en italique) et de la **Figure 1** (deux barres et leurs intervalles) ; boutons « Word (tableaux et figures APA) » et « Excel (graphiques modifiables) » |
+| 32 | Encadré du Tableau 1 : numéro 2, titre « Qualité du sommeil selon le genre » | L'aperçu affiche « Tableau 2 » et le nouveau titre ; les chiffres ne changent pas |
+| 33 | **Écrire à côté du projet** ; ouvrir le `.docx` dans Word et le classeur `-graphiques.xlsx` dans Excel | Le Word montre le tableau 2 avec son titre, la figure et leurs notes ; dans Excel, le graphique se modifie (couleur d'une barre) et se colle dans Word |
 
 À la fin, fermer la fenêtre de l'outil et supprimer le dossier de travail.

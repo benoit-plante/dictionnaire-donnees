@@ -1,13 +1,13 @@
 # dictionnaire-donnees
 
-> Nom de travail. Version 0.9.0 : des analyses dans l'outil. Six analyses écrites et vérifiées d'avance (Tableau 1, test t, ANOVA, khi-carré, corrélation, régression linéaire), calculées sur la base avec les décisions de l'équipe, avec leur rapport et un script R équivalent ; une IA locale facultative propose l'analyse qui répond à un objectif. Depuis la 0.8, cotation des échelles, script de préparation des scores et niveaux de mesure décidés par l'équipe ; depuis la 0.7, les exports bruts de SurveyMonkey sont lus juste et les variables se renomment d'une vague à l'autre. Pour Windows seulement. **L'anglais est à l'essai** : la traduction n'a pas encore été relue par une personne anglophone. À essayer d'abord sur la base fictive et son questionnaire, fournis.
+> Nom de travail. Version 0.10.0 : les résultats en tableaux et figures APA 7, modifiables, dans un fichier Word et des graphiques Excel natifs. Depuis la 0.9, des analyses dans l'outil : six analyses écrites et vérifiées d'avance (Tableau 1, test t, ANOVA, khi-carré, corrélation, régression linéaire), calculées sur la base avec les décisions de l'équipe, avec leur rapport et un script R équivalent ; une IA locale facultative propose l'analyse qui répond à un objectif. Depuis la 0.8, cotation des échelles, script de préparation des scores et niveaux de mesure décidés par l'équipe ; depuis la 0.7, les exports bruts de SurveyMonkey sont lus juste et les variables se renomment d'une vague à l'autre. Pour Windows seulement. **L'anglais est à l'essai** : la traduction n'a pas encore été relue par une personne anglophone. À essayer d'abord sur la base fictive et son questionnaire, fournis.
 
 Outil libre et local qui aide les équipes de recherche à produire le **dictionnaire de données** (codebook) d'une base existante (SPSS, CSV, Stata, SAS ou Excel ; le `.sav` de SPSS donne les meilleurs résultats), avec l'aide du questionnaire de l'étude.
 
 - Tout ce qui se calcule exactement (types, manquants, étendues observées, modalités, étiquettes du fichier) est calculé sans IA.
 - Le questionnaire (PDF ou texte) donne le texte exact des questions, le sens des sigles et des options de réponse ; il est lu sans IA.
 - Une IA locale, facultative, propose des rattachements aux questions, des libellés et des descriptions ; chaque proposition attend une décision humaine. Elle ne définit jamais un sigle.
-- Des analyses courantes se calculent dans l'outil, sur la base et avec les décisions acceptées, sans IA ; chacune donne un rapport et un script R qui la refait. L'IA peut proposer une analyse, jamais écrire de code.
+- Des analyses courantes se calculent dans l'outil, sur la base et avec les décisions acceptées, sans IA ; chacune donne un rapport, un script R qui la refait, et ses tableaux et figures au format APA 7 (Word, graphiques Excel modifiables). L'IA peut proposer une analyse, jamais écrire de code.
 - Rien ne quitte le poste, et le modèle ne reçoit jamais de données individuelles.
 
 ## Commencer
@@ -41,6 +41,7 @@ ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M  # banc d'essai d'un modèle
 | Installation et premier codebook, pas à pas | [`docs/installation-windows.md`](docs/installation-windows.md) |
 | Guides in English | [`docs/en/`](docs/en/) |
 | Les analyses du catalogue (conditions, options, formules) | [`docs/catalogue-analyses.md`](docs/catalogue-analyses.md) |
+| Les tableaux et figures APA de chaque analyse | [`docs/tableaux-figures-apa.md`](docs/tableaux-figures-apa.md) |
 | Conception, principes, format du fichier projet | [`docs/CONCEPTION.md`](docs/CONCEPTION.md) |
 | Décisions prises | [`docs/journal-des-decisions.md`](docs/journal-des-decisions.md) |
 | Essais de modèles locaux | [`docs/essais/`](docs/essais/) |

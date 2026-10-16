@@ -187,6 +187,14 @@ The **Analyses** page (after **Names** in the sidebar) computes, on your databas
 
 **Redo the analysis in R.** Put the script and its two files in the database's folder, then, in R: `source("sleep-study-analyse-1.R", encoding = "UTF-8")`. It uses only base R and haven, and gives the same results as the tool (checked by tests, within 10⁻⁶).
 
+**The APA tables and figures.** Under the result, the **APA tables and figures** section presents the analysis in APA 7 style: a table ("**Table 1**" in bold, the title in *italics*, horizontal rules only, symbols in italics, a "*Note.*") and, except for Table 1, a figure (means and their 95% confidence interval, grouped bars of a chi-square, scatter plot of a correlation, standardized coefficients of a regression). Each table and figure is described in detail (in French) in [`../tableaux-figures-apa.md`](../tableaux-figures-apa.md).
+
+- **Number, title and note** are changed in the box of each table and figure (for example "Table 3" to follow your article); the preview follows. The numbers cannot be changed: they come from the computation.
+- **Word (APA tables and figures)**: a `.docx` file. Each table is a real Word table, to edit like any other; each figure a sharp image, with its number, title and note as text. At the end, in small print, the result's sentence and the codebook fingerprint, for the record.
+- **Excel (editable charts)**: a workbook, one sheet per figure, with its data and the **native Excel chart**. Change the colours, axes or labels there, then copy the chart into Word: it stays editable. For a regression chart, the coefficients are horizontal bars with their interval.
+- **Write next to the project** also writes these two files (`sleep-study-analyse-1.docx` and `sleep-study-analyse-1-graphiques.xlsx`), with your numbers, titles and notes. On the command line: `ddict analyse … --format docx xlsx` (both by default; `--format aucun` for none).
+- The figures show the study's data (a scatter plot shows each person): as for the tables, the team decides what may be published.
+
 **These results come from your data**: store the reports as you store the data, and decide before publishing what small counts (flagged below 5) may show.
 
 **Ask the local AI for a proposal (optional).** At the top of the page, the **Ask the local AI for a proposal** box: write your objective in one sentence ("Do women and men have the same sleep quality?"), then **Ask for a proposal**. The model chosen on the **Local AI** page receives this objective as is, the list of the analyses and that of the variables (name, label, level, group): **no data, no statistic**; **See what would be sent** shows the exact message. Do not write any participant data in the objective. It answers within seconds with one to three proposals, each with its reason; **Take up this proposal** fills the page's choices, and nothing is computed before **Run the analysis**.

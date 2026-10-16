@@ -1,5 +1,17 @@
 # Changements
 
+## 0.10.0 — 2026-10-16
+
+Les résultats des analyses en tableaux et figures APA 7, modifiables (plan : `docs/plan-v0.10.md`, D-082 à D-086 ; fiches validées : `docs/tableaux-figures-apa.md`).
+
+- **Un tableau et une figure APA par analyse** : Tableau 1 (caractéristiques des participants, par groupe et au total), test *t* (en-têtes regroupés par groupe, *t*, *p*, *d* et son IC), ANOVA (*n*, *M*, *ÉT* et l'IC de chaque moyenne ; comparaisons de Tukey), khi-carré (tableau croisé en pourcentages de colonne), corrélation (matrice avec *M*, *ÉT* et les IC), régression (*b*, son IC, *ET*, β, *t*, *p*). Figures : moyennes et leur IC 95 %, barres groupées, nuage de points avec sa droite, coefficients standardisés et leur IC. Normes APA 7 : numéro en gras, titre en italique, filets horizontaux seulement, symboles en italique, *p* exacts sans astérisques (D-086), en français ou en anglais.
+- **Word** (`.docx`, D-085) : de vrais tableaux Word, des figures nettes ; colonnes de chiffres qui ne se replient pas. **Excel** (D-084) : le graphique natif de chaque figure, avec ses données, à modifier puis coller dans Word.
+- **Modifiable dans l'outil** (D-086) : le numéro, le titre et la note de chaque tableau et de chaque figure, avec un aperçu, sur la page « Analyses » ; les chiffres viennent du calcul. Téléchargement, ou écriture à côté du projet avec le rapport ; `ddict analyser --format docx xlsx`.
+- **D'autres formats faciles à ajouter** (D-083) : une description neutre des tableaux et des figures, un module par format inscrit dans une liste, et un test commun que chaque format doit réussir (chaque chiffre, titre et note retrouvé dans le fichier).
+- Deux nouvelles dépendances (D-082) : python-docx (MIT) et matplotlib (licence permissive). Avec python-docx arrive lxml, qu'openpyxl utilise : les fichiers Excel de l'outil gardent leur contenu, pas leurs octets.
+- Les tests n'utilisent plus jamais les réglages du poste, même avant leur propre isolement.
+- Guides : « Les tableaux et les figures APA », dans la section « Analyser la base », en français et en anglais.
+
 ## 0.9.0 — 2026-10-16
 
 Des analyses dans l'outil : un catalogue d'analyses écrites et testées, calculées sur la base avec les décisions de l'équipe, chacune avec son rapport et un script R équivalent ; une IA locale facultative aide à choisir, sans jamais écrire de code (plan : `docs/plan-v0.9.md`, D-069 à D-081).
