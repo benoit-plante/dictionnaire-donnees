@@ -183,7 +183,7 @@ The **Analyses** page (after **Names** in the sidebar) computes, on your databas
 4. **The conditions show before the computation.** In red, a **refusal**, with its reason (fewer than 2 people in a group, too few observations per predictor…): the button stays greyed out. In yellow, a **warning** (a group of fewer than 5 people, an ordinal variable in a Pearson correlation): the analysis stays allowed, you judge.
 5. **Run the analysis.** The result gives an APA-style sentence that describes without judging (no "significant"): the means and standard deviations of the two groups, t with its degrees of freedom, p, and Cohen's d with its 95% confidence interval. Then the people used and excluded, the warnings and the tables.
 
-**The files of the analysis.** **Write next to the project** gives `sleep-study-analyse-1.md` (the report: variables, options, results, codebook fingerprint, date and library versions), `sleep-study-analyse-1.xlsx` (the tables) and `sleep-study-analyse-1.R` (the equivalent R script), with the command file and the preparation script it runs; the next analysis takes number 2. They can also be **downloaded**; the R script comes as a `.zip` with its two files. Only the last analysis stays on screen: keep the reports you need.
+**The files of the analysis.** **Write next to the project** gives `sleep-study-analyse-1.md` (the report: variables, options, results, codebook fingerprint, date and library versions), `sleep-study-analyse-1.xlsx` (the tables) and `sleep-study-analyse-1.R` (the equivalent R script), with the command file and the preparation script it runs; the next analysis takes number 2. They can also be **downloaded**; the R script comes as a `.zip` with its two files. Only the last analysis stays on screen: keep the reports you need, or add the analysis to the notebook (section 14).
 
 **Redo the analysis in R.** Put the script and its two files in the database's folder, then, in R: `source("sleep-study-analyse-1.R", encoding = "UTF-8")`. It uses only base R and haven, and gives the same results as the tool (checked by tests, within 10⁻⁶).
 
@@ -200,6 +200,25 @@ The **Analyses** page (after **Names** in the sidebar) computes, on your databas
 **Ask the local AI for a proposal (optional).** At the top of the page, the **Ask the local AI for a proposal** box: write your objective in one sentence ("Do women and men have the same sleep quality?"), then **Ask for a proposal**. The model chosen on the **Local AI** page receives this objective as is, the list of the analyses and that of the variables (name, label, level, group): **no data, no statistic**; **See what would be sent** shows the exact message. Do not write any participant data in the objective. It answers within seconds with one to three proposals, each with its reason; **Take up this proposal** fills the page's choices, and nothing is computed before **Run the analysis**.
 
 What to expect (trials `docs/essais/2026-10-16-ia-conseillere.md` and `2026-10-16-essai-analyses.md`, in French): on the fictional database, the right analysis and the right variables 9 times out of 13; on a real database of 250 variables, the right kind of analysis two times out of three, but less reliable variables. The model proposes an analysis even when none fits, and sometimes picks a less fitting method (Student rather than Welch). **It helps to find the kind of analysis; the choice stays yours.** For a very large database, the tool may refuse to send the message, too long for the model: then choose the analysis yourself.
+
+## 14. The analysis notebook and the results document
+
+An article often brings together ten or twenty results, numbered one after the other, that must stay right when the codebook changes. The **notebook** keeps the study's analyses, in your article's order, and brings them together in a single "Results" document. It uses no AI. The details are in [`../carnet-analyses.md`](../carnet-analyses.md) (in French).
+
+1. **Add an analysis.** On the **Analyses** page, after **Run the analysis**, the **Analysis notebook** section has an **Add to the notebook** button. The analysis goes at the end of the notebook, retained, with the titles and notes you changed in the APA tables and figures (not their numbers: the notebook numbers in its order). The button becomes "Already in the notebook (A1)".
+2. **The Notebook page** (after **Analyses**) lists the analyses in their order: number (A1, A2…), title, variables, result sentence and state. **Move up** and **Move down** change the order; **Retained for the document** leaves an analysis out of the document without removing it; **Remove** deletes it (its number does not come back).
+3. **When a decision changes** (a missing code confirmed, a measure level corrected), each analysis is recomputed when the page opens:
+   - **up to date** or **recomputed, unchanged**: nothing to do;
+   - **changed, to confirm**: the page shows what changed (for example "n_used : 200 → 196", "r : ,05 → ,01") and the new sentence. **Confirm the new computation** adopts it. As long as a retained analysis waits for its confirmation, the results document is not produced;
+   - **cannot be computed**: the reason shows (a variable removed, a measure level that no longer fits). The analysis stays in the notebook, but it is left out of the document, and the end of the document says so.
+4. **The results document.** Set the **First table** and the **First figure** if needed (for example 3, if two tables come before in your article), then **Produce the results**. Three files are written next to the project, and replaced each time:
+   - `sleep-study-resultats.docx`: a heading per analysis ("A2 — t test: compare two groups"), its result sentence, its APA tables and figures numbered one after the other; at the end, the codebook fingerprint, the date, the versions and the list of the analyses;
+   - `sleep-study-resultats-graphiques.xlsx`: the native Excel chart of each figure;
+   - `sleep-study-resultats-R.zip`: the **R master script**, which redoes all the retained analyses, in order, with the command file and the preparation script. Unzip it in the database's folder, then, in R: `source("sleep-study-resultats.R", encoding = "UTF-8")`. It gives the same values as the tool (checked by tests, within 10⁻⁶), stored in `resultats$A1`, `resultats$A2`…
+
+Each analysis is **recomputed** on the database when the document is produced: nothing is copied from the notebook. The notebook, `sleep-study-carnet.json`, is next to the project; it keeps aggregates only (counts, means, statistics, sentences), never a row of the database. Without the database, the page shows the notebook as it is, without recomputing it, and **Choose the database…** finds it.
+
+On the command line: `ddict notebook add` (same options as `ddict analyse`), `list`, `move A3 1`, `retain A2`, `leave-out A2`, `remove A2`, `confirm A1` (or `--all`), `numbers --table 3 --figure 2`; then `ddict results` writes the three files. The page and the commands read and write the same notebook.
 
 ## Update or uninstall
 
@@ -223,6 +242,9 @@ ddict export sleep-study.dd.json --context    # and the analysis context (--with
 ddict document sleep-study.dd.json            # documented copy of the database (.sav)
 ddict rename study-t2.dd.json --suffix _t2 --reference study-t1.dd.json   # names
 ddict analyse sleep-study.dd.json t_test --outcome sleep_total --group gender --levels 1,2
+ddict notebook add sleep-study.dd.json correlation --variables sleep_hours n_awakenings
+ddict notebook list sleep-study.dd.json      # the notebook, recomputed
+ddict results sleep-study.dd.json            # the results document and the R master script
 ddict advise sleep-study.dd.json "Compare the sleep of women and men." --model qwen2.5:7b-instruct-q4_K_M
 ddict evaluate --model qwen2.5:7b-instruct-q4_K_M       # model bench
 ```

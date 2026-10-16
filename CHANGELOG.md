@@ -1,5 +1,17 @@
 # Changements
 
+## 0.11.0 — 2026-10-16
+
+Le carnet d'analyses : les analyses d'une étude, dans l'ordre de l'article, recalculées quand le codebook change, réunies dans un document des résultats et un script R maître (plan : `docs/plan-v0.11.md`, D-087 à D-092 ; fiche validée : `docs/carnet-analyses.md`). Aucune IA dans cette version.
+
+- **Le carnet** (D-087, D-088, D-091) : `<projet>-carnet.json`, à côté du projet, qui reste un dictionnaire de données. Une analyse y entre par le bouton **Ajouter au carnet** de la page « Analyses », avec les titres et les notes changés de ses tableaux et figures. Il garde ce qui a été demandé (analyse, variables par leur clé du projet, qui survit à un renommage, options), si l'analyse est retenue, et son dernier calcul confirmé : des agrégats seulement, jamais une ligne de la base, un point d'un nuage ni une étendue observée.
+- **Recalculé quand une décision change** (D-089) : chaque analyse est « à jour », « recalculée, sans changement », « changée, à confirmer » (avec ce qui a changé, aux décimales de l'APA, et la nouvelle phrase) ou « impossible à calculer » (avec sa raison). Un changement non confirmé d'une analyse retenue bloque le document ; une analyse impossible en est écartée, et la fin du document le dit.
+- **La page « Carnet »** : l'ordre (monter, descendre), retenir ou écarter, confirmer, retirer, les numéros du premier tableau et de la première figure, et **Produire les résultats**. Sans la base, le carnet s'affiche tel qu'il est.
+- **Le document des résultats** (D-090, D-092) : `<projet>-resultats.docx`, un intertitre par analyse, sa phrase, ses tableaux et figures APA numérotés à la suite dans l'ordre du carnet ; à la fin, l'empreinte du codebook, la date, les versions et la liste des analyses. Avec `-resultats-graphiques.xlsx` (graphiques Excel natifs) et `-resultats-R.zip`, le **script R maître**, qui refait toutes les analyses retenues et range leurs valeurs dans `resultats$A1`, `resultats$A2`… Tout est recalculé au moment de l'export, jamais recopié du carnet.
+- **En ligne de commande** : `ddict carnet` (`lister`, `ajouter`, `retirer`, `deplacer`, `retenir`, `ecarter`, `confirmer`, `numeros`) et `ddict resultats` ; en anglais, `ddict notebook` et `ddict results`. La page et les commandes écrivent les mêmes fichiers.
+- **Scripts R complétés** : la corrélation de plus de deux variables calcule désormais toutes les paires (elle ne calculait que la première) ; le Tableau 1 et les comparaisons de Tukey donnent toutes leurs valeurs. Vérifié dans R : treize analyses de la base fictive, plus de 150 valeurs égales à 10⁻⁶ près ; sur une vraie base de 252 variables, dix analyses, 119 valeurs égales à 10⁻⁷ près (`docs/essais/2026-10-16-essai-carnet.md`).
+- Guides : « Le carnet d'analyses et le document des résultats », en français et en anglais.
+
 ## 0.10.0 — 2026-10-16
 
 Les résultats des analyses en tableaux et figures APA 7, modifiables (plan : `docs/plan-v0.10.md`, D-082 à D-086 ; fiches validées : `docs/tableaux-figures-apa.md`).

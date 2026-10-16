@@ -95,7 +95,7 @@ Au recalcul, chaque référence redonne le nom final en vigueur ; une référenc
 | 4 | Document des résultats : sections, numérotation continue, titres et notes repris, liste finale ; classeur commun des graphiques | Test commun des formats passé sur un document de quatre analyses ; Tableau 1 à *n* et Figure 1 à *m* sans trou ni doublon ; vérifié dans Word et Excel |
 | 5 | Script R maître | Exécuté dans R : mêmes valeurs que l'outil, à 10⁻⁶ près, pour chaque statistique gardée de chaque analyse du carnet, y compris une corrélation à trois variables |
 | 6 | Page « Carnet », bouton « Ajouter au carnet », `ddict carnet`, `ddict resultats` | Parcours dans le navigateur ; mêmes fichiers depuis la page et la ligne de commande |
-| 7 | Essai sur une vraie base (calcul et script R sans erreur, aucun résultat consigné) ; guides, journal des changements, version 0.11.0 | Scénario refait dans le navigateur ; guides en français et en anglais |
+| 7 | Essai sur une vraie base (calcul et script R sans erreur, aucun résultat consigné) ; guides, journal des changements, version 0.11.0 | Scénario refait dans le navigateur ; guides en français et en anglais. *Essai : `docs/essais/2026-10-16-essai-carnet.md`.* |
 
 ## 7. Risques
 

@@ -181,7 +181,7 @@ La page **Analyses** (après **Noms** dans la barre latérale) calcule, sur votr
 4. **Les conditions s'affichent avant le calcul.** En rouge, un **refus**, avec sa raison (moins de 2 personnes dans un groupe, trop peu d'observations par prédicteur…) : le bouton reste grisé. En jaune, un **avertissement** (un groupe de moins de 5 personnes, une variable ordinale dans une corrélation de Pearson) : l'analyse reste permise, à vous de juger.
 5. **Lancer l'analyse.** Le résultat donne une phrase au style APA, qui décrit sans juger (pas de « significatif ») ; par exemple : « M = 23,69 (ÉT = 7,86) pour Femme et M = 23,50 (ÉT = 7,18) pour Homme, t(172,26) = 0,18, p = ,861, d = 0,03, IC 95 % [−0,27 ; 0,32] ». Puis les personnes retenues et écartées, les avertissements et les tableaux.
 
-**Les fichiers de l'analyse.** **Écrire à côté du projet** donne `etude-sommeil-analyse-1.md` (le rapport : variables, options, résultats, empreinte du codebook, date et versions des bibliothèques), `etude-sommeil-analyse-1.xlsx` (les tableaux) et `etude-sommeil-analyse-1.R` (le script R équivalent), avec le fichier de commandes et le script de préparation qu'il exécute ; l'analyse suivante prend le numéro 2. On peut aussi les **télécharger** ; le script R se télécharge en `.zip` avec ses deux fichiers. Seule la dernière analyse reste affichée : gardez les rapports qui vous servent.
+**Les fichiers de l'analyse.** **Écrire à côté du projet** donne `etude-sommeil-analyse-1.md` (le rapport : variables, options, résultats, empreinte du codebook, date et versions des bibliothèques), `etude-sommeil-analyse-1.xlsx` (les tableaux) et `etude-sommeil-analyse-1.R` (le script R équivalent), avec le fichier de commandes et le script de préparation qu'il exécute ; l'analyse suivante prend le numéro 2. On peut aussi les **télécharger** ; le script R se télécharge en `.zip` avec ses deux fichiers. Seule la dernière analyse reste affichée : gardez les rapports qui vous servent, ou ajoutez l'analyse au carnet (section 14).
 
 **Refaire l'analyse dans R.** Placez le script et ses deux fichiers dans le dossier de la base, puis, dans R : `source("etude-sommeil-analyse-1.R", encoding = "UTF-8")`. Il n'utilise que R de base et haven, et donne les mêmes résultats que l'outil (vérifié par des tests, à 10⁻⁶ près).
 
@@ -198,6 +198,25 @@ La page **Analyses** (après **Noms** dans la barre latérale) calcule, sur votr
 **Demander une proposition à l'IA locale (facultatif).** En haut de la page, l'encadré **Demander une proposition à l'IA locale** : écrivez votre objectif en une phrase (« Les hommes et les femmes ont-ils la même qualité de sommeil ? »), puis **Demander une proposition**. Le modèle choisi sur la page **IA locale** reçoit cet objectif tel quel, la liste des analyses et celle des variables (nom, libellé, niveau, groupe) : **aucune donnée, aucune statistique** ; **Voir ce qui serait envoyé** montre le message exact. N'écrivez aucune donnée de participant dans l'objectif. Il répond en quelques secondes par une à trois propositions, chacune avec sa raison ; **Reprendre cette proposition** remplit les choix de la page, et rien n'est calculé avant **Lancer l'analyse**.
 
 Ce qu'il faut en attendre (essais `docs/essais/2026-10-16-ia-conseillere.md` et `2026-10-16-essai-analyses.md`) : sur la base fictive, la bonne analyse et les bonnes variables 9 fois sur 13 ; sur une vraie base de 250 variables, le bon type d'analyse deux fois sur trois, mais des variables moins sûres. Le modèle propose une analyse même quand aucune ne convient, et choisit parfois une méthode moins adaptée (Student plutôt que Welch). **C'est une aide pour retrouver le type d'analyse ; le choix reste le vôtre.** Pour une très grande base, l'outil peut refuser d'envoyer le message, trop long pour le modèle : choisissez alors l'analyse vous-même.
+
+## 14. Le carnet d'analyses et le document des résultats
+
+Un article réunit souvent dix ou vingt résultats, numérotés à la suite, qui doivent rester justes quand le codebook change. Le **carnet** garde les analyses de l'étude, dans l'ordre de votre article, et les réunit dans un seul document « Résultats ». Il ne fait appel à aucune IA. Le détail est dans [`carnet-analyses.md`](carnet-analyses.md).
+
+1. **Ajouter une analyse.** Sur la page **Analyses**, après **Lancer l'analyse**, la section **Carnet d'analyses** a un bouton **Ajouter au carnet**. L'analyse va à la fin du carnet, retenue, avec les titres et les notes que vous avez changés dans les tableaux et figures APA (pas leurs numéros : le carnet numérote dans son ordre). Le bouton devient « Déjà dans le carnet (A1) ».
+2. **La page Carnet** (après **Analyses**) liste les analyses dans leur ordre : numéro (A1, A2…), titre, variables, phrase de résultat et état. **Monter** et **Descendre** changent l'ordre ; **Retenue pour le document** écarte une analyse du document sans la retirer ; **Retirer** la supprime (son numéro ne revient pas).
+3. **Quand une décision change** (un code manquant confirmé, un niveau de mesure corrigé), chaque analyse est recalculée à l'ouverture de la page :
+   - **à jour** ou **recalculée, sans changement** : rien à faire ;
+   - **changée, à confirmer** : la page montre ce qui a changé (par exemple « n_used : 200 → 196 », « r : ,05 → ,01 ») et la nouvelle phrase. **Confirmer le nouveau calcul** l'adopte. Tant qu'une analyse retenue attend sa confirmation, le document des résultats ne se produit pas ;
+   - **impossible à calculer** : la raison s'affiche (une variable retirée, un niveau de mesure qui ne convient plus). L'analyse reste dans le carnet, mais elle est écartée du document, et la fin du document le dit.
+4. **Le document des résultats.** Réglez au besoin le **Premier tableau** et la **Première figure** (par exemple 3, si deux tableaux précèdent dans votre article), puis **Produire les résultats**. Trois fichiers sont écrits à côté du projet, et remplacés à chaque fois :
+   - `etude-sommeil-resultats.docx` : un intertitre par analyse (« A2 — Test t : comparer deux groupes »), sa phrase de résultat, ses tableaux et figures APA numérotés à la suite ; à la fin, l'empreinte du codebook, la date, les versions et la liste des analyses ;
+   - `etude-sommeil-resultats-graphiques.xlsx` : le graphique Excel natif de chaque figure ;
+   - `etude-sommeil-resultats-R.zip` : le **script R maître**, qui refait toutes les analyses retenues, dans l'ordre, avec le fichier de commandes et le script de préparation. Décompressez-le dans le dossier de la base, puis, dans R : `source("etude-sommeil-resultats.R", encoding = "UTF-8")`. Il donne les mêmes valeurs que l'outil (vérifié par des tests, à 10⁻⁶ près), rangées dans `resultats$A1`, `resultats$A2`…
+
+Chaque analyse est **recalculée** sur la base au moment de produire le document : rien n'est recopié du carnet. Le carnet, `etude-sommeil-carnet.json`, est à côté du projet ; il ne garde que des agrégats (effectifs, moyennes, statistiques, phrases), jamais une ligne de la base. Sans la base, la page affiche le carnet tel qu'il est, sans le recalculer, et **Choisir la base…** la retrouve.
+
+En ligne de commande : `ddict carnet ajouter` (mêmes options que `ddict analyser`), `lister`, `deplacer A3 1`, `retenir A2`, `ecarter A2`, `retirer A2`, `confirmer A1` (ou `--tout`), `numeros --tableau 3 --figure 2` ; puis `ddict resultats` écrit les trois fichiers. La page et les commandes lisent et écrivent le même carnet.
 
 ## Mettre à jour ou désinstaller
 
@@ -221,6 +240,9 @@ ddict exporter etude-sommeil.dd.json --contexte  # et le contexte d'analyse (--a
 ddict documenter etude-sommeil.dd.json        # copie documentée de la base (.sav)
 ddict renommer etude-t2.dd.json --suffixe _t2 --reference etude-t1.dd.json   # noms
 ddict analyser etude-sommeil.dd.json test_t --dependante sommeil_total --groupe genre --modalites 1,2
+ddict carnet ajouter etude-sommeil.dd.json correlation --variables heures_sommeil nb_reveils
+ddict carnet lister etude-sommeil.dd.json      # le carnet, recalculé
+ddict resultats etude-sommeil.dd.json         # le document des résultats et le script R maître
 ddict conseiller etude-sommeil.dd.json "Comparer le sommeil des femmes et des hommes." --modele qwen2.5:7b-instruct-q4_K_M
 ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M   # banc d'essai d'un modèle
 ```

@@ -107,7 +107,16 @@ def differences(before: nb.Computed, after: nb.Computed) -> tuple[Difference, ..
         a, b = before.statistics[key], after.statistics[key]
         if not (math.isfinite(a) and math.isfinite(b) and _same(a, b)):
             found.append(_difference(key, a, b))
-    return tuple(found)
+    # A correlation of two variables keeps its only pair twice (`r` and `r_2_1`): shown once.
+    shown = {d.key: (d.shown_before, d.shown_after) for d in found}
+    return tuple(
+        d
+        for d in found
+        if not (d.key in PAIR_TWINS and shown.get(PAIR_TWINS[d.key]) == shown[d.key])
+    )
+
+
+PAIR_TWINS = {"r_2_1": "r", "p_2_1": "p", "n_2_1": "n", "low_2_1": "ci_low", "high_2_1": "ci_high"}
 
 
 def recompute(project: Project, prepared: PreparedData, entry: nb.Entry) -> AnalysisResult:

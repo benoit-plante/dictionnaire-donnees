@@ -53,6 +53,7 @@ def test_a_missing_code_confirmed_after_the_fact(sleep):
     assert shown["p"] == (",572", ",342")
     assert shown["ci_low"] == ("−,10", "−,07") and shown["ci_high"] == (",18", ",21")
     assert shown["n_used"] == ("200", "197")
+    assert not {"r_2_1", "p_2_1", "n_2_1", "low_2_1", "high_2_1"} & set(shown)  # said once
     assert entry.pending is not None and entry.computed.statistics["n"] == 200  # not yet
     assert check.blocking(notebook, [status]) == ["A1"]  # the export waits
     check.confirm(notebook, "A1")
