@@ -140,3 +140,18 @@ Une étude fictive sur la vie au travail, exportée comme le fait SurveyMonkey, 
 ## Base de contrôle SurveyMonkey (v0.7)
 
 `trajets_surveymonkey.sav` (et `.xlsx`), `questionnaire-trajets.txt` et le corrigé `corrige-controle-surveymonkey.json`, écrits par `scripts/generer_controle_surveymonkey.py` (graine fixe) : une étude fictive en anglais sur les trajets domicile-travail, mesurée une seule fois avant les corrections qu'elle a fait trouver (`docs/essais/2026-10-15-controle-surveymonkey.md`). Elle contient des types de questions que les deux exports réels de l'essai n'avaient pas : coordonnées, choix unique avec « autre », classement, curseur, zones de texte, grille avec colonne de commentaire, grille de menus déroulants. **Pour ces types, les conventions de SurveyMonkey sont supposées, pas observées** : la base vérifie que l'outil échoue proprement là où il ne sait pas.
+
+## Base de passation (v0.12)
+
+`etude-passation.sav` et son corrigé `corrige-passation.json`, écrits par `scripts/generer_base_passation.py` (graine fixe) : 400 réponses à un questionnaire fictif, avec des cas d'exclusion plantés pour vérifier les règles d'exclusion, le diagramme de flux, les signaux de qualité et la section Méthode (`docs/methode-gabarits.md`). Le corrigé donne les règles, les effectifs par règle dans deux ordres, la description de l'échantillon analysé et l'alpha de l'échelle d'anxiété avec son intervalle de Feldt, calculés sans le code de l'outil.
+
+| Cas planté | Nombre | Variables |
+|---|---|---|
+| Refus de consentement (questionnaire vide ensuite), dont 2 de moins de 18 ans | 12 | `consentement` = 2 |
+| Moins de 18 ans | 9 | `age` |
+| Moins de 5 items d'anxiété répondus sur 6 | 14 | `anx1` à `anx6` |
+| Passation de moins de 3 minutes, dont 3 aussi en ligne droite | 10 | `debut`, `fin` |
+| Grille de satisfaction en ligne droite | 8 | `sat1` à `sat8` |
+| Courriel répété par une réponse plus tardive | 5 | `courriel` |
+
+Pièges : le code 999 de l'âge, déclaré manquant (6 personnes gardées) ; l'item `anx3`, à inverser ; quatre personnes gardées avec un item d'anxiété manquant (la somme proportionnelle) ; les témoins `ZQXID` et `zqxmail` dans l'identifiant et le courriel.

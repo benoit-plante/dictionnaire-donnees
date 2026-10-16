@@ -1,0 +1,180 @@
+{
+  "sav": "etude-passation.sav",
+  "rows": 400,
+  "groups": {
+    "G1": [
+      "anx1",
+      "anx2",
+      "anx3",
+      "anx4",
+      "anx5",
+      "anx6"
+    ],
+    "G2": [
+      "sat1",
+      "sat2",
+      "sat3",
+      "sat4",
+      "sat5",
+      "sat6",
+      "sat7",
+      "sat8"
+    ]
+  },
+  "scoring": {
+    "group_items": [
+      "anx1",
+      "anx2",
+      "anx3",
+      "anx4",
+      "anx5",
+      "anx6"
+    ],
+    "reverse_items": [
+      "anx3"
+    ],
+    "aggregation": "sum",
+    "scale_min": 1,
+    "scale_max": 4,
+    "min_items_answered": 5,
+    "missing_rule": "prorate",
+    "score_name": "anx_total",
+    "instrument": "Échelle d'anxiété fictive",
+    "source": "Laboratoire fictif (2024)"
+  },
+  "missing_codes": {
+    "age": 999
+  },
+  "rules": [
+    {
+      "id": "E1",
+      "kind": "condition",
+      "variable": "consentement",
+      "operator": "eq",
+      "value": 2,
+      "reason": "Refus de consentement"
+    },
+    {
+      "id": "E2",
+      "kind": "condition",
+      "variable": "age",
+      "operator": "lt",
+      "value": 18,
+      "reason": "Moins de 18 ans"
+    },
+    {
+      "id": "E3",
+      "kind": "completeness",
+      "group": "G1",
+      "min_answered": 5,
+      "reason": "Moins de 5 items d'anxiété répondus sur 6"
+    },
+    {
+      "id": "E4",
+      "kind": "duration",
+      "start": "debut",
+      "end": "fin",
+      "min_seconds": 180,
+      "reason": "Passation de moins de 3 minutes",
+      "source": "Seuil fixé par l'équipe (fictif)"
+    },
+    {
+      "id": "E5",
+      "kind": "straightlining",
+      "group": "G2",
+      "reason": "Grille de satisfaction en ligne droite"
+    },
+    {
+      "id": "E6",
+      "kind": "duplicate",
+      "variables": [
+        "courriel"
+      ],
+      "keep": "first",
+      "reason": "Courriel en double"
+    }
+  ],
+  "planted": {
+    "refusal": 12,
+    "minor": 9,
+    "minor_and_refusal": 2,
+    "incomplete": 14,
+    "fast": 10,
+    "straight": 8,
+    "fast_and_straight": 3,
+    "duplicate": 5,
+    "missing_age_kept": 6,
+    "one_anxiety_item_missing_kept": 4
+  },
+  "exact": {
+    "flow": {
+      "order": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E6"
+      ],
+      "start": 400,
+      "excluded": {
+        "E1": 12,
+        "E2": 7,
+        "E3": 14,
+        "E4": 10,
+        "E5": 5,
+        "E6": 5
+      },
+      "analysed": 347
+    },
+    "flow_e5_before_e4": {
+      "order": [
+        "E1",
+        "E2",
+        "E3",
+        "E5",
+        "E4",
+        "E6"
+      ],
+      "start": 400,
+      "excluded": {
+        "E1": 12,
+        "E2": 7,
+        "E3": 14,
+        "E5": 8,
+        "E4": 7,
+        "E6": 5
+      },
+      "analysed": 347
+    },
+    "sample": {
+      "age": {
+        "n": 341,
+        "mean": 45.0703812317,
+        "sd": 15.0413460414
+      },
+      "genre": {
+        "n": 347,
+        "percent": {
+          "1": 55.6195965418,
+          "2": 42.939481268,
+          "3": 1.4409221902
+        }
+      }
+    },
+    "anxiety": {
+      "alpha": 0.8904361678,
+      "n": 343,
+      "k": 6,
+      "ci95": [
+        0.8714459042,
+        0.9074693517
+      ],
+      "score": {
+        "n": 347,
+        "mean": 14.7994236311,
+        "sd": 4.4938621869
+      }
+    }
+  }
+}
