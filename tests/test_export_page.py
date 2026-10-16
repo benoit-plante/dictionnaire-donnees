@@ -101,7 +101,6 @@ def test_a_file_open_in_excel_is_explained(project_path):
 def test_open_folder(project_path, monkeypatch):
     opened = []
     monkeypatch.setattr(export_view.os, "startfile", opened.append, raising=False)
-    monkeypatch.setattr(export_view.sys, "platform", "win32")
     app = _open(project_path)
     app.button(key="export-folder").click().run()
     assert opened == [str(project_path.resolve().parent)]

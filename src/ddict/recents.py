@@ -1,9 +1,8 @@
 """The projects opened lately, for the home page (v0.3, D-024).
 
-Kept on this computer, in the user's folder (%APPDATA%\\ddict on Windows,
-~/Library/Application Support/ddict on macOS, ~/.config/ddict elsewhere): paths of project
-files only, never data. The list can be emptied from the home
-page. DDICT_CONFIG_DIR sets another folder (the tests use it).
+Kept on this computer, in the user's folder (%APPDATA%\\ddict): paths of project files
+only, never data. The list can be emptied from the home page. DDICT_CONFIG_DIR sets another
+folder (the tests use it).
 """
 
 from __future__ import annotations
@@ -11,7 +10,6 @@ from __future__ import annotations
 import contextlib
 import json
 import os
-import sys
 from pathlib import Path
 
 MAX_RECENTS = 10
@@ -22,11 +20,7 @@ def config_dir() -> Path:
     override = os.environ.get("DDICT_CONFIG_DIR")
     if override:
         return Path(override)
-    if sys.platform == "win32" and os.environ.get("APPDATA"):
-        return Path(os.environ["APPDATA"]) / "ddict"
-    if sys.platform == "darwin":  # v0.5
-        return Path.home() / "Library" / "Application Support" / "ddict"
-    base = os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config"
+    base = os.environ.get("APPDATA") or Path.home() / "AppData" / "Roaming"  # Windows (D-081)
     return Path(base) / "ddict"
 
 

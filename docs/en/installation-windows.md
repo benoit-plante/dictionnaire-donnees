@@ -2,7 +2,7 @@
 
 This guide is for people who do not program. It goes from the installation to a complete codebook, made from the fictional database and its questionnaire that come with the tool. Everything is done by double-clicking and in the tool's window; there are no commands to type. Allow an hour, plus the download of the AI model if you choose to use it.
 
-On a Mac: [`installation-macos.md`](installation-macos.md). En français : [`../installation-windows.md`](../installation-windows.md).
+En français : [`../installation-windows.md`](../installation-windows.md).
 
 > **Trial version of the English.** The tool was written in French first; its English interface is new (version 0.5) and its translation has not yet been reviewed by a native English speaker. If a sentence is unclear or wrong, write it down and pass it on. The installer window speaks French only: this guide gives what it says.
 

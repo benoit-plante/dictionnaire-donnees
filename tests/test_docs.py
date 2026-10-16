@@ -21,10 +21,8 @@ def test_relative_links_lead_to_a_file(path):
 
 def test_every_guide_links_to_the_others():
     guides = {
-        "installation-windows.md": ["installation-macos.md", "en/installation-windows.md"],
-        "installation-macos.md": ["installation-windows.md", "en/installation-macos.md"],
-        "en/installation-windows.md": ["installation-macos.md", "../installation-windows.md"],
-        "en/installation-macos.md": ["installation-windows.md", "../installation-macos.md"],
+        "installation-windows.md": ["en/installation-windows.md"],
+        "en/installation-windows.md": ["../installation-windows.md"],
     }
     for guide, targets in guides.items():
         text = (ROOT / "docs" / guide).read_text(encoding="utf-8")

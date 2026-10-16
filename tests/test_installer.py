@@ -1,10 +1,6 @@
 """v0.3, step 7: the Windows installer, and starting the tool again from its icon."""
 
-import shutil
-import subprocess
 from pathlib import Path
-
-import pytest
 
 from ddict import cli
 
@@ -83,48 +79,6 @@ def test_an_open_tool_is_closed_only_when_asked():
     check = text.index("Get-OpenTool")
     asked = text.index('Ask "Fermer l\'outil maintenant ?"')
     assert check < asked < text.index("Stop-Process") < text.index("uv tool install")
-
-
-MACOS_SCRIPTS = ["installer.command", "desinstaller.command"]
-
-
-@pytest.mark.parametrize("name", MACOS_SCRIPTS)
-def test_macos_scripts_are_bash_with_unix_line_ends(name):
-    """v0.5: double-clicked in the Finder, run by bash in the Terminal."""
-    raw = (ROOT / name).read_bytes()
-    assert raw.startswith(b"#!/bin/bash\n")
-    assert b"\r\n" not in raw
-    bash = shutil.which("bash")
-    if bash:
-        done = subprocess.run([bash, "-n", str(ROOT / name)], capture_output=True, text=True)
-        assert done.returncode == 0, done.stderr
-
-
-@pytest.mark.parametrize("name", MACOS_SCRIPTS)
-def test_macos_scripts_are_executable_in_the_repository(name):
-    """Without the executable bit, the Finder refuses to run them from the archive."""
-    done = subprocess.run(["git", "ls-files", "-s", name], cwd=ROOT, capture_output=True, text=True)
-    if done.returncode != 0 or not done.stdout:
-        pytest.skip("not a git checkout")
-    assert done.stdout.startswith("100755"), done.stdout
-
-
-def test_macos_installer_asks_and_needs_no_administrator():
-    text = (ROOT / "installer.command").read_text(encoding="utf-8")
-    assert "sudo" not in text
-    assert text.index('ask "Fermer l\'outil maintenant ?"') < text.index("pkill")
-    assert text.index("pkill") < text.index("tool install --reinstall")
-    assert text.index('ask "Le télécharger maintenant ?"') < text.index('pull "$MODEL"')
-
-
-def test_macos_uninstaller_keeps_the_projects():
-    text = (ROOT / "desinstaller.command").read_text(encoding="utf-8")
-    removed = [line.strip() for line in text.splitlines() if "rm " in line]
-    assert removed == [
-        'if [ -e "$launcher" ]; then rm -f "$launcher" && say "Icône retirée : $launcher"; fi',
-        'rm -rf "$RECENTS"',
-    ]
-    assert text.index('ask "Effacer aussi') < text.index('rm -rf "$RECENTS"')
 
 
 def test_the_icon_opens_the_window_without_console():

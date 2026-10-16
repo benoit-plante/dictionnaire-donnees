@@ -22,8 +22,8 @@ def project():
 
 
 def test_the_same_on_every_computer(project):
-    # The committed reference project: every system must give this value (the macOS
-    # workflow runs this test there). It changes only when the reference is regenerated.
+    # The committed reference project: every computer must give this value. It changes
+    # only when the reference is regenerated.
     assert fingerprint.fingerprint(project) == (
         "4b0b57a805164fefc473cbf04436d7c162dbe3f9f3cd77745c70274978afe901"
     )

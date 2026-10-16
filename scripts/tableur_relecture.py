@@ -95,8 +95,8 @@ INSTRUCTIONS = [
     '- "Where" says on which screen or in which document the sentence appears.',
     '- Use "Comment" for anything else: a question, a doubt, a suggestion.',
     "",
-    "The two guides in English are in the project's docs/en folder (installation-windows.md "
-    "and installation-macos.md); comments on them are welcome too, in a separate message.",
+    "The guide in English is in the project's docs/en folder (installation-windows.md); "
+    "comments on it are welcome too, in a separate message.",
     "",
     "Thank you!",
 ]

@@ -23,7 +23,7 @@ CSV_OPTIONS = {
 
 def _digest(path):
     """The bytes of a file; for a workbook, the content of each part, decompressed: the zip
-    compression may differ from one system to another (macOS run of v0.5)."""
+    compression may differ from one computer to another."""
     if path.suffix != ".xlsx":
         return hashlib.sha256(path.read_bytes()).hexdigest()
     with zipfile.ZipFile(path) as archive:

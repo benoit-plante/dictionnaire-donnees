@@ -20,7 +20,7 @@ L'auteur n'est pas développeur de métier : expliquer les choix techniques simp
 ## Conventions
 
 - Python 3.11+, paquet dans `src/ddict/` ; environnement géré par uv (`uv sync`, `uv run pytest`, `uv run ruff check`, `uv run ruff format`).
-- Développement sous Windows (PowerShell) ; l'outil doit fonctionner sous Windows, macOS et Linux. Utiliser `pathlib`, ouvrir les fichiers avec `encoding="utf-8"` et `newline="\n"` explicitement.
+- Développement sous Windows (PowerShell) ; l'outil ne vise que Windows (D-081). Utiliser `pathlib`, ouvrir les fichiers avec `encoding="utf-8"` et `newline="\n"` explicitement.
 - Code, commentaires, docstrings, noms de champs et messages de commit en anglais ; documentation, journal des décisions, interface et prompts en français (D-004).
 - Écriture JSON déterministe : ordre des clés fixe, indentation 2, UTF-8, `ensure_ascii=False`, LF.
 - Licence Apache-2.0 (D-002). Vérifier la licence de toute nouvelle dépendance et la noter dans `docs/dependances.md`.

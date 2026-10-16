@@ -987,3 +987,14 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   2. Demander d'agrandir le contexte du serveur local (réglage d'Ollama), une étape d'installation de plus.
   3. Envoyer le message entier, au risque que le modèle n'en lise qu'une partie sans le dire.
 - **Justification :** une base réelle de 252 variables donnait un message d'environ 10 000 jetons au format de la v1 ; il en compte environ 3 000 au nouveau format. Sur le banc des 13 objectifs, le 7B passe de 11 à 10 propositions justes au premier rang ; les deux écarts restent défendables.
+
+### D-081 — Windows seulement
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** D-035 (installation sur macOS)
+- **Décision :** l'outil ne vise plus que Windows. L'installation sur macOS (v0.5) est retirée : scripts `installer.command` et `desinstaller.command`, guides Mac en français et en anglais, flux GitHub `macos.yml`, tests propres au Mac, et les branches du code pour macOS et Linux (dossier des réglages, ouverture du dossier du projet). Le code reste écrit avec `pathlib` et des encodages explicites. Les anciennes entrées du journal, les plans, les essais et l'historique Git gardent la trace de la version Mac.
+- **Options considérées :**
+  1. Windows seulement (ce choix).
+  2. Garder macOS à l'essai, vérifié seulement sur un Mac de GitHub.
+- **Justification :** décision de l'auteur, le 2026-10-16 : on oublie le déploiement hors de Windows. L'installation Mac n'avait jamais été vérifiée par une personne sur son propre Mac, et son entretien (flux, guides, tests) pesait sur chaque version.

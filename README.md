@@ -1,6 +1,6 @@
 # dictionnaire-donnees
 
-> Nom de travail. Version 0.8.0 : du dictionnaire à l'analyse. Cotation des échelles, script de préparation des scores (SPSS et R), niveaux de mesure décidés par l'équipe, et un « contexte d'analyse » compact à donner à une IA qui aide à écrire le code. Depuis la 0.7, les exports bruts de SurveyMonkey sont lus juste et les variables se renomment d'une vague à l'autre. **L'anglais et macOS sont à l'essai** : la traduction n'a pas encore été relue par une personne anglophone, et l'installation sur Mac n'a été vérifiée que sur un Mac de GitHub. À essayer d'abord sur la base fictive et son questionnaire, fournis.
+> Nom de travail. Version 0.8.0 : du dictionnaire à l'analyse. Cotation des échelles, script de préparation des scores (SPSS et R), niveaux de mesure décidés par l'équipe, et un « contexte d'analyse » compact à donner à une IA qui aide à écrire le code. Depuis la 0.7, les exports bruts de SurveyMonkey sont lus juste et les variables se renomment d'une vague à l'autre. Pour Windows seulement. **L'anglais est à l'essai** : la traduction n'a pas encore été relue par une personne anglophone. À essayer d'abord sur la base fictive et son questionnaire, fournis.
 
 Outil libre et local qui aide les équipes de recherche à produire le **dictionnaire de données** (codebook) d'une base existante (SPSS, CSV, Stata, SAS ou Excel ; le `.sav` de SPSS donne les meilleurs résultats), avec l'aide du questionnaire de l'étude.
 
@@ -11,9 +11,9 @@ Outil libre et local qui aide les équipes de recherche à produire le **diction
 
 ## Commencer
 
-Le guide [`docs/installation-windows.md`](docs/installation-windows.md) mène de l'installation à un codebook complet, sans connaissances en programmation. En bref : décompresser l'archive, double-cliquer sur `installer.bat`, puis sur l'icône **Dictionnaire de données** ; le reste se fait dans le navigateur, sur cet ordinateur seulement. Sur un Mac : [`docs/installation-macos.md`](docs/installation-macos.md) (`installer.command`).
+Le guide [`docs/installation-windows.md`](docs/installation-windows.md) mène de l'installation à un codebook complet, sans connaissances en programmation. En bref : décompresser l'archive, double-cliquer sur `installer.bat`, puis sur l'icône **Dictionnaire de données** ; le reste se fait dans le navigateur, sur cet ordinateur seulement.
 
-**In English.** A free, local tool that helps research teams write the data dictionary (codebook) of an existing database, with the help of the study's questionnaire; an optional local AI proposes, a person decides, and nothing leaves the computer. The interface, the codebook and the guides exist in English (a trial version: the translation has not yet been reviewed by a native speaker): [`docs/en/installation-windows.md`](docs/en/installation-windows.md) (Windows) and [`docs/en/installation-macos.md`](docs/en/installation-macos.md) (Mac).
+**In English.** A free, local tool that helps research teams write the data dictionary (codebook) of an existing database, with the help of the study's questionnaire; an optional local AI proposes, a person decides, and nothing leaves the computer. The interface, the codebook and the guides exist in English (a trial version: the translation has not yet been reviewed by a native speaker): [`docs/en/installation-windows.md`](docs/en/installation-windows.md) (Windows only).
 
 Toutes les étapes existent aussi en ligne de commande (`ddict --help`) :
 
@@ -36,7 +36,6 @@ ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M  # banc d'essai d'un modèle
 | Sujet | Fichier |
 |---|---|
 | Installation et premier codebook, pas à pas | [`docs/installation-windows.md`](docs/installation-windows.md) |
-| Installation sur Mac | [`docs/installation-macos.md`](docs/installation-macos.md) |
 | Guides in English | [`docs/en/`](docs/en/) |
 | Conception, principes, format du fichier projet | [`docs/CONCEPTION.md`](docs/CONCEPTION.md) |
 | Décisions prises | [`docs/journal-des-decisions.md`](docs/journal-des-decisions.md) |

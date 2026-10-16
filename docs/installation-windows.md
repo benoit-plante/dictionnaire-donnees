@@ -2,7 +2,7 @@
 
 Ce guide s'adresse aux personnes qui ne programment pas. Il mène de l'installation jusqu'à un codebook complet, produit à partir de la base fictive et de son questionnaire, fournis avec l'outil. Tout se fait par des doubles-clics et dans la fenêtre de l'outil ; aucune commande n'est à taper. Comptez une heure, plus le téléchargement du modèle d'IA si vous choisissez de l'utiliser.
 
-Sur un Mac : [`installation-macos.md`](installation-macos.md). In English: [`en/installation-windows.md`](en/installation-windows.md) (Windows), [`en/installation-macos.md`](en/installation-macos.md) (macOS).
+In English: [`en/installation-windows.md`](en/installation-windows.md).
 
 ## Ce qu'il faut
 

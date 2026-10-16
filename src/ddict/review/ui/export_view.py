@@ -8,8 +8,6 @@ from __future__ import annotations
 
 import io
 import os
-import subprocess
-import sys
 from pathlib import Path
 
 import streamlit as st
@@ -179,10 +177,7 @@ def _copy_section(project: Project) -> None:
 def _open_folder() -> None:
     """Show the project's folder in the file manager of this computer."""
     folder = str(c.project_path().resolve().parent)
-    if sys.platform == "win32":
-        os.startfile(folder)
-    else:
-        subprocess.run(["open" if sys.platform == "darwin" else "xdg-open", folder], check=False)
+    os.startfile(folder)  # Windows only (D-081)
 
 
 def _write_context(omit: tuple[str, ...], language: str) -> None:
