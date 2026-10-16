@@ -469,13 +469,17 @@ class CompletenessRule(Strict):
 
 class DurationRule(Strict):
     """An administration shorter than `min_seconds`, between two date variables; the
-    threshold is the team's choice and needs its source (principle 4)."""
+    threshold is the team's choice and needs its source (principle 4). Dates in text (a
+    platform's export) are read with `text_format`, "iso" or a format of the slashes
+    (`ddict.profile.compute.TEXT_DATETIME_FORMATS`), found in the data when the rule is
+    made."""
 
     id: str
     kind: Literal["duration"] = "duration"
     start: str
     end: str
     min_seconds: float = Field(gt=0)
+    text_format: str | None = None
     reason: NonEmptyText
     source: SourceText
 

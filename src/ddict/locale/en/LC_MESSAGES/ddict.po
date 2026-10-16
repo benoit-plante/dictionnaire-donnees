@@ -1333,6 +1333,10 @@ msgstr "Flow of participants"
 msgid "Format"
 msgstr "Format"
 
+#, python-brace-format
+msgid "Format de date inconnu : {format}."
+msgstr "Unknown date format: {format}."
+
 msgid "Format du projet"
 msgstr "Project format"
 
@@ -3927,11 +3931,9 @@ msgstr "{name}: ends of the scale unknown, not reversed."
 
 #, python-brace-format
 msgid ""
-"{name} : ce n'est pas une date enregistrée comme date dans le fichier ; la durée ne se calcule "
-"que sur deux variables de date."
-msgstr ""
-"{name}: not a date stored as a date in the file; the duration is computed between two date "
-"variables only."
+"{name} : ce n'est pas une date avec l'heure ; la durée ne se calcule qu'entre deux variables de "
+"date et d'heure."
+msgstr "{name}: not a date with a time; the duration is computed between two date-and-time variables only."
 
 #, python-brace-format
 msgid "{name} : identifiant, texte ou date, exclu des analyses."
@@ -3944,6 +3946,10 @@ msgstr "{name}: the item is no longer reversed."
 #, python-brace-format
 msgid "{name} : la variable n'est plus dans le projet."
 msgstr "{name}: the variable is no longer in the project."
+
+#, python-brace-format
+msgid "{name} : le format de la date ne correspond pas à celui du fichier."
+msgstr "{name}: the date format does not match the file's."
 
 #, python-brace-format
 msgid "{name} : le groupe n'a plus de cotation, donc plus de score."

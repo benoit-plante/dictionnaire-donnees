@@ -38,7 +38,7 @@ def _score_names(project: Project) -> dict[str, str]:
     return {score.group: score.name for score in plan(project)[1]}
 
 
-def _blank(column: pd.Series) -> pd.Series:
+def blank(column: pd.Series) -> pd.Series:
     """Missing, or an empty text."""
     missing = column.isna()
     if column.dtype == object or pd.api.types.is_string_dtype(column):
@@ -57,11 +57,11 @@ def _same_type(column: pd.Series, value):
 
 def _condition(column: pd.Series, rule: ConditionRule) -> pd.Series:
     if rule.operator == "missing":
-        return _blank(column)
+        return blank(column)
     if rule.operator == "in":
         return column.isin([_same_type(column, v) for v in rule.value])
     value = _same_type(column, rule.value)
-    present = ~_blank(column)
+    present = ~blank(column)
     compare = {
         "eq": lambda c: c == value,
         "ne": lambda c: c != value,
@@ -71,6 +71,22 @@ def _condition(column: pd.Series, rule: ConditionRule) -> pd.Series:
         "ge": lambda c: c >= value,
     }[rule.operator]
     return present & compare(column).fillna(False).astype(bool)
+
+
+def moments(column: pd.Series, text_format: str | None) -> pd.Series:
+    """A date variable as dates: as it is, or read from its text ("iso" or a format of the
+    slashes); a text that does not fit is missing."""
+    if text_format is None:
+        return column
+    texts = column.astype("string").str.strip()
+    if text_format == "iso":
+        return pd.to_datetime(texts, format="ISO8601", errors="coerce")
+    return pd.to_datetime(texts, format=text_format, errors="coerce")
+
+
+def seconds(data: pd.DataFrame, start: str, end: str, text_format: str | None) -> pd.Series:
+    """The duration of each administration, in seconds (final names)."""
+    return (moments(data[end], text_format) - moments(data[start], text_format)).dt.total_seconds()
 
 
 def hits(project: Project, data: pd.DataFrame, rule: ExclusionRule) -> pd.Series:
@@ -83,14 +99,14 @@ def hits(project: Project, data: pd.DataFrame, rule: ExclusionRule) -> pd.Series
         items = [names[n] for n in members(_group(project, rule.group))]
         found = data[items].notna().sum(axis=1) < rule.min_answered
     elif isinstance(rule, DurationRule):
-        seconds = (data[names[rule.end]] - data[names[rule.start]]).dt.total_seconds()
-        found = (seconds >= 0) & (seconds < rule.min_seconds)
+        span = seconds(data, names[rule.start], names[rule.end], rule.text_format)
+        found = (span >= 0) & (span < rule.min_seconds)
     elif isinstance(rule, StraightliningRule):
         items = data[[names[n] for n in members(_group(project, rule.group))]]
         found = items.notna().all(axis=1) & (items.nunique(axis=1) == 1)
     else:  # DuplicateRule
         columns = [names[n] for n in rule.variables]
-        complete = ~pd.concat([_blank(data[c]) for c in columns], axis=1).any(axis=1)
+        complete = ~pd.concat([blank(data[c]) for c in columns], axis=1).any(axis=1)
         repeated = data.loc[complete, columns].duplicated(keep="first")
         found = repeated.reindex(data.index, fill_value=False)
     return pd.Series(np.asarray(found, dtype=bool), index=data.index)

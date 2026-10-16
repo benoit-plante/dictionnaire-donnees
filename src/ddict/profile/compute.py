@@ -151,6 +151,19 @@ def _slash_datetime_format(texts: list[str]) -> str | None:
     return None
 
 
+# The dates and times in text an exclusion rule of duration reads (v0.12): "iso" or a format
+# of the slashes, the same in the tool, SPSS and R.
+TEXT_DATETIME_FORMATS = ("iso", *_SLASH_DATETIME_FORMATS)
+
+
+def text_datetime_format(texts: list[str]) -> str | None:
+    """ "iso" or the format of dates and times written in text; None if not all such."""
+    texts = [str(t).strip() for t in texts]
+    if texts and all(_ISO_DATETIME.fullmatch(t) for t in texts):
+        return "iso"
+    return _slash_datetime_format(texts)
+
+
 def is_missing_label(label: str) -> bool:
     """A value label saying that the person did not answer: "Ne sais pas", "Refus"..."""
     return bool(MISSING_LABEL.search(label))

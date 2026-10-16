@@ -254,6 +254,40 @@ def _spss_condition(rule: ConditionRule, name: str, text: bool) -> str:
     return f"{present} AND {name} {symbol} {_spss_value(rule.value, text)}"
 
 
+def _order(text_format: str) -> str:
+    """How a date in text is written: "iso", month first ("mdy") or day first ("dmy")."""
+    if text_format == "iso":
+        return "iso"
+    return "mdy" if text_format.startswith("%m") else "dmy"
+
+
+def _spss_moment(name: str, text_format: str, target: str, number: int) -> list[str]:
+    """A date and time in text read into a number of SPSS (seconds), whatever the language
+    of the computer: the date by its own format, the time, then the afternoon."""
+    date, time = f"#ddict_d{number}", f"#ddict_t{number}"
+    if text_format == "iso":
+        return [
+            f"COMPUTE {target} = NUMBER(SUBSTR(LTRIM({name}), 1, 10), SDATE10) + "
+            f"NUMBER(SUBSTR(LTRIM({name}), 12, 8), TIME8).",
+        ]
+    reading = "ADATE10" if _order(text_format) == "mdy" else "EDATE10"
+    lines = [
+        f"STRING {date} {time} (A40).",
+        f"COMPUTE {date} = SUBSTR(LTRIM({name}), 1, INDEX(LTRIM({name}), ' ') - 1).",
+        f"COMPUTE {time} = LTRIM(SUBSTR(LTRIM({name}), INDEX(LTRIM({name}), ' ') + 1)).",
+        f"COMPUTE {target} = NUMBER({date}, {reading}) + "
+        f"NUMBER(SUBSTR({time}, 1, INDEX(CONCAT({time}, ' '), ' ') - 1), TIME8).",
+    ]
+    if "%p" in text_format:
+        lines += [
+            f"IF (INDEX(UPCASE({time}), 'PM') > 0 AND XDATE.HOUR({target}) < 12) "
+            f"{target} = {target} + 43200.",
+            f"IF (INDEX(UPCASE({time}), 'AM') > 0 AND XDATE.HOUR({target}) = 12) "
+            f"{target} = {target} - 43200.",
+        ]
+    return lines
+
+
 def _spss_exclusions(project: Project, scores: list[Score]) -> list[str]:
     rules = project.exclusions.rules
     if not rules:
@@ -267,7 +301,7 @@ def _spss_exclusions(project: Project, scores: list[Score]) -> list[str]:
         ),
         "COMPUTE ddict_ordre = $CASENUM.",
     ]
-    conditions = []
+    conditions, temporary = [], []
     for number, rule in enumerate(rules, start=1):
         if isinstance(rule, ConditionRule):
             name, text = final[f"score:{rule.score}" if rule.score else rule.variable]
@@ -277,6 +311,12 @@ def _spss_exclusions(project: Project, scores: list[Score]) -> list[str]:
             conditions.append(f"NVALID({items}) < {rule.min_answered}")
         elif isinstance(rule, DurationRule):
             start, end = final[rule.start][0], final[rule.end][0]
+            if rule.text_format is not None:  # dates in text, read into numbers first
+                read_start, read_end = f"ddict_debut{number}", f"ddict_fin{number}"
+                lines += _spss_moment(start, rule.text_format, read_start, 2 * number - 1)
+                lines += _spss_moment(end, rule.text_format, read_end, 2 * number)
+                start, end = read_start, read_end
+                temporary.extend([read_start, read_end])
             span = f"({end} - {start})"
             conditions.append(
                 f"NOT MISSING({start}) AND NOT MISSING({end}) AND {span} >= 0 "
@@ -316,7 +356,7 @@ def _spss_exclusions(project: Project, scores: list[Score]) -> list[str]:
         "FREQUENCIES VARIABLES = ddict_exclusion.",
         "SELECT IF (ddict_exclusion = 0).",
         "EXECUTE.",
-        "DELETE VARIABLES ddict_ordre" + "".join(f" {f}" for f in flags) + ".",
+        "DELETE VARIABLES ddict_ordre" + "".join(f" {f}" for f in flags + temporary) + ".",
         "",
     ]
     return lines
@@ -401,6 +441,32 @@ def r_script(project: Project, today: str) -> str:
     return "\n".join(lines) + "\n"
 
 
+# A date and time in text read into seconds, whatever the language of the computer (R's
+# own reading of "PM" depends on it): the numbers of the date in their order, the time, the
+# afternoon.
+R_MOMENT = [
+    "ddict_moment <- function(x, ordre, douze) {",
+    "  x <- trimws(ddict_chaine(x))",
+    '  motif <- "^([0-9]{1,4})[-/]([0-9]{1,2})[-/]([0-9]{1,4})[ T]([0-9]{1,2}):([0-9]{2})'
+    '(:([0-9]{2}))?([.][0-9]+)? ?([AaPp][Mm])?$"',
+    "  vapply(regmatches(x, regexec(motif, x)), function(p) {",
+    "    if (length(p) == 0) return(NA_real_)",
+    "    n <- suppressWarnings(as.numeric(p[c(2, 3, 4, 5, 6, 8)]))",
+    "    if (is.na(n[6])) n[6] <- 0",
+    "    jour <- switch(ordre, iso = n[c(1, 2, 3)], mdy = n[c(3, 1, 2)], dmy = n[c(3, 2, 1)])",
+    "    heure <- n[4]",
+    "    if (douze) {",
+    '      apres <- toupper(p[10]) == "PM"',
+    "      if (apres && heure < 12) heure <- heure + 12",
+    "      if (!apres && heure == 12) heure <- 0",
+    "    }",
+    '    as.numeric(as.Date(sprintf("%04d-%02d-%02d", jour[1], jour[2], jour[3]))) * 86400 +',
+    "      heure * 3600 + n[5] * 60 + n[6]",
+    "  }, numeric(1))",
+    "}",
+]
+
+
 def _r_values(name: str, text: bool) -> str:
     return f"ddict_chaine({_r_column(name)})" if text else f"ddict_valeurs({_r_column(name)})"
 
@@ -439,6 +505,8 @@ def _r_exclusions(project: Project, scores: list[Score]) -> list[str]:
         "}",
         "ddict_exclusion <- integer(nrow(donnees))",
     ]
+    if any(isinstance(r, DurationRule) and r.text_format for r in rules):
+        lines += R_MOMENT
     for number, rule in enumerate(rules, start=1):
         if isinstance(rule, ConditionRule):
             name, text = final[f"score:{rule.score}" if rule.score else rule.variable]
@@ -448,10 +516,18 @@ def _r_exclusions(project: Project, scores: list[Score]) -> list[str]:
             condition = f"rowSums(!is.na(cbind({items}))) < {rule.min_answered}"
         elif isinstance(rule, DurationRule):
             start, end = _r_column(final[rule.start][0]), _r_column(final[rule.end][0])
-            lines.append(
-                f'ddict_secondes <- as.numeric(difftime(as.POSIXct({end}, tz = "UTC"), '
-                f'as.POSIXct({start}, tz = "UTC"), units = "secs"))'
-            )
+            if rule.text_format is not None:  # dates in text, read by their format
+                order = _r_text(_order(rule.text_format))
+                twelve = "TRUE" if "%p" in rule.text_format else "FALSE"
+                lines.append(
+                    f"ddict_secondes <- ddict_moment({end}, {order}, {twelve}) - "
+                    f"ddict_moment({start}, {order}, {twelve})"
+                )
+            else:
+                lines.append(
+                    f'ddict_secondes <- as.numeric(difftime(as.POSIXct({end}, tz = "UTC"), '
+                    f'as.POSIXct({start}, tz = "UTC"), units = "secs"))'
+                )
             limit = _number(rule.min_seconds)
             condition = f"ddict_vrai(ddict_secondes >= 0 & ddict_secondes < {limit})"
         elif isinstance(rule, StraightliningRule):

@@ -95,17 +95,27 @@ def _items(project: Project, group_id: str, found: list[str]) -> list[str]:
     return items
 
 
-def _date(project: Project, name: str, found: list[str]) -> None:
+def _date(project: Project, name: str, text_format: str | None, found: list[str]) -> None:
+    from ddict.profile.compute import TEXT_DATETIME_FORMATS
+
     if not _variable(project, name, found):
         return
     entry = project.variable(name)
-    if entry.profile.inferred_type != "datetime" or entry.file.storage_type != "numeric":
+    if entry.profile.inferred_type != "datetime":
         found.append(
             _(
-                "{name} : ce n'est pas une date enregistrée comme date dans le fichier ; la "
-                "durée ne se calcule que sur deux variables de date."
+                "{name} : ce n'est pas une date avec l'heure ; la durée ne se calcule qu'entre "
+                "deux variables de date et d'heure."
             ).format(name=name)
         )
+    elif (entry.file.storage_type == "numeric") != (text_format is None):
+        found.append(
+            _("{name} : le format de la date ne correspond pas à celui du fichier.").format(
+                name=name
+            )
+        )
+    elif text_format is not None and text_format not in TEXT_DATETIME_FORMATS:
+        found.append(_("Format de date inconnu : {format}.").format(format=text_format))
 
 
 def refusals(project: Project, rule: ExclusionRule) -> list[str]:
@@ -122,8 +132,8 @@ def refusals(project: Project, rule: ExclusionRule) -> list[str]:
                 )
             )
     elif isinstance(rule, DurationRule):
-        _date(project, rule.start, found)
-        _date(project, rule.end, found)
+        _date(project, rule.start, rule.text_format, found)
+        _date(project, rule.end, rule.text_format, found)
         if rule.start == rule.end:
             found.append(_("Le début et la fin sont la même variable."))
     elif isinstance(rule, StraightliningRule):
