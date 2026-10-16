@@ -25,6 +25,13 @@ Toute nouvelle dépendance est ajoutée à ce tableau après vérification de sa
 | statsmodels | ANOVA (Tukey), régression linéaire, facteurs d'inflation de la variance (D-071) | BSD-3-Clause | Oui | v0.9, 5 |
 | patsy, formulaic | Formules de modèles (requis par statsmodels) | BSD-2-Clause, MIT | Oui | v0.9, 5 |
 | interface-meta, wrapt | Utilitaires (requis par formulaic) | MIT, BSD-2-Clause | Oui | v0.9, 5 |
+| python-docx | Tableaux et figures APA dans un fichier Word (D-082) | MIT | Oui | v0.10, 3 |
+| lxml | XML du fichier Word (requis par python-docx) | BSD-3-Clause | Oui | v0.10, 3 |
+| matplotlib | Figures APA en image (D-082) | Licence matplotlib (fondée sur la PSF, permissive) | Oui | v0.10, 3 |
+| pillow | Images (requis par matplotlib) | MIT-CMU (HPND) | Oui | v0.10, 3 |
+| contourpy, cycler, kiwisolver | Calculs de tracé (requis par matplotlib) | BSD-3-Clause | Oui | v0.10, 3 |
+| fonttools, pyparsing | Polices et analyse de texte (requis par matplotlib) | MIT | Oui | v0.10, 3 |
+| packaging | Numéros de version (requis par matplotlib et statsmodels) | Apache-2.0 ou BSD-2-Clause | Oui | v0.10, 3 |
 
 ### Option « ia » : enrichissement par un modèle local
 

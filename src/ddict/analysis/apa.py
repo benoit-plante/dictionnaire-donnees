@@ -26,9 +26,11 @@ from ddict.analysis.data import PreparedData
 from ddict.analysis.models import _codes
 from ddict.analysis.results import MINUS, AnalysisResult, number, p_value
 from ddict.i18n import _
+from ddict.project import fingerprint
 from ddict.project.model import Project
 
 SMALL = 5
+NBSP = chr(0xA0)  # a no-break space
 
 # --- Texts. ---
 
@@ -185,6 +187,7 @@ class ApaDocument:
     tables: tuple[ApaTable, ...] = ()
     figures: tuple[ApaFigure, ...] = ()
     sentence: str = ""
+    fingerprint: str = ""  # of the codebook, short
 
 
 def _note(parts) -> Text:
@@ -229,6 +232,13 @@ class _Builder:
             )
         )
         self.figure_number += 1
+
+
+def _mid(label: str) -> str:
+    """A label inside a title: "score de stress", but "TCC" and "QFS total" stay."""
+    if len(label) > 1 and label[0].isupper() and label[1].islower():
+        return label[0].lower() + label[1:]
+    return label
 
 
 def _join(parts: Iterable[Text], separator: str = " ") -> Text:
@@ -276,8 +286,11 @@ def _table1(b: _Builder, book: Codebook, prepared: PreparedData, result: Analysi
             for c in _codes(book, group, kept[group])
         ]
     columns = [_left(_("Caractéristique"))]
-    columns += [_col(rich(f"{name} (", it("n"), f" = {len(part)})")) for name, part in parts]
-    columns.append(_col(rich(_("Total") + " (", it("N"), f" = {len(kept)})")))
+    # No-break spaces: "(n = 150)" never cut in two.
+    columns += [
+        _col(rich(f"{name} (", it("n"), f"{NBSP}={NBSP}{len(part)})")) for name, part in parts
+    ]
+    columns.append(_col(rich(_("Total") + " (", it("N"), f"{NBSP}={NBSP}{len(kept)})")))
     every = [part for _name, part in parts] + [kept]
     rows, missing, small = [], [], []
     for name in variables:
@@ -321,7 +334,7 @@ def _table1(b: _Builder, book: Codebook, prepared: PreparedData, result: Analysi
     title = _("Caractéristiques des participants")
     if group:
         title = _("Caractéristiques des participants selon {group}").format(
-            group=book.label(group).lower()
+            group=_mid(book.label(group))
         )
     b.table(title, columns, rows, note=[rich(" ".join(note))])
 
@@ -345,7 +358,7 @@ def _t_test(b: _Builder, book: Codebook, prepared: PreparedData, result: Analysi
     s = result.statistics
     outcome, group, names, samples = _two_groups(book, prepared, result)
     label = book.label(outcome)
-    title = _("{outcome} selon {group}").format(outcome=label, group=book.label(group).lower())
+    title = _("{outcome} selon {group}").format(outcome=label, group=_mid(book.label(group)))
     sizes_text = _join(
         [
             marked(_("{group} : {n} = {count}"), group=name, n=it("n"), count=len(x))
@@ -438,7 +451,7 @@ def _bars(b, book, label, group, names, samples) -> None:
     total = sum(len(x) for x in samples)
     b.figure(
         _("Moyenne de {outcome} selon {group}").format(
-            outcome=label, group=book.label(group).lower()
+            outcome=_mid(label), group=_mid(book.label(group))
         ),
         "bars",
         book.label(group),
@@ -477,7 +490,7 @@ def _anova(b: _Builder, book: Codebook, prepared: PreparedData, result: Analysis
     samples = [data.loc[data[group] == c, outcome].to_numpy(float) for c in codes]
     names = [book.category(group, c) for c in codes]
     label, group_label = book.label(outcome), book.label(group)
-    title = _("{outcome} selon {group}").format(outcome=label, group=group_label.lower())
+    title = _("{outcome} selon {group}").format(outcome=label, group=_mid(group_label))
     if result.options.get("method") == "kruskal_wallis":
         rows = [
             _row(nm, str(len(x)), apa(float(np.median(x))))
@@ -537,7 +550,7 @@ def _anova(b: _Builder, book: Codebook, prepared: PreparedData, result: Analysis
                     )
                 )
         b.table(
-            _("Comparaisons deux à deux de {outcome} (Tukey)").format(outcome=label),
+            _("Comparaisons deux à deux de {outcome} (Tukey)").format(outcome=_mid(label)),
             [
                 _left(_("Comparaison")),
                 _col(_("Différence")),
@@ -598,7 +611,7 @@ def _chi_square(
         note += marked(" " + _("Test exact de Fisher : {p}."), p=p_text(s["fisher_p"]))
     b.table(
         _("{rows} selon {columns}").format(
-            rows=book.label(row_name), columns=book.label(col_name).lower()
+            rows=book.label(row_name), columns=_mid(book.label(col_name))
         ),
         columns,
         rows,
@@ -607,7 +620,7 @@ def _chi_square(
     percent = observed / totals * 100
     b.figure(
         _("Pourcentage de {rows} selon {columns}").format(
-            rows=book.label(row_name).lower(), columns=book.label(col_name).lower()
+            rows=_mid(book.label(row_name)), columns=_mid(book.label(col_name))
         ),
         "grouped_bars",
         book.label(col_name),
@@ -707,7 +720,7 @@ def _correlation(
             + _("IC 95 % {ci}").format(ci=brackets(pair["ci_low"], pair["ci_high"], zero=False))
         )
     b.figure(
-        _("{y} selon {x}").format(y=book.label(c), x=book.label(a).lower()),
+        _("{y} selon {x}").format(y=book.label(c), x=_mid(book.label(a))),
         "scatter",
         book.label(a),
         book.label(c),
@@ -725,7 +738,8 @@ def _regression(
 ) -> None:
     s = result.statistics
     outcome = result.chosen["outcome"][0]
-    labels = [r[0] for r in result.tables[0].rows]  # the constant, then each term
+    # The constant in the language asked, then each term as the analysis named it.
+    labels = [_("Constante"), *[r[0] for r in result.tables[0].rows[1:]]]
     rows = []
     for i, label in enumerate(labels):
         rows.append(
@@ -770,7 +784,7 @@ def _regression(
     if references:
         note += rich(" " + " ".join(references))
     b.table(
-        _("Régression de {outcome}").format(outcome=book.label(outcome).lower()),
+        _("Régression de {outcome}").format(outcome=_mid(book.label(outcome))),
         [
             _left(_("Prédicteur")),
             _col(rich(it("b"))),
@@ -786,7 +800,7 @@ def _regression(
     terms = range(1, len(labels))
     b.figure(
         _("Coefficients standardisés de la régression de {outcome}").format(
-            outcome=book.label(outcome).lower()
+            outcome=_mid(book.label(outcome))
         ),
         "coefficients",
         _("Coefficient standardisé (β)"),
@@ -841,6 +855,7 @@ def describe(
             tuple(builder.tables),
             tuple(builder.figures),
             result.sentence,
+            fingerprint.short(project),
         )
 
 

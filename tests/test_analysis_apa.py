@@ -26,7 +26,8 @@ def _cells(table):
 
 
 def _headers(table):
-    return [plain(c.header) for c in table.columns]
+    """The headers, their no-break spaces as spaces."""
+    return [plain(c.header).replace(chr(0xA0), " ") for c in table.columns]
 
 
 # --- Numbers. ---

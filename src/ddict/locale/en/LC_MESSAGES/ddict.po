@@ -1214,6 +1214,9 @@ msgstr "Files written next to the project: {names}."
 msgid "Fichiers écrits à côté du projet : {xlsx} et {md}."
 msgstr "Files written next to the project: {xlsx} and {md}."
 
+msgid "Figure"
+msgstr "Figure"
+
 msgid "Filtre"
 msgstr "Filter"
 
@@ -2010,6 +2013,9 @@ msgstr "Not documented: {gaps}."
 
 msgid "Note"
 msgstr "Note"
+
+msgid "Note."
+msgstr "Note."
 
 msgid "Notes"
 msgstr "Notes"
@@ -2996,6 +3002,9 @@ msgstr "Check again"
 
 msgid "Welch (variances inégales permises)"
 msgstr "Welch (unequal variances allowed)"
+
+msgid "Word (tableaux et figures APA)"
+msgstr "Word (APA tables and figures)"
 
 #, python-brace-format
 msgid "[{low} ; {high}]"
