@@ -1,5 +1,6 @@
 """Command line: `ddict profiler`, `exporter`, `documenter`, `questionnaire`, `enrichir`,
-`rattacher`, `evaluer`, `analyser`, `carnet`, `resultats`, `conseiller`, `reviser`."""
+`rattacher`, `evaluer`, `analyser`, `carnet`, `resultats`, `exclusions`, `conseiller`,
+`reviser`."""
 
 from __future__ import annotations
 
@@ -199,6 +200,8 @@ NOTEBOOK_ACTIONS = {
     "confirm": "confirm",
     "numeros": "numbers",
     "numbers": "numbers",
+    "echantillon": "sample",
+    "sample": "sample",
 }
 OPTION_ARGUMENTS = {
     "method": "methode",
@@ -318,6 +321,13 @@ def notebook_lines(project, notebook, statuses) -> list[str]:
             lines.append(f"   {entry.computed.sentence}")
         if entry.pending is not None and entry.pending.sentence:
             lines.append("   " + _("Nouveau : {sentence}").format(sentence=entry.pending.sentence))
+    method = by_id.get(nb.METHOD)
+    if method is not None:
+        lines.append(f"{nb.METHOD}. {_('Méthode')} — {state_text(method.state)}")
+        if method.reason:
+            lines.append(f"   {method.reason}")
+        for difference in method.differences:
+            lines.append(f"   {difference_text(difference)}")
     lines.append(numbering_text(notebook))
     return lines
 
@@ -347,7 +357,8 @@ def cmd_notebook(args: argparse.Namespace) -> int:
                                 notebook)  # fmt: skip
     except nb.NotebookError as error:
         return _notebook_error(error)
-    if code == 0 and (notebook.entries or path.is_file()):
+    sample = NOTEBOOK_ACTIONS[args.action] == "sample"
+    if code == 0 and (notebook.entries or path.is_file() or sample):
         nb.save_notebook(notebook, path)
     return code
 
@@ -384,6 +395,17 @@ def _notebook_action(action, args, project, project_path, notebook) -> int:
             nb.retain(notebook, entry_id, action == "retain")
         text = _("Retenues : {ids}") if action == "retain" else _("Écartées : {ids}")
         print(text.format(ids=", ".join(args.numeros)))
+    elif action == "sample":
+        if args.vider:
+            nb.describe_sample(notebook, project, [])
+        elif args.variables:
+            nb.describe_sample(notebook, project, args.variables)
+        names = nb.sample_names(notebook, project)
+        print(
+            _("Variables qui décrivent l'échantillon : {names}").format(
+                names=", ".join(names) or _("aucune")
+            )
+        )
     elif action == "numbers":
         if args.tableau is not None:
             notebook.first_table = max(1, args.tableau)
@@ -392,7 +414,7 @@ def _notebook_action(action, args, project, project_path, notebook) -> int:
         print(numbering_text(notebook))
     else:  # list, confirm: recompute what the decisions changed since
         prepared, reason = _database(project, project_path, args.base)
-        statuses = check.check_all(notebook, project, prepared, today=today, reason=reason)
+        statuses = check.check_everything(notebook, project, prepared, today=today, reason=reason)
         if action == "list":
             for line in notebook_lines(project, notebook, statuses):
                 print(line)
@@ -405,12 +427,13 @@ def _notebook_action(action, args, project, project_path, notebook) -> int:
             print(_("Aucun changement à confirmer."))
         for entry_id in ids or []:
             check.confirm(notebook, entry_id)
-            print(_("Confirmée : {id}").format(id=entry_id))
+            print(_("Confirmée : {id}").format(id=check.waiting_text([entry_id])))
     return 0
 
 
 def cmd_results(args: argparse.Namespace) -> int:
     from ddict.analysis import notebook as nb
+    from ddict.analysis.notebook_check import waiting_text
     from ddict.analysis.notebook_export import ExportBlocked, write_results
 
     project_path = Path(args.projet)
@@ -436,15 +459,158 @@ def cmd_results(args: argparse.Namespace) -> int:
         nb.save_notebook(notebook, path)  # what changed waits in the notebook
         print(
             _(
-                "Des analyses retenues ont changé : {ids}. Voyez les différences avec "
-                "« ddict carnet lister », puis confirmez-les avec « ddict carnet confirmer »."
-            ).format(ids=", ".join(error.ids)),
+                "À confirmer avant de produire le document : {ids}. Voyez les différences "
+                "avec « ddict carnet lister », puis confirmez-les avec « ddict carnet "
+                "confirmer »."
+            ).format(ids=waiting_text(error.ids)),
             file=sys.stderr,
         )
         return EXIT_ERROR
     nb.save_notebook(notebook, path)
     for written_path in written:
         print(_("Fichier écrit : {path}").format(path=written_path))
+    return 0
+
+
+# --- The exclusion rules (v0.12): `ddict exclusions`. ---
+
+EXCLUSION_ACTIONS = {
+    "lister": "list",
+    "list": "list",
+    "ajouter": "add",
+    "add": "add",
+    "retirer": "remove",
+    "remove": "remove",
+    "deplacer": "move",
+    "move": "move",
+    "signaux": "signals",
+    "signals": "signals",
+}
+
+
+def exclusion_lines(project, flow) -> list[str]:
+    """The rules in their rank, with who each excluded and the counts of the flow, as
+    `ddict exclusions lister` prints them."""
+    from ddict.project.exclusions import rule_text
+
+    rules = project.exclusions.rules
+    if not rules:
+        return [_("Aucune règle d'exclusion : toutes les réponses sont analysées.")]
+    counts = dict(flow.excluded) if flow is not None else {}
+    lines = []
+    for rank, rule in enumerate(rules, start=1):
+        line = f"{rank}. {rule.id} — {rule.reason} : {rule_text(rule)}"
+        if rule.id in counts:
+            line += " — " + _("{n} exclues").format(n=counts[rule.id])
+        lines.append(line)
+        if rule.source:
+            lines.append("   " + _("Source : {source}").format(source=rule.source))
+    if flow is not None:
+        lines.append(
+            _(
+                "Réponses reçues : {start} ; exclues : {excluded} ; échantillon analysé : "
+                "{analysed}."
+            ).format(start=flow.start, excluded=flow.start - flow.analysed, analysed=flow.analysed)
+        )
+    return lines
+
+
+def _whole_number(text: str) -> int:
+    from ddict.project.exclusions import ExclusionRefused
+
+    try:
+        return int(text)
+    except ValueError:
+        raise ExclusionRefused(
+            [_("« {value} » n'est pas un nombre entier.").format(value=text)]
+        ) from None
+
+
+def _rule_data(args: argparse.Namespace, project, project_path: Path) -> dict:
+    """The fields of the rule the command line describes. Raises ExclusionRefused."""
+    from ddict.analysis.quality import duration_rule
+    from ddict.project import exclusions as ex
+
+    if args.condition or args.score:
+        what, operator, *values = args.condition or args.score
+        data = ex.condition_data(project, what, operator, values, score=bool(args.score))
+    elif args.completude:
+        group, count = args.completude
+        data = {"kind": "completeness", "group": group, "min_answered": _whole_number(count)}
+    elif args.duree:
+        start, end, seconds = args.duree
+        prepared, reason = _database(project, project_path, args.base)
+        if prepared is None:
+            raise ex.ExclusionRefused([reason])
+        data = duration_rule(project, prepared, start, end, ex.typed_number(str(seconds)))
+    elif args.ligne_droite:
+        data = {"kind": "straightlining", "group": args.ligne_droite}
+    else:
+        names = [ex.original(project, n) for n in args.doublons]
+        data = {"kind": "duplicate", "variables": names}
+    data["reason"] = args.raison
+    if args.source:
+        data["source"] = args.source
+    return data
+
+
+def cmd_exclusions(args: argparse.Namespace) -> int:
+    from ddict.analysis.quality import proposed_dates, signal_lines
+    from ddict.project import exclusions as ex
+
+    project_path = Path(args.projet)
+    project = load_project(project_path)
+    action = EXCLUSION_ACTIONS[args.action]
+    if action in ("list", "signals"):
+        prepared, reason = _database(project, project_path, args.base)
+        if action == "list":
+            for line in exclusion_lines(project, prepared.flow if prepared else None):
+                print(line)
+            if prepared is None and project.exclusions.rules:
+                print(reason, file=sys.stderr)
+            return 0
+        if prepared is None:
+            print(reason, file=sys.stderr)
+            return EXIT_ERROR
+        dates = proposed_dates(project)
+        if args.debut and args.fin:
+            dates = (ex.original(project, args.debut), ex.original(project, args.fin))
+        duplicate_on = [ex.original(project, n) for n in args.doublons] if args.doublons else None
+        try:
+            lines = signal_lines(project, prepared, dates, args.duree_min, duplicate_on)
+        except KeyError as error:
+            print(_("{name} : variable inconnue du projet.").format(name=error.args[0]),
+                  file=sys.stderr)  # fmt: skip
+            return EXIT_ERROR
+        for line in lines:
+            print(line)
+        return 0
+    try:
+        if action == "add":
+            rule = ex.add(project, _rule_data(args, project, project_path))
+            print(_("Règle ajoutée : {id} — {text}").format(id=rule.id, text=ex.rule_text(rule)))
+        elif action == "remove":
+            ex.remove(project, args.numero)
+            print(_("Règle retirée : {id}").format(id=args.numero))
+        else:
+            ex.move(project, args.numero, args.rang)
+            rank = [r.id for r in project.exclusions.rules].index(args.numero) + 1
+            print(_("{id} est maintenant au rang {rank}.").format(id=args.numero, rank=rank))
+    except ex.ExclusionRefused as error:
+        print(_("Règle refusée :"), file=sys.stderr)
+        for reason in error.reasons:
+            print(f"- {reason}", file=sys.stderr)
+        return EXIT_ERROR
+    save_project(project, project_path)
+    from ddict.analysis import notebook as nb
+
+    if nb.notebook_path(project_path).is_file():
+        print(
+            _(
+                "Les analyses du carnet seront recalculées : voyez ce qui a changé avec "
+                "« ddict carnet lister »."
+            )
+        )
     return 0
 
 
@@ -1071,7 +1237,7 @@ def build_parser() -> argparse.ArgumentParser:
         aliases=["notebook"],
         help=_(
             "Le carnet d'analyses du projet : lister, ajouter, retirer, déplacer, retenir, "
-            "écarter, confirmer, numéroter."
+            "écarter, confirmer, numéroter, décrire l'échantillon."
         ),
     )
     actions = notebook_command.add_subparsers(dest="action", required=True)
@@ -1122,6 +1288,17 @@ def build_parser() -> argparse.ArgumentParser:
     numbers.add_argument("projet", help=_("Fichier projet (.dd.json)."))
     numbers.add_argument("--tableau", "--table", type=int, help=_("Premier tableau (défaut : 1)."))
     numbers.add_argument("--figure", type=int, help=_("Première figure (défaut : 1)."))
+    sample = actions.add_parser(
+        "echantillon",
+        aliases=["sample"],
+        help=_(
+            "Les variables qui décrivent l'échantillon analysé dans la Méthode (p. ex. l'âge "
+            "et le genre), dans cet ordre ; sans variable, les montrer."
+        ),
+    )
+    sample.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    sample.add_argument("variables", nargs="*", help=_("Noms des variables."))
+    sample.add_argument("--vider", "--clear", action="store_true", help=_("N'en garder aucune."))
     for action in (listed, added, confirmed):
         action.add_argument(
             "--base",
@@ -1134,8 +1311,9 @@ def build_parser() -> argparse.ArgumentParser:
         "resultats",
         aliases=["results"],
         help=_(
-            "Produire le document des résultats des analyses retenues du carnet, recalculées : "
-            "Word, graphiques Excel et script R maître, à côté du projet."
+            "Produire le document « Méthode et Résultats » : la Méthode, puis les analyses "
+            "retenues du carnet, recalculées ; Word, graphiques Excel et script R maître, à "
+            "côté du projet."
         ),
     )
     results.add_argument("projet", help=_("Fichier projet (.dd.json)."))
@@ -1149,6 +1327,120 @@ def build_parser() -> argparse.ArgumentParser:
         help=_("Langue du document (défaut : celle de l'interface)."),
     )
     results.set_defaults(handler=cmd_results)
+
+    exclusions_command = commands.add_parser(
+        "exclusions",
+        help=_(
+            "Les règles d'exclusion du projet : lister avec leurs effectifs, ajouter, retirer, "
+            "déplacer ; voir les signaux de qualité de la passation."
+        ),
+    )
+    rule_actions = exclusions_command.add_subparsers(dest="action", required=True)
+    rules_listed = rule_actions.add_parser(
+        "lister",
+        aliases=["list"],
+        help=_("Lister les règles dans leur ordre, avec combien chacune exclut."),
+    )
+    rules_listed.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    rule_added = rule_actions.add_parser(
+        "ajouter",
+        aliases=["add"],
+        help=_("Ajouter une règle à la fin de la liste, avec sa raison."),
+    )
+    rule_added.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    kinds = rule_added.add_mutually_exclusive_group(required=True)
+    kinds.add_argument(
+        "--condition",
+        nargs="+",
+        metavar="TERME",
+        help=_(
+            "Une condition sur une variable : VARIABLE OPÉRATEUR [VALEUR…], p. ex. "
+            "« age lt 18 », « consentement eq 2 », « groupe manquant ». Opérateurs : eq, ne, "
+            "lt, le, gt, ge, parmi (in), manquant (missing)."
+        ),
+    )
+    kinds.add_argument(
+        "--score",
+        nargs="+",
+        metavar="TERME",
+        help=_("Une condition sur le score d'un groupe : GROUPE OPÉRATEUR VALEUR."),
+    )
+    kinds.add_argument(
+        "--completude",
+        "--completeness",
+        nargs=2,
+        metavar=("GROUPE", "MIN"),
+        help=_("Moins de MIN items du groupe répondus."),
+    )
+    kinds.add_argument(
+        "--duree",
+        "--duration",
+        nargs=3,
+        metavar=("DEBUT", "FIN", "SECONDES"),
+        help=_("Une passation plus courte que SECONDES ; exige --source."),
+    )
+    kinds.add_argument(
+        "--ligne-droite",
+        "--straightlining",
+        metavar="GROUPE",
+        help=_("Tous les items du groupe répondus, avec la même valeur."),
+    )
+    kinds.add_argument(
+        "--doublons",
+        "--duplicates",
+        nargs="+",
+        metavar="VARIABLE",
+        help=_("Une réponse qui en répète une autre sur ces variables ; la première est gardée."),
+    )
+    rule_added.add_argument(
+        "--raison", "--reason", required=True, help=_("La raison, en clair, telle que publiée.")
+    )
+    rule_added.add_argument(
+        "--source", help=_("D'où vient la règle ou son seuil (p. ex. un procès-verbal).")
+    )
+    rule_removed = rule_actions.add_parser(
+        "retirer", aliases=["remove"], help=_("Retirer une règle.")
+    )
+    rule_removed.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    rule_removed.add_argument("numero", help=_("Numéro de la règle, p. ex. E2."))
+    rule_moved = rule_actions.add_parser(
+        "deplacer", aliases=["move"], help=_("Mettre une règle à un autre rang.")
+    )
+    rule_moved.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    rule_moved.add_argument("numero", help=_("Numéro de la règle, p. ex. E2."))
+    rule_moved.add_argument("rang", type=int, help=_("Son nouveau rang, 1 pour la première."))
+    signals = rule_actions.add_parser(
+        "signaux",
+        aliases=["signals"],
+        help=_(
+            "Les signaux de qualité de la passation, parmi les personnes que les règles "
+            "gardent : durées, lignes droites, doublons. Aucun n'est appliqué."
+        ),
+    )
+    signals.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    signals.add_argument("--debut", "--start", help=_("Variable de la date de début."))
+    signals.add_argument("--fin", "--end", help=_("Variable de la date de fin."))
+    signals.add_argument(
+        "--duree-min",
+        "--min-duration",
+        type=float,
+        metavar="SECONDES",
+        help=_("Compter les passations plus courtes que ce seuil, choisi par l'équipe."),
+    )
+    signals.add_argument(
+        "--doublons",
+        "--duplicates",
+        nargs="+",
+        metavar="VARIABLE",
+        help=_("Les variables des doublons (défaut : celles que la plateforme désigne)."),
+    )
+    for action in (rules_listed, rule_added, signals):
+        action.add_argument(
+            "--base",
+            "--database",
+            help=_("La base d'origine, si elle n'est pas à côté du projet."),
+        )
+    exclusions_command.set_defaults(handler=cmd_exclusions)
 
     advise_command = commands.add_parser(
         "conseiller",

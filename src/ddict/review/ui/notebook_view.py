@@ -88,7 +88,7 @@ def _statuses(project: Project, notebook: nb.Notebook, prepared) -> list[check.S
     before = nb.dumps(notebook)
     reason = _("La base n'a pas été trouvée.") if prepared is None else ""
     with st.spinner(_("Recalcul du carnet…")):
-        statuses = check.check_all(
+        statuses = check.check_everything(
             notebook, project, prepared, today=date.today().isoformat(), reason=reason
         )
     if nb.dumps(notebook) != before:
@@ -108,9 +108,9 @@ def _write(project: Project) -> None:
         st.session_state.message = (
             "error",
             _(
-                "Des analyses retenues ont changé : {ids}. Confirmez leur nouveau calcul avant "
-                "de produire les résultats."
-            ).format(ids=", ".join(error.ids)),
+                "À confirmer avant de produire le document : {ids}. Voyez ce qui a changé "
+                "plus haut."
+            ).format(ids=check.waiting_text(error.ids)),
             "notebook-write",
         )
         return
@@ -154,8 +154,7 @@ def _entry(project: Project, notebook: nb.Notebook, rank: int, entry, status) ->
         if entry.computed.sentence:
             st.markdown(f"> {entry.computed.sentence}")
         if status.state == "changed":
-            st.markdown(_("**Ce qui a changé depuis le dernier calcul confirmé :**"))
-            st.markdown("\n".join(f"- {check.difference_text(d)}" for d in status.differences))
+            _changes(status)
             if entry.pending is not None and entry.pending.sentence:
                 st.markdown(_("Nouveau calcul :") + f"\n> {entry.pending.sentence}")
             st.button(
@@ -203,6 +202,41 @@ def _entry(project: Project, notebook: nb.Notebook, rank: int, entry, status) ->
             )
 
 
+def _confirm_all(notebook: nb.Notebook, ids: list[str]) -> None:
+    for entry_id in ids:
+        check.confirm(notebook, entry_id)
+
+
+def _changes(status) -> None:
+    st.markdown(_("**Ce qui a changé depuis le dernier calcul confirmé :**"))
+    st.markdown("\n".join(f"- {check.difference_text(d)}" for d in status.differences))
+
+
+def _method(status) -> None:
+    """The Method's figures (v0.12, D-100), confirmed as an analysis's."""
+    with st.container(border=True):
+        title, state = st.columns([3, 1])
+        title.markdown(f"**{nb.METHOD}. {_('Méthode')}**")
+        state.markdown(f"{ICONS[status.state]} {check.state_text(status.state)}")
+        st.caption(
+            _(
+                "Les chiffres de la Méthode : les exclusions, la description de l'échantillon "
+                "et la fidélité des scores. Ils se règlent sur la page Méthode."
+            )
+        )
+        if status.reason:
+            st.caption(status.reason)
+        if status.state == "changed":
+            _changes(status)
+            st.button(
+                _("Confirmer les nouveaux chiffres"),
+                key="notebook-confirm-M",
+                type="primary",
+                on_click=_change,
+                args=(check.confirm, nb.METHOD),
+            )
+
+
 def page(project: Project) -> None:
     st.header(_("Carnet"))
     st.caption(
@@ -229,15 +263,32 @@ def page(project: Project) -> None:
     statuses = _statuses(project, notebook, prepared)
     if not nb.belongs(notebook, project):
         top.warning(_("Ce carnet a été fait avec une autre base que celle du projet."))
+    changed = [s.entry_id for s in statuses if s.state == "changed"]
+    if changed:
+        st.warning(
+            _(
+                "Une décision a changé des chiffres : {ids}. Voyez ce qui a changé ci-dessous, "
+                "puis confirmez un à un ou tout à la fois."
+            ).format(ids=check.waiting_text(changed))
+        )
+        st.button(
+            _("Tout confirmer"),
+            key="notebook-confirm-all",
+            icon=":material/done_all:",
+            on_click=_change,
+            args=(_confirm_all, changed),
+        )
     c.show_message("notebook-top")
     by_id = {s.entry_id: s for s in statuses}
     for rank, entry in enumerate(notebook.entries, start=1):
         _entry(project, notebook, rank, entry, by_id[entry.id])
-    st.subheader(_("Document des résultats"))
+    if nb.METHOD in by_id:
+        _method(by_id[nb.METHOD])
+    st.subheader(_("Document « Méthode et Résultats »"))
     st.caption(
         _(
-            "Les analyses retenues, recalculées sur la base avec les décisions en vigueur, "
-            "numérotées dans l'ordre du carnet : un document Word, ses graphiques Excel et le "
+            "La Méthode, puis les analyses retenues, recalculées sur la base avec les décisions "
+            "en vigueur, numérotées à la suite : un document Word, ses graphiques Excel et le "
             "script R maître, à côté du projet. Ces résultats viennent des données de l'étude : "
             "rangez-les avec soin."
         )
@@ -264,11 +315,13 @@ def page(project: Project) -> None:
     blocked = check.blocking(notebook, statuses)
     if blocked:
         st.warning(
-            _("À confirmer avant de produire les résultats : {ids}.").format(ids=", ".join(blocked))
+            _("À confirmer avant de produire le document : {ids}.").format(
+                ids=check.waiting_text(blocked)
+            )
         )
     retained = any(e.retained for e in notebook.entries)
     st.button(
-        _("Produire les résultats"),
+        _("Produire le document"),
         key="notebook-write",
         type="primary",
         disabled=prepared is None or bool(blocked) or not retained,

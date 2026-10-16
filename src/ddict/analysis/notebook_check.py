@@ -63,13 +63,16 @@ def _digits(key: str) -> int:
     """Three decimals for a p, two for the rest, none for a count."""
     if key in ("n", "n_used", "n_excluded", "n1", "n2", "df1", "df2") or key.startswith("n_"):
         return 0
+    # The Method's counts (v0.12): by rule, of an alpha, of a variable of the sample.
+    if key.startswith(("excluded_", "alpha_n_")) or key.endswith("_n"):
+        return 0
     if key == "p" or key.startswith(("p_", "tukey_p_", "fisher_p", "levene_p", "shapiro_p")):
         return 3
     return 2
 
 
 NO_ZERO = {"r", "p", "V", "rb", "r2", "r2adj", "eta2", "omega2", "epsilon2", "ci_low", "ci_high"}
-NO_ZERO_STARTS = ("p_", "r_", "beta_", "levene_p", "shapiro_p", "fisher_p", "tukey_p_")
+NO_ZERO_STARTS = ("p_", "r_", "beta_", "levene_p", "shapiro_p", "fisher_p", "tukey_p_", "alpha_")
 
 
 def _zero(key: str) -> bool:
@@ -253,3 +256,23 @@ def state_text(state: State) -> str:
 def difference_text(difference: Difference) -> str:
     """ "n : 200 → 197"."""
     return f"{difference.key} : {difference.shown_before} → {difference.shown_after}"
+
+
+def waiting_text(ids: list[str]) -> str:
+    """ "A2, la Méthode (M)": what waits for a confirmation, the Method said in words."""
+    return ", ".join(_("la Méthode (M)") if i == nb.METHOD else i for i in ids)
+
+
+def check_everything(
+    notebook: nb.Notebook,
+    project: Project,
+    prepared: PreparedData | None,
+    *,
+    today: str,
+    reason: str = "",
+) -> list[Status]:
+    """Every entry's state, then the Method's, when the notebook holds an analysis."""
+    statuses = check_all(notebook, project, prepared, today=today, reason=reason)
+    if notebook.entries:
+        statuses.append(check_method(notebook, project, prepared, today=today, reason=reason))
+    return statuses

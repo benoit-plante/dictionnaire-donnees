@@ -300,6 +300,24 @@ def retain(notebook: Notebook, entry_id: str, retained: bool) -> None:
     find(notebook, entry_id).retained = retained
 
 
+def describe_sample(notebook: Notebook, project: Project, names: list[str]) -> None:
+    """The variables that describe the sample analysed (v0.12), by their final names, in
+    this order. Raises NotebookError for a name the project does not know."""
+    notebook.method.variables = [reference(project, name) for name in dict.fromkeys(names)]
+
+
+def sample_names(notebook: Notebook, project: Project) -> list[str]:
+    """The final names of the variables that describe the sample; those whose key leads
+    nowhere any more are left out."""
+    found = []
+    for ref in notebook.method.variables:
+        try:
+            found.append(resolve(project, ref))
+        except NotebookError:
+            continue
+    return found
+
+
 # --- The file. ---
 
 

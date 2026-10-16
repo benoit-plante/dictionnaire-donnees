@@ -144,3 +144,115 @@ def duplicates(project: Project, prepared: PreparedData, variables: list[str]) -
     complete = ~pd.concat([blank(data[c]) for c in columns], axis=1).any(axis=1)
     count = int(data.loc[complete, columns].duplicated(keep="first").sum())
     return Duplicates(tuple(variables), count)
+
+
+def seconds_text(value: float | None) -> str:
+    """ "312 s (5 min 12 s)"; a dash when there is no duration."""
+    if value is None:
+        return "—"
+    whole = round(value)
+    if whole < 60:
+        return f"{whole} s"
+    minutes, rest = divmod(whole, 60)
+    return f"{whole} s ({minutes} min {rest} s)" if rest else f"{whole} s ({minutes} min)"
+
+
+def signal_lines(
+    project: Project,
+    prepared: PreparedData,
+    dates: tuple[str, str] | None,
+    threshold: float | None = None,
+    duplicate_on: list[str] | None = None,
+) -> list[str]:
+    """The quality signals in plain words (`ddict exclusions signaux`): aggregates only."""
+    from ddict.i18n import _
+
+    lines = [
+        _("Signaux de qualité, parmi les {n} personnes que les règles gardent :").format(
+            n=len(prepared.table)
+        )
+    ]
+    if dates is None:
+        found_dates = date_variables(project)
+        if found_dates:
+            lines.append(
+                _("Durée : choisissez le début et la fin parmi {names}.").format(
+                    names=", ".join(found_dates)
+                )
+            )
+        else:
+            lines.append(_("Durée : aucune variable de date et d'heure."))
+    else:
+        try:
+            found = durations(project, prepared, *dates)
+        except ValueError:
+            lines.append(
+                _("Durée : {start} et {end} ne se lisent pas comme des dates.").format(
+                    start=dates[0], end=dates[1]
+                )
+            )
+        else:
+            lines.append(
+                _(
+                    "Durée, de {start} à {end} : {n} durées ({invalid} manquantes ou "
+                    "impossibles) ; médiane {median}, 5e centile {p5}, 10e centile {p10}."
+                ).format(
+                    start=found.start,
+                    end=found.end,
+                    n=found.n,
+                    invalid=found.invalid,
+                    median=seconds_text(found.median),
+                    p5=seconds_text(found.p5),
+                    p10=seconds_text(found.p10),
+                )
+            )
+            if threshold is not None:
+                lines.append(
+                    _("   Moins de {threshold} : {count} personnes.").format(
+                        threshold=seconds_text(threshold),
+                        count=below(project, prepared, found, threshold),
+                    )
+                )
+    for grid in grids(project, prepared):
+        lines.append(
+            _("Ligne droite, {group} ({k} items) : {count} personnes.").format(
+                group=grid.group, k=grid.items, count=grid.count
+            )
+        )
+    # Each proposed variable on its own; the variables a person chose, together.
+    sets = [duplicate_on] if duplicate_on else [[n] for n in duplicate_variables(project)]
+    for variables in sets:
+        found = duplicates(project, prepared, variables)
+        lines.append(
+            _("Doublons sur {names} : {count} réponses répètent une réponse antérieure.").format(
+                names=", ".join(found.variables), count=found.count
+            )
+        )
+    if not sets:
+        lines.append(_("Doublons : aucune variable proposée."))
+    return lines
+
+
+def duration_rule(
+    project: Project, prepared: PreparedData, start: str, end: str, min_seconds: float
+) -> dict:
+    """A duration rule's fields (without its reason and source), with the way its dates
+    are read, found in the data. Raises ExclusionRefused when their texts are not dates."""
+    from ddict.i18n import _
+    from ddict.project.exclusions import ExclusionRefused, original
+
+    start, end = original(project, start), original(project, end)
+    data: dict = {"kind": "duration", "start": start, "end": end, "min_seconds": min_seconds}
+    names = w.names_of(project)
+    if start in names and end in names and start != end:
+        try:
+            data["text_format"] = text_format(project, prepared, start, end)
+        except ValueError:
+            raise ExclusionRefused(
+                [
+                    _("{start} et {end} ne se lisent pas comme des dates.").format(
+                        start=start, end=end
+                    )
+                ]
+            ) from None
+    return data

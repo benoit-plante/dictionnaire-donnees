@@ -150,12 +150,27 @@ def refusals(project: Project, rule: ExclusionRule) -> list[str]:
     return found
 
 
+def _incomplete(error: ValidationError) -> list[str]:
+    """What a rule lacks, in plain words."""
+    found = []
+    for problem in error.errors():
+        field = str(problem["loc"][-1]) if problem["loc"] else ""
+        if field == "source":
+            found.append(_("Un seuil de durée est un choix de l'équipe : donnez sa source."))
+        elif field == "reason":
+            found.append(_("Donnez la raison de la règle, en clair."))
+        else:
+            text = _("Règle incomplète : {field} ({detail}).")
+            found.append(text.format(field=field, detail=problem["msg"]))
+    return list(dict.fromkeys(found))
+
+
 def add(project: Project, data: dict) -> ExclusionRule:
     """A new rule at the end, with the next identifier. Raises ExclusionRefused."""
     try:
         rule = _RULE.validate_python({**data, "id": f"E{project.exclusions.next_id}"})
     except ValidationError as error:
-        raise ExclusionRefused([_("Règle incomplète : {detail}").format(detail=error)]) from error
+        raise ExclusionRefused(_incomplete(error)) from None
     found = refusals(project, rule)
     if found:
         raise ExclusionRefused(found)
@@ -182,3 +197,114 @@ def move(project: Project, rule_id: str, position: int) -> None:
     rules.remove(rule)
     position = max(1, min(position, len(rules) + 1))
     rules.insert(position - 1, rule)
+
+
+# --- What the page and `ddict exclusions` share (v0.12, step 8). ---
+
+SYMBOLS = {"eq": "=", "ne": "≠", "lt": "<", "le": "≤", "gt": ">", "ge": "≥"}
+
+
+def original(project: Project, name: str) -> str:
+    """A variable's original name, given by its original or its final name."""
+    from ddict.export import wording as w
+
+    if any(e.name == name for e in project.variables):
+        return name
+    for first, final in w.names_of(project).items():
+        if final == name:
+            return first
+    return name  # unknown: `refusals` says so
+
+
+def typed(project: Project, name: str, text: str):
+    """A value typed by a person, as the variable holds it: a number for a numeric
+    variable (ExclusionRefused when it is not one), else the text."""
+    text = text.strip()
+    try:
+        entry = project.variable(name)
+    except KeyError:
+        return text
+    if entry.file.storage_type != "numeric":
+        return text
+    try:
+        number = float(text.replace(",", "."))
+    except ValueError:
+        raise ExclusionRefused(
+            [_("{name} : « {value} » n'est pas un nombre.").format(name=name, value=text)]
+        ) from None
+    return int(number) if number.is_integer() else number
+
+
+def _value(value) -> str:
+    from ddict.export import wording as w
+
+    return w.code_text(value)
+
+
+def rule_text(rule: ExclusionRule) -> str:
+    """The condition of a rule, in plain words: "age < 18", "doublon sur email"."""
+    if isinstance(rule, ConditionRule):
+        what = _("score de {group}").format(group=rule.score) if rule.score else rule.variable
+        if rule.operator == "missing":
+            return _("{what} manquant").format(what=what)
+        if rule.operator == "in":
+            values = ", ".join(_value(v) for v in rule.value)
+            return _("{what} parmi {values}").format(what=what, values=values)
+        return f"{what} {SYMBOLS[rule.operator]} {_value(rule.value)}"
+    if isinstance(rule, CompletenessRule):
+        return _("moins de {m} items de {group} répondus").format(
+            m=rule.min_answered, group=rule.group
+        )
+    if isinstance(rule, DurationRule):
+        return _("passation de moins de {seconds} s, de {start} à {end}").format(
+            seconds=_value(rule.min_seconds), start=rule.start, end=rule.end
+        )
+    if isinstance(rule, StraightliningRule):
+        return _("tous les items de {group} à la même valeur").format(group=rule.group)
+    return _("doublon sur {names}, la première réponse gardée").format(
+        names=", ".join(rule.variables)
+    )
+
+
+# How a person may write an operator: its code, its symbol, or a French word.
+OPERATORS = {
+    **{code: code for code in ("eq", "ne", "lt", "le", "gt", "ge", "in", "missing")},
+    "=": "eq", "==": "eq", "!=": "ne", "<>": "ne", "<": "lt", "<=": "le", ">": "gt",
+    ">=": "ge", "parmi": "in", "manquant": "missing",
+}  # fmt: skip
+
+
+def condition_data(
+    project: Project, what: str, operator: str, values: list[str], *, score: bool = False
+) -> dict:
+    """A condition rule's fields from what a person typed (without its reason): a variable
+    by its original or final name, or a group's score. Raises ExclusionRefused."""
+    code = OPERATORS.get(operator.strip().lower())
+    if code is None:
+        raise ExclusionRefused([_("Opérateur inconnu : {operator}.").format(operator=operator)])
+    data: dict = {"kind": "condition", "operator": code}
+    if score:
+        data["score"] = what
+    else:
+        what = original(project, what)
+        data["variable"] = what
+    if code == "missing":
+        return data
+    if not values:
+        raise ExclusionRefused([_("Cette condition demande une valeur.")])
+    if score:
+        found = [typed_number(v) for v in values]
+    else:
+        found = [typed(project, what, v) for v in values]
+    data["value"] = found if code == "in" else found[0]
+    return data
+
+
+def typed_number(text: str) -> float:
+    try:
+        number = float(text.strip().replace(",", "."))
+    except ValueError:
+        raise ExclusionRefused(
+            [_("« {value} » n'est pas un nombre.").format(value=text.strip())]
+        ) from None
+    return int(number) if number.is_integer() else number

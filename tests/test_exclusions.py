@@ -103,7 +103,7 @@ def test_what_is_refused():
     _refused(project, {"kind": "duration", "start": "age", "end": "fin", "min_seconds": 60,
                        "reason": "x", "source": "s"}, "pas une date")  # fmt: skip
     _refused(project, {"kind": "duration", "start": "debut", "end": "fin", "min_seconds": 60,
-                       "reason": "x"}, "Règle incomplète")  # no source  # fmt: skip
+                       "reason": "x"}, "donnez sa source")  # fmt: skip
     _refused(project, {"kind": "condition", "score": "G2", "operator": "missing",
                        "reason": "x"}, "aucune cotation structurée")  # fmt: skip
     assert project.exclusions.rules == [] and project.exclusions.next_id == 1
