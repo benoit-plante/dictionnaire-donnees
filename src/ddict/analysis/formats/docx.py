@@ -169,6 +169,31 @@ def _figure(document, found: ApaFigure, language: str) -> None:
     _note(document, found.note)
 
 
+def _apa_heading(document) -> None:
+    """An APA level-2 heading: bold, flush left, the document's font, black (not Word's
+    blue)."""
+    style = document.styles["Heading 2"]
+    style.font.name = FONT
+    style.font.size = SIZE
+    style.font.bold = True
+    style.font.italic = False
+    style.font.color.rgb = RGBColor(0, 0, 0)
+    style.element.rPr.rFonts.set(qn("w:asciiTheme"), "")
+    for attribute in ("w:asciiTheme", "w:hAnsiTheme", "w:eastAsiaTheme", "w:cstheme"):
+        style.element.rPr.rFonts.attrib.pop(qn(attribute), None)
+    style.element.rPr.rFonts.set(qn("w:ascii"), FONT)
+    style.element.rPr.rFonts.set(qn("w:hAnsi"), FONT)
+    style.paragraph_format.space_before = Pt(12)
+    style.paragraph_format.space_after = Pt(6)
+
+
+def _small(paragraph, text: str) -> None:
+    """The record at the end, in small grey print."""
+    run = paragraph.add_run(text)
+    run.font.size = Pt(8)
+    run.font.color.rgb = RGBColor(0x60, 0x60, 0x60)
+
+
 def render(found: ApaDocument) -> bytes:
     """The Word file of an analysis's tables and figures."""
     with i18n.using(found.language):
@@ -180,19 +205,29 @@ def render(found: ApaDocument) -> bytes:
         for section in document.sections:
             section.left_margin = section.right_margin = Cm(2.54)
             section.top_margin = section.bottom_margin = Cm(2.54)
-        for table in found.tables:
-            _table(document, table)
-        for figure in found.figures:
-            _figure(document, figure, found.language)
-        record = document.add_paragraph()
-        text = found.sentence
-        if found.fingerprint:
-            text += (" " if text else "") + _("Empreinte du codebook : {fingerprint}.").format(
-                fingerprint=found.fingerprint
-            )
-        run = record.add_run(text)
-        run.font.size = Pt(8)
-        run.font.color.rgb = RGBColor(0x60, 0x60, 0x60)
+        if found.sections:  # v0.11: the results of several analyses
+            _apa_heading(document)
+            for section in found.sections:
+                document.add_heading(section.heading, level=2)
+                if section.sentence:
+                    document.add_paragraph(section.sentence)
+                for table in section.tables:
+                    _table(document, table)
+                for figure in section.figures:
+                    _figure(document, figure, found.language)
+            for line in found.closing:
+                _small(document.add_paragraph(), line)
+        else:
+            for table in found.tables:
+                _table(document, table)
+            for figure in found.figures:
+                _figure(document, figure, found.language)
+            text = found.sentence
+            if found.fingerprint:
+                text += (" " if text else "") + _("Empreinte du codebook : {fingerprint}.").format(
+                    fingerprint=found.fingerprint
+                )
+            _small(document.add_paragraph(), text)
         document.core_properties.author = "dictionnaire-donnees"
         out = io.BytesIO()
         document.save(out)

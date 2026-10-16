@@ -356,6 +356,12 @@ msgstr "Analysis refused:"
 msgid "Analyses"
 msgstr "Analyses"
 
+msgid "Analyses du document :"
+msgstr "Analyses of the document:"
+
+msgid "Analyses retenues mais écartées, impossibles à calculer :"
+msgstr "Retained analyses left out, impossible to compute:"
+
 msgid "Annuler"
 msgstr "Cancel"
 
@@ -2191,6 +2197,10 @@ msgstr "Problem"
 
 msgid "Produire le codebook Excel et le rapport Markdown d'un projet."
 msgstr "Produce the Excel codebook and the Markdown report of a project."
+
+#, python-brace-format
+msgid "Produit le {date} par dictionnaire-donnees {version} ({others})."
+msgstr "Made on {date} by dictionnaire-donnees {version} ({others})."
 
 #, python-brace-format
 msgid "Projet créé : {path}"

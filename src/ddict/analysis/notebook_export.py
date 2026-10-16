@@ -1,0 +1,145 @@
+"""The results document of the notebook (v0.11, step 4, D-089, D-090, D-092): the retained
+analyses, in the notebook's order, each recomputed on the database with the decisions in
+force (never copied from the notebook), with its heading, its APA sentence, its tables and
+its figures, numbered one after the other; at the end, the codebook's fingerprint, the date,
+the versions and the list of the analyses, and those left out because impossible.
+
+A retained analysis that changed and waits for a person's confirmation blocks the export.
+"""
+
+from __future__ import annotations
+
+from datetime import date
+from pathlib import Path
+
+from ddict import i18n
+from ddict.analysis import notebook as nb
+from ddict.analysis import notebook_check as check
+from ddict.analysis.apa import Edit, Section, assembled, describe, edited
+from ddict.analysis.book import Codebook
+from ddict.analysis.catalogue import ROLES, TITLES
+from ddict.analysis.data import PreparedData
+from ddict.analysis.formats import available
+from ddict.analysis.report import versions
+from ddict.i18n import _, semicolon
+from ddict.project import fingerprint
+from ddict.project.model import Project
+
+
+class ExportBlocked(Exception):
+    """Retained analyses changed and wait for a confirmation (`ids`)."""
+
+    def __init__(self, ids: list[str]) -> None:
+        super().__init__(", ".join(ids))
+        self.ids = ids
+
+
+def heading(entry: nb.Entry) -> str:
+    """ "A2 — Test t : comparer deux groupes" (the sheet, § 8, point 6)."""
+    return f"{entry.id} — {TITLES[entry.analysis]}"
+
+
+def _edits(entry: nb.Entry) -> dict[str, Edit]:
+    """A person's titles and notes; never a number: the order numbers (D-090)."""
+    return {key: Edit(title=e.title, note=e.note) for key, e in entry.edits.items()}
+
+
+def _variables(book: Codebook, chosen: dict[str, list[str]]) -> str:
+    parts = []
+    for role, names in chosen.items():
+        parts.append(f"{ROLES[role]} : " + ", ".join(book.label(n) for n in names))
+    return semicolon().join(parts)
+
+
+def results_document(
+    project: Project,
+    prepared: PreparedData,
+    notebook: nb.Notebook,
+    *,
+    language: str | None = None,
+    today: str | None = None,
+):
+    """The ApaDocument of the retained analyses, recomputed. Raises ExportBlocked."""
+    today = today or date.today().isoformat()
+    with i18n.using(language):
+        language = i18n.language()
+        statuses = check.check_all(notebook, project, prepared, today=today, always=True)
+        blocked = check.blocking(notebook, statuses)
+        if blocked:
+            raise ExportBlocked(blocked)
+        by_id = {s.entry_id: s for s in statuses}
+        book = Codebook(project, prepared)
+        sections, listed, left_out = [], [], []
+        table, figure = notebook.first_table, notebook.first_figure
+        for entry in notebook.entries:
+            if not entry.retained:
+                continue
+            status = by_id[entry.id]
+            if status.state in ("impossible", "no_database") or status.result is None:
+                left_out.append(f"{heading(entry)} : {status.reason}")
+                continue
+            result = status.result
+            document = describe(
+                project, prepared, result, language=language, first_table=table, first_figure=figure
+            )
+            document = edited(document, _edits(entry))
+            sections.append(
+                Section(
+                    entry.id, heading(entry), result.sentence, document.tables, document.figures
+                )
+            )
+            listed.append(f"{heading(entry)} — {_variables(book, result.chosen)}")
+            table += len(document.tables)
+            figure += len(document.figures)
+        made = versions()
+        closing = [
+            _("Empreinte du codebook : {fingerprint}.").format(
+                fingerprint=fingerprint.short(project)
+            ),
+            _("Produit le {date} par dictionnaire-donnees {version} ({others}).").format(
+                date=today,
+                version=made["dictionnaire-donnees"],
+                others=", ".join(
+                    f"{k} {v}" for k, v in made.items() if k != "dictionnaire-donnees"
+                ),
+            ),
+            _("Analyses du document :"),
+            *listed,
+        ]
+        if left_out:
+            closing += [_("Analyses retenues mais écartées, impossibles à calculer :"), *left_out]
+        return assembled(language, sections, closing, fingerprint.short(project))
+
+
+def results_paths(project_path: Path) -> dict[str, Path]:
+    """ "etude-resultats.docx", "-resultats-graphiques.xlsx", "-resultats-R.zip" (D-092)."""
+    from ddict.workflow import project_stem
+
+    stem = project_stem(project_path) + "-resultats"
+    return {
+        "docx": project_path.with_name(stem + ".docx"),
+        "xlsx": project_path.with_name(stem + "-graphiques.xlsx"),
+        "r": project_path.with_name(stem + "-R.zip"),
+    }
+
+
+def write_results(
+    project: Project,
+    prepared: PreparedData,
+    notebook: nb.Notebook,
+    project_path: Path,
+    *,
+    language: str | None = None,
+    today: str | None = None,
+) -> list[Path]:
+    """Write the results document and its charts workbook next to the project, replacing
+    the former ones (D-092). Raises ExportBlocked. The notebook is updated in memory (an
+    unchanged entry gets the new fingerprint): the caller saves it."""
+    document = results_document(project, prepared, notebook, language=language, today=today)
+    paths = results_paths(project_path)
+    written = []
+    for found in available(document):
+        path = paths[found.key]
+        path.write_bytes(found.render(document))
+        written.append(path)
+    return written

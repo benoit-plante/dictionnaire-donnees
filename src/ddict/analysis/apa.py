@@ -182,12 +182,44 @@ class ApaFigure:
 
 @dataclass(frozen=True)
 class ApaDocument:
+    """One analysis's tables and figures; or, with `sections` (v0.11), those of several
+    analyses, numbered one after the other, `tables` and `figures` then holding them all
+    in order, and `closing` the lines that end the document."""
+
     analysis: str
     language: str
     tables: tuple[ApaTable, ...] = ()
     figures: tuple[ApaFigure, ...] = ()
     sentence: str = ""
     fingerprint: str = ""  # of the codebook, short
+    sections: tuple[Section, ...] = ()
+    closing: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class Section:
+    """An analysis of the results document (v0.11): its heading, its APA sentence, its
+    tables and its figures, already numbered."""
+
+    key: str  # the notebook's identifier: "A2"
+    heading: str
+    sentence: str
+    tables: tuple[ApaTable, ...] = ()
+    figures: tuple[ApaFigure, ...] = ()
+
+
+def assembled(language: str, sections: list[Section], closing: list[str], fingerprint: str = ""):
+    """The document of several analyses: every table and figure, in the sections' order."""
+    return ApaDocument(
+        "results",
+        language,
+        tuple(t for s in sections for t in s.tables),
+        tuple(f for s in sections for f in s.figures),
+        "",
+        fingerprint,
+        tuple(sections),
+        tuple(closing),
+    )
 
 
 def _note(parts) -> Text:
