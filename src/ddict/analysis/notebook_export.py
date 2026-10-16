@@ -9,6 +9,8 @@ A retained analysis that changed and waits for a person's confirmation blocks th
 
 from __future__ import annotations
 
+import io
+import zipfile
 from datetime import date
 from pathlib import Path
 
@@ -21,6 +23,10 @@ from ddict.analysis.catalogue import ROLES, TITLES
 from ddict.analysis.data import PreparedData
 from ddict.analysis.formats import available
 from ddict.analysis.report import versions
+from ddict.analysis.rscript import r_master
+from ddict.export.preparation import needed as preparation_needed
+from ddict.export.preparation import render_preparation
+from ddict.export.syntax import render_syntax
 from ddict.i18n import _, semicolon
 from ddict.project import fingerprint
 from ddict.project.model import Project
@@ -60,7 +66,14 @@ def results_document(
     today: str | None = None,
 ):
     """The ApaDocument of the retained analyses, recomputed. Raises ExportBlocked."""
+    return _results(project, prepared, notebook, language=language, today=today)[0]
+
+
+def _results(project, prepared, notebook, *, language=None, today=None):
+    """The document, and the analyses it holds as the R master script takes them
+    (identifier, analysis, final names by role, options): from one computation."""
     today = today or date.today().isoformat()
+    analyses = []
     with i18n.using(language):
         language = i18n.language()
         statuses = check.check_all(notebook, project, prepared, today=today, always=True)
@@ -89,6 +102,7 @@ def results_document(
                 )
             )
             listed.append(f"{heading(entry)} — {_variables(book, result.chosen)}")
+            analyses.append((entry.id, entry.analysis, result.chosen, dict(entry.options)))
             table += len(document.tables)
             figure += len(document.figures)
         made = versions()
@@ -108,7 +122,8 @@ def results_document(
         ]
         if left_out:
             closing += [_("Analyses retenues mais écartées, impossibles à calculer :"), *left_out]
-        return assembled(language, sections, closing, fingerprint.short(project))
+        document = assembled(language, sections, closing, fingerprint.short(project))
+        return document, analyses
 
 
 def results_paths(project_path: Path) -> dict[str, Path]:
@@ -132,14 +147,48 @@ def write_results(
     language: str | None = None,
     today: str | None = None,
 ) -> list[Path]:
-    """Write the results document and its charts workbook next to the project, replacing
-    the former ones (D-092). Raises ExportBlocked. The notebook is updated in memory (an
-    unchanged entry gets the new fingerprint): the caller saves it."""
-    document = results_document(project, prepared, notebook, language=language, today=today)
+    """Write the results document, its charts workbook and the R master script next to the
+    project, replacing the former ones (D-092). Raises ExportBlocked. The notebook is
+    updated in memory (an unchanged entry gets the new fingerprint): the caller saves it."""
+    today = today or date.today().isoformat()
+    document, analyses = _results(project, prepared, notebook, language=language, today=today)
     paths = results_paths(project_path)
     written = []
     for found in available(document):
         path = paths[found.key]
         path.write_bytes(found.render(document))
         written.append(path)
-    return written
+    paths["r"].write_bytes(
+        r_bundle(project, project_path, analyses, language=document.language, today=today)
+    )
+    return [*written, paths["r"]]
+
+
+def r_bundle(
+    project: Project,
+    project_path: Path,
+    analyses: list,
+    *,
+    language: str | None = None,
+    today: str | None = None,
+) -> bytes:
+    """The R master script (v0.11, step 5), with the command file and the preparation
+    script it runs, in a zip: to run in the database's folder."""
+    from ddict.workflow import project_stem
+
+    stem = project_stem(project_path)
+    today = today or date.today().isoformat()
+    with i18n.using(language):
+        files = {
+            f"{stem}-resultats.R": r_master(project, stem, analyses, today),
+            f"{stem}-metadonnees.R": render_syntax(project, "r", today),
+        }
+        if preparation_needed(project):
+            files[f"{stem}-preparation.R"] = render_preparation(project, "r", today)
+    out = io.BytesIO()
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as archive:
+        for name, text in files.items():
+            info = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            archive.writestr(info, text.encode("utf-8"))
+    return out.getvalue()

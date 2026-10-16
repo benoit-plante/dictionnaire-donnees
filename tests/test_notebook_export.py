@@ -139,7 +139,7 @@ def test_the_files_next_to_the_project(ready, tmp_path):
         "etude-analyses-resultats-R.zip",
     ]
     written = export.write_results(project, prepared, notebook, project_path, today=TODAY)
-    assert written == [paths["docx"], paths["xlsx"]]
+    assert written == [paths["docx"], paths["xlsx"], paths["r"]]
     word = Document(io.BytesIO(paths["docx"].read_bytes()))
     headings = [p.text for p in word.paragraphs if p.style.name.startswith("Heading")]
     assert headings == ["A2 — Test t : comparer deux groupes",

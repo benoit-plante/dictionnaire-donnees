@@ -33,13 +33,13 @@ def _column(name: str) -> str:
     return f"ddict_num(donnees[[{_text(name)}]])"
 
 
-def _header(project: Project, stem: str, key: str, today: str) -> list[str]:
+def _header(project: Project, stem: str, title: str, today: str) -> list[str]:
     lines = [
         "# "
         + _(
             "{analysis} : script R équivalent, produit par dictionnaire-donnees {version} "
             "le {date}."
-        ).format(analysis=TITLES[key], version=__version__, date=today),
+        ).format(analysis=title, version=__version__, date=today),
         "# "
         + _("Empreinte du codebook : {fingerprint}.").format(
             fingerprint=fingerprint.short(project)
@@ -54,9 +54,31 @@ def _header(project: Project, stem: str, key: str, today: str) -> list[str]:
     return [*lines, "", *HELPER, ""]
 
 
-def _table1(chosen, options) -> list[str]:
-    lines = ["resultats <- list()"]
-    for name in chosen["variables"]:
+# A code inside a statistic's key, as the tool writes it: "1", "2p5" for 2.5, "m9" for -9.
+CODE_KEY = [
+    "ddict_cle <- function(v) {",
+    "  s <- if (v == round(v)) format(round(v), scientific = FALSE, trim = TRUE)"
+    " else as.character(v)",
+    '  gsub("\\\\.", "p", gsub("-", "m", s))',
+    "}",
+]
+
+
+def _table1(chosen, options, levels) -> list[str]:
+    """Each variable's n, mean and SD (its name, as in v0.9), and, by position (v0.11), the
+    aggregates the notebook keeps: for each column (a group's code, then "total"), n and
+    mean and SD of a scale variable, or the count of each code."""
+    group = (chosen.get("group") or [None])[0]
+    lines = ["resultats <- list()", *CODE_KEY]
+    if group:
+        lines += [
+            f"g <- {_column(group)}",
+            "garde <- !is.na(g)",
+            'colonnes <- c(as.list(sort(unique(g[garde]))), list("total"))',
+        ]
+    else:
+        lines += ["garde <- rep(TRUE, nrow(donnees))", 'colonnes <- list("total")']
+    for i, name in enumerate(chosen["variables"], start=1):
         column = _column(name)
         lines += [
             f"x <- {column}",
@@ -64,24 +86,60 @@ def _table1(chosen, options) -> list[str]:
             f"resultats[[{_text(name + '_moyenne')}]] <- mean(x, na.rm = TRUE)",
             f"resultats[[{_text(name + '_et')}]] <- sd(x, na.rm = TRUE)",
             f'print(table(donnees[[{_text(name)}]], useNA = "ifany"))',
+            "for (co in colonnes) {",
+            '  dans <- if (identical(co, "total")) garde else garde & g == co',
+            "  xx <- x[dans & !is.na(x)]",
+            '  cc <- if (identical(co, "total")) "total" else ddict_cle(co)',
+            f'  resultats[[paste0("v{i}_n_", cc)]] <- length(xx)',
         ]
+        if levels.get(name) == "scale":
+            lines += [
+                f'  if (length(xx) > 0) resultats[[paste0("v{i}_m_", cc)]] <- mean(xx)',
+                f'  if (length(xx) > 1) resultats[[paste0("v{i}_sd_", cc)]] <- sd(xx)',
+            ]
+        else:
+            lines += [
+                "  for (k in sort(unique(xx))) {",
+                f'    resultats[[paste0("v{i}_k", ddict_cle(k), "_", cc)]] <- sum(xx == k)',
+                "  }",
+            ]
+        lines.append("}")
     return [*lines, "print(resultats)"]
 
 
 def _correlation(chosen, options) -> list[str]:
-    a, b = chosen["variables"][:2]
+    """Every pair, by position (row j, column i of the APA matrix: `r_2_1`), as v0.11 keeps
+    them; and, for two variables, the keys of v0.9 (r, p, n, ci_low, ci_high)."""
+    names = chosen["variables"]
     method = options.get("method", "pearson")
     exact = ", exact = FALSE" if method == "spearman" else ""
     lines = [
-        f"x <- {_column(a)}",
-        f"y <- {_column(b)}",
-        "ok <- complete.cases(x, y)",
-        f'test <- cor.test(x[ok], y[ok], method = "{method}"{exact})',
-        "print(test)",
-        "resultats <- list(r = unname(test$estimate), p = test$p.value, n = sum(ok))",
+        "v <- list(" + ", ".join(_column(n) for n in names) + ")",
+        "resultats <- list()",
+        "for (j in 2:length(v)) for (i in 1:(j - 1)) {",
+        "  ok <- complete.cases(v[[i]], v[[j]])",
+        f'  test <- cor.test(v[[i]][ok], v[[j]][ok], method = "{method}"{exact})',
+        "  print(test)",
+        '  cle <- paste0("_", j, "_", i)',
+        '  resultats[[paste0("r", cle)]] <- unname(test$estimate)',
+        '  resultats[[paste0("p", cle)]] <- test$p.value',
+        '  resultats[[paste0("n", cle)]] <- sum(ok)',
     ]
     if method == "pearson":
-        lines.append("resultats$ci_low <- test$conf.int[1]; resultats$ci_high <- test$conf.int[2]")
+        lines += [
+            '  resultats[[paste0("low", cle)]] <- test$conf.int[1]',
+            '  resultats[[paste0("high", cle)]] <- test$conf.int[2]',
+        ]
+    lines.append("}")
+    if len(names) == 2:
+        lines.append(
+            "resultats$r <- resultats$r_2_1; resultats$p <- resultats$p_2_1; "
+            "resultats$n <- resultats$n_2_1"
+        )
+        if method == "pearson":
+            lines.append(
+                "resultats$ci_low <- resultats$low_2_1; resultats$ci_high <- resultats$high_2_1"
+            )
     return [*lines, "print(resultats)"]
 
 
@@ -211,6 +269,8 @@ def _anova(chosen, options, _levels) -> list[str]:
             '  cle <- gsub("-", "_", paire)',
             '  resultats[[paste0("tukey_", cle)]] <- tk[paire, "diff"]',
             '  resultats[[paste0("tukey_p_", cle)]] <- tk[paire, "p adj"]',
+            '  resultats[[paste0("tukey_low_", cle)]] <- tk[paire, "lwr"]',
+            '  resultats[[paste0("tukey_high_", cle)]] <- tk[paire, "upr"]',
             "}",
         ]
     return [*lines, "print(resultats)"]
@@ -256,7 +316,7 @@ def _regression(chosen, options, levels) -> list[str]:
 
 
 BODIES = {
-    "table1": lambda c, o, _l: _table1(c, o),
+    "table1": _table1,
     "t_test": _t_test,
     "anova": _anova,
     "chi_square": lambda c, o, _l: _chi_square(c, o),
@@ -276,6 +336,29 @@ def r_script(
 ) -> str:
     """The R script of an analysis; `stem` names the files next to the project."""
     options = {k: v[0] for k, v in CATALOGUE[key].options.items()} | (options or {})
-    lines = _header(project, stem, key, today or date.today().isoformat())
+    lines = _header(project, stem, TITLES[key], today or date.today().isoformat())
     lines += BODIES[key](chosen, options, conditions.levels(project))
+    return "\n".join(lines) + "\n"
+
+
+@in_language
+def r_master(
+    project: Project,
+    stem: str,
+    analyses: list[tuple[str, str, dict[str, list[str]], dict[str, str]]],
+    today: str | None = None,
+) -> str:
+    """The master script of the notebook (v0.11, step 5): the database, the command file
+    and the preparation script once, then each analysis `(id, key, chosen, options)` in its
+    own space (`local`), so that their working variables never mix, kept as
+    `resultats$A2`."""
+    levels = conditions.levels(project)
+    lines = _header(project, stem, _("Résultats du carnet"), today or date.today().isoformat())
+    lines += ["resultats <- list()", ""]
+    for entry_id, key, chosen, options in analyses:
+        options = {k: v[0] for k, v in CATALOGUE[key].options.items()} | dict(options)
+        lines += [f"# {entry_id} — {TITLES[key]}", f"resultats${entry_id} <- local({{"]
+        lines += [f"  {line}" for line in BODIES[key](chosen, options, levels)]
+        lines += ["  resultats", "})", ""]
+    lines.append("invisible(resultats)")
     return "\n".join(lines) + "\n"

@@ -2549,6 +2549,9 @@ msgstr "Residuals far from normal (Shapiro-Wilk {p}) with fewer than {n} observa
 msgid "Résultat"
 msgstr "Result"
 
+msgid "Résultats du carnet"
+msgstr "Results of the notebook"
+
 msgid "Révision du dictionnaire"
 msgstr "Data dictionary review"
 
