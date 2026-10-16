@@ -186,3 +186,19 @@ def blocking(notebook: nb.Notebook, statuses: list[Status]) -> list[str]:
     """The retained entries whose change waits for a confirmation: they block the export."""
     retained = {e.id for e in notebook.entries if e.retained}
     return [s.entry_id for s in statuses if s.state == "changed" and s.entry_id in retained]
+
+
+def state_text(state: State) -> str:
+    """An entry's state, in plain words (the page and `ddict carnet`)."""
+    return {
+        "current": _("à jour"),
+        "unchanged": _("recalculée, sans changement"),
+        "changed": _("changée, à confirmer"),
+        "impossible": _("impossible à calculer"),
+        "no_database": _("non recalculée"),
+    }[state]
+
+
+def difference_text(difference: Difference) -> str:
+    """ "n : 200 → 197"."""
+    return f"{difference.key} : {difference.shown_before} → {difference.shown_after}"

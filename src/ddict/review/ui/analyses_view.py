@@ -16,6 +16,7 @@ import streamlit as st
 
 from ddict import i18n
 from ddict.analysis import conditions
+from ddict.analysis import notebook as nb
 from ddict.analysis.book import Codebook
 from ddict.analysis.catalogue import CATALOGUE, CHOICES, OPTIONS, PURPOSES, ROLES, TITLES
 from ddict.analysis.compute import AnalysisRefused, run
@@ -43,6 +44,7 @@ DATABASE = "analysis-database"  # the database chosen by hand, when not next to 
 TABLE = "analysis-table"  # (path, table read from the database)
 PREPARED = "analysis-prepared"  # (fingerprint, PreparedData)
 RESULT = "analysis-result"  # the last analysis run: (what was asked, AnalysisResult)
+ADDED = "analysis-added"  # (what was asked, identifier): the last run added to the notebook
 XLSX_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 
@@ -52,15 +54,16 @@ def _choose_database() -> None:
         st.session_state[DATABASE] = path
 
 
-def _prepared(project: Project) -> PreparedData | None:
+def prepared_data(project: Project, where: str = "analysis") -> PreparedData | None:
     """The data with the accepted decisions, read once per session and prepared again when
-    a decision changes; None, with the reason shown, when the database is not found."""
+    a decision changes; None, with the reason shown, when the database is not found (the
+    Analyses and the Notebook pages share it, `where` names the button)."""
     chosen = st.session_state.get(DATABASE)
     try:
         path = find_database(project, c.project_path(), Path(chosen) if chosen else None)
     except DataError as error:
         st.info(copy_error_text(error, project.source.name))
-        st.button(_("Choisir la base…"), key="analysis-choose", on_click=_choose_database)
+        st.button(_("Choisir la base…"), key=f"{where}-choose", on_click=_choose_database)
         return None
     read = st.session_state.get(TABLE)
     if read is None or read[0] != str(path):
@@ -250,6 +253,49 @@ def _show(project: Project, prepared: PreparedData, asked: tuple, result) -> Non
     )
     c.show_message("analysis-write")
     apa_view.panel(project, prepared, result, asked, files)
+    _notebook_button(project, prepared, asked, result)
+
+
+def _add(project: Project, prepared: PreparedData, asked: tuple, result) -> None:
+    """v0.11: the analysis at the end of the notebook, retained, with the titles and notes
+    a person changed above (never their numbers: the notebook numbers by its order)."""
+    path = c.project_path()
+    try:
+        notebook = nb.open_notebook(project, path)
+        entry = nb.add(notebook, project, result, edits=apa_view.edits(project, prepared, result,
+                                                                      asked))  # fmt: skip
+        nb.save_notebook(notebook, nb.notebook_path(path))
+    except (OSError, nb.NotebookError) as error:
+        text = nb.reason_text(error) if isinstance(error, nb.NotebookError) else str(error)
+        st.session_state.message = ("error", text, "analysis-add")
+        return
+    st.session_state[ADDED] = (asked, entry.id)
+    st.session_state.message = (
+        "success",
+        _("Ajoutée au carnet : {id}. Le carnet se trouve sur la page Carnet.").format(id=entry.id),
+        "analysis-add",
+    )
+
+
+def _notebook_button(project: Project, prepared: PreparedData, asked: tuple, result) -> None:
+    st.subheader(_("Carnet d'analyses"))
+    st.caption(
+        _(
+            "Le carnet garde les analyses de l'étude pour le document des résultats, avec les "
+            "titres et les notes changés ci-dessus. Il ne garde que des agrégats."
+        )
+    )
+    added = st.session_state.get(ADDED)
+    done = added is not None and added[0] == asked
+    st.button(
+        _("Déjà dans le carnet ({id})").format(id=added[1]) if done else _("Ajouter au carnet"),
+        key="analysis-add",
+        icon=":material/bookmark_add:",
+        disabled=done,
+        on_click=_add,
+        args=(project, prepared, asked, result),
+    )
+    c.show_message("analysis-add")
 
 
 def page(project: Project) -> None:
@@ -262,7 +308,7 @@ def page(project: Project) -> None:
             "votre ordinateur."
         )
     )
-    prepared = _prepared(project)
+    prepared = prepared_data(project)
     if prepared is None:
         return
     advice_view.panel(project)

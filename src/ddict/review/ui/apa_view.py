@@ -55,6 +55,12 @@ def current(project, prepared, result, asked: tuple) -> ApaDocument:
     return edited(document, _edits(_signature(asked), document))
 
 
+def edits(project, prepared, result, asked: tuple) -> dict[str, Edit]:
+    """The titles and notes a person changed, for the notebook (v0.11)."""
+    document = describe(project, prepared, result, language=i18n.language())
+    return _edits(_signature(asked), document)
+
+
 def _cached(signature: str, what: tuple, make) -> bytes:
     stored = st.session_state.get(CACHE)
     if stored is None or stored[0] != signature:

@@ -23,6 +23,7 @@ from ddict.review.ui import (
     groups_view,
     home_view,
     names_view,
+    notebook_view,
     questionnaire_view,
     variables_view,
 )
@@ -40,6 +41,7 @@ MODES = Texts(
         "groups": N_("Groupes"),
         "names": N_("Noms"),
         "analyses": N_("Analyses"),
+        "notebook": N_("Carnet"),
         "export": N_("Export"),
     }
 )
@@ -175,6 +177,8 @@ def main() -> None:
         names_view.page(project)
     elif mode == "analyses":
         analyses_view.page(project)
+    elif mode == "notebook":
+        notebook_view.page(project)
     elif mode == "variables" and chosen is None:
         bulk_view.links_panel(project)
     elif chosen is not None:

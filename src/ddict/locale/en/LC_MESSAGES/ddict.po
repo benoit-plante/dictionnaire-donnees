@@ -200,6 +200,9 @@ msgstr "* {name}: variable name not valid for SPSS, left out."
 msgid "* {name} inversé ({total} - x ; bornes : {source})."
 msgstr "* {name} reversed ({total} - x; ends: {source})."
 
+msgid "**Ce qui a changé depuis le dernier calcul confirmé :**"
+msgstr "**What changed since the last confirmed computation:**"
+
 #, python-brace-format
 msgid ", après inversion de {items} ({total} - x)"
 msgstr ", after reversing {items} ({total} - x)"
@@ -307,6 +310,9 @@ msgstr "Show"
 msgid "Ajouter"
 msgstr "Add"
 
+msgid "Ajouter au carnet"
+msgstr "Add to the notebook"
+
 msgid ""
 "Ajouter au contexte d'analyse les statistiques, filtrées par la porte de confidentialité. Sans "
 "cette option, il ne contient que des métadonnées."
@@ -332,6 +338,14 @@ msgstr "Add --model, or --preview to see the message without sending anything."
 
 msgid "Ajoutez d'abord le questionnaire de l'étude (page « Questionnaire »)."
 msgstr "First add the study questionnaire (\"Questionnaire\" page)."
+
+#, python-brace-format
+msgid "Ajoutée au carnet : {id}"
+msgstr "Added to the notebook: {id}"
+
+#, python-brace-format
+msgid "Ajoutée au carnet : {id}. Le carnet se trouve sur la page Carnet."
+msgstr "Added to the notebook: {id}. The notebook is on the Notebook page."
 
 msgid "Alpha de Cronbach observé"
 msgstr "Observed Cronbach's alpha"
@@ -404,6 +418,9 @@ msgstr "None: all the text is reproduced"
 msgid "Aucun avertissement."
 msgstr "No warning."
 
+msgid "Aucun changement à confirmer."
+msgstr "No change to confirm."
+
 msgid "Aucun fichier choisi. Vous pouvez aussi coller son chemin dans le champ."
 msgstr "No file chosen. You can also paste its path in the field."
 
@@ -427,6 +444,9 @@ msgstr "No acronym yet."
 
 msgid "Aucune"
 msgstr "None"
+
+msgid "Aucune analyse retenue dans le carnet."
+msgstr "No retained analysis in the notebook."
 
 msgid "Aucune nouvelle proposition."
 msgstr "No new proposal."
@@ -551,6 +571,12 @@ msgstr "Characteristics of the participants"
 msgid "Caractéristiques des participants selon {group}"
 msgstr "Characteristics of the participants by {group}"
 
+msgid "Carnet"
+msgstr "Notebook"
+
+msgid "Carnet d'analyses"
+msgstr "Analysis notebook"
+
 msgid ""
 "Case à cocher probable : une seule valeur observée, les cases vides veulent sans doute dire « non"
 " coché »"
@@ -558,6 +584,10 @@ msgstr "Likely checkbox: only one value observed, empty cells probably mean \"no
 
 msgid "Cases vides"
 msgstr "Empty cells"
+
+#, python-brace-format
+msgid "Ce carnet (version {name}) a été fait par une version plus récente de l'outil."
+msgstr "This notebook (version {name}) was made by a newer version of the tool."
 
 msgid "Ce carnet a été fait avec une autre base que celle du projet."
 msgstr "This notebook was made with another database than the project's."
@@ -787,6 +817,19 @@ msgstr "Privacy"
 msgid "Confirmer la classe"
 msgstr "Confirm the class"
 
+msgid "Confirmer le nouveau calcul"
+msgstr "Confirm the new computation"
+
+msgid "Confirmer le nouveau calcul d'analyses qui ont changé."
+msgstr "Confirm the new computation of analyses that changed."
+
+msgid "Confirmer toutes celles qui ont changé."
+msgstr "Confirm all those that changed."
+
+#, python-brace-format
+msgid "Confirmée : {id}"
+msgstr "Confirmed: {id}"
+
 msgid ""
 "Conseil : validez d'abord le glossaire et révisez les rattachements proposés ; le modèle s'en "
 "sert pour les libellés."
@@ -938,6 +981,20 @@ msgstr "Ask the local AI for a proposal (optional)"
 msgid "Dernier rapport : {name}"
 msgstr "Last report: {name}"
 
+#, python-brace-format
+msgid ""
+"Des analyses retenues ont changé : {ids}. Confirmez leur nouveau calcul avant de produire les "
+"résultats."
+msgstr "Retained analyses changed: {ids}. Confirm their new computation before producing the results."
+
+#, python-brace-format
+msgid ""
+"Des analyses retenues ont changé : {ids}. Voyez les différences avec « ddict carnet lister », "
+"puis confirmez-les avec « ddict carnet confirmer »."
+msgstr ""
+"Retained analyses changed: {ids}. See the differences with \"ddict notebook list\", then confirm "
+"them with \"ddict notebook confirm\"."
+
 msgid ""
 "Des analyses écrites et vérifiées d'avance, calculées dans l'outil sur votre base, avec les "
 "décisions acceptées : codes manquants retirés, nouveaux noms, items inversés, scores. Votre "
@@ -949,6 +1006,9 @@ msgstr ""
 
 msgid "Des prédicteurs sont redondants (l'un se déduit exactement des autres) : retirez-en un."
 msgstr "Some predictors are redundant (one follows exactly from the others): remove one."
+
+msgid "Descendre"
+msgstr "Move down"
 
 msgid "Description"
 msgstr "Description"
@@ -979,6 +1039,9 @@ msgstr "Mean differences; intervals and {p} adjusted by Tukey's method."
 #, python-brace-format
 msgid "Distribution peu normale pour {group} (Shapiro-Wilk {p}) avec moins de {n} personnes."
 msgstr "Distribution far from normal for {group} (Shapiro-Wilk {p}) with fewer than {n} people."
+
+msgid "Document des résultats"
+msgstr "Results document"
 
 msgid "Donnez un nom au score."
 msgstr "Give the score a name."
@@ -1027,6 +1090,10 @@ msgstr ""
 
 msgid "Définition"
 msgstr "Definition"
+
+#, python-brace-format
+msgid "Déjà dans le carnet ({id})"
+msgstr "Already in the notebook ({id})"
 
 msgid "ET"
 msgstr "SE"
@@ -1483,6 +1550,9 @@ msgstr ""
 "The database is in long format (several rows per person): this analysis assumes independent "
 "observations."
 
+msgid "La base n'a pas été trouvée."
+msgstr "The database was not found."
+
 #, python-brace-format
 msgid ""
 "La base {name} est introuvable à côté du projet. Placez-la dans le même dossier que le projet, ou"
@@ -1563,6 +1633,9 @@ msgstr ""
 "Run an analysis of the catalogue on the database, with the accepted decisions, and write its "
 "report and R script next to the project."
 
+msgid "Lancer une analyse et l'ajouter à la fin du carnet, retenue."
+msgstr "Run an analysis and add it at the end of the notebook, retained."
+
 msgid "Langue de l'étude"
 msgstr "Language of the study"
 
@@ -1572,9 +1645,36 @@ msgstr "Codebook language"
 msgid "Langue du codebook (défaut : celle de l'interface)."
 msgstr "Language of the codebook (default: that of the interface)."
 
+msgid "Langue du document (défaut : celle de l'interface)."
+msgstr "Language of the document (default: the interface's)."
+
 #, python-brace-format
 msgid "Langue inconnue : {language}"
 msgstr "Unknown language: {language}"
+
+msgid ""
+"Le carnet d'analyses du projet : lister, ajouter, retirer, déplacer, retenir, écarter, confirmer,"
+" numéroter."
+msgstr "The project's analysis notebook: list, add, remove, move, retain, leave out, confirm, number."
+
+msgid "Le carnet est vide : ajoutez-y une analyse avec « ddict carnet ajouter »."
+msgstr "The notebook is empty: add an analysis to it with \"ddict notebook add\"."
+
+msgid ""
+"Le carnet est vide. Lancez une analyse sur la page Analyses, puis cliquez sur « Ajouter au carnet"
+" »."
+msgstr "The notebook is empty. Run an analysis on the Analyses page, then click \"Add to the notebook\"."
+
+msgid ""
+"Le carnet garde les analyses de l'étude pour le document des résultats, avec les titres et les "
+"notes changés ci-dessus. Il ne garde que des agrégats."
+msgstr ""
+"The notebook keeps the study's analyses for the results document, with the titles and notes "
+"changed above. It keeps aggregates only."
+
+#, python-brace-format
+msgid "Le carnet ne peut pas être lu : {name}"
+msgstr "The notebook cannot be read: {name}"
 
 msgid ""
 "Le codebook en format compact, pour un programme ou pour une IA qui aide à écrire le code "
@@ -1763,6 +1863,24 @@ msgstr ""
 msgid "Lecture de la base…"
 msgstr "Reading the database…"
 
+msgid ""
+"Les analyses ajoutées depuis la page Analyses, dans l'ordre du document des résultats. Chacune "
+"est recalculée quand une décision change : ce qui a changé attend votre confirmation. Le carnet "
+"est un fichier à côté du projet ; il ne garde que des agrégats, jamais une ligne de la base."
+msgstr ""
+"The analyses added from the Analyses page, in the order of the results document. Each is "
+"recomputed when a decision changes: what changed waits for your confirmation. The notebook is a "
+"file next to the project; it keeps aggregates only, never a row of the database."
+
+msgid ""
+"Les analyses retenues, recalculées sur la base avec les décisions en vigueur, numérotées dans "
+"l'ordre du carnet : un document Word, ses graphiques Excel et le script R maître, à côté du "
+"projet. Ces résultats viennent des données de l'étude : rangez-les avec soin."
+msgstr ""
+"The retained analyses, recomputed on the database with the decisions in force, numbered in the "
+"notebook's order: a Word document, its Excel charts and the R master script, next to the project."
+" These results come from the study's data: store them with care."
+
 #, python-brace-format, python-format
 msgid "Les barres d'erreur représentent l'IC 95 % de β. {N} = {n}."
 msgstr "Error bars represent the 95% CI of β. {N} = {n}."
@@ -1904,6 +2022,9 @@ msgstr ""
 "Measure an installed model on the tool's fictional databases: correct links, flagged inventions, "
 "duration."
 
+msgid "Mettre une analyse à un autre rang."
+msgstr "Put an analysis at another rank."
+
 msgid "Min"
 msgstr "Min"
 
@@ -1926,6 +2047,9 @@ msgstr "Fewer than {n} people: {cases}."
 #, python-brace-format
 msgid "Moins de {n} personnes{where} : {cases}."
 msgstr "Fewer than {n} people{where}: {cases}."
+
+msgid "Monter"
+msgstr "Move up"
 
 msgid "Moyenne"
 msgstr "Mean"
@@ -2060,6 +2184,13 @@ msgstr "Notes"
 msgid "Notes de l'équipe"
 msgstr "Team notes"
 
+#, python-brace-format
+msgid "Nouveau : {sentence}"
+msgstr "New: {sentence}"
+
+msgid "Nouveau calcul :"
+msgstr "New computation:"
+
 msgid "Nouveau nom"
 msgstr "New name"
 
@@ -2068,6 +2199,19 @@ msgstr "New project"
 
 msgid "Numéro"
 msgstr "Number"
+
+msgid "Numéro de l'analyse, p. ex. A3."
+msgstr "Number of the analysis, e.g. A3."
+
+msgid "Numéro du premier tableau et de la première figure du document."
+msgstr "Number of the document's first table and first figure."
+
+msgid "Numéros des analyses, p. ex. A1 A3."
+msgstr "Numbers of the analyses, e.g. A1 A3."
+
+#, python-brace-format
+msgid "Numérotation : premier tableau {table}, première figure {figure}."
+msgstr "Numbering: first table {table}, first figure {figure}."
 
 msgid "Objectif de l'analyse"
 msgstr "Objective of the analysis"
@@ -2192,11 +2336,33 @@ msgstr "Percentages computed on the size of each column."
 msgid "Pourquoi les rattachements du modèle ont été manqués :"
 msgstr "Why the model's links were missed:"
 
+msgid "Premier tableau"
+msgstr "First table"
+
+msgid "Premier tableau (défaut : 1)."
+msgstr "First table (default: 1)."
+
+msgid "Première figure"
+msgstr "First figure"
+
+msgid "Première figure (défaut : 1)."
+msgstr "First figure (default: 1)."
+
 msgid "Problème"
 msgstr "Problem"
 
 msgid "Produire le codebook Excel et le rapport Markdown d'un projet."
 msgstr "Produce the Excel codebook and the Markdown report of a project."
+
+msgid ""
+"Produire le document des résultats des analyses retenues du carnet, recalculées : Word, "
+"graphiques Excel et script R maître, à côté du projet."
+msgstr ""
+"Produce the results document of the notebook's retained analyses, recomputed: Word, Excel charts "
+"and R master script, next to the project."
+
+msgid "Produire les résultats"
+msgstr "Produce the results"
 
 #, python-brace-format
 msgid "Produit le {date} par dictionnaire-donnees {version} ({others})."
@@ -2426,6 +2592,12 @@ msgstr ""
 msgid "Rattacher à"
 msgstr "Link to"
 
+msgid "Recalcul du carnet…"
+msgstr "Recomputing the notebook…"
+
+msgid "Recalculer et lister les analyses du carnet, avec ce qui a changé."
+msgstr "Recompute and list the notebook's analyses, with what changed."
+
 msgid "Refaire l'analyse dans R"
 msgstr "Redo the analysis in R"
 
@@ -2486,6 +2658,16 @@ msgstr ""
 "Reproducing the items of a protected instrument is up to the team; the codebook will then give "
 "the reference of the question (Q12.r3, p. 4) without its text."
 
+msgid "Retenir des analyses pour le document des résultats."
+msgstr "Retain analyses for the results document."
+
+msgid "Retenue pour le document"
+msgstr "Retained for the document"
+
+#, python-brace-format
+msgid "Retenues : {ids}"
+msgstr "Retained: {ids}"
+
 msgid "Retirer"
 msgstr "Remove"
 
@@ -2494,6 +2676,17 @@ msgstr "Remove the range"
 
 msgid "Retirer la cotation"
 msgstr "Remove the scoring"
+
+msgid "Retirer une analyse."
+msgstr "Remove an analysis."
+
+#, python-brace-format
+msgid "Retirer {id}"
+msgstr "Remove {id}"
+
+#, python-brace-format
+msgid "Retirée du carnet : {id}"
+msgstr "Removed from the notebook: {id}"
 
 msgid "Revenir sur cette décision"
 msgstr "Undo this decision"
@@ -2665,6 +2858,9 @@ msgstr ""
 "question; the names taken are proposals. A report of the differences between the waves is written"
 " next to the project."
 
+msgid "Son nouveau rang, 1 pour la première."
+msgstr "Its new rank, 1 for the first."
+
 msgid "Source"
 msgstr "Source"
 
@@ -2796,6 +2992,10 @@ msgstr ""
 
 msgid "Titre"
 msgstr "Title"
+
+#, python-brace-format
+msgid "Titres ou notes changés : {n}"
+msgstr "Titles or notes changed: {n}"
 
 msgid "Total"
 msgstr "Total"
@@ -3105,6 +3305,9 @@ msgstr "checkboxes, according to the database"
 msgid "ce qu'est une ligne"
 msgstr "what a row is"
 
+msgid "changée, à confirmer"
+msgstr "changed, to confirm"
+
 #, python-brace-format
 msgid "choix justes du calcul défaits ({names})"
 msgstr "right choices of the computation undone ({names})"
@@ -3209,6 +3412,9 @@ msgstr "grouping identifier"
 
 msgid "identifiant probable"
 msgstr "likely identifier"
+
+msgid "impossible à calculer"
+msgstr "cannot be computed"
 
 msgid "incomplète"
 msgstr "incomplete"
@@ -3321,6 +3527,9 @@ msgstr "nominal"
 msgid "non documenté"
 msgstr "not documented"
 
+msgid "non recalculée"
+msgstr "not recomputed"
+
 #, python-brace-format
 msgid "omis pour les groupes {groups} (instrument protégé, D-014)"
 msgstr "left out for the groups {groups} (protected instrument, D-014)"
@@ -3383,6 +3592,9 @@ msgstr "questionnaire"
 msgid "rattachement proposé"
 msgstr "proposed link"
 
+msgid "recalculée, sans changement"
+msgstr "recomputed, unchanged"
+
 msgid "refusé"
 msgstr "refused"
 
@@ -3397,6 +3609,9 @@ msgstr "looks like a threshold"
 
 msgid "ressemble à une citation"
 msgstr "looks like a citation"
+
+msgid "retenue"
+msgstr "retained"
 
 msgid "règle"
 msgstr "rule"
@@ -3600,6 +3815,14 @@ msgid "{group} : {n} = {count}"
 msgstr "{group}: {n} = {count}"
 
 #, python-brace-format
+msgid "{id} est maintenant au rang {rank}."
+msgstr "{id} is now at rank {rank}."
+
+#, python-brace-format
+msgid "{id} quitte le carnet ; son numéro ne reviendra pas."
+msgstr "{id} leaves the notebook; its number will not come back."
+
+#, python-brace-format
 msgid "{key} : nom de base refusé ({why})."
 msgstr "{key}: base name refused ({why})."
 
@@ -3626,6 +3849,14 @@ msgstr "{names}: ordinal variable; Spearman's correlation fits better."
 #, python-brace-format
 msgid "{name} (score de {group})"
 msgstr "{name} (score of {group})"
+
+#, python-brace-format
+msgid "{name} : aucun changement à confirmer."
+msgstr "{name}: no change to confirm."
+
+#, python-brace-format
+msgid "{name} : aucune analyse du carnet ne porte ce numéro."
+msgstr "{name}: no analysis of the notebook has this number."
 
 #, python-brace-format
 msgid "{name} : bornes de l'échelle inconnues, non inversé."
@@ -3914,6 +4145,10 @@ msgstr ""
 msgid "« {token} » lu comme vide ({n})"
 msgstr "\"{token}\" read as empty ({n})"
 
+#, python-brace-format
+msgid "À confirmer avant de produire les résultats : {ids}."
+msgstr "To confirm before producing the results: {ids}."
+
 msgid "À documenter"
 msgstr "To document"
 
@@ -3951,6 +4186,13 @@ msgstr "Gap"
 
 msgid "Écart-type"
 msgstr "Standard deviation"
+
+msgid "Écarter des analyses du document, sans les retirer."
+msgstr "Leave analyses out of the document, without removing them."
+
+#, python-brace-format
+msgid "Écartées : {ids}"
+msgstr "Left out: {ids}"
 
 msgid "Écraser un projet existant."
 msgstr "Overwrite an existing project."
@@ -4068,6 +4310,9 @@ msgstr "checkbox"
 msgid "à documenter"
 msgstr "to document"
 
+msgid "à jour"
+msgstr "up to date"
+
 msgid "à nommer"
 msgstr "to name"
 
@@ -4080,6 +4325,9 @@ msgstr "sd {sd}"
 
 msgid "écart-type"
 msgstr "standard deviation"
+
+msgid "écartée"
+msgstr "left out"
 
 msgid "échec"
 msgstr "failed"

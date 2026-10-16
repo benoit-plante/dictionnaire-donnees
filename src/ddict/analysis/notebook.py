@@ -22,6 +22,7 @@ from pathlib import Path
 from pydantic import BaseModel, ConfigDict, model_serializer, model_validator
 
 from ddict.analysis.apa import Edit
+from ddict.analysis.catalogue import CATALOGUE
 from ddict.analysis.results import AnalysisResult
 from ddict.export import wording as w
 from ddict.export.preparation import plan
@@ -168,12 +169,19 @@ def resolved(project: Project, entry: Entry) -> dict[str, list[str]]:
 
 
 def reason_text(error: NotebookError) -> str:
-    """Why an analysis of the notebook cannot be computed, in plain words."""
+    """Why an analysis of the notebook cannot be computed, or the notebook read or changed,
+    in plain words."""
     texts = {
         "variable_removed": _("{name} : la variable n'est plus dans le projet."),
         "score_removed": _("{name} : le groupe n'a plus de cotation, donc plus de score."),
         "not_reversed": _("{name} : l'item n'est plus inversé."),
         "unknown_variable": _("{name} : variable inconnue du projet."),
+        "unknown_entry": _("{name} : aucune analyse du carnet ne porte ce numéro."),
+        "nothing_pending": _("{name} : aucun changement à confirmer."),
+        "unreadable": _("Le carnet ne peut pas être lu : {name}"),
+        "version": _(
+            "Ce carnet (version {name}) a été fait par une version plus récente de l'outil."
+        ),
     }
     return texts.get(error.reason, "{name}").format(name=error.detail)
 
@@ -245,10 +253,10 @@ def add(
     entry = Entry(
         id=f"A{notebook.next_id}",
         analysis=result.analysis,
-        variables={
-            role: [reference(project, n) for n in names]
-            for role, names in result.chosen.items()
-            if names
+        variables={  # in the catalogue's order of the roles, however they were chosen
+            role.key: [reference(project, n) for n in result.chosen[role.key]]
+            for role in CATALOGUE[result.analysis].roles
+            if result.chosen.get(role.key)
         },
         options={k: str(v) for k, v in sorted(result.options.items())},
         edits=_edits(edits),
@@ -285,6 +293,15 @@ def notebook_path(project_path: Path) -> Path:
     from ddict.workflow import project_stem
 
     return project_path.with_name(project_stem(project_path) + SUFFIX)
+
+
+def open_notebook(project: Project, project_path: Path) -> Notebook:
+    """The project's notebook, or a new empty one when there is none yet (nothing is
+    written until an analysis is added). Raises NotebookError."""
+    path = notebook_path(project_path)
+    if path.is_file():
+        return load_notebook(path)
+    return new_notebook(project, project_path)
 
 
 def dumps(notebook: Notebook) -> str:

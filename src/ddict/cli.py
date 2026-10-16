@@ -1,5 +1,5 @@
 """Command line: `ddict profiler`, `exporter`, `documenter`, `questionnaire`, `enrichir`,
-`rattacher`, `evaluer`, `analyser`, `conseiller`, `reviser`."""
+`rattacher`, `evaluer`, `analyser`, `carnet`, `resultats`, `conseiller`, `reviser`."""
 
 from __future__ import annotations
 
@@ -181,12 +181,53 @@ ROLE_ARGUMENTS = {
     "columns": "colonnes",
     "predictors": "predicteurs",
 }
+# The actions of `ddict carnet`, in French or in English (v0.11).
+NOTEBOOK_ACTIONS = {
+    "lister": "list",
+    "list": "list",
+    "ajouter": "add",
+    "add": "add",
+    "retirer": "remove",
+    "remove": "remove",
+    "deplacer": "move",
+    "move": "move",
+    "retenir": "retain",
+    "retain": "retain",
+    "ecarter": "leave_out",
+    "leave-out": "leave_out",
+    "confirmer": "confirm",
+    "confirm": "confirm",
+    "numeros": "numbers",
+    "numbers": "numbers",
+}
 OPTION_ARGUMENTS = {
     "method": "methode",
     "alternative": "hypothese",
     "post_hoc": "post_hoc",
     "levels": "modalites",
 }
+
+
+def _asked(args: argparse.Namespace) -> tuple[dict[str, list[str]], dict[str, str]]:
+    """The variables by role and the options of an analysis, as the command line gives
+    them."""
+    chosen = {
+        role: list(getattr(args, argument))
+        for role, argument in ROLE_ARGUMENTS.items()
+        if getattr(args, argument)
+    }
+    options = {
+        option: getattr(args, argument)
+        for option, argument in OPTION_ARGUMENTS.items()
+        if getattr(args, argument)
+    }
+    return chosen, options
+
+
+def _print_refusal(error) -> None:
+    print(_("Analyse refusée :"), file=sys.stderr)
+    for reason in error.check.refusals:
+        print(f"- {reason}", file=sys.stderr)
 
 
 def cmd_analyse(args: argparse.Namespace) -> int:
@@ -211,28 +252,15 @@ def cmd_analyse(args: argparse.Namespace) -> int:
         return EXIT_ERROR
     project_path = Path(args.projet)
     project = load_project(project_path)
-    key = ANALYSES[args.analyse]
-    chosen = {
-        role: list(getattr(args, argument))
-        for role, argument in ROLE_ARGUMENTS.items()
-        if getattr(args, argument)
-    }
-    options = {
-        option: getattr(args, argument)
-        for option, argument in OPTION_ARGUMENTS.items()
-        if getattr(args, argument)
-    }
     try:
         prepared = prepare(project, project_path, Path(args.base) if args.base else None)
     except DataError as error:
         print(copy_error_text(error, project.source.name), file=sys.stderr)
         return EXIT_ERROR
     try:
-        result = run(project, prepared, key, chosen, options)
+        result = run(project, prepared, ANALYSES[args.analyse], *_asked(args))
     except AnalysisRefused as error:
-        print(_("Analyse refusée :"), file=sys.stderr)
-        for reason in error.check.refusals:
-            print(f"- {reason}", file=sys.stderr)
+        _print_refusal(error)
         return EXIT_ERROR
     print(result.sentence)
     for warning in result.warnings:
@@ -243,6 +271,180 @@ def cmd_analyse(args: argparse.Namespace) -> int:
     written += write_apa(files, describe(project, prepared, result), keys)
     for path in written:
         print(_("Fichier écrit : {path}").format(path=path))
+    return 0
+
+
+# --- The analysis notebook (v0.11): `ddict carnet` and `ddict resultats`. ---
+
+
+def _database(project, project_path: Path, base: str | None):
+    """The database ready for the analyses, or None and why it cannot be read."""
+    from ddict.analysis.data import DataError, prepare
+
+    try:
+        return prepare(project, project_path, Path(base) if base else None), ""
+    except DataError as error:
+        return None, copy_error_text(error, project.source.name)
+
+
+def notebook_lines(project, notebook, statuses) -> list[str]:
+    """The notebook as `ddict carnet lister` prints it: each analysis in its order, retained
+    or not, its state, its variables, what changed, and its sentence."""
+    from ddict.analysis import notebook as nb
+    from ddict.analysis.catalogue import ROLES
+    from ddict.analysis.notebook_check import difference_text, state_text
+    from ddict.analysis.notebook_export import heading
+
+    if not notebook.entries:
+        return [_("Le carnet est vide : ajoutez-y une analyse avec « ddict carnet ajouter ».")]
+    by_id = {status.entry_id: status for status in statuses}
+    lines = []
+    for rank, entry in enumerate(notebook.entries, start=1):
+        status = by_id[entry.id]
+        kept = _("retenue") if entry.retained else _("écartée")
+        lines.append(f"{rank}. {heading(entry)} — {kept}, {state_text(status.state)}")
+        try:
+            names = nb.resolved(project, entry)
+            lines.append(
+                "   " + " ; ".join(f"{ROLES[role]} : {', '.join(n)}" for role, n in names.items())
+            )
+        except nb.NotebookError:
+            pass
+        if status.reason:
+            lines.append(f"   {status.reason}")
+        for difference in status.differences:
+            lines.append(f"   {difference_text(difference)}")
+        if entry.computed.sentence:
+            lines.append(f"   {entry.computed.sentence}")
+        if entry.pending is not None and entry.pending.sentence:
+            lines.append("   " + _("Nouveau : {sentence}").format(sentence=entry.pending.sentence))
+    lines.append(numbering_text(notebook))
+    return lines
+
+
+def numbering_text(notebook) -> str:
+    return _("Numérotation : premier tableau {table}, première figure {figure}.").format(
+        table=notebook.first_table, figure=notebook.first_figure
+    )
+
+
+def _notebook_error(error) -> int:
+    from ddict.analysis import notebook as nb
+
+    print(nb.reason_text(error), file=sys.stderr)
+    return EXIT_ERROR
+
+
+def cmd_notebook(args: argparse.Namespace) -> int:
+    from ddict.analysis import notebook as nb
+
+    project_path = Path(args.projet)
+    project = load_project(project_path)
+    path = nb.notebook_path(project_path)
+    try:
+        notebook = nb.open_notebook(project, project_path)
+        code = _notebook_action(NOTEBOOK_ACTIONS[args.action], args, project, project_path,
+                                notebook)  # fmt: skip
+    except nb.NotebookError as error:
+        return _notebook_error(error)
+    if code == 0 and (notebook.entries or path.is_file()):
+        nb.save_notebook(notebook, path)
+    return code
+
+
+def _notebook_action(action, args, project, project_path, notebook) -> int:
+    from ddict.analysis import notebook as nb
+    from ddict.analysis import notebook_check as check
+    from ddict.analysis.compute import AnalysisRefused, run
+
+    today = datetime.now().date().isoformat()
+    if action == "add":
+        prepared, reason = _database(project, project_path, args.base)
+        if prepared is None:
+            print(reason, file=sys.stderr)
+            return EXIT_ERROR
+        try:
+            result = run(project, prepared, ANALYSES[args.analyse], *_asked(args))
+        except AnalysisRefused as error:
+            _print_refusal(error)
+            return EXIT_ERROR
+        entry = nb.add(notebook, project, result, today=today)
+        print(_("Ajoutée au carnet : {id}").format(id=entry.id))
+        if result.sentence:
+            print(result.sentence)
+    elif action == "remove":
+        nb.remove(notebook, args.numero)
+        print(_("Retirée du carnet : {id}").format(id=args.numero))
+    elif action == "move":
+        nb.move(notebook, args.numero, args.rang)
+        rank = [e.id for e in notebook.entries].index(args.numero) + 1
+        print(_("{id} est maintenant au rang {rank}.").format(id=args.numero, rank=rank))
+    elif action in ("retain", "leave_out"):
+        for entry_id in args.numeros:
+            nb.retain(notebook, entry_id, action == "retain")
+        text = _("Retenues : {ids}") if action == "retain" else _("Écartées : {ids}")
+        print(text.format(ids=", ".join(args.numeros)))
+    elif action == "numbers":
+        if args.tableau is not None:
+            notebook.first_table = max(1, args.tableau)
+        if args.figure is not None:
+            notebook.first_figure = max(1, args.figure)
+        print(numbering_text(notebook))
+    else:  # list, confirm: recompute what the decisions changed since
+        prepared, reason = _database(project, project_path, args.base)
+        statuses = check.check_all(notebook, project, prepared, today=today, reason=reason)
+        if action == "list":
+            for line in notebook_lines(project, notebook, statuses):
+                print(line)
+            return 0
+        if prepared is None:
+            print(reason, file=sys.stderr)
+            return EXIT_ERROR
+        ids = [s.entry_id for s in statuses if s.state == "changed"] if args.tout else args.numeros
+        if not ids:
+            print(_("Aucun changement à confirmer."))
+        for entry_id in ids or []:
+            check.confirm(notebook, entry_id)
+            print(_("Confirmée : {id}").format(id=entry_id))
+    return 0
+
+
+def cmd_results(args: argparse.Namespace) -> int:
+    from ddict.analysis import notebook as nb
+    from ddict.analysis.notebook_export import ExportBlocked, write_results
+
+    project_path = Path(args.projet)
+    project = load_project(project_path)
+    path = nb.notebook_path(project_path)
+    try:
+        notebook = nb.load_notebook(path) if path.is_file() else None
+    except nb.NotebookError as error:
+        return _notebook_error(error)
+    if notebook is None or not any(e.retained for e in notebook.entries):
+        print(_("Aucune analyse retenue dans le carnet."), file=sys.stderr)
+        return EXIT_ERROR
+    if not nb.belongs(notebook, project):
+        print(_("Ce carnet a été fait avec une autre base que celle du projet."), file=sys.stderr)
+        return EXIT_ERROR
+    prepared, reason = _database(project, project_path, args.base)
+    if prepared is None:
+        print(reason, file=sys.stderr)
+        return EXIT_ERROR
+    try:
+        written = write_results(project, prepared, notebook, project_path, language=args.langue)
+    except ExportBlocked as error:
+        nb.save_notebook(notebook, path)  # what changed waits in the notebook
+        print(
+            _(
+                "Des analyses retenues ont changé : {ids}. Voyez les différences avec "
+                "« ddict carnet lister », puis confirmez-les avec « ddict carnet confirmer »."
+            ).format(ids=", ".join(error.ids)),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
+    nb.save_notebook(notebook, path)
+    for written_path in written:
+        print(_("Fichier écrit : {path}").format(path=written_path))
     return 0
 
 
@@ -849,43 +1051,7 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     analyse.add_argument("projet", help=_("Fichier projet (.dd.json)."))
-    analyse.add_argument(
-        "analyse",
-        choices=list(ANALYSES),
-        help=_("tableau1, test_t, anova, khi2, correlation ou regression."),
-    )
-    analyse.add_argument("--variables", nargs="+", help=_("Variables (Tableau 1, corrélation)."))
-    analyse.add_argument("--groupe", "--group", nargs=1, help=_("Variable de groupe."))
-    analyse.add_argument(
-        "--dependante",
-        "--outcome",
-        nargs=1,
-        help=_("Variable dépendante (test t, ANOVA, régression)."),
-    )
-    analyse.add_argument("--lignes", "--rows", nargs=1, help=_("Variable en lignes (khi-carré)."))
-    analyse.add_argument(
-        "--colonnes", "--columns", nargs=1, help=_("Variable en colonnes (khi-carré).")
-    )
-    analyse.add_argument(
-        "--predicteurs", "--predictors", nargs="+", help=_("Prédicteurs (régression).")
-    )
-    analyse.add_argument(
-        "--methode",
-        "--method",
-        help=_(
-            "welch, student, mann_whitney ; anova, kruskal_wallis ; pearson, fisher, spearman "
-            "(défaut : la première de chaque analyse)."
-        ),
-    )
-    analyse.add_argument(
-        "--hypothese", "--alternative", help=_("Test t : two_sided, greater ou less.")
-    )
-    analyse.add_argument("--post-hoc", help=_("ANOVA : none ou tukey."))
-    analyse.add_argument(
-        "--modalites",
-        "--levels",
-        help=_("Test t : les deux codes du groupe à comparer, p. ex. 1,3."),
-    )
+    _analysis_arguments(analyse)
     analyse.add_argument(
         "--base", "--database", help=_("La base d'origine, si elle n'est pas à côté du projet.")
     )
@@ -899,6 +1065,90 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     analyse.set_defaults(handler=cmd_analyse)
+
+    notebook_command = commands.add_parser(
+        "carnet",
+        aliases=["notebook"],
+        help=_(
+            "Le carnet d'analyses du projet : lister, ajouter, retirer, déplacer, retenir, "
+            "écarter, confirmer, numéroter."
+        ),
+    )
+    actions = notebook_command.add_subparsers(dest="action", required=True)
+    listed = actions.add_parser(
+        "lister",
+        aliases=["list"],
+        help=_("Recalculer et lister les analyses du carnet, avec ce qui a changé."),
+    )
+    listed.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    added = actions.add_parser(
+        "ajouter",
+        aliases=["add"],
+        help=_("Lancer une analyse et l'ajouter à la fin du carnet, retenue."),
+    )
+    added.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    _analysis_arguments(added)
+    removed = actions.add_parser("retirer", aliases=["remove"], help=_("Retirer une analyse."))
+    removed.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    removed.add_argument("numero", help=_("Numéro de l'analyse, p. ex. A3."))
+    moved = actions.add_parser(
+        "deplacer", aliases=["move"], help=_("Mettre une analyse à un autre rang.")
+    )
+    moved.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    moved.add_argument("numero", help=_("Numéro de l'analyse, p. ex. A3."))
+    moved.add_argument("rang", type=int, help=_("Son nouveau rang, 1 pour la première."))
+    for name, alias, text in (
+        ("retenir", "retain", _("Retenir des analyses pour le document des résultats.")),
+        ("ecarter", "leave-out", _("Écarter des analyses du document, sans les retirer.")),
+    ):
+        kept = actions.add_parser(name, aliases=[alias], help=text)
+        kept.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+        kept.add_argument("numeros", nargs="+", help=_("Numéros des analyses, p. ex. A1 A3."))
+    confirmed = actions.add_parser(
+        "confirmer",
+        aliases=["confirm"],
+        help=_("Confirmer le nouveau calcul d'analyses qui ont changé."),
+    )
+    confirmed.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    confirmed.add_argument("numeros", nargs="*", help=_("Numéros des analyses, p. ex. A1 A3."))
+    confirmed.add_argument(
+        "--tout", "--all", action="store_true", help=_("Confirmer toutes celles qui ont changé.")
+    )
+    numbers = actions.add_parser(
+        "numeros",
+        aliases=["numbers"],
+        help=_("Numéro du premier tableau et de la première figure du document."),
+    )
+    numbers.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    numbers.add_argument("--tableau", "--table", type=int, help=_("Premier tableau (défaut : 1)."))
+    numbers.add_argument("--figure", type=int, help=_("Première figure (défaut : 1)."))
+    for action in (listed, added, confirmed):
+        action.add_argument(
+            "--base",
+            "--database",
+            help=_("La base d'origine, si elle n'est pas à côté du projet."),
+        )
+    notebook_command.set_defaults(handler=cmd_notebook)
+
+    results = commands.add_parser(
+        "resultats",
+        aliases=["results"],
+        help=_(
+            "Produire le document des résultats des analyses retenues du carnet, recalculées : "
+            "Word, graphiques Excel et script R maître, à côté du projet."
+        ),
+    )
+    results.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    results.add_argument(
+        "--base", "--database", help=_("La base d'origine, si elle n'est pas à côté du projet.")
+    )
+    results.add_argument(
+        "--langue",
+        "--language",
+        choices=list(LANGUAGES),
+        help=_("Langue du document (défaut : celle de l'interface)."),
+    )
+    results.set_defaults(handler=cmd_results)
 
     advise_command = commands.add_parser(
         "conseiller",
@@ -1045,6 +1295,47 @@ def build_parser() -> argparse.ArgumentParser:
     )
     review.set_defaults(handler=cmd_review)
     return parser
+
+
+def _analysis_arguments(command: argparse.ArgumentParser) -> None:
+    """The variables and options of an analysis (`analyser`, `carnet ajouter`)."""
+    command.add_argument(
+        "analyse",
+        choices=list(ANALYSES),
+        help=_("tableau1, test_t, anova, khi2, correlation ou regression."),
+    )
+    command.add_argument("--variables", nargs="+", help=_("Variables (Tableau 1, corrélation)."))
+    command.add_argument("--groupe", "--group", nargs=1, help=_("Variable de groupe."))
+    command.add_argument(
+        "--dependante",
+        "--outcome",
+        nargs=1,
+        help=_("Variable dépendante (test t, ANOVA, régression)."),
+    )
+    command.add_argument("--lignes", "--rows", nargs=1, help=_("Variable en lignes (khi-carré)."))
+    command.add_argument(
+        "--colonnes", "--columns", nargs=1, help=_("Variable en colonnes (khi-carré).")
+    )
+    command.add_argument(
+        "--predicteurs", "--predictors", nargs="+", help=_("Prédicteurs (régression).")
+    )
+    command.add_argument(
+        "--methode",
+        "--method",
+        help=_(
+            "welch, student, mann_whitney ; anova, kruskal_wallis ; pearson, fisher, spearman "
+            "(défaut : la première de chaque analyse)."
+        ),
+    )
+    command.add_argument(
+        "--hypothese", "--alternative", help=_("Test t : two_sided, greater ou less.")
+    )
+    command.add_argument("--post-hoc", help=_("ANOVA : none ou tukey."))
+    command.add_argument(
+        "--modalites",
+        "--levels",
+        help=_("Test t : les deux codes du groupe à comparer, p. ex. 1,3."),
+    )
 
 
 def _model_arguments(command: argparse.ArgumentParser, redo_help: str, block_size: int) -> None:
