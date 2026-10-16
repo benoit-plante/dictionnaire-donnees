@@ -1,6 +1,6 @@
 # Plan de la v0.9
 
-> Statut : **proposé le 2026-10-15, en attente de validation par l'auteur** (décisions D-069 à D-076 au § 9). Remplace une première version du même jour, centrée sur du code écrit par une IA (gardée dans l'historique Git), à la demande de l'auteur : des analyses toujours les mêmes, sans IA, que l'IA peut seulement aider à choisir.
+> Statut : **proposé le 2026-10-15, en attente de validation par l'auteur** (décisions D-069 à D-076 au § 10). Remplace une première version du même jour, centrée sur du code écrit par une IA (gardée dans l'historique Git), à la demande de l'auteur : des analyses toujours les mêmes, sans IA, que l'IA peut seulement aider à choisir.
 
 ## 1. Pourquoi cette version
 
