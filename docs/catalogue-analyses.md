@@ -1,6 +1,6 @@
 # Catalogue des analyses (v0.9)
 
-> Statut : **proposé le 2026-10-15 (étape 1 de la v0.9), en attente de validation par l'auteur.** Les exemples sont calculés sur les bases fictives révisées (`tests/context_examples.py`) par un prototype, avec SciPy et statsmodels ; le test t a été refait dans R (mêmes t, ddl et p).
+> Statut : **validé par l'auteur le 2026-10-15 (étape 1 de la v0.9)**, avec les cinq points du § 9 ; le script R en R de base est consigné dans D-077. Les exemples sont calculés sur les bases fictives révisées (`tests/context_examples.py`) par un prototype, avec SciPy et statsmodels ; le test t a été refait dans R (mêmes t, ddl et p).
 
 ## 1. Règles communes
 

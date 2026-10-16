@@ -942,3 +942,14 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
 - **Décision :** sont reportés : les modèles en ligne, l'exécution de code écrit par une IA, la base synthétique, le vérificateur de scripts, les analyses avancées (multiniveaux, équations structurelles, analyses factorielles) et les filtres du questionnaire.
 - **Options considérées :** sans objet.
 - **Justification :** garder la v0.9 centrée sur un catalogue juste et utile seul.
+
+### D-077 — Le script R équivalent en R de base ; conventions du catalogue d'analyses
+
+- **Date :** 2026-10-15
+- **Statut :** adoptée
+- **Remplace :** — (précise D-071)
+- **Décision :** le script R équivalent de chaque analyse est écrit en R de base, avec `haven` pour lire la base, sans `effectsize` : les tailles d'effet y sont calculées par les mêmes formules que l'outil. Le catalogue (`docs/catalogue-analyses.md`) est validé : six analyses (Tableau 1, test t, ANOVA, khi-carré, corrélation, régression linéaire) et leurs options, Welch par défaut ; p sans zéro initial (style APA) ; une phrase de résultat qui décrit sans juger (pas de « significatif ») ; d et r avec leur intervalle de confiance, V, η², ω², ε² et corrélation bisériale de rang sans intervalle ; seuils : 2 personnes par groupe au minimum, signalement sous 5, 20 % d'effectifs attendus sous 5, 10 observations par prédicteur, VIF supérieur à 5.
+- **Options considérées :**
+  1. R de base seulement (ce choix).
+  2. R de base et `effectsize`, comme D-071 le prévoyait.
+- **Justification :** `effectsize` n'est pas installé chez l'auteur ; un script sans dépendance se refait sur tout poste où R et `haven` sont installés, et ses formules sont lisibles. Conventions et seuils validés par l'auteur à la fin de l'étape 1.
