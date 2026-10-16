@@ -972,6 +972,12 @@ msgstr "Folder not found: {path}"
 msgid "Dossier où écrire le rapport (défaut : le dossier courant)."
 msgstr "Folder where the report is written (default: the current folder)."
 
+msgid "Droite (x)"
+msgstr "Line (x)"
+
+msgid "Droite (y)"
+msgstr "Line (y)"
+
 msgid "Durée"
 msgstr "Duration"
 
@@ -1141,6 +1147,9 @@ msgstr "File error: {detail}"
 msgid "Estime comment plusieurs prédicteurs, ensemble, expliquent une variable continue."
 msgstr "Estimates how several predictors, together, explain a continuous variable."
 
+msgid "Excel (graphiques modifiables)"
+msgstr "Excel (editable charts)"
+
 msgid "Export"
 msgstr "Export"
 
@@ -1270,6 +1279,12 @@ msgstr "Local AI"
 
 msgid "IC 95 %"
 msgstr "95% CI"
+
+msgid "IC 95 % (+)"
+msgstr "95% CI (+)"
+
+msgid "IC 95 % (−)"
+msgstr "95% CI (−)"
 
 #, python-brace-format
 msgid "IC 95 % [{low} ; {high}]"

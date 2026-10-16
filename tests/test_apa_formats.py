@@ -10,6 +10,7 @@ import zipfile
 import pytest
 from docx import Document
 from docx.oxml.ns import qn
+from openpyxl import load_workbook
 from PIL import Image
 
 from ddict.analysis.apa import Edit, describe, edited, plain
@@ -97,8 +98,9 @@ def test_every_format_takes_a_persons_edits(ready, key):
 
 
 def test_the_formats_of_this_version():
-    assert list(FORMATS) == ["docx"]  # D-085
+    assert list(FORMATS) == ["docx", "xlsx"]  # D-084, D-085
     assert FORMATS["docx"].tables and FORMATS["docx"].figures
+    assert FORMATS["xlsx"].figures and not FORMATS["xlsx"].tables
 
 
 # --- Word, APA 7. ---
@@ -176,3 +178,55 @@ def test_word_is_a_valid_office_file(ready):
     with zipfile.ZipFile(io.BytesIO(content)) as archive:
         assert "word/document.xml" in archive.namelist()
         assert any(n.startswith("word/media/") for n in archive.namelist())
+
+
+# --- Excel, the native charts (D-084). ---
+
+
+def _book(ready, case):
+    return load_workbook(io.BytesIO(FORMATS["xlsx"].render(_document(ready, case))))
+
+
+def test_one_sheet_and_one_native_chart_per_figure(ready):
+    document = _document(ready, "t_test")
+    book = _book(ready, "t_test")
+    assert book.sheetnames == ["Figure 1"]
+    sheet = book["Figure 1"]
+    assert sheet["A1"].value == "Figure 1" and sheet["A1"].font.bold
+    assert sheet["A2"].value == document.figures[0].title and sheet["A2"].font.italic
+    rows = list(sheet.iter_rows(min_row=5, max_row=6, values_only=True))
+    series = document.figures[0].series[0]
+    for row, mean, low, high in zip(rows, series.values, series.low, series.high, strict=True):
+        assert row[1] == pytest.approx(mean)
+        assert row[2] == pytest.approx(high - mean) and row[3] == pytest.approx(mean - low)
+    chart = sheet._charts[0]
+    assert chart.tagname == "barChart" and chart.title is None  # the title is in the cells
+    error = chart.series[0].errBars
+    assert error.errValType == "cust" and error.plus.numRef.f.endswith("$C$5:$C$6")
+    assert not chart.x_axis.delete and not chart.y_axis.delete
+    assert any(
+        str(v).startswith("Note. ") for r in sheet.iter_rows(values_only=True) for v in r if v
+    )
+
+
+def test_the_other_charts(ready):
+    book = _book(ready, "chi_square")
+    chart = book.worksheets[0]._charts[0]
+    assert len(chart.series) == 2 and chart.legend.position == "b"  # Oui, Non
+    book = _book(ready, "scatter")
+    chart = book.worksheets[0]._charts[0]
+    assert chart.tagname == "scatterChart" and len(chart.series) == 2  # the points, the line
+    assert chart.x_axis.scaling.min == 25  # not from 0
+    book = _book(ready, "regression")
+    sheet = book.worksheets[0]
+    chart = sheet._charts[0]
+    assert chart.type == "bar" and chart.series[0].invertIfNegative is False
+    names = [r[0] for r in sheet.iter_rows(min_row=5, values_only=True) if r[0]][:3]
+    assert names[-1] == "Soutien des collègues (0 à 10)"  # Excel's bottom row: drawn on top
+
+
+def test_no_workbook_without_a_figure(ready):
+    document = _document(ready, "table1")
+    assert FORMATS["xlsx"] not in available(document)
+    with pytest.raises(ValueError):
+        FORMATS["xlsx"].render(document)

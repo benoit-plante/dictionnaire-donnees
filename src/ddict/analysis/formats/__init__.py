@@ -45,4 +45,4 @@ def available(document: ApaDocument) -> list[Format]:
 
 
 # The formats of this version (D-085): importing them registers them.
-from ddict.analysis.formats import docx  # noqa: E402, F401
+from ddict.analysis.formats import docx, xlsx_charts  # noqa: E402, F401
