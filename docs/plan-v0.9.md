@@ -1,114 +1,117 @@
 # Plan de la v0.9
 
-> Statut : **proposé le 2026-10-15, en attente de validation par l'auteur** (décisions D-069 à D-076 au § 9). Cette version touche deux règles fondatrices : « Rien ne quitte le poste » (règle 3 du `CLAUDE.md`, principe de `CONCEPTION.md`) et « aucune exécution de code d'analyse dans l'outil » (D-065). Rien n'en sera changé sans une décision explicite de l'auteur.
+> Statut : **proposé le 2026-10-15, en attente de validation par l'auteur** (décisions D-069 à D-076 au § 9). Remplace une première version du même jour, centrée sur du code écrit par une IA (gardée dans l'historique Git), à la demande de l'auteur : des analyses toujours les mêmes, sans IA, que l'IA peut seulement aider à choisir.
 
 ## 1. Pourquoi cette version
 
-La v0.8 a fait du codebook un contrat d'analyse. L'essai de son étape 8 a montré deux choses :
+La v0.8 a fait du codebook un contrat d'analyse. Son essai (étape 8) a montré qu'un petit modèle local ne sait pas écrire une analyse en R, et que de grands modèles en ligne y arrivent, mais avec des variations d'un modèle à l'autre (un groupe vide gardé dans les résultats, par exemple) et un code qu'il faut relire à chaque fois.
 
-- **un petit modèle local ne sait pas écrire une analyse** : qwen2.5 7B a échoué six fois sur six, faute de savoir programmer en R ;
-- **un assistant en ligne y arrive à partir du seul contexte** : trois assistants (Claude Opus 5.5 et Haiku 5.5, Gemini 3.6) ont écrit une analyse juste ou presque, sans jamais voir les données, pour quelques cents au plus.
+Il y a une voie plus sûre, dans l'esprit de l'outil depuis le début (le calcul déterministe d'abord, l'IA propose, une personne décide) : **un catalogue d'analyses courantes, écrites une fois, vérifiées et testées**, que l'outil remplit avec les bonnes variables et exécute sur la base. Les analyses sont toujours les mêmes et toujours justes, quel que soit le modèle, et sans modèle du tout. L'IA, facultative, aide seulement à choisir : à partir des objectifs ou des hypothèses de l'équipe, elle propose une analyse du catalogue et ses variables, ou un plan d'analyse ; une personne confirme.
 
-Aujourd'hui, la personne fait le chemin à la main : copier le contexte dans un assistant, rapporter le code, le relire, l'exécuter dans son logiciel. L'auteur souhaite que l'outil fasse ce chemin : **choisir un modèle, en ligne si l'équipe le permet, obtenir le code, le vérifier, puis l'appliquer à la base, dans l'outil.**
+Le codebook rend ces analyses justes presque d'elles-mêmes : l'outil connaît le niveau de mesure de chaque variable (donc les analyses permises), ses codes manquants (retirés), les scores (calculés par le script de préparation) et la structure de la base (mesures répétées ou non).
 
-C'est faisable, mais c'est la partie la plus risquée de tout ce que l'outil a envisagé : des métadonnées qui quittent le poste, et du code écrit par une IA exécuté sur de vraies données. Cette version n'a de sens qu'avec des garde-fous à chaque étape du chemin.
+Les statistiques ne sont pas réécrites : l'outil s'appuie sur R et sur des paquets éprouvés, largement utilisés en psychologie et en sciences sociales, et appelés par le R de l'utilisateur, comme `haven` aujourd'hui.
 
-## 2. Le chemin proposé
+## 2. Le chemin
 
 ```
-question de l'équipe
-  → contexte d'analyse (v0.8) + consigne        [porte de confidentialité]
-  → modèle local, ou en ligne si permis         [aperçu exact, registre]
-  → code R proposé
-  → vérificateur de scripts                     [règles bloquantes et avertissements]
-  → exécution sur la base synthétique           [automatique, sans risque]
-  → relecture et approbation par une personne   [obligatoire]
-  → exécution sur la vraie base                 [dossier isolé, copie, délai]
-  → résultats affichés sur le poste
-  → (facultatif) résultats renvoyés au modèle   [seulement des agrégats filtrés]
+objectif de l'équipe (facultatif : l'IA locale propose une analyse et ses variables)
+  → analyse du catalogue, variables, options             [choisies ou confirmées par une personne]
+  → contrôle des conditions d'application                [d'après le codebook]
+  → script R écrit par l'outil, à partir du gabarit      [lisible, gardé avec les résultats]
+  → exécution par le R de l'utilisateur, sur une copie   [fichier de commandes et préparation d'abord]
+  → résultats dans l'outil, et rapport à télécharger     [avec l'empreinte du codebook]
 ```
 
-Le code peut aussi venir d'ailleurs : une personne qui colle le code d'un assistant utilisé à la main (comme à l'essai de l'étape 8) suit le même chemin à partir du vérificateur.
+Sans R sur le poste, l'outil écrit le script : la personne l'exécute elle-même, comme les fichiers de commandes de la v0.4.
 
 ## 3. Contenu proposé
 
 | | Fonction | Ce qu'elle apporte |
 |---|---|---|
-| A | **Modèles en ligne, sur option** : un service compatible (OpenAI, Anthropic, Google, ou tout service au format OpenAI), désactivé par défaut, activé par projet avec une attestation de l'équipe | Les modèles capables d'écrire du code, sans changer le reste de l'outil |
-| B | **Base synthétique** générée à partir du projet seul : même structure, mêmes codes, mêmes manquants, distributions marginales proches ; marquée fictive | Essayer tout code sans toucher aux vraies données |
-| C | **Vérificateur de scripts** : analyse du code R avant toute exécution | Le garde-fou qui rend l'exécution défendable |
-| D | **Page « Analyse »** : une question, un modèle, le code proposé, son contrôle, son essai sur la base synthétique, l'approbation, l'exécution sur la vraie base, les résultats | Le chemin entier dans l'outil, ou à partir d'un code collé |
-| E | **Porte de confidentialité des résultats** : ce qui peut être renvoyé à un modèle | Une boucle de correction sans fuite de données |
+| A | **Catalogue d'analyses**, de départ : Tableau 1 (description de l'échantillon), test t (Student ou Welch, et Mann-Whitney), ANOVA à un facteur (et Kruskal-Wallis), khi-carré (et test exact de Fisher), corrélation (Pearson ou Spearman), régression linéaire ; avec tailles d'effet et intervalles de confiance | Les analyses les plus courantes, justes à chaque fois |
+| B | **Conditions d'application** tirées du codebook : une variable nominale ne va pas dans une corrélation, un groupe de moins de deux personnes est refusé, des données longitudinales sont signalées pour une analyse qui suppose l'indépendance | Une analyse inadaptée n'est pas lancée par erreur |
+| C | **Exécution par le R de l'utilisateur**, sur une copie de la base, après le fichier de commandes et le script de préparation ; résultats structurés | Les analyses appliquées à la base, dans l'outil |
+| D | **Page « Analyses »** : choisir une analyse, ses variables et ses options ; voir le script ; lancer ; lire les résultats ; télécharger le rapport et le script | Tout le parcours sans programmer |
+| E | **L'IA conseillère**, facultative et locale : à partir des objectifs de l'équipe, elle propose des analyses du catalogue et leurs variables, ou un plan d'analyse ; elle n'écrit jamais de code | Une aide au choix, jamais une analyse faite par l'IA |
+| F | **Bases fictives aux effets connus** : des différences, associations et corrélations plantées à l'avance, pour vérifier que chaque analyse les retrouve | Les gabarits testés comme le reste de l'outil |
 
-**Hors de cette version :** les filtres du questionnaire (prévus plus tôt en v0.9) passent à une version suivante ; l'exécution de Python ou de syntaxe SPSS (R seulement : il est installé chez l'auteur, et haven lit tous les formats de l'outil) ; une vraie application Mac ; la relecture de l'anglais.
+**Hors de cette version :** les modèles en ligne (la règle « Rien ne quitte le poste » reste entière : choisir dans une liste est à la portée du modèle local, comme pour les rattachements ; l'essai le dira) ; l'exécution de code écrit par une IA, la base synthétique et le vérificateur de scripts (de la première version du plan, à revoir plus tard) ; les modèles mixtes pour les données longitudinales et les analyses factorielles (une version suivante) ; les filtres du questionnaire ; Python et la syntaxe SPSS pour les analyses (R seulement).
 
-## 4. Conception — modèles en ligne (A)
+## 4. Conception — le catalogue (A, B)
 
-- **Fournisseurs** : un client au format OpenAI (le plus répandu, accepté aussi par plusieurs autres services) et un client Anthropic ; adresse, modèle et clé donnés par la personne. Aucun fournisseur par défaut.
-- **Désactivé par défaut**, activé **projet par projet**, après une case où l'équipe atteste que son certificat d'éthique permet d'envoyer à ce service les métadonnées de l'étude. L'attestation est enregistrée dans le projet (qui, quand, quel service).
-- **Ce qui part** : exactement ce que reçoit déjà le modèle local, construit par la porte de confidentialité (`ddict.privacy`) ; pour l'analyse, le contexte d'analyse sans statistiques, sauf si l'équipe coche aussi les statistiques. **Jamais une donnée individuelle.** L'aperçu exact est montré avant chaque envoi, et chaque envoi est consigné (service, modèle, empreinte du message, date), comme les appels locaux (`AiRun`).
-- **La clé d'accès** reste sur le poste, dans le trousseau du système (Gestionnaire d'identification de Windows, Trousseau du Mac), jamais dans le projet ni dans un fichier du dépôt.
-- **Les tests** gardent le réseau bloqué : faux serveurs seulement.
+Chaque analyse est décrite comme des données (comme les plateformes de la v0.7), et son gabarit R est un texte fixe, rempli par l'outil :
 
-## 5. Conception — base synthétique (B)
-
-- Générée **à partir du fichier projet seulement**, jamais du tableau (règle 2) : pour chaque variable, sa structure (type, codes et étiquettes, manquants déclarés et leur taux), une distribution marginale tirée du profil enregistré (effectifs des codes, masqués sous 5 et alors approchés ; moyenne, écart-type et étendue observée pour une variable continue). Les variables sensibles reçoivent des valeurs inventées de même forme (identifiants « FICTIF-001 »).
-- Les liens entre variables ne sont pas reproduits, sauf la structure des groupes (items d'une échelle tirés autour d'un même niveau, pour qu'un score ait un sens) : la base sert à faire tourner le code, pas à en tirer des conclusions.
-- Marquée fictive dans son nom (`-synthetique.sav`) et son étiquette de fichier ; graine fixe, donc reproductible.
-- Utile seule aussi : une équipe peut la donner à n'importe qui pour mettre au point un script.
-
-## 6. Conception — vérificateur de scripts (C)
-
-Une analyse statique du code R (sans l'exécuter), en deux niveaux :
-
-| Niveau | Règle |
+| Élément | Exemple (test t) |
 |---|---|
-| **Bloquant** | accès au réseau (`download.file`, `url(`, `httr`, `curl`, `socketConnection`…) ; commandes du système (`system`, `shell`, `processx`…) ; écriture ou suppression hors du dossier de travail (`unlink`, `file.remove`, `write*` avec un chemin absolu ou `..`) ; installation de paquets ; affichage de lignes de données (`print(donnees)`, `head`, `View`, `donnees[i, ]` sans agrégation) ; une variable sensible du projet dans le code |
-| **Avertissement** | une variable à codes manquants utilisée sans `zap_missing`, `is.na` ni ses codes ; un item inversé confirmé additionné sans son inversion ; un score recalculé alors que le script de préparation le donne ; un niveau nominal traité comme continu (moyenne d'un code) |
+| Rôles des variables | une variable dépendante continue (`scale`, ou score) ; une variable de groupe nominale ou ordinale à deux modalités |
+| Conditions | la variable dépendante n'est ni un identifiant ni un texte ; deux groupes, au moins 2 personnes chacun ; pas de mesures répétées dans la même colonne |
+| Options | Welch (par défaut) ou Student ; bilatéral ou unilatéral ; version non paramétrique (Mann-Whitney) |
+| Sorties | effectifs, moyennes et écarts-types par groupe ; t, ddl, p ; d de Cohen et son intervalle de confiance ; phrase de résultat au format APA |
+| Hypothèses vérifiées et signalées | normalité dans chaque groupe (indication), égalité des variances (Levene) |
 
-Un script bloqué ne s'exécute pas ; les avertissements sont montrés à la personne, qui décide. Le vérificateur est imparfait par nature (un code peut contourner une règle) : c'est une aide, pas une garantie, et le guide le dit.
+- **Les variables** sont proposées à partir du codebook (noms finaux, libellés, niveaux en vigueur) ; seules celles qui conviennent à un rôle sont offertes.
+- **Les codes manquants** sont retirés par le fichier de commandes ; **les scores** viennent du script de préparation ; le script d'analyse ne fait que l'analyse.
+- **Un contrôle refusé** dit pourquoi, en clair ; un contrôle douteux (hypothèse fragile, petits groupes) est un avertissement, la personne décide.
 
-## 7. Conception — exécution et résultats (D, E)
+## 5. Conception — l'exécution et les résultats (C, D)
 
-- **Toujours d'abord sur la base synthétique**, automatiquement : un code qui échoue ou bloque n'atteint jamais la vraie base.
-- **Puis sur la vraie base seulement après l'approbation d'une personne**, qui a vu le code, le rapport du vérificateur et le résultat sur la base synthétique (principe 5 : toute production de l'IA est une proposition).
-- **Exécution** : `Rscript --vanilla` dans un dossier de travail à part, sur une **copie** de la base (la copie documentée quand elle existe), avec un délai maximal ; le fichier d'origine n'est jamais touché. **Limite à dire clairement** : sous Windows, sans conteneur, ce n'est pas un vrai bac à sable ; un code malveillant qui échapperait au vérificateur aurait les droits de la personne. D'où les règles bloquantes, l'essai synthétique et l'approbation.
-- **Résultats** : le code doit ranger ses résultats dans une liste `resultats` (tableaux et nombres). Ils sont affichés sur le poste tels quels. **Pour les renvoyer à un modèle** (correction d'une erreur, interprétation), seuls passent ceux qui franchissent la porte : agrégats seulement, effectifs de moins de 5 masqués, aucune colonne d'une variable sensible, aucun vecteur de la longueur de la base ; et une erreur R est renvoyée sans les valeurs qu'elle pourrait citer.
-- **Trace** : le code exécuté, le rapport du vérificateur, l'empreinte du codebook et la date sont gardés à côté du projet, pour savoir ce qui a produit quel résultat.
+- **R** est cherché sur le poste comme pour les tests (`Rscript`, ou `R/R-*/bin` sous Windows) ; les paquets nécessaires sont vérifiés avant de lancer, et la commande pour les installer est donnée s'ils manquent (l'outil ne les installe pas lui-même).
+- **Le script complet** est écrit dans un dossier « analyses » à côté du projet : lecture de la base (ou de sa copie documentée), fichier de commandes, script de préparation, puis l'analyse. Il reste lisible et réutilisable tel quel, avec l'empreinte du codebook en tête : l'analyse est reproductible hors de l'outil.
+- **L'exécution** se fait par `Rscript` sur une copie, avec un délai maximal ; le fichier d'origine n'est jamais touché. Le code exécuté est **celui de l'outil**, vérifié et testé, jamais du code écrit par une IA.
+- **Les résultats** sont écrits par le script dans des fichiers structurés (tableaux CSV et un fichier de résultats), lus par l'outil et affichés : tableaux, statistiques, tailles d'effet, phrase APA. Un **rapport** (Markdown, et le tableau en Excel) se télécharge, avec le script, l'empreinte et la date.
+- **Confidentialité :** les résultats restent sur le poste ; ce sont ceux de l'analyse de l'équipe (un Tableau 1 peut montrer de petits effectifs, signalés quand ils sont sous 5, à l'équipe de décider avant de publier). Rien n'est envoyé à un modèle.
+
+## 6. Conception — l'IA conseillère (E)
+
+- **Facultative et locale**, par le client existant (règle 3 inchangée).
+- **Ce qu'elle reçoit**, par la porte de confidentialité : l'objectif écrit par l'équipe, le catalogue (noms, rôles, conditions) et la liste des variables avec leur libellé, leur niveau et leur groupe, comme pour les libellés aujourd'hui. Aucune donnée, aucune statistique.
+- **Ce qu'elle répond**, dans un schéma strict (`extra="forbid"`) : des analyses **du catalogue** et des variables **du projet**, désignées par leurs identifiants, avec une courte justification. Une analyse ou une variable inconnue est refusée ; une proposition qui ne respecte pas les conditions est signalée.
+- **Toujours une proposition** (principe 5) : la personne la confirme, la change ou la rejette ; rien ne s'exécute sans elle.
+- Un **banc** mesure, sur des objectifs écrits pour les bases fictives, la part de propositions justes, avec le modèle local, comme pour les rattachements.
+
+## 7. Conception — les paquets R (D-071)
+
+Critères : justesse reconnue, large usage en psychologie et en sciences sociales, maintenance active, licence libre, et des résultats lisibles sans programmer. Appelés par le R de l'utilisateur, jamais intégrés à l'outil. Licences vérifiées à l'étape 1 et notées dans `docs/dependances.md`.
+
+| Rôle | Choix proposé | Autre choix |
+|---|---|---|
+| Tests et régression | **R de base** (`stats` : `t.test`, `aov`, `chisq.test`, `cor.test`, `lm`) : code transparent, que toute personne qui connaît R peut relire | `jmv` : les analyses de jamovi, résultats identiques à ce logiciel connu en psychologie, mais en une fonction qui cache le calcul |
+| Tailles d'effet et intervalles | **effectsize** | calcul dans le gabarit |
+| Tableau 1 | **gtsummary** | tableau construit dans le gabarit |
+| Hypothèses (Levene) | **car** ou calcul dans le gabarit | — |
 
 ## 8. Étapes
 
 | # | Étape | Critère de réussite |
 |---|---|---|
-| 1 | Modèle de menace et conception détaillée (ce qui peut mal tourner, à chaque flèche du chemin) ; consignés dans `CONCEPTION.md` | Validés par l'auteur ; chaque risque a sa parade ou est dit comme limite |
-| 2 | Base synthétique (B) | Générée depuis le projet seul (test : aucune valeur du tableau n'y figure hors des codes étiquetés) ; le script de préparation et l'analyse de l'essai 8 y tournent |
-| 3 | Vérificateur de scripts (C) | Chaque règle testée sur des scripts écrits pour l'enfreindre ; les scripts justes de l'essai 8 passent sans blocage |
-| 4 | Exécution isolée et résultats (D, E), à partir d'un code collé | Le code d'Opus de l'essai 8 donne dans l'outil les mêmes résultats qu'à l'essai ; un code bloqué ne s'exécute jamais ; la porte des résultats testée |
-| 5 | Modèles en ligne (A) : clients, clé dans le trousseau, attestation, aperçu, registre | Faux serveurs : rien ne part sans attestation ; le message envoyé est exactement l'aperçu ; la clé n'est écrite nulle part ailleurs (test) |
-| 6 | Page « Analyse » : question, modèle, code, contrôle, essai synthétique, approbation, exécution | Parcours complet sur la base fictive, avec le modèle local et un faux serveur en ligne |
-| 7 | Boucle de correction facultative : erreur ou résultat renvoyé au modèle, filtré | Une erreur R corrigée par le modèle sans qu'aucune valeur ne parte (test) |
-| 8 | Essai : de la question au résultat, sur la base fictive, avec un modèle en ligne choisi par l'auteur | Essai consigné dans `docs/essais/` |
+| 1 | Fiches du catalogue (rôles, conditions, options, sorties) et choix des paquets, avec leurs licences ; un exemple de résultat et de rapport par analyse | Validés par l'auteur |
+| 2 | Bases fictives aux effets connus (F) et leur corrigé | Fichiers reproductibles (graine fixe) ; effets plantés retrouvés par un calcul indépendant (test) |
+| 3 | Catalogue comme données, conditions d'application (B) | Chaque condition testée : une analyse inadaptée est refusée avec sa raison |
+| 4 | Exécution par R, scripts et résultats structurés (C), d'abord pour le Tableau 1, la corrélation et le khi-carré | Résultats égaux au corrigé et à un calcul indépendant ; base d'origine intacte ; sans R, le script est écrit |
+| 5 | Test t, ANOVA, régression linéaire, tailles d'effet, hypothèses signalées | Idem, sur chaque base fictive |
+| 6 | Page « Analyses », rapport et script téléchargeables | Parcours dans le navigateur ; mêmes résultats que la ligne de commande (`ddict analyser`) |
+| 7 | IA conseillère locale, schéma strict, banc des propositions | Faux serveur : propositions hors catalogue refusées (tests) ; banc avec qwen2.5 7B consigné |
+| 8 | Essai : des objectifs à un rapport, sur une base fictive, avec et sans IA ; puis sur une vraie base (exécution sans erreur seulement, aucun résultat consigné) | Essai dans `docs/essais/` |
 | 9 | Guides, journal des changements, version 0.9.0 | Scénario refait dans le navigateur ; guides en français et en anglais |
 
 ## 9. Risques
 
-- **Exécution de code écrit par une IA** : effacement, écriture ou envoi de données. Parades : vérificateur bloquant, base synthétique d'abord, approbation humaine, copie de la base, dossier isolé, délai ; limite dite (pas de vrai bac à sable sous Windows).
-- **Fuite de métadonnées vers un service en ligne** : désactivé par défaut, attestation par projet, aperçu exact, registre ; la décision reste celle de l'équipe et de son comité d'éthique.
-- **Fuite de résultats** dans la boucle de correction : porte des résultats, agrégats seulement.
-- **Base synthétique prise pour de vraies données** : marquée fictive partout ; liens entre variables non reproduits, dit dans le guide.
-- **Faux sentiment de sécurité** : le vérificateur et la porte réduisent les risques, ils ne les suppriment pas ; le guide le dit.
-- **Coût et variabilité des modèles en ligne** : quelques cents par analyse à l'essai ; le registre garde le modèle utilisé.
-- **Version trop chargée** : si elle s'allonge, la boucle de correction (étape 7) passe en 0.9.x ; la base synthétique, le vérificateur et l'exécution à partir d'un code collé (étapes 2 à 4) forment un premier ensemble utile, même sans modèle en ligne.
+- **Une analyse juste mais mal choisie** (une moyenne sur une variable ordinale, des mesures répétées traitées comme indépendantes) : conditions tirées du codebook et avertissements ; la décision reste à l'équipe.
+- **Un faux sentiment d'automatisme** : l'outil fait des analyses justes, pas une démarche de recherche ; le guide le dit, et le rapport rappelle les hypothèses vérifiées et celles qui ne le sont pas.
+- **R ou un paquet absent, ou d'une autre version** : vérification avant de lancer, commande d'installation donnée, version des paquets écrite dans le rapport.
+- **Des résultats sur de petits groupes partagés trop vite** : petits effectifs signalés dans le rapport.
+- **Version trop chargée** : si elle s'allonge, l'IA conseillère (étape 7) passe en 0.9.x ; le catalogue et son exécution (étapes 2 à 6) sont utiles seuls.
 
 ## 10. Décisions à prendre
 
 | N° | Décision | Recommandation |
 |---|---|---|
-| D-069 | **Périmètre de la v0.9** | Modèles en ligne sur option, base synthétique, vérificateur, exécution dans l'outil avec approbation, porte des résultats ; filtres du questionnaire reportés ; R seulement. |
-| D-070 | **Modèles en ligne** (remplace en partie la règle « Rien ne quitte le poste ») | Permis sur option seulement : désactivés par défaut, activés par projet avec l'attestation de l'équipe ; seul part ce que construit la porte de confidentialité ; aperçu et registre. La règle 3 du `CLAUDE.md` est réécrite en ce sens, et les données individuelles ne quittent toujours jamais le poste. |
-| D-071 | **Clé d'accès** | Dans le trousseau du système, par la bibliothèque `keyring` (MIT) ; jamais dans le projet. Autre choix : une variable d'environnement, plus simple mais moins sûre pour une personne qui ne programme pas. |
-| D-072 | **Exécution de code dans l'outil** (remplace D-065) | R seulement, toujours sur la base synthétique d'abord, sur la vraie base après approbation d'une personne, dans un dossier isolé sur une copie ; la limite de l'isolement est dite. Autre choix : garder D-065 et faire de l'assistant un projet distinct qui lirait le contexte d'analyse. |
-| D-073 | **Vérificateur de scripts** | Règles bloquantes (réseau, système, fichiers hors du dossier, affichage de lignes, variables sensibles) et avertissements (codes manquants, inversions, niveaux) ; une aide, pas une garantie. |
-| D-074 | **Base synthétique** | Depuis le projet seul ; distributions marginales et structure des groupes ; marquée fictive ; graine fixe. |
-| D-075 | **Ce qui peut revenir à un modèle** | Seulement les résultats rangés dans `resultats` qui passent la porte : agrégats, effectifs d'au moins 5, aucune variable sensible, aucun vecteur de la longueur de la base. |
-| D-076 | **Filtres du questionnaire** | Reportés à une version suivante. |
+| D-069 | **Périmètre de la v0.9** | Un catalogue d'analyses écrites et testées, exécutées par le R de l'utilisateur, et une IA conseillère locale et facultative ; modèles en ligne, code écrit par une IA, base synthétique, vérificateur, modèles mixtes et filtres du questionnaire reportés. |
+| D-070 | **Exécuter des analyses dans l'outil** (remplace en partie D-065) | Oui, mais seulement les gabarits de l'outil, vérifiés et testés ; jamais du code écrit par une IA ; par le R de l'utilisateur, sur une copie ; sans R, le script est écrit pour être exécuté à la main. |
+| D-071 | **Paquets R** | R de base pour les tests et la régression (code transparent), effectsize, gtsummary ; appelés par le R de l'utilisateur, jamais intégrés ; licences notées. Autre choix : `jmv`, pour des résultats identiques à jamovi. |
+| D-072 | **Résultats et reproductibilité** | Résultats structurés écrits par le script ; rapport et script complet gardés ensemble, avec l'empreinte du codebook et la version des paquets ; rien n'est envoyé à un modèle. |
+| D-073 | **L'IA conseillère** | Locale et facultative ; elle propose des analyses du catalogue et des variables du projet, dans un schéma strict ; elle n'écrit jamais de code ; toujours une proposition. |
+| D-074 | **Conditions d'application** | Une analyse inadaptée selon le codebook (niveau, nombre de groupes, mesures répétées) est refusée avec sa raison ; une hypothèse fragile est un avertissement. |
+| D-075 | **Bases fictives aux effets connus** | Le corrigé des analyses, comme celui des rattachements : chaque gabarit doit retrouver les effets plantés. |
+| D-076 | **Reportés** | Modèles en ligne, exécution de code écrit par une IA, base synthétique, vérificateur de scripts, modèles mixtes, filtres du questionnaire. |
