@@ -1,5 +1,5 @@
 """Command line: `ddict profiler`, `exporter`, `documenter`, `questionnaire`, `enrichir`,
-`rattacher`, `evaluer`, `reviser`."""
+`rattacher`, `evaluer`, `analyser`, `reviser`."""
 
 from __future__ import annotations
 
@@ -39,6 +39,7 @@ from ddict.workflow import (
     UnknownGroups,
     acronym_summary,
     add_questionnaire,
+    analysis_files,
     copy_error_text,
     documented_copy,
     exchange_dir,
@@ -53,6 +54,7 @@ from ddict.workflow import (
     platform_summary,
     profile_database,
     profile_summary,
+    project_stem,
     questionnaire_summary,
     rename,
     wave_summary,
@@ -155,6 +157,75 @@ def cmd_copy(args: argparse.Namespace) -> int:
                 "manquants : {names}. Ceux du fichier sont gardés."
             ).format(names=", ".join(result.missing_not_written))
         )
+    return 0
+
+
+# The analyses as the command line names them (v0.9): the catalogue's keys, or in French.
+ANALYSES = {
+    "table1": "table1",
+    "tableau1": "table1",
+    "t_test": "t_test",
+    "test_t": "t_test",
+    "anova": "anova",
+    "chi_square": "chi_square",
+    "khi2": "chi_square",
+    "correlation": "correlation",
+    "regression": "regression",
+}
+ROLE_ARGUMENTS = {
+    "variables": "variables",
+    "group": "groupe",
+    "outcome": "dependante",
+    "rows": "lignes",
+    "columns": "colonnes",
+    "predictors": "predicteurs",
+}
+OPTION_ARGUMENTS = {
+    "method": "methode",
+    "alternative": "hypothese",
+    "post_hoc": "post_hoc",
+    "levels": "modalites",
+}
+
+
+def cmd_analyse(args: argparse.Namespace) -> int:
+    # Imported here: SciPy and statsmodels load only for an analysis.
+    from ddict.analysis.compute import AnalysisRefused, run
+    from ddict.analysis.data import DataError, prepare
+    from ddict.analysis.report import write_report
+
+    project_path = Path(args.projet)
+    project = load_project(project_path)
+    key = ANALYSES[args.analyse]
+    chosen = {
+        role: list(getattr(args, argument))
+        for role, argument in ROLE_ARGUMENTS.items()
+        if getattr(args, argument)
+    }
+    options = {
+        option: getattr(args, argument)
+        for option, argument in OPTION_ARGUMENTS.items()
+        if getattr(args, argument)
+    }
+    try:
+        prepared = prepare(project, project_path, Path(args.base) if args.base else None)
+    except DataError as error:
+        print(copy_error_text(error, project.source.name), file=sys.stderr)
+        return EXIT_ERROR
+    try:
+        result = run(project, prepared, key, chosen, options)
+    except AnalysisRefused as error:
+        print(_("Analyse refusée :"), file=sys.stderr)
+        for reason in error.check.refusals:
+            print(f"- {reason}", file=sys.stderr)
+        return EXIT_ERROR
+    print(result.sentence)
+    for warning in result.warnings:
+        print(_("Avertissement : {text}").format(text=warning))
+    files = analysis_files(project_path)
+    today = datetime.now().date().isoformat()
+    for path in write_report(project, prepared, result, files, project_stem(project_path), today):
+        print(_("Fichier écrit : {path}").format(path=path))
     return 0
 
 
@@ -669,6 +740,57 @@ def build_parser() -> argparse.ArgumentParser:
         "--remplacer", "--replace", action="store_true", help=_("Remplacer une copie déjà écrite.")
     )
     copy.set_defaults(handler=cmd_copy)
+
+    analyse = commands.add_parser(
+        "analyser",
+        aliases=["analyse"],
+        help=_(
+            "Lancer une analyse du catalogue sur la base, avec les décisions acceptées, et "
+            "écrire son rapport et son script R à côté du projet."
+        ),
+    )
+    analyse.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    analyse.add_argument(
+        "analyse",
+        choices=list(ANALYSES),
+        help=_("tableau1, test_t, anova, khi2, correlation ou regression."),
+    )
+    analyse.add_argument("--variables", nargs="+", help=_("Variables (Tableau 1, corrélation)."))
+    analyse.add_argument("--groupe", "--group", nargs=1, help=_("Variable de groupe."))
+    analyse.add_argument(
+        "--dependante",
+        "--outcome",
+        nargs=1,
+        help=_("Variable dépendante (test t, ANOVA, régression)."),
+    )
+    analyse.add_argument("--lignes", "--rows", nargs=1, help=_("Variable en lignes (khi-carré)."))
+    analyse.add_argument(
+        "--colonnes", "--columns", nargs=1, help=_("Variable en colonnes (khi-carré).")
+    )
+    analyse.add_argument(
+        "--predicteurs", "--predictors", nargs="+", help=_("Prédicteurs (régression).")
+    )
+    analyse.add_argument(
+        "--methode",
+        "--method",
+        help=_(
+            "welch, student, mann_whitney ; anova, kruskal_wallis ; pearson, fisher, spearman "
+            "(défaut : la première de chaque analyse)."
+        ),
+    )
+    analyse.add_argument(
+        "--hypothese", "--alternative", help=_("Test t : two_sided, greater ou less.")
+    )
+    analyse.add_argument("--post-hoc", help=_("ANOVA : none ou tukey."))
+    analyse.add_argument(
+        "--modalites",
+        "--levels",
+        help=_("Test t : les deux codes du groupe à comparer, p. ex. 1,3."),
+    )
+    analyse.add_argument(
+        "--base", "--database", help=_("La base d'origine, si elle n'est pas à côté du projet.")
+    )
+    analyse.set_defaults(handler=cmd_analyse)
 
     questionnaire = commands.add_parser(
         "questionnaire",

@@ -953,3 +953,14 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   1. R de base seulement (ce choix).
   2. R de base et `effectsize`, comme D-071 le prévoyait.
 - **Justification :** `effectsize` n'est pas installé chez l'auteur ; un script sans dépendance se refait sur tout poste où R et `haven` sont installés, et ses formules sont lisibles. Conventions et seuils validés par l'auteur à la fin de l'étape 1.
+
+### D-078 — Seule la dernière analyse est gardée, en mémoire
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** la page « Analyses » ne garde que la dernière analyse lancée, en mémoire, le temps de la séance ; le projet n'enregistre ni résultat ni historique des analyses. L'équipe conserve les rapports qu'elle écrit à côté du projet ou télécharge : un rapport Markdown, ses tableaux en Excel, et un fichier `.zip` qui contient le script R équivalent avec le fichier de commandes et le script de préparation qu'il exécute. Écrits à côté du projet, les fichiers d'une analyse portent le premier numéro libre (`<projet>-analyse-<n>`).
+- **Options considérées :**
+  1. Dernière analyse en mémoire seulement (ce choix).
+  2. Un historique des analyses dans le projet.
+- **Justification :** le projet reste un dictionnaire de données, qui ne garde que des agrégats et des décisions (règle 2) ; des résultats calculés sur les données n'y ont pas leur place. Un historique pourra venir plus tard si le besoin se présente.

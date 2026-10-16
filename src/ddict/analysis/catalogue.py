@@ -96,3 +96,49 @@ ROLES = Texts(
         "predictors": N_("Prédicteurs"),
     }
 )
+PURPOSES = Texts(
+    {
+        "table1": N_(
+            "Décrit les participants : moyenne et écart-type des variables continues, "
+            "effectifs et pourcentages des catégories, au besoin par groupe."
+        ),
+        "t_test": N_(
+            "Compare la moyenne d'une variable continue entre deux groupes, par exemple "
+            "intervention et contrôle."
+        ),
+        "anova": N_("Compare la moyenne d'une variable continue entre trois groupes ou plus."),
+        "chi_square": N_(
+            "Regarde si deux variables catégorielles sont associées, par exemple le secteur "
+            "d'emploi et le télétravail."
+        ),
+        "correlation": N_("Mesure la force du lien entre deux variables continues ou plus."),
+        "regression": N_(
+            "Estime comment plusieurs prédicteurs, ensemble, expliquent une variable continue."
+        ),
+    }
+)
+OPTIONS = Texts(
+    {
+        "method": N_("Méthode"),
+        "alternative": N_("Hypothèse"),
+        "post_hoc": N_("Comparaisons deux à deux"),
+        "levels": N_("Modalités comparées"),
+    }
+)
+CHOICES = Texts(
+    {
+        "welch": N_("Welch (variances inégales permises)"),
+        "student": N_("Student (variances égales)"),
+        "mann_whitney": N_("Mann-Whitney (sans supposer la normalité)"),
+        "two_sided": N_("Bilatérale"),
+        "greater": N_("Unilatérale : le premier groupe plus élevé"),
+        "less": N_("Unilatérale : le premier groupe moins élevé"),
+        "anova": N_("ANOVA de Fisher"),
+        "kruskal_wallis": N_("Kruskal-Wallis (sans supposer la normalité)"),
+        "none": N_("Aucune"),
+        "tukey": N_("Tukey"),
+        "pearson": N_("Pearson"),
+        "fisher": N_("Test exact de Fisher"),
+        "spearman": N_("Spearman"),
+    }
+)

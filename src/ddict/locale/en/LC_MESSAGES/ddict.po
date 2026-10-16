@@ -244,6 +244,12 @@ msgstr "32, Stata's limit, suits SPSS, R and Stata."
 msgid "ANOVA : comparer plusieurs groupes"
 msgstr "ANOVA: compare several groups"
 
+msgid "ANOVA : none ou tukey."
+msgstr "ANOVA: none or tukey."
+
+msgid "ANOVA de Fisher"
+msgstr "Fisher's ANOVA"
+
 msgid "Accepter"
 msgstr "Accept"
 
@@ -332,6 +338,15 @@ msgstr "Observed Cronbach's alpha: {a}"
 msgid "Alpha, items probables inversés"
 msgstr "Alpha, likely reversed items reversed"
 
+msgid "Analyse"
+msgstr "Analysis"
+
+msgid "Analyse refusée :"
+msgstr "Analysis refused:"
+
+msgid "Analyses"
+msgstr "Analyses"
+
 msgid "Annuler"
 msgstr "Cancel"
 
@@ -362,6 +377,9 @@ msgstr "At least one cell has fewer than {n} people."
 msgid "Aucun : tout le texte est reproduit"
 msgstr "None: all the text is reproduced"
 
+msgid "Aucun avertissement."
+msgstr "No warning."
+
 msgid "Aucun fichier choisi. Vous pouvez aussi coller son chemin dans le champ."
 msgstr "No file chosen. You can also paste its path in the field."
 
@@ -382,6 +400,9 @@ msgstr "No prefix proposed for this group."
 
 msgid "Aucun sigle pour l'instant."
 msgstr "No acronym yet."
+
+msgid "Aucune"
+msgstr "None"
 
 msgid "Aucune nouvelle proposition."
 msgstr "No new proposal."
@@ -421,6 +442,16 @@ msgstr "With the likely reversed items reversed: {a}"
 msgid "Avec signalements"
 msgstr "With flags"
 
+msgid "Avertissement"
+msgstr "Warning"
+
+#, python-brace-format
+msgid "Avertissement : {text}"
+msgstr "Warning: {text}"
+
+msgid "Avertissements"
+msgstr "Warnings"
+
 msgid "Banc d'essai des modèles"
 msgstr "Model bench"
 
@@ -443,6 +474,9 @@ msgid ""
 "Bases fictives seulement : rien de réel n'a été envoyé au modèle. Les durées dépendent de "
 "l'ordinateur."
 msgstr "Fictional databases only: nothing real was sent to the model. Durations depend on the computer."
+
+msgid "Bilatérale"
+msgstr "Two-sided"
 
 msgid "Bloc"
 msgstr "Block"
@@ -508,6 +542,13 @@ msgstr "These names no longer wait for a decision: {names}."
 msgid "Ces rattachements ne sont plus en accord : {names}."
 msgstr "These links no longer agree: {names}."
 
+msgid ""
+"Ces résultats viennent des données de l'étude : à l'équipe de décider de ce qui peut être publié,"
+" en particulier les effectifs de moins de 5."
+msgstr ""
+"These results come from the study's data: the team decides what may be published, in particular "
+"counts below 5."
+
 #, python-brace-format
 msgid "Ces étiquettes n'attendent plus de décision dans ce groupe : {names}."
 msgstr "These labels no longer wait for a decision in this group: {names}."
@@ -517,6 +558,10 @@ msgstr "Field"
 
 msgid "Champs documentés : étendue théorique, seuils, références, notes"
 msgstr "Documented fields: theoretical range, thresholds, references, notes"
+
+#, python-brace-format
+msgid "Choisir de {least} à {most} variables"
+msgstr "Choose from {least} to {most} variables"
 
 msgid "Choisir la base de données"
 msgstr "Choose the database"
@@ -533,6 +578,9 @@ msgstr "Choose the questionnaire"
 msgid "Choisir le questionnaire…"
 msgstr "Choose the questionnaire…"
 
+msgid "Choisir les deux groupes à comparer"
+msgstr "Choose the two groups to compare"
+
 msgid "Choisir un fichier projet"
 msgstr "Choose a project file"
 
@@ -541,6 +589,9 @@ msgstr "Choose a project file…"
 
 msgid "Choisir une base…"
 msgstr "Choose a database…"
+
+msgid "Choisir une variable"
+msgstr "Choose a variable"
 
 #, python-brace-format
 msgid "Choisir « Accepter » pour les {n} niveaux proposés"
@@ -644,8 +695,21 @@ msgstr "Suspect codes"
 msgid "Codes suspects à confirmer : {n}"
 msgstr "Suspect codes to confirm: {n}"
 
+msgid "Comparaisons deux à deux"
+msgstr "Pairwise comparisons"
+
 msgid "Comparaisons deux à deux (Tukey)"
 msgstr "Pairwise comparisons (Tukey)"
+
+msgid ""
+"Compare la moyenne d'une variable continue entre deux groupes, par exemple intervention et "
+"contrôle."
+msgstr ""
+"Compares the mean of a continuous variable between two groups, for example intervention and "
+"control."
+
+msgid "Compare la moyenne d'une variable continue entre trois groupes ou plus."
+msgstr "Compares the mean of a continuous variable between three groups or more."
 
 msgid "Complétude"
 msgstr "Completeness"
@@ -792,6 +856,15 @@ msgstr "Working: with the pending proposals, marked as such"
 msgid "Dernier rapport : {name}"
 msgstr "Last report: {name}"
 
+msgid ""
+"Des analyses écrites et vérifiées d'avance, calculées dans l'outil sur votre base, avec les "
+"décisions acceptées : codes manquants retirés, nouveaux noms, items inversés, scores. Votre "
+"fichier n'est jamais modifié, et rien n'est envoyé hors de votre ordinateur."
+msgstr ""
+"Analyses written and checked in advance, computed in the tool on your database, with the accepted"
+" decisions: missing codes removed, new names, reversed items, scores. Your file is never changed,"
+" and nothing is sent outside your computer."
+
 msgid "Des prédicteurs sont redondants (l'un se déduit exactement des autres) : retirez-en un."
 msgstr "Some predictors are redundant (one follows exactly from the others): remove one."
 
@@ -852,6 +925,13 @@ msgstr "Decision"
 #, python-brace-format
 msgid "Décision impossible : {detail}"
 msgstr "Decision impossible: {detail}"
+
+msgid ""
+"Décrit les participants : moyenne et écart-type des variables continues, effectifs et "
+"pourcentages des catégories, au besoin par groupe."
+msgstr ""
+"Describes the participants: mean and standard deviation of the continuous variables, counts and "
+"percentages of the categories, by group if needed."
 
 msgid "Définition"
 msgstr "Definition"
@@ -990,6 +1070,9 @@ msgstr ""
 msgid "Erreur de fichier : {detail}"
 msgstr "File error: {detail}"
 
+msgid "Estime comment plusieurs prédicteurs, ensemble, expliquent une variable continue."
+msgstr "Estimates how several predictors, together, explain a continuous variable."
+
 msgid "Export"
 msgstr "Export"
 
@@ -1040,6 +1123,10 @@ msgstr "Project file: {path}"
 
 msgid "Fichier projet à créer (par défaut : à côté de la base, en .dd.json)."
 msgstr "Project file to create (default: next to the database, as .dd.json)."
+
+#, python-brace-format
+msgid "Fichier écrit : {path}"
+msgstr "File written: {path}"
 
 msgid "Fichiers de commandes"
 msgstr "Command files"
@@ -1097,6 +1184,9 @@ msgstr "Groups of variables found: {n}"
 
 msgid "Groupes dont le texte des questions n'est pas reproduit"
 msgstr "Groups whose question text is not reproduced"
+
+msgid "Hypothèse"
+msgstr "Hypothesis"
 
 msgid "Hypothèse de l'IA"
 msgstr "AI hypothesis"
@@ -1209,6 +1299,9 @@ msgstr "Items answered, at least"
 
 msgid "Khi-carré : associer deux variables catégorielles"
 msgstr "Chi-square: associate two categorical variables"
+
+msgid "Kruskal-Wallis (sans supposer la normalité)"
+msgstr "Kruskal-Wallis (without assuming normality)"
 
 msgid ""
 "L'interface de révision n'est pas installée. Installez-la avec : uv tool install --reinstall "
@@ -1325,6 +1418,16 @@ msgstr "The corrected value is empty."
 
 msgid "La valeur est obligatoire."
 msgstr "The value is required."
+
+msgid "Lancer l'analyse"
+msgstr "Run the analysis"
+
+msgid ""
+"Lancer une analyse du catalogue sur la base, avec les décisions acceptées, et écrire son rapport "
+"et son script R à côté du projet."
+msgstr ""
+"Run an analysis of the catalogue on the database, with the accepted decisions, and write its "
+"report and R script next to the project."
 
 msgid "Langue de l'étude"
 msgstr "Language of the study"
@@ -1454,6 +1557,25 @@ msgstr ""
 "gives the text of the questions, items and options. Only the questions linked to variables go "
 "into the codebook, never the consent page."
 
+msgid ""
+"Le rapport donne les variables, les options, les résultats, l'empreinte du codebook et les "
+"versions des bibliothèques. Le script R refait l'analyse hors de l'outil ; il s'exécute dans le "
+"dossier de la base, avec le fichier de commandes et le script de préparation joints. Ces "
+"résultats viennent des données de l'étude : rangez-les avec soin."
+msgstr ""
+"The report gives the variables, the options, the results, the codebook fingerprint and the "
+"versions of the libraries. The R script redoes the analysis outside the tool; it runs in the "
+"database's folder, with the command file and the preparation script included. These results come "
+"from the study's data: store them with care."
+
+#, python-brace-format
+msgid ""
+"Le script {script} refait cette analyse en R de base, avec haven pour lire la base. Placez-le "
+"dans le dossier de la base {base}, avec {needed}, puis exécutez-le dans ce dossier."
+msgstr ""
+"The script {script} redoes this analysis in base R, with haven to read the database. Put it in "
+"the folder of the database {base}, with {needed}, then run it in that folder."
+
 msgid "Le serveur local ne répond pas comme prévu."
 msgstr "The local server does not answer as expected."
 
@@ -1480,6 +1602,12 @@ msgid ""
 msgstr ""
 "The work stops after the block in progress if you click \"Stop\" or change pages. Finished blocks"
 " are kept; running again resumes where it stopped."
+
+msgid "Lecture de la base…"
+msgstr "Reading the database…"
+
+msgid "Les choix ont changé depuis la dernière analyse : relancez-la."
+msgstr "The choices have changed since the last analysis: run it again."
 
 msgid "Les codes de la colonne « Manquants » sont des valeurs manquantes : les exclure de tout calcul."
 msgstr "The codes of the \"Missing\" column are missing values: leave them out of every computation."
@@ -1549,6 +1677,9 @@ msgstr "M (SD)"
 msgid "M (ÉT) ou effectif (%)"
 msgstr "M (SD) or count (%)"
 
+msgid "Mann-Whitney (sans supposer la normalité)"
+msgstr "Mann-Whitney (without assuming normality)"
+
 msgid "Manquant déclaré"
 msgstr "Declared missing"
 
@@ -1591,6 +1722,9 @@ msgstr "Message of block {block}"
 msgid "Messages enregistrés dans : {path}"
 msgstr "Messages saved in: {path}"
 
+msgid "Mesure la force du lien entre deux variables continues ou plus."
+msgstr "Measures the strength of the relation between two continuous variables or more."
+
 msgid "Mesurer ce modèle"
 msgstr "Measure this model"
 
@@ -1606,6 +1740,9 @@ msgstr "Min"
 
 msgid "Minimum de l'échelle"
 msgstr "Scale minimum"
+
+msgid "Modalités comparées"
+msgstr "Levels compared"
 
 msgid "Modèle"
 msgstr "Model"
@@ -1626,6 +1763,9 @@ msgstr "Median"
 #, python-brace-format
 msgid "Métadonnées de {name}, produites par dictionnaire-donnees {version} le {date}."
 msgstr "Metadata of {name}, produced by dictionnaire-donnees {version} on {date}."
+
+msgid "Méthode"
+msgstr "Method"
 
 msgid ""
 "Ne pas reproduire le texte des questions de ce groupe dans le codebook (instrument protégé par le"
@@ -1742,6 +1882,12 @@ msgstr "New name"
 msgid "Nouveau projet"
 msgstr "New project"
 
+msgid "Observations retenues"
+msgstr "Observations used"
+
+msgid "Observations écartées"
+msgstr "Observations excluded"
+
 msgid "Ollama répond, mais aucun modèle n'est installé."
 msgstr "Ollama answers, but no model is installed."
 
@@ -1775,6 +1921,9 @@ msgstr "Page"
 #, python-brace-format
 msgid "Pas dans le groupe : {names}"
 msgstr "Not in the group: {names}"
+
+msgid "Pearson"
+msgstr "Pearson"
 
 msgid "Place de la marque"
 msgstr "Place of the mark"
@@ -1896,6 +2045,9 @@ msgstr "Predictor"
 msgid "Prédicteurs"
 msgstr "Predictors"
 
+msgid "Prédicteurs (régression)."
+msgstr "Predictors (regression)."
+
 #, python-brace-format
 msgid "Prédicteurs très liés entre eux (VIF > {v}) : {names}."
 msgstr "Predictors closely related to each other (VIF > {v}): {names}."
@@ -1982,6 +2134,9 @@ msgstr "Quit the tool"
 msgid "R de base et haven seulement ; à exécuter dans le dossier du projet."
 msgstr "Base R and haven only; to run in the project's folder."
 
+msgid "Rapport (Markdown)"
+msgstr "Report (Markdown)"
+
 #, python-brace-format
 msgid "Rapport : {path}"
 msgstr "Report: {path}"
@@ -2003,6 +2158,9 @@ msgstr "Report of the differences: {name}"
 #, python-brace-format
 msgid "Rapport des écarts entre les vagues : {path}"
 msgstr "Report of the differences between the waves: {path}"
+
+msgid "Rapport et script R"
+msgstr "Report and R script"
 
 #, python-brace-format
 msgid "Rapport écrit à côté du projet : {name}."
@@ -2034,6 +2192,16 @@ msgstr ""
 
 msgid "Rattacher à"
 msgstr "Link to"
+
+msgid "Refaire l'analyse dans R"
+msgstr "Redo the analysis in R"
+
+msgid ""
+"Regarde si deux variables catégorielles sont associées, par exemple le secteur d'emploi et le "
+"télétravail."
+msgstr ""
+"Looks at whether two categorical variables are associated, for example the employment sector and "
+"remote work."
 
 msgid "Rejeter"
 msgstr "Reject"
@@ -2134,6 +2302,9 @@ msgstr "For people only; the range and the thresholds require a source."
 msgid "Résidus peu normaux (Shapiro-Wilk {p}) avec moins de {n} observations."
 msgstr "Residuals far from normal (Shapiro-Wilk {p}) with fewer than {n} observations."
 
+msgid "Résultat"
+msgstr "Result"
+
 msgid "Révision du dictionnaire"
 msgstr "Data dictionary review"
 
@@ -2148,6 +2319,12 @@ msgstr "Without a question"
 
 msgid "Script R"
 msgstr "R script"
+
+msgid "Script R (.zip)"
+msgstr "R script (.zip)"
+
+msgid "Script R équivalent"
+msgstr "Equivalent R script"
 
 msgid "Sensibles"
 msgstr "Sensitive"
@@ -2256,6 +2433,9 @@ msgstr "Source of the label"
 msgid "Source du seuil"
 msgstr "Source of the threshold"
 
+msgid "Spearman"
+msgstr "Spearman"
+
 msgid "Statut"
 msgstr "Status"
 
@@ -2281,6 +2461,9 @@ msgstr "Unknown structure."
 msgid "Structure proposée : {structure}"
 msgstr "Proposed structure: {structure}"
 
+msgid "Student (variances égales)"
+msgstr "Student (equal variances)"
+
 msgid "Suffixes de temps (format large), séparés par des virgules"
 msgstr "Time suffixes (wide format), separated by commas"
 
@@ -2303,8 +2486,17 @@ msgstr "Separator"
 msgid "Table de correspondance des noms : {path}"
 msgstr "Table of names: {path}"
 
+msgid "Tableau"
+msgstr "Table"
+
 msgid "Tableau 1 : décrire l'échantillon"
 msgstr "Table 1: describe the sample"
+
+msgid "Tableaux (Excel)"
+msgstr "Tables (Excel)"
+
+msgid "Test exact de Fisher"
+msgstr "Fisher's exact test"
 
 #, python-brace-format
 msgid "Test exact de Fisher : {p}."
@@ -2312,6 +2504,12 @@ msgstr "Fisher's exact test: {p}."
 
 msgid "Test t : comparer deux groupes"
 msgstr "t test: compare two groups"
+
+msgid "Test t : les deux codes du groupe à comparer, p. ex. 1,3."
+msgstr "t test: the two codes of the group to compare, e.g. 1,3."
+
+msgid "Test t : two_sided, greater ou less."
+msgstr "t test: two_sided, greater or less."
 
 msgid "Texte"
 msgstr "Text"
@@ -2347,6 +2545,9 @@ msgstr "Everything happens on this computer: files are read here, and nothing is
 
 msgid "Toutes"
 msgstr "All"
+
+msgid "Tukey"
+msgstr "Tukey"
 
 msgid "Type"
 msgstr "Type"
@@ -2414,6 +2615,12 @@ msgstr ""
 
 msgid "Une source documentée est obligatoire."
 msgstr "A documented source is required."
+
+msgid "Unilatérale : le premier groupe moins élevé"
+msgstr "One-sided: the first group lower"
+
+msgid "Unilatérale : le premier groupe plus élevé"
+msgstr "One-sided: the first group higher"
 
 msgid "Unité"
 msgstr "Unit"
@@ -2494,14 +2701,26 @@ msgstr "Constant variable"
 msgid "Variable de groupe"
 msgstr "Grouping variable"
 
+msgid "Variable de groupe."
+msgstr "Group variable."
+
 msgid "Variable dépendante"
 msgstr "Dependent variable"
+
+msgid "Variable dépendante (test t, ANOVA, régression)."
+msgstr "Dependent variable (t test, ANOVA, regression)."
 
 msgid "Variable en colonnes"
 msgstr "Column variable"
 
+msgid "Variable en colonnes (khi-carré)."
+msgstr "Column variable (chi-square)."
+
 msgid "Variable en lignes"
 msgstr "Row variable"
+
+msgid "Variable en lignes (khi-carré)."
+msgstr "Row variable (chi-square)."
 
 msgid "Variable entièrement vide"
 msgstr "Entirely empty variable"
@@ -2514,6 +2733,9 @@ msgstr "Sensitive variable: no statistics on its values."
 
 msgid "Variables"
 msgstr "Variables"
+
+msgid "Variables (Tableau 1, corrélation)."
+msgstr "Variables (Table 1, correlation)."
 
 #, python-brace-format
 msgid "Variables : {names}"
@@ -2560,6 +2782,9 @@ msgstr "Spelling variants of the same answer: {spellings}"
 msgid "Version"
 msgstr "Version"
 
+msgid "Versions"
+msgstr "Versions"
+
 msgid "Voir exactement ce qui serait envoyé (rien n'est envoyé)"
 msgstr "See exactly what would be sent (nothing is sent)"
 
@@ -2568,6 +2793,9 @@ msgstr "You can close this window. Your decisions are saved."
 
 msgid "Vérifier de nouveau"
 msgstr "Check again"
+
+msgid "Welch (variances inégales permises)"
+msgstr "Welch (unequal variances allowed)"
 
 #, python-brace-format
 msgid "au moins {n} items répondus, sinon manquant"
@@ -2942,6 +3170,9 @@ msgstr "source"
 msgid "structure de la plateforme"
 msgstr "platform structure"
 
+msgid "tableau1, test_t, anova, khi2, correlation ou regression."
+msgstr "tableau1, test_t, anova, khi2, correlation or regression (or table1, t_test, chi_square)."
+
 msgid "texte"
 msgstr "text"
 
@@ -3002,6 +3233,12 @@ msgstr "values in email format"
 msgid "valeurs au format téléphone"
 msgstr "values in phone format"
 
+msgid "valeurs manquantes"
+msgstr "missing values"
+
+msgid "valeurs manquantes, ou hors des deux groupes comparés"
+msgstr "missing values, or outside the two groups compared"
+
 msgid "validé"
 msgstr "accepted"
 
@@ -3025,6 +3262,13 @@ msgstr "empty"
 
 msgid "vraie valeur"
 msgstr "real value"
+
+msgid ""
+"welch, student, mann_whitney ; anova, kruskal_wallis ; pearson, fisher, spearman (défaut : la "
+"première de chaque analyse)."
+msgstr ""
+"welch, student, mann_whitney; anova, kruskal_wallis; pearson, fisher, spearman (default: the "
+"first of each analysis)."
 
 #, python-brace-format
 msgid "{analysis} : script R équivalent, produit par dictionnaire-donnees {version} le {date}."
@@ -3285,6 +3529,10 @@ msgid "{proposed} noms proposés, {accepted} acceptés, {to_name} variables à n
 msgstr "{proposed} names proposed, {accepted} accepted, {to_name} variables to name."
 
 #, python-brace-format
+msgid "{role} : aucune variable ne convient. Le niveau de mesure se décide sur la page Base."
+msgstr "{role}: no variable fits. The measure level is decided on the Database page."
+
+#, python-brace-format
 msgid "{role} : de {least} à {most} variables."
 msgstr "{role}: {least} to {most} variables."
 
@@ -3309,6 +3557,10 @@ msgstr "{title}: sending the first block…"
 #, python-brace-format
 msgid "{title} : {ok} blocs réussis, {skipped} déjà faits, {failed} en échec."
 msgstr "{title}: {ok} blocks succeeded, {skipped} already done, {failed} failed."
+
+#, python-brace-format
+msgid "{used} observations retenues, {excluded} écartées ({why})."
+msgstr "{used} observations used, {excluded} excluded ({why})."
 
 msgid ""
 "« Non documenté » veut dire inconnu : ne pas le deviner. Ne citer aucun seuil, étendue ou "

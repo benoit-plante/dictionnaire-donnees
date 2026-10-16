@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ddict import naming, platforms, waves
+from ddict.analysis.report import AnalysisFiles
 from ddict.export import write_markdown, write_xlsx
 from ddict.export.context import write_context
 from ddict.export.documented import CopyError, CopyResult, find_database, write_documented_copy
@@ -528,6 +529,26 @@ def export_syntax(
     preparation = preparation_paths(project_path)
     write_preparation(project, preparation, language=language)
     return {**paths, **{f"{p}-preparation": path for p, path in preparation.items()}}
+
+
+def analysis_files(project_path: Path) -> AnalysisFiles:
+    """The files of the next analysis (v0.9, D-078): "etude-analyse-1.md", ".xlsx" and ".R",
+    with the first number none of them takes yet; and the R files that script runs."""
+    stem = project_stem(project_path)
+    number = 1
+    while any(
+        project_path.with_name(f"{stem}-analyse-{number}{suffix}").exists()
+        for suffix in (".md", ".xlsx", ".R")
+    ):
+        number += 1
+    name = f"{stem}-analyse-{number}"
+    return AnalysisFiles(
+        markdown=project_path.with_name(name + ".md"),
+        xlsx=project_path.with_name(name + ".xlsx"),
+        r=project_path.with_name(name + ".R"),
+        syntax=syntax_paths(project_path)["r"],
+        preparation=preparation_paths(project_path)["r"],
+    )
 
 
 def documented_copy(

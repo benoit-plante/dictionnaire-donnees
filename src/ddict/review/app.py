@@ -15,6 +15,7 @@ from ddict.i18n import N_, Texts, _
 from ddict.review import logic, shutdown
 from ddict.review.ui import (
     ai_view,
+    analyses_view,
     base_view,
     bulk_view,
     export_view,
@@ -38,6 +39,7 @@ MODES = Texts(
         "variables": N_("Variables"),
         "groups": N_("Groupes"),
         "names": N_("Noms"),
+        "analyses": N_("Analyses"),
         "export": N_("Export"),
     }
 )
@@ -171,6 +173,8 @@ def main() -> None:
         export_view.page(project)
     elif mode == "names":
         names_view.page(project)
+    elif mode == "analyses":
+        analyses_view.page(project)
     elif mode == "variables" and chosen is None:
         bulk_view.links_panel(project)
     elif chosen is not None:
