@@ -1,0 +1,109 @@
+{
+  "sav": "etude-analyses.sav",
+  "csv": "etude-analyses.csv",
+  "rows": 300,
+  "scoring": {
+    "group_items": [
+      "bienetre_1",
+      "bienetre_2",
+      "bienetre_3",
+      "bienetre_4",
+      "bienetre_5"
+    ],
+    "reverse_items": [
+      "bienetre_4"
+    ],
+    "aggregation": "sum",
+    "scale_min": 1,
+    "scale_max": 5,
+    "min_items_answered": 4,
+    "missing_rule": "prorate",
+    "score_name": "bienetre_total"
+  },
+  "missing_codes": {
+    "age": 999,
+    "stress": -9
+  },
+  "planted": {
+    "t_groupe": "intervention plus haute, d d'environ 0,5",
+    "t_sexe": "aucune différence",
+    "anova_etudes": "moyennes de stress 22, 19, 16 selon le niveau d'études",
+    "small_group": "région Ouest : 3 personnes",
+    "khi2_teletravail_secteur": "associés, V d'environ 0,3",
+    "khi2_sexe_secteur": "indépendants",
+    "r_heures_stress": "r d'environ 0,4",
+    "r_age_stress": "r d'environ 0",
+    "regression_satisfaction": "2 + 0,5 x soutien - 0,3 x charge",
+    "ordinal": "sport",
+    "identifier": "id_participant"
+  },
+  "exact": {
+    "t_groupe": {
+      "n": [
+        150,
+        150
+      ],
+      "means": [
+        17.01,
+        14.5366666667
+      ],
+      "t": 4.9997268431,
+      "df": 297.2859171266,
+      "d": 0.5773187277
+    },
+    "t_sexe": {
+      "n": [
+        148,
+        152
+      ],
+      "means": [
+        15.7888513514,
+        15.7582236842
+      ],
+      "t": 0.0595196487,
+      "df": 297.4269706313,
+      "d": 0.0068668601
+    },
+    "anova_etudes": {
+      "F": 34.8797178734,
+      "df": [
+        2,
+        293
+      ],
+      "eta2": 0.192302195,
+      "omega2": 0.1862754037,
+      "means": {
+        "1": 22.2786407767,
+        "2": 18.9989690722,
+        "3": 15.8854166667
+      }
+    },
+    "khi2_teletravail_secteur": {
+      "chi2": 25.5935998928,
+      "df": 2,
+      "V": 0.2920821796
+    },
+    "khi2_sexe_secteur": {
+      "chi2": 0.4116673882,
+      "df": 2,
+      "V": 0.0370435504
+    },
+    "r_heures_stress": {
+      "n": 296,
+      "r": 0.4221290012
+    },
+    "r_age_stress": {
+      "n": 291,
+      "r": 0.0514033621
+    },
+    "regression_satisfaction": {
+      "n": 300,
+      "coef": [
+        1.8797620448,
+        0.5125296162,
+        -0.2891253005
+      ],
+      "r2": 0.4748855533
+    }
+  }
+}
