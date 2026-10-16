@@ -1055,3 +1055,71 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   2. Tout modifiable dans l'outil.
   3. Astérisques de signification par défaut.
 - **Justification :** Les chiffres restent ceux du calcul, sans erreur de recopie ; les *p* exacts suivent la phrase de résultat, qui décrit sans juger (D-077).
+
+### D-087 — Le carnet d'analyses hors du projet
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** D-078 (en partie)
+- **Décision :** Les analyses d'une étude sont gardées dans un carnet, un fichier à côté du projet ; le fichier projet reste un dictionnaire de données. La dernière analyse lancée reste affichée en mémoire sur la page « Analyses » ; une personne peut l'ajouter au carnet ; rien n'y entre sans ce geste.
+- **Options considérées :**
+  1. Un carnet à côté du projet (ce choix).
+  2. Les analyses dans le fichier projet.
+  3. Rien de gardé, comme D-078.
+- **Justification :** Un article réunit dix ou vingt résultats, qu'il faut retrouver, recalculer et numéroter à la suite ; les garder hors du projet le laisse un dictionnaire de données, qui ne garde que des décisions et des agrégats.
+
+### D-088 — Ce que garde le carnet, et ce qu'il ne garde jamais
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Une entrée garde : l'analyse ; ses variables par rôle, par leur clé du projet (le nom d'origine d'une variable, le groupe d'un score, le nom d'origine d'un item inversé), pour survivre à un renommage ; les options ; les titres et les notes changés par une personne ; l'empreinte du codebook, la date et les versions ; les statistiques agrégées du résultat (médianes comprises), ses effectifs, sa phrase APA et ses avertissements (effectifs inférieurs à 5 gardés et signalés) ; « retenue pour l'article » et un rang. Elle ne garde jamais une ligne de la base, un identifiant, un point d'un nuage de points ni une étendue observée (minimum, maximum) : les figures sont redessinées à partir de la base. Un test à chaînes témoins le vérifie.
+- **Options considérées :**
+  1. Agrégats seulement, références par la clé du projet (ce choix).
+  2. Le résultat entier, figures comprises.
+- **Justification :** Le carnet sert à comparer et à vérifier ; ce qui est individuel reste dans la base, sur le poste, et n'a pas à être copié ailleurs.
+
+### D-089 — Recalcul à chaque export, et confirmation d'une analyse changée
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Le document des résultats et le script R maître sont toujours recalculés sur la base, avec les décisions en vigueur, jamais copiés du carnet. Une analyse dont l'empreinte du codebook a changé est recalculée : si rien ne change, l'outil le dit et met l'empreinte à jour ; si une statistique ou un effectif change, l'outil le montre statistique par statistique et attend qu'une personne confirme la nouvelle version, qui remplace les statistiques gardées ; une analyse retenue changée et non confirmée empêche l'export. Une analyse devenue impossible (référence perdue, niveau de mesure qui ne convient plus, condition D-074 non remplie) est signalée avec sa raison, jamais supprimée, et écartée du document. Base introuvable ou modifiée : le carnet reste lisible, rien ne se recalcule ni ne s'exporte.
+- **Options considérées :**
+  1. Recalcul, et confirmation de ce qui change (ce choix).
+  2. Recalcul sans confirmation.
+  3. Copie des statistiques gardées.
+- **Justification :** Les chiffres du document sont ceux du codebook actuel, et aucun ne change sans qu'une personne l'ait vu.
+
+### D-090 — Numérotation continue des tableaux et des figures
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Dans le document des résultats, les numéros sont donnés par l'ordre des analyses retenues : Tableau 1 à n, Figure 1 à m, sans trou ni doublon ; pour changer un numéro, une personne change l'ordre. Un numéro de départ par document est réglable, pour laisser la place aux tableaux de la Méthode (v0.12). Les numéros changés à la main sur la page « Analyses » valent pour le fichier de cette seule analyse et n'entrent pas au carnet ; les titres et les notes, si.
+- **Options considérées :**
+  1. Numéros par l'ordre, numéro de départ réglable (ce choix).
+  2. Numéros changés à la main gardés dans le carnet.
+- **Justification :** Une numérotation toujours cohérente, sans conflit possible entre deux numéros choisis à la main.
+
+### D-091 — Le fichier carnet
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** `<projet>-carnet.json`, à côté du fichier projet, avec le même préfixe que les autres fichiers ; JSON déterministe comme le projet (indentation 2, UTF-8, LF, écriture atomique) ; sa propre version de format, `carnet_version` 1.0.0, et ses migrations ; il rappelle l'empreinte de la base et le nom du projet, pour refuser d'être utilisé avec un autre.
+- **Options considérées :**
+  1. Un fichier JSON propre, versionné (ce choix).
+  2. Un dossier d'un fichier par analyse.
+- **Justification :** Un seul fichier, lisible, comparable d'une version à l'autre et facile à joindre à un dépôt.
+
+### D-092 — Les fichiers d'une analyse seule et ceux du carnet
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Les fichiers `<projet>-analyse-<n>` de la page « Analyses » (rapport, tableaux, script R, fichiers APA) restent tels quels. Le carnet produit ses propres fichiers, remplacés à chaque export : `<projet>-resultats.docx`, `<projet>-resultats-graphiques.xlsx` et `<projet>-resultats-R.zip`.
+- **Options considérées :**
+  1. Garder les deux (ce choix).
+  2. Remplacer les fichiers d'une analyse par le carnet.
+- **Justification :** Une analyse seule reste utile pour essayer ; le carnet donne le document de l'article.
