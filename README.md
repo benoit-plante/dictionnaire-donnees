@@ -42,6 +42,7 @@ ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M  # banc d'essai d'un modèle
 | Guides in English | [`docs/en/`](docs/en/) |
 | Les analyses du catalogue (conditions, options, formules) | [`docs/catalogue-analyses.md`](docs/catalogue-analyses.md) |
 | Les tableaux et figures APA de chaque analyse | [`docs/tableaux-figures-apa.md`](docs/tableaux-figures-apa.md) |
+| Feuille de route : de la base à l'ébauche d'article (v0.11 et suivantes) | [`docs/feuille-de-route-article.md`](docs/feuille-de-route-article.md) |
 | Conception, principes, format du fichier projet | [`docs/CONCEPTION.md`](docs/CONCEPTION.md) |
 | Décisions prises | [`docs/journal-des-decisions.md`](docs/journal-des-decisions.md) |
 | Essais de modèles locaux | [`docs/essais/`](docs/essais/) |

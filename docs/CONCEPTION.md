@@ -484,6 +484,8 @@ Toutes les dépendances ci-dessus sont sous licences permissives (BSD, MIT, Apac
 
 **v0.4** : fichiers de commandes (SPSS, R) et copie documentée du `.sav`, codes manquants confirmés, banc d'essai des modèles, décisions groupées ; plan validé dans [`plan-v0.4.md`](plan-v0.4.md).
 
+**v0.11 et suivantes** : de la base à l'ébauche d'article au format IMRaD, d'abord sans IA (carnet d'analyses, section Méthode, plan d'analyse, catalogue élargi, vérification du manuscrit), les modèles externes à la toute fin ; feuille de route proposée dans [`feuille-de-route-article.md`](feuille-de-route-article.md).
+
 **Plus tard** (hors v0.1) :
 - bases SQL ;
 - export Frictionless Table Schema ;
