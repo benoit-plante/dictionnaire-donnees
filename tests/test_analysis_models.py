@@ -75,7 +75,7 @@ def test_the_catalogue_examples(sleep):
     )
     assert t.n_excluded == 14
     anova = run(project, prepared, "anova", {"outcome": ["sommeil_total"], "group": ["genre"]})
-    assert "F(2, 185) = 1,05, p = ,351, η² = 0,01, ω² = 0,00" in anova.sentence
+    assert "F(2, 185) = 1,05, p = ,351, η² = ,01, ω² = ,00" in anova.sentence
     assert anova.warnings == ["genre : moins de 5 personnes dans 3 Autre identité."]
     reg = run(project, prepared, "regression",
               {"outcome": ["sommeil_total"], "predictors": ["age", "heures_sommeil"]})  # fmt: skip

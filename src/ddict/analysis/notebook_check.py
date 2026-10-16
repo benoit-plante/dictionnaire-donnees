@@ -183,8 +183,49 @@ def check_all(
     ]
 
 
+def check_method(
+    notebook: nb.Notebook,
+    project: Project,
+    prepared: PreparedData | None,
+    *,
+    today: str,
+    reason: str = "",
+) -> Status:
+    """The state of the Method's figures (v0.12, D-100), as an entry's: the first time, kept
+    as they are; then a change of a figure kept waits in `pending` for a confirmation. A
+    figure that is only new (a variable added to describe the sample) changes nothing kept,
+    and is kept at once."""
+    from ddict.analysis import method
+
+    if prepared is None:
+        return Status(nb.METHOD, "no_database", reason)
+    if not nb.belongs(notebook, project):
+        reason = _("Ce carnet a été fait avec une autre base que celle du projet.")
+        return Status(nb.METHOD, "no_database", reason)
+    part = notebook.method
+    fresh = method.computed(project, method.facts(project, prepared, notebook), today)
+    if part.computed is None:
+        part.computed, part.pending = fresh, None
+        return Status(nb.METHOD, "current")
+    found = differences(part.computed, fresh)
+    if found:
+        part.pending = fresh
+        return Status(nb.METHOD, "changed", differences=found)
+    state: State = "current" if part.computed.fingerprint == fresh.fingerprint else "unchanged"
+    if part.computed.statistics.keys() != fresh.statistics.keys() or state == "unchanged":
+        part.computed = fresh
+    part.pending = None
+    return Status(nb.METHOD, state)
+
+
 def confirm(notebook: nb.Notebook, entry_id: str) -> None:
     """A person confirms the new computation: it replaces the statistics kept."""
+    if entry_id == nb.METHOD:
+        part = notebook.method
+        if part.pending is None:
+            raise nb.NotebookError("nothing_pending", entry_id)
+        part.computed, part.pending = part.pending, None
+        return
     entry = nb.find(notebook, entry_id)
     if entry.pending is None:
         raise nb.NotebookError("nothing_pending", entry_id)
@@ -192,8 +233,9 @@ def confirm(notebook: nb.Notebook, entry_id: str) -> None:
 
 
 def blocking(notebook: nb.Notebook, statuses: list[Status]) -> list[str]:
-    """The retained entries whose change waits for a confirmation: they block the export."""
-    retained = {e.id for e in notebook.entries if e.retained}
+    """The retained entries, and the Method, whose change waits for a confirmation: they
+    block the export."""
+    retained = {e.id for e in notebook.entries if e.retained} | {nb.METHOD}
     return [s.entry_id for s in statuses if s.state == "changed" and s.entry_id in retained]
 
 

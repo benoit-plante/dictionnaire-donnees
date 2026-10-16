@@ -14,7 +14,7 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 from ddict.analysis import conditions
 from ddict.analysis.book import Codebook
-from ddict.analysis.results import AnalysisResult, Table, interval, number, p_part
+from ddict.analysis.results import AnalysisResult, Table, bounded, interval, number, p_part
 from ddict.i18n import _, semicolon
 
 SMALL = 5
@@ -108,7 +108,7 @@ def t_test(project, prepared, chosen, options) -> AnalysisResult:
             g2=names[1],
             u=number(test.statistic, 1),
             p=p_part(test.pvalue),
-            r=number(rb),
+            r=bounded(rb),
             n=used,
         )
         return AnalysisResult(
@@ -221,7 +221,7 @@ def anova(project, prepared, chosen, options) -> AnalysisResult:
             df=len(samples) - 1,
             h=number(test.statistic),
             p=p_part(test.pvalue),
-            e=number(epsilon),
+            e=bounded(epsilon),
             n=n,
         )
         return AnalysisResult(
@@ -297,8 +297,8 @@ def anova(project, prepared, chosen, options) -> AnalysisResult:
         df2=dfe,
         f=number(f_value),
         p=p_part(p),
-        eta=number(eta2),
-        omega=number(omega2),
+        eta=bounded(eta2),
+        omega=bounded(omega2),
         means=means,
     )
     return AnalysisResult(
@@ -420,7 +420,7 @@ def regression(project, prepared, chosen, options) -> AnalysisResult:
         df2=int(fit.df_resid),
         f=number(fit.fvalue),
         p=p_part(fit.f_pvalue),
-        adj=number(fit.rsquared_adj),
+        adj=bounded(fit.rsquared_adj),
         n=n,
     )
     return AnalysisResult(

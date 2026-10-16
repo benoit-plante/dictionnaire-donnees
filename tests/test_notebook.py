@@ -137,11 +137,24 @@ def test_round_trip_byte_for_byte(ready):
     assert path.read_bytes() == first
     data = json.loads(first)
     assert list(data) == ["carnet_version", "project", "next_id", "first_table", "first_figure",
-                          "entries"]  # fmt: skip
-    assert data["carnet_version"] == "1.0.0" and data["project"]["file"] == project_path.name
+                          "entries", "method"]  # fmt: skip
+    assert data["carnet_version"] == "1.1.0" and data["project"]["file"] == project_path.name
 
 
-@pytest.mark.parametrize("version", ["2.0.0", "1.9.0", "0.9.0", "un"])
+def test_a_notebook_of_v0_11_reads_as_it_is(ready):
+    """1.0.0 had no Method (D-100): it reads, and is written again in 1.1.0."""
+    notebook = _filled(ready)
+    path = ready[2].with_name("carnet.json")
+    data = json.loads(nb.dumps(notebook))
+    data["carnet_version"] = "1.0.0"
+    del data["method"]
+    path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+    old = nb.load_notebook(path)
+    assert old.carnet_version == "1.1.0" and old.method == nb.MethodPart()
+    assert old.entries == notebook.entries
+
+
+@pytest.mark.parametrize("version", ["2.0.0", "1.9.0", "1.2.0", "0.9.0", "un"])
 def test_a_notebook_of_another_version_is_refused(ready, version):
     notebook = _filled(ready)
     path = ready[2].with_name("carnet.json")

@@ -14,7 +14,7 @@ import io
 
 from docx import Document
 from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_COLOR_INDEX
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt, RGBColor
@@ -98,6 +98,8 @@ def _runs(paragraph, text: Text, bold: bool = False, italic: bool = False) -> No
         added = paragraph.add_run(run.text)
         added.italic = run.italic or italic
         added.bold = bold
+        if run.hole:  # a fact left for a person (D-097)
+            added.font.highlight_color = WD_COLOR_INDEX.YELLOW
 
 
 def _cell(cell, text: Text, align: str, indent: int = 0) -> None:
@@ -169,10 +171,12 @@ def _figure(document, found: ApaFigure, language: str) -> None:
     _note(document, found.note)
 
 
-def _apa_heading(document) -> None:
-    """An APA level-2 heading: bold, flush left, the document's font, black (not Word's
-    blue)."""
-    style = document.styles["Heading 2"]
+def _apa_heading(document, level: int = 2) -> None:
+    """An APA heading: bold, the document's font, black (not Word's blue); flush left at
+    level 2, centred at level 1 (v0.12: "Méthode", "Résultats")."""
+    style = document.styles[f"Heading {level}"]
+    if level == 1:
+        style.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
     style.font.name = FONT
     style.font.size = SIZE
     style.font.bold = True
@@ -207,8 +211,11 @@ def render(found: ApaDocument) -> bytes:
             section.top_margin = section.bottom_margin = Cm(2.54)
         if found.sections:  # v0.11: the results of several analyses
             _apa_heading(document)
+            _apa_heading(document, level=1)
             for section in found.sections:
-                document.add_heading(section.heading, level=2)
+                document.add_heading(section.heading, level=section.level)
+                for text in section.paragraphs:  # v0.12: the Method
+                    _runs(document.add_paragraph(), text)
                 if section.sentence:
                     document.add_paragraph(section.sentence)
                 for table in section.tables:

@@ -95,7 +95,7 @@ def test_sentences(ready):
     found = _run(ready, "correlation", {"variables": ["heures_travail", "stress"]})
     assert found.sentence == (
         "La corrélation entre Heures de travail par semaine et Score de stress (0 à 40) était "
-        "r(294) = 0,42, IC 95 % [0,32 ; 0,51], p < ,001."
+        "r(294) = ,42, IC 95 % [,32 ; ,51], p < ,001."
     )
     with i18n.using("en"):
         english = _run(ready, "chi_square", {"rows": ["sexe"], "columns": ["secteur"]})

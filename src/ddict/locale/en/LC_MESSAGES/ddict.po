@@ -412,6 +412,10 @@ msgstr ""
 msgid "Au moins une case compte moins de {n} personnes."
 msgstr "At least one cell has fewer than {n} people."
 
+#, python-brace-format
+msgid "Au total, {n} personnes ont répondu au questionnaire."
+msgstr "In total, {n} people answered the questionnaire."
+
 msgid "Aucun : tout le texte est reproduit"
 msgstr "None: all the text is reproduced"
 
@@ -1020,6 +1024,29 @@ msgid "Description de la base"
 msgstr "Description of the database"
 
 msgid ""
+"Deux distributions ont été comparées par le test de Mann-Whitney ; la taille d'effet est la "
+"corrélation bisériale des rangs."
+msgstr ""
+"Two distributions were compared with the Mann-Whitney test; the effect size is the rank-biserial "
+"correlation."
+
+#, python-brace-format
+msgid ""
+"Deux moyennes ont été comparées par le test {t} de Student, qui suppose des variances égales ; la"
+" taille d'effet est le {d} de Cohen, avec son intervalle de confiance à 95 %."
+msgstr ""
+"Two means were compared with Student's {t} test, which assumes equal variances; the effect size "
+"is Cohen's {d}, with its 95% confidence interval."
+
+#, python-brace-format
+msgid ""
+"Deux moyennes ont été comparées par le test {t} de Welch, qui ne suppose pas des variances égales"
+" ; la taille d'effet est le {d} de Cohen, avec son intervalle de confiance à 95 %."
+msgstr ""
+"Two means were compared with Welch's {t} test, which does not assume equal variances; the effect "
+"size is Cohen's {d}, with its 95% confidence interval."
+
+msgid ""
 "Deux variables auraient le même nom dans la copie : réglez les conflits de noms sur la page « "
 "Noms ». Rien n'a été écrit."
 msgstr ""
@@ -1129,6 +1156,10 @@ msgstr ""
 
 msgid "Effectifs observés"
 msgstr "Observed counts"
+
+#, python-brace-format
+msgid "Elles sont décrites par les variables suivantes : {items}."
+msgstr "They are described by the following variables: {items}."
 
 msgid "Empreinte SHA-256"
 msgstr "SHA-256 fingerprint"
@@ -1412,6 +1443,30 @@ msgid "Identique à {name}"
 msgstr "Identical to {name}"
 
 #, python-brace-format
+msgid ""
+"Il est calculé quand au moins {m} items sur {k} sont répondus ; c'est alors la moyenne des items "
+"répondus."
+msgstr ""
+"It is computed when at least {m} of the {k} items are answered; it is then the mean of the "
+"answered items."
+
+#, python-brace-format
+msgid ""
+"Il est calculé quand au moins {m} items sur {k} sont répondus ; c'est alors la somme des items "
+"répondus."
+msgstr ""
+"It is computed when at least {m} of the {k} items are answered; it is then the sum of the "
+"answered items."
+
+#, python-brace-format
+msgid ""
+"Il est calculé quand au moins {m} items sur {k} sont répondus ; un item manquant est remplacé par"
+" la moyenne des items répondus de la personne."
+msgstr ""
+"It is computed when at least {m} of the {k} items are answered; a missing item is replaced by the"
+" mean of the person's answered items."
+
+#, python-brace-format
 msgid "Impossible d'écrire le rapport : {detail}."
 msgstr "Cannot write the report: {detail}."
 
@@ -1458,6 +1513,9 @@ msgstr "Instrument"
 
 msgid "Instrument (source)"
 msgstr "Instrument (source)"
+
+msgid "Instruments"
+msgstr "Measures"
 
 #, python-brace-format
 msgid ""
@@ -1506,6 +1564,29 @@ msgstr "Chi-square: associate two categorical variables"
 msgid "Kruskal-Wallis (sans supposer la normalité)"
 msgstr "Kruskal-Wallis (without assuming normality)"
 
+#, python-brace-format
+msgid ""
+"L'association entre deux variables catégorielles a été testée par le khi-carré de Pearson ; la "
+"taille d'effet est le {v} de Cramér."
+msgstr ""
+"The association between two categorical variables was tested with Pearson's chi-square; the "
+"effect size is Cramér's {v}."
+
+msgid "L'association entre deux variables catégorielles a été testée par le test exact de Fisher."
+msgstr "The association between two categorical variables was tested with Fisher's exact test."
+
+#, python-brace-format
+msgid ""
+"L'instrument {instrument} mesure {what} au moyen de {k} items, notés de {low} ({low_label}) à "
+"{high} ({high_label})."
+msgstr ""
+"The {instrument} measures {what} with {k} items, rated from {low} ({low_label}) to {high} "
+"({high_label})."
+
+#, python-brace-format
+msgid "L'instrument {instrument} mesure {what} au moyen de {k} items, notés de {low} à {high} {missing}."
+msgstr "The {instrument} measures {what} with {k} items, rated from {low} to {high} {missing}."
+
 msgid ""
 "L'interface de révision n'est pas installée. Installez-la avec : uv tool install --reinstall "
 "\".[ia,revision]\" (voir docs/installation-windows.md)."
@@ -1515,6 +1596,10 @@ msgstr ""
 
 msgid "L'interface n'a pas démarré : voir les messages ci-dessus."
 msgstr "The interface did not start: see the messages above."
+
+#, python-brace-format
+msgid "L'item {item} est inversé avant le calcul du score."
+msgstr "Item {item} is reversed before the score is computed."
 
 msgid ""
 "L'objectif de l'analyse, en une ou deux phrases, envoyé tel quel au modèle local. N'y écrivez "
@@ -1552,6 +1637,10 @@ msgstr "The tool is already open: one more window opens on it."
 
 msgid "L'outil ne télécharge jamais de modèle lui-même : c'est une étape d'installation, faite par vous."
 msgstr "The tool never downloads a model itself: that is an installation step, done by you."
+
+#, python-brace-format
+msgid "L'échantillon analysé compte {n} personnes."
+msgstr "The analysed sample includes {n} people."
 
 msgid ""
 "La base compte trop de variables pour le modèle local : le message dépasserait ce qu'il peut "
@@ -1606,6 +1695,10 @@ msgstr "The correlation between {a} and {b} was r({df}) = {r}, {ci}, {p}."
 
 msgid "La cotation exige une source documentée (manuel, article)."
 msgstr "The scoring requires a documented source (manual, article)."
+
+#, python-brace-format
+msgid "La cotation suit {source}."
+msgstr "Scoring follows {source}."
 
 msgid "La définition est vide ; utilisez « Rejeter »."
 msgstr "The definition is empty; use \"Reject\"."
@@ -1695,6 +1788,10 @@ msgstr ""
 #, python-brace-format
 msgid "Le carnet ne peut pas être lu : {name}"
 msgstr "The notebook cannot be read: {name}"
+
+#, python-brace-format
+msgid "Le code {codes} a été traité comme une valeur manquante."
+msgstr "Code {codes} was treated as a missing value."
 
 msgid ""
 "Le codebook en format compact, pour un programme ou pour une IA qui aide à écrire le code "
@@ -1849,6 +1946,14 @@ msgstr ""
 "from the study's data: store them with care."
 
 #, python-brace-format
+msgid "Le score ({name}) est la moyenne des items, de {low} à {high}."
+msgstr "The score ({name}) is the mean of the items, from {low} to {high}."
+
+#, python-brace-format
+msgid "Le score ({name}) est la somme des items, de {low} à {high}."
+msgstr "The score ({name}) is the sum of the items, from {low} to {high}."
+
+#, python-brace-format
 msgid ""
 "Le script {script} refait cette analyse en R de base, avec haven pour lire la base. Placez-le "
 "dans le dossier de la base {base}, avec {needed}, puis exécutez-le dans ce dossier."
@@ -1895,6 +2000,14 @@ msgstr ""
 "recomputed when a decision changes: what changed waits for your confirmation. The notebook is a "
 "file next to the project; it keeps aggregates only, never a row of the database."
 
+#, python-brace-format
+msgid ""
+"Les analyses ont été faites avec dictionnaire-donnees {version} ({others}) ; un script R joint "
+"({script}) les refait et donne les mêmes valeurs."
+msgstr ""
+"The analyses were run with dictionnaire-donnees {version} ({others}); an attached R script "
+"({script}) redoes them and gives the same values."
+
 msgid ""
 "Les analyses retenues, recalculées sur la base avec les décisions en vigueur, numérotées dans "
 "l'ordre du carnet : un document Word, ses graphiques Excel et le script R maître, à côté du "
@@ -1912,11 +2025,22 @@ msgstr "Error bars represent the 95% CI of β. {N} = {n}."
 msgid "Les barres d'erreur représentent l'intervalle de confiance à 95 % de la moyenne. {N} = {n}."
 msgstr "Error bars represent the 95% confidence interval of the mean. {N} = {n}."
 
+msgid ""
+"Les caractéristiques des participants sont décrites par la moyenne et l'écart-type, ou par "
+"l'effectif et le pourcentage."
+msgstr ""
+"The participants' characteristics are described by the mean and the standard deviation, or by the"
+" count and the percentage."
+
 msgid "Les choix ont changé depuis la dernière analyse : relancez-la."
 msgstr "The choices have changed since the last analysis: run it again."
 
 msgid "Les codes de la colonne « Manquants » sont des valeurs manquantes : les exclure de tout calcul."
 msgstr "The codes of the \"Missing\" column are missing values: leave them out of every computation."
+
+#, python-brace-format
+msgid "Les codes {codes} ont été traités comme des valeurs manquantes."
+msgstr "Codes {codes} were treated as missing values."
 
 msgid ""
 "Les définitions viennent du questionnaire ou de l'équipe ; l'IA n'en propose jamais. Une "
@@ -1932,8 +2056,46 @@ msgstr ""
 "Exclusions are applied in order; a person is counted only under the first reason that excludes "
 "them."
 
+msgid "Les groupes ont été comparés deux à deux par la méthode de Tukey."
+msgstr "The groups were compared pairwise with Tukey's method."
+
+#, python-brace-format
+msgid "Les items {items} sont inversés avant le calcul du score."
+msgstr "Items {items} are reversed before the score is computed."
+
+#, python-brace-format
+msgid ""
+"Les liens entre une variable dépendante et ses prédicteurs ont été estimés par une régression "
+"linéaire ; les coefficients sont donnés bruts ({b}, avec leur intervalle de confiance à 95 %) et "
+"standardisés (β)."
+msgstr ""
+"The relations between a dependent variable and its predictors were estimated with a linear "
+"regression; the coefficients are given unstandardized ({b}, with their 95% confidence interval) "
+"and standardized (β)."
+
+msgid ""
+"Les liens entre variables continues sont décrits par la corrélation de Pearson, avec son "
+"intervalle de confiance à 95 %."
+msgstr ""
+"The relations between continuous variables are described by Pearson's correlation, with its 95% "
+"confidence interval."
+
+msgid "Les liens entre variables sont décrits par la corrélation de Spearman."
+msgstr "The relations between variables are described by Spearman's correlation."
+
 msgid "Les propositions sont à réviser dans « Variables »."
 msgstr "The proposals are to be reviewed in \"Variables\"."
+
+#, python-brace-format
+msgid "Les valeurs de {p} sont données exactes, à trois décimales ({p} < ,001 en deçà)."
+msgstr "{p} values are given exactly, to three decimals ({p} < .001 below that)."
+
+msgid ""
+"Les valeurs manquantes ont été retirées analyse par analyse : chaque analyse porte sur les "
+"personnes qui ont répondu à toutes ses variables."
+msgstr ""
+"Missing values were removed analysis by analysis: each analysis includes the people who answered "
+"all its variables."
 
 msgid ""
 "Les variables marquées « sensible » ne doivent apparaître dans aucune sortie (ni valeurs, ni "
@@ -2285,6 +2447,9 @@ msgstr "Page"
 msgid "Par exemple : comparer le bien-être entre les deux groupes de l'étude."
 msgstr "For example: compare well-being between the two groups of the study."
 
+msgid "Participants"
+msgstr "Participants"
+
 #, python-brace-format
 msgid "Pas dans le groupe : {names}"
 msgstr "Not in the group: {names}"
@@ -2294,6 +2459,16 @@ msgstr "Pearson"
 
 msgid "Place de la marque"
 msgstr "Place of the mark"
+
+msgid ""
+"Plusieurs distributions ont été comparées par le test de Kruskal-Wallis ; la taille d'effet est "
+"ε²."
+msgstr "Several distributions were compared with the Kruskal-Wallis test; the effect size is ε²."
+
+msgid ""
+"Plusieurs moyennes ont été comparées par une analyse de variance à un facteur ; les tailles "
+"d'effet sont η² et ω²."
+msgstr "Several means were compared with a one-way analysis of variance; the effect sizes are η² and ω²."
 
 msgid "Port local de l'interface (défaut : 8501)."
 msgstr "Local port of the interface (default: 8501)."
@@ -2737,6 +2912,9 @@ msgstr "Nothing to send."
 msgid "Règle incomplète : {detail}"
 msgstr "Incomplete rule: {detail}"
 
+msgid "Règles d'exclusion :"
+msgstr "Exclusion rules:"
+
 msgid "Règles seules"
 msgstr "Rules alone"
 
@@ -2784,6 +2962,9 @@ msgstr "Residuals far from normal (Shapiro-Wilk {p}) with fewer than {n} observa
 
 msgid "Résultat"
 msgstr "Result"
+
+msgid "Résultats"
+msgstr "Results"
 
 msgid "Résultats du carnet"
 msgstr "Results of the notebook"
@@ -2964,6 +3145,10 @@ msgstr ""
 "On the fictional SurveyMonkey export: the base name of each question, compared with that of the "
 "answer key (a team's choice). The model is kept in the interface only if it does better than the "
 "rules alone (D-051)."
+
+#, python-brace-format
+msgid "Sur l'échantillon analysé, l'alpha de Cronbach est de {alpha} (IC 95 % {ci}, {n} = {count})."
+msgstr "In the analysed sample, Cronbach's alpha is {alpha} (95% CI {ci}, {n} = {count})."
 
 msgid "Syntaxe SPSS"
 msgstr "SPSS syntax"
@@ -3314,6 +3499,10 @@ msgid "[{low} ; {high}]"
 msgstr "[{low}, {high}]"
 
 #, python-brace-format
+msgid "[à compléter : {what}]"
+msgstr "[to complete: {what}]"
+
+#, python-brace-format
 msgid "au moins {n} items répondus, sinon manquant"
 msgstr "at least {n} items answered, else missing"
 
@@ -3347,6 +3536,10 @@ msgstr "checkboxes, according to the database"
 
 msgid "ce qu'est une ligne"
 msgstr "what a row is"
+
+#, python-brace-format
+msgid "ce que mesure le groupe {group}"
+msgstr "what group {group} measures"
 
 msgid "changée, à confirmer"
 msgstr "changed, to confirm"
@@ -3392,6 +3585,10 @@ msgstr "working (pending AI proposals included)"
 msgid "de travail (propositions de l'IA incluses)"
 msgstr "working (AI proposals included)"
 
+#, python-brace-format
+msgid "description de l'instrument du groupe {group}"
+msgstr "description of the instrument of group {group}"
+
 msgid "deviné : la variable n'a pas d'étiquette dans le fichier"
 msgstr "guessed: the variable has no label in the file"
 
@@ -3425,6 +3622,9 @@ msgstr "exported for all linked variables"
 
 msgid "fichier"
 msgstr "file"
+
+msgid "fidélité, trop peu de réponses complètes"
+msgstr "reliability, too few complete answers"
 
 msgid "finale"
 msgstr "final"
@@ -3560,6 +3760,10 @@ msgstr "place of birth name"
 
 msgid "nom de texte libre"
 msgstr "free text name"
+
+#, python-brace-format
+msgid "nom et source de l'instrument du groupe {group}"
+msgstr "name and source of the instrument of group {group}"
 
 msgid "nom ou étiquette d'identifiant"
 msgstr "identifier name or label"
@@ -3898,6 +4102,18 @@ msgid "{k} effectifs attendus sur {n} sont sous 5 (minimum {m})."
 msgstr "{k} expected counts out of {n} are below 5 (minimum {m})."
 
 #, python-brace-format
+msgid "{label} ({m} = {mean}, {sd} = {sdv})"
+msgstr "{label} ({m} = {mean}, {sd} = {sdv})"
+
+#, python-brace-format
+msgid "{label} ({m} = {mean}, {sd} = {sdv}, {n} = {count})"
+msgstr "{label} ({m} = {mean}, {sd} = {sdv}, {n} = {count})"
+
+#, python-brace-format
+msgid "{label} ({shares})"
+msgstr "{label} ({shares})"
+
+#, python-brace-format
 msgid "{label} : {n} valeurs manquantes"
 msgstr "{label}: {n} missing values"
 
@@ -4070,6 +4286,10 @@ msgid "{n} observations pour {k} prédicteurs : moins de {warn} par prédicteur.
 msgstr "{n} observations for {k} predictors: fewer than {warn} per predictor."
 
 #, python-brace-format
+msgid "{n} ont été exclues, pour les raisons suivantes, dans cet ordre : {reasons} (Figure {figure})."
+msgstr "{n} were excluded, for the following reasons, in this order: {reasons} (Figure {figure})."
+
+#, python-brace-format
 msgid "{n} options à cocher"
 msgstr "{n} checkbox options"
 
@@ -4162,6 +4382,10 @@ msgid "{proposed} noms proposés, {accepted} acceptés, {to_name} variables à n
 msgstr "{proposed} names proposed, {accepted} accepted, {to_name} variables to name."
 
 #, python-brace-format
+msgid "{reason} ({n} = {count})"
+msgstr "{reason} ({n} = {count})"
+
+#, python-brace-format
 msgid "{role} : aucune variable ne convient. Le niveau de mesure se décide sur la page Base."
 msgstr "{role}: no variable fits. The measure level is decided on the Database page."
 
@@ -4220,6 +4444,10 @@ msgid "{used} observations retenues, {excluded} écartées ({why})."
 msgstr "{used} observations used, {excluded} excluded ({why})."
 
 #, python-brace-format
+msgid "{value} %"
+msgstr "{value}%"
+
+#, python-brace-format
 msgid "{y} selon {x}"
 msgstr "{y} by {x}"
 
@@ -4229,6 +4457,10 @@ msgid ""
 msgstr ""
 "\"Not documented\" means unknown: do not guess it. Quote no threshold, range or instrument absent"
 " from this document."
+
+#, python-brace-format
+msgid "« {note} »"
+msgstr "“{note}”"
 
 #, python-brace-format
 msgid "« {token} » lu comme vide ({n})"
@@ -4448,6 +4680,9 @@ msgstr "similar label"
 
 msgid "étiquettes de valeurs"
 msgstr "value labels"
+
+msgid "étiquettes des extrémités"
+msgstr "labels of the ends"
 
 msgid "étiquettes proposées à partir des options, ordre supposé, à vérifier"
 msgstr "labels proposed from the options, assumed order, to check"

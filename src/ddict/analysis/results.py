@@ -51,6 +51,24 @@ def p_value(p: float) -> str:
     return decimal(text[1:] if text.startswith("0") else text)
 
 
+def bounded(value: float | None, digits: int = 2) -> str:
+    """A statistic that cannot exceed 1 (r, ρ, V, η², ω², ε², R²), without its leading
+    zero, as APA writes it: ",07", "−,13" (v0.12: the sentences, like the tables)."""
+    text = number(value, digits)
+    sign = MINUS if text.startswith(MINUS) else ""
+    body = text[len(sign) :]
+    if body.startswith("0") and len(body) > 1 and not body[1].isdigit():
+        body = body[1:]
+    return sign + body
+
+
+def bounded_interval(low: float, high: float, digits: int = 2) -> str:
+    """ "IC 95 % [−,13 ; ,15]": the interval of a correlation, without leading zeros."""
+    return _("IC 95 % [{low} ; {high}]").format(
+        low=bounded(low, digits), high=bounded(high, digits)
+    )
+
+
 def p_part(p: float) -> str:
     """ "p = ,861" or "p < ,001"."""
     shown = p_value(p)

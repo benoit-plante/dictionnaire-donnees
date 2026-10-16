@@ -5,6 +5,11 @@ its figures, numbered one after the other; at the end, the codebook's fingerprin
 the versions and the list of the analyses, and those left out because impossible.
 
 A retained analysis that changed and waits for a person's confirmation blocks the export.
+
+Since v0.12 (D-099), the document opens with the Method: Participants (with the flow
+diagram, Figure 1 by default), Instruments and Analyses, written by templates
+(`method_text`); the Results follow, numbered after it. Its figures are confirmed as an
+analysis's (D-100).
 """
 
 from __future__ import annotations
@@ -15,9 +20,11 @@ from datetime import date
 from pathlib import Path
 
 from ddict import i18n
+from ddict.analysis import method as method_facts
+from ddict.analysis import method_text
 from ddict.analysis import notebook as nb
 from ddict.analysis import notebook_check as check
-from ddict.analysis.apa import Edit, Section, assembled, describe, edited
+from ddict.analysis.apa import Edit, Section, assembled, describe, describe_flow, edited
 from ddict.analysis.book import Codebook
 from ddict.analysis.catalogue import ROLES, TITLES
 from ddict.analysis.data import PreparedData
@@ -57,6 +64,49 @@ def _variables(book: Codebook, chosen: dict[str, list[str]]) -> str:
     return semicolon().join(parts)
 
 
+def _method(project, prepared, notebook, found, table: int, figure: int):
+    """The sections of the Method, and the numbers of the next table and figure."""
+    from ddict.workflow import project_stem
+
+    flow = describe_flow(project, prepared.flow, number=figure)
+    sections = [Section("methode", _("Méthode"), "", level=1)]
+    sections.append(
+        Section(
+            "participants",
+            _("Participants"),
+            "",
+            figures=(flow,) if flow else (),
+            paragraphs=(method_text.participants(project, found, flow.number if flow else None),),
+        )
+    )
+    figure += 1 if flow else 0
+    paragraphs = method_text.instruments(project, prepared, found)
+    if paragraphs:
+        sections.append(Section("instruments", _("Instruments"), "", paragraphs=tuple(paragraphs)))
+    script = project_stem(Path(notebook.project.file)) + "-resultats.R"
+    sections.append(
+        Section(
+            "analyses",
+            _("Analyses"),
+            "",
+            paragraphs=(method_text.analyses(found, script),),
+        )
+    )
+    sections.append(Section("resultats", _("Résultats"), "", level=1))
+    return sections, table, figure
+
+
+def _rules(project) -> list[str]:
+    """The exclusion rules, at the end of the document, with their source."""
+    lines = []
+    for rule in project.exclusions.rules:
+        line = f"{rule.id} — {rule.reason}"
+        if rule.source:
+            line += f" ({rule.source})"
+        lines.append(line)
+    return [_("Règles d'exclusion :"), *lines] if lines else []
+
+
 def results_document(
     project: Project,
     prepared: PreparedData,
@@ -77,13 +127,17 @@ def _results(project, prepared, notebook, *, language=None, today=None):
     with i18n.using(language):
         language = i18n.language()
         statuses = check.check_all(notebook, project, prepared, today=today, always=True)
+        statuses.append(check.check_method(notebook, project, prepared, today=today))
         blocked = check.blocking(notebook, statuses)
         if blocked:
             raise ExportBlocked(blocked)
         by_id = {s.entry_id: s for s in statuses}
         book = Codebook(project, prepared)
-        sections, listed, left_out = [], [], []
-        table, figure = notebook.first_table, notebook.first_figure
+        listed, left_out = [], []
+        found = method_facts.facts(project, prepared, notebook)
+        sections, table, figure = _method(
+            project, prepared, notebook, found, notebook.first_table, notebook.first_figure
+        )
         for entry in notebook.entries:
             if not entry.retained:
                 continue
@@ -119,6 +173,7 @@ def _results(project, prepared, notebook, *, language=None, today=None):
             ),
             _("Analyses du document :"),
             *listed,
+            *_rules(project),
         ]
         if left_out:
             closing += [_("Analyses retenues mais écartées, impossibles à calculer :"), *left_out]

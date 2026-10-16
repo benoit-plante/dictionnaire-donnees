@@ -17,6 +17,8 @@ from ddict.analysis.data import PreparedData
 from ddict.analysis.results import (
     AnalysisResult,
     Table,
+    bounded,
+    bounded_interval,
     count_percent,
     interval,
     number,
@@ -187,13 +189,13 @@ def correlation(project, prepared, chosen, options) -> AnalysisResult:
         if method == "spearman":
             result.sentence = _(
                 "La corrélation de Spearman entre {a} et {b} était ρ = {r}, {p} (n = {n})."
-            ).format(a=book.label(names[0]), b=book.label(names[1]), r=number(pair["r"]),
+            ).format(a=book.label(names[0]), b=book.label(names[1]), r=bounded(pair["r"]),
                      p=p_part(pair["p"]), n=pair["n"])  # fmt: skip
         else:
             result.sentence = _(
                 "La corrélation entre {a} et {b} était r({df}) = {r}, {ci}, {p}."
             ).format(a=book.label(names[0]), b=book.label(names[1]), df=pair["n"] - 2,
-                     r=number(pair["r"]), ci=interval(pair["ci_low"], pair["ci_high"]),
+                     r=bounded(pair["r"]), ci=bounded_interval(pair["ci_low"], pair["ci_high"]),
                      p=p_part(pair["p"]))  # fmt: skip
     return result
 
@@ -242,7 +244,7 @@ def chi_square(project, prepared, chosen, options) -> AnalysisResult:
         df=statistics["df"],
         chi2=number(statistics["chi2"]),
         p=p_part(statistics["p"]),
-        v=number(v),
+        v=bounded(v),
         n=n,
     )
     if "fisher_p" in statistics:

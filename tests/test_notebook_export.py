@@ -53,9 +53,14 @@ def ready():
     return project, prepared, notebook
 
 
+def _analyses(document):
+    """The sections of the analyses, after those of the Method (v0.12)."""
+    return [s for s in document.sections if s.key[:1] == "A" and s.key[1:].isdigit()]
+
+
 def _numbers(document):
     return [(s.key, [t.number for t in s.tables], [f.number for f in s.figures])
-            for s in document.sections]  # fmt: skip
+            for s in _analyses(document)]  # fmt: skip
 
 
 # --- Numbering (D-090), as the sheet's example (§ 4). ---
@@ -64,8 +69,8 @@ def _numbers(document):
 def test_the_sheets_numbering(ready):
     document = export.results_document(*ready, today=TODAY)
     assert _numbers(document) == [("A2", [1], [1]), ("A3", [2, 3], [2]), ("A1", [4], [])]
-    assert document.sections[0].heading == "A2 — Test t : comparer deux groupes"
-    t_test = document.sections[0]
+    assert _analyses(document)[0].heading == "A2 — Test t : comparer deux groupes"
+    t_test = _analyses(document)[0]
     assert t_test.tables[0].title == "Bien-être selon le groupe"  # a person's title kept
     assert t_test.tables[0].number == 1  # but never their number: the order numbers
     assert t_test.sentence.startswith("bienetre_total (score de G1) : M = 17,01")
@@ -100,7 +105,7 @@ def test_an_impossible_analysis_is_left_out_and_said(ready):
         value="ordinal", origin="human", status="none"
     )
     document = export.results_document(project, prepared, notebook, today=TODAY)
-    assert [s.key for s in document.sections] == ["A2", "A1"]
+    assert [s.key for s in _analyses(document)] == ["A2", "A1"]
     assert _numbers(document) == [("A2", [1], [1]), ("A1", [2], [])]  # no hole
     assert "Analyses retenues mais écartées, impossibles à calculer :" in document.closing
     assert any(line.startswith("A3 — ANOVA") and "ordinal" in line for line in document.closing)
@@ -123,7 +128,7 @@ def test_a_change_waiting_for_a_confirmation_blocks_the_export(tmp_path):
     notebook_check.confirm(notebook, "A1")
     document = export.results_document(project, prepared, notebook, today=TODAY)
     assert plain(document.figures[0].note).startswith("N = 197.")  # recomputed, confirmed
-    assert "r(195) = 0,07" in document.sections[0].sentence
+    assert "r(195) = ,07" in _analyses(document)[0].sentence
 
 
 # --- The files. ---
@@ -142,7 +147,8 @@ def test_the_files_next_to_the_project(ready, tmp_path):
     assert written == [paths["docx"], paths["xlsx"], paths["r"]]
     word = Document(io.BytesIO(paths["docx"].read_bytes()))
     headings = [p.text for p in word.paragraphs if p.style.name.startswith("Heading")]
-    assert headings == ["A2 — Test t : comparer deux groupes",
+    assert headings == ["Méthode", "Participants", "Instruments", "Analyses", "Résultats",
+                        "A2 — Test t : comparer deux groupes",
                         "A3 — ANOVA : comparer plusieurs groupes",
                         "A1 — Tableau 1 : décrire l'échantillon"]  # fmt: skip
     texts = [p.text for p in word.paragraphs]
@@ -172,6 +178,7 @@ def test_every_format_renders_the_results(ready, key, language):
             expected += [plain(c.header) for c in table.columns]
             expected += [plain(cell) for row in table.rows for cell in row.cells]
         expected += [s.heading for s in document.sections] + [s.sentence for s in document.sections]
+        expected += [plain(p) for s in document.sections for p in s.paragraphs]  # v0.12
         expected += list(document.closing)
     if found.figures:
         for figure in document.figures:

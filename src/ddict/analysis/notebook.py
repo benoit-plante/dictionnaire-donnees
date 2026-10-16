@@ -10,6 +10,11 @@ database, an identifier, a point of a scatter plot nor an observed range (D-088)
 
 The order of the entries is their rank. Identifiers only grow: a removed A5 never comes
 back.
+
+Since 1.1.0 (v0.12, D-100), the notebook keeps the figures of the Method too (`method`):
+the variables chosen to describe the sample, and the last confirmed computation of the
+flow, the description and the reliabilities, compared and confirmed as an analysis. A
+notebook 1.0.0 reads as it is.
 """
 
 from __future__ import annotations
@@ -30,7 +35,8 @@ from ddict.i18n import _
 from ddict.project import fingerprint
 from ddict.project.model import Project
 
-NOTEBOOK_VERSION = "1.0.0"
+NOTEBOOK_VERSION = "1.1.0"
+METHOD = "M"  # the identifier of the Method in the states and the confirmations
 SUFFIX = "-carnet.json"
 
 
@@ -105,6 +111,14 @@ class Entry(_Strict):
     pending: Computed | None = None
 
 
+class MethodPart(_Strict):
+    """The Method's part of the notebook (v0.12, D-100)."""
+
+    variables: list[VariableRef] = []  # describe the sample analysed, in this order
+    computed: Computed | None = None
+    pending: Computed | None = None
+
+
 class ProjectLink(_Strict):
     file: str
     source_sha256: str
@@ -117,6 +131,7 @@ class Notebook(_Strict):
     first_table: int = 1
     first_figure: int = 1
     entries: list[Entry] = []
+    method: MethodPart = MethodPart()
 
 
 # --- Variables by their key in the project. ---

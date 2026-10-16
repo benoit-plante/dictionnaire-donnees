@@ -39,6 +39,7 @@ NBSP = chr(0xA0)  # a no-break space
 class Run:
     text: str
     italic: bool = False
+    hole: bool = False  # v0.12 (D-097): "[à compléter : …]", highlighted in Word
 
 
 Text = tuple[Run, ...]
@@ -54,6 +55,11 @@ def rich(*parts: str | Run) -> Text:
 
 def it(text: str) -> Run:
     return Run(text, italic=True)
+
+
+def hole(what: str) -> Run:
+    """A fact the codebook does not hold, left for a person (D-097): never guessed."""
+    return Run(_("[à compléter : {what}]").format(what=what), hole=True)
 
 
 def marked(template: str, **values: str | Run | Text) -> Text:
@@ -211,13 +217,17 @@ class ApaDocument:
 @dataclass(frozen=True)
 class Section:
     """An analysis of the results document (v0.11): its heading, its APA sentence, its
-    tables and its figures, already numbered."""
+    tables and its figures, already numbered. Since v0.12, a part of the Method too: its
+    paragraphs, written by templates; and the headings of level 1, "Méthode" and
+    "Résultats", which hold nothing."""
 
-    key: str  # the notebook's identifier: "A2"
+    key: str  # the notebook's identifier: "A2"; or "methode", "participants"...
     heading: str
     sentence: str
     tables: tuple[ApaTable, ...] = ()
     figures: tuple[ApaFigure, ...] = ()
+    paragraphs: tuple[Text, ...] = ()
+    level: int = 2  # APA heading level
 
 
 def assembled(language: str, sections: list[Section], closing: list[str], fingerprint: str = ""):

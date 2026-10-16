@@ -82,7 +82,7 @@ F(2, 185) = 1,05, p = ,351 ; η² = 0,01, ω² = 0,00. Moyennes : femmes 23,69 (
 
 > ⚠ Le groupe « Autre identité » compte 2 personnes : sa moyenne est très incertaine, et l'analyse repose presque entièrement sur les deux autres groupes.
 
-> Score de qualité du sommeil selon le genre : F(2, 185) = 1,05, p = ,351, η² = 0,01, ω² = 0,00 ; moyennes : Femme 23,69 (n = 109) ; Homme 23,50 (n = 77) ; Autre identité 15,86 (n = 2).
+> Score de qualité du sommeil selon le genre : F(2, 185) = 1,05, p = ,351, η² = ,01, ω² = ,00 ; moyennes : Femme 23,69 (n = 109) ; Homme 23,50 (n = 77) ; Autre identité 15,86 (n = 2).
 
 ## 5. Khi-carré — associer deux variables catégorielles
 
@@ -108,7 +108,7 @@ F(2, 185) = 1,05, p = ,351 ; η² = 0,01, ω² = 0,00. Moyennes : femmes 23,69 (
 
 χ²(4) = 6,98, p = ,137 ; V = 0,25. 1 effectif attendu sur 10 sous 5 (minimum 3,7) : sous le seuil de 20 %.
 
-> Association entre le secteur et la formation en santé et sécurité au travail : χ²(4) = 6,98, p = ,137, V = 0,25 (n = 110).
+> Association entre le secteur et la formation en santé et sécurité au travail : χ²(4) = 6,98, p = ,137, V = ,25 (n = 110).
 
 ## 6. Corrélation — relier deux variables continues
 
@@ -126,7 +126,7 @@ F(2, 185) = 1,05, p = ,351 ; η² = 0,01, ω² = 0,00. Moyennes : femmes 23,69 (
 
 r = 0,04, IC 95 % [−0,10 ; 0,18], p = ,585 ; Spearman : ρ = 0,03, p = ,732.
 
-> La corrélation entre le score de qualité du sommeil et l'âge était r(187) = 0,04, IC 95 % [−0,10 ; 0,18], p = ,585.
+> La corrélation entre le score de qualité du sommeil et l'âge était r(187) = ,04, IC 95 % [−,10 ; ,18], p = ,585.
 
 ## 7. Régression linéaire — prédire une variable continue
 
@@ -148,7 +148,7 @@ r = 0,04, IC 95 % [−0,10 ; 0,18], p = ,585 ; Spearman : ρ = 0,03, p = ,732.
 
 R² = 0,51, R² ajusté = 0,51, F(2, 186) = 97,43, p < ,001. VIF : 1,00 et 1,00 ; résidus : Shapiro-Wilk p = ,396.
 
-> Le modèle expliquait 51,2 % de la variance du score de qualité du sommeil, F(2, 186) = 97,43, p < ,001, R² ajusté = 0,51 (n = 189). Les coefficients sont dans le tableau.
+> Le modèle expliquait 51,2 % de la variance du score de qualité du sommeil, F(2, 186) = 97,43, p < ,001, R² ajusté = ,51 (n = 189). Les coefficients sont dans le tableau.
 
 ## 8. Le rapport téléchargé
 
