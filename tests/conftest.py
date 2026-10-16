@@ -31,6 +31,16 @@ def fictional_files(generator, tmp_path_factory):
     return {path.name: path for path in generator.write_all(out_dir)}
 
 
+@pytest.fixture(scope="session", autouse=True)
+def isolated_session_config(tmp_path_factory):
+    """Before any fixture of a module or a session: never the settings of this computer (a
+    language chosen on the home page made module fixtures write their files in English)."""
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setenv("DDICT_CONFIG_DIR", str(tmp_path_factory.mktemp("session-config")))
+        patch.delenv("DDICT_LANG", raising=False)
+        yield
+
+
 @pytest.fixture(autouse=True)
 def isolated_config(tmp_path_factory, monkeypatch):
     """The list of recent projects (v0.3) goes to a temporary folder, never the user's."""
