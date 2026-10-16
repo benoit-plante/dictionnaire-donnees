@@ -241,6 +241,9 @@ msgstr ""
 msgid "32, la limite de Stata, convient à SPSS, R et Stata."
 msgstr "32, Stata's limit, suits SPSS, R and Stata."
 
+msgid "ANOVA : comparer plusieurs groupes"
+msgstr "ANOVA: compare several groups"
+
 msgid "Accepter"
 msgstr "Accept"
 
@@ -698,6 +701,9 @@ msgstr "Correct or enter"
 
 msgid "Corrigé"
 msgstr "Answer key"
+
+msgid "Corrélation : relier des variables continues"
+msgstr "Correlation: relate continuous variables"
 
 msgid "Corrélation avec le reste du groupe"
 msgstr "Correlation with the rest of the group"
@@ -1157,6 +1163,9 @@ msgstr "Items probably reversed: {s}"
 msgid "Items répondus, au minimum"
 msgstr "Items answered, at least"
 
+msgid "Khi-carré : associer deux variables catégorielles"
+msgstr "Chi-square: associate two categorical variables"
+
 msgid ""
 "L'interface de révision n'est pas installée. Installez-la avec : uv tool install --reinstall "
 "\".[ia,revision]\" (voir docs/installation-windows.md)."
@@ -1195,6 +1204,13 @@ msgstr "The tool never downloads a model itself: that is an installation step, d
 
 msgid "La base d'origine, si elle n'est pas à côté du projet."
 msgstr "The original database, if it is not next to the project."
+
+msgid ""
+"La base est en format long (plusieurs lignes par personne) : cette analyse suppose des "
+"observations indépendantes."
+msgstr ""
+"The database is in long format (several rows per person): this analysis assumes independent "
+"observations."
 
 #, python-brace-format
 msgid ""
@@ -1801,6 +1817,9 @@ msgstr "Proposed by the model"
 msgid "Provenance"
 msgstr "Provenance"
 
+msgid "Prédicteurs"
+msgstr "Predictors"
+
 msgid "Préfixe des noms de ses items"
 msgstr "Prefix of its items' names"
 
@@ -2013,6 +2032,9 @@ msgstr "References (one per line)"
 msgid "Réglages de nommage"
 msgstr "Naming settings"
 
+msgid "Régression linéaire : prédire une variable continue"
+msgstr "Linear regression: predict a continuous variable"
+
 msgid ""
 "Réservée aux personnes, avec une source documentée (manuel, article) ; jamais proposée par l'IA. "
 "Les items inversés sont ceux confirmés ci-dessus ; l'étendue du score est calculée. Une cotation "
@@ -2194,6 +2216,12 @@ msgstr "Separator"
 msgid "Table de correspondance des noms : {path}"
 msgstr "Table of names: {path}"
 
+msgid "Tableau 1 : décrire l'échantillon"
+msgstr "Table 1: describe the sample"
+
+msgid "Test t : comparer deux groupes"
+msgstr "t test: compare two groups"
+
 msgid "Texte"
 msgstr "Text"
 
@@ -2371,6 +2399,18 @@ msgstr "Variable"
 
 msgid "Variable constante"
 msgstr "Constant variable"
+
+msgid "Variable de groupe"
+msgstr "Grouping variable"
+
+msgid "Variable dépendante"
+msgstr "Dependent variable"
+
+msgid "Variable en colonnes"
+msgstr "Column variable"
+
+msgid "Variable en lignes"
+msgstr "Row variable"
 
 msgid "Variable entièrement vide"
 msgstr "Entirely empty variable"
@@ -2933,20 +2973,56 @@ msgid "{names} : nom modifié et « Rejeter » choisi ; gardez l'un ou l'autre."
 msgstr "{names}: name changed and \"Reject\" chosen; keep one or the other."
 
 #, python-brace-format
+msgid "{names} : variable ordinale ; la corrélation de Spearman convient mieux."
+msgstr "{names}: ordinal variable; Spearman's correlation fits better."
+
+#, python-brace-format
 msgid "{name} : bornes de l'échelle inconnues, non inversé."
 msgstr "{name}: ends of the scale unknown, not reversed."
+
+#, python-brace-format
+msgid "{name} : identifiant, texte ou date, exclu des analyses."
+msgstr "{name}: identifier, text or date, left out of the analyses."
 
 #, python-brace-format
 msgid "{name} : le nom {new} est déjà pris ou invalide, non inversé."
 msgstr "{name}: the name {new} is taken or invalid, not reversed."
 
 #, python-brace-format
+msgid "{name} : moins de {n} personnes dans {codes}."
+msgstr "{name}: fewer than {n} people in {codes}."
+
+#, python-brace-format
 msgid "{name} : niveau de mesure inconnu."
 msgstr "{name}: unknown measure level."
 
 #, python-brace-format
+msgid "{name} : niveau de mesure non décidé ; décidez-le sur la page Base."
+msgstr "{name}: measure level not decided; decide it on the Database page."
+
+#, python-brace-format
+msgid "{name} : niveau « {level} », ne convient pas au rôle « {role} »."
+msgstr "{name}: level \"{level}\", does not fit the role \"{role}\"."
+
+#, python-brace-format
 msgid "{name} : nom refusé ({why})."
 msgstr "{name}: name refused ({why})."
+
+#, python-brace-format
+msgid "{name} : un groupe de moins de {n} personnes ({codes})."
+msgstr "{name}: a group of fewer than {n} people ({codes})."
+
+#, python-brace-format
+msgid "{name} : variable inconnue."
+msgstr "{name}: unknown variable."
+
+#, python-brace-format
+msgid "{name} : {n} modalités ; choisissez-en deux."
+msgstr "{name}: {n} categories; choose two of them."
+
+#, python-brace-format
+msgid "{name} : {n} modalités observées ; il en faut de {low} à {high}."
+msgstr "{name}: {n} categories observed; {low} to {high} are needed."
 
 #, python-brace-format
 msgid "{name} existe déjà : la remplacer"
@@ -2997,6 +3073,14 @@ msgstr "{n} base names saved."
 #, python-brace-format
 msgid "{n} noms enregistrés."
 msgstr "{n} names saved."
+
+#, python-brace-format
+msgid "{n} observations pour {k} prédicteurs : il en faut au moins {least} par prédicteur."
+msgstr "{n} observations for {k} predictors: at least {least} per predictor are needed."
+
+#, python-brace-format
+msgid "{n} observations pour {k} prédicteurs : moins de {warn} par prédicteur."
+msgstr "{n} observations for {k} predictors: fewer than {warn} per predictor."
 
 #, python-brace-format
 msgid "{n} options à cocher"
@@ -3059,6 +3143,10 @@ msgstr "{program}: preparation"
 #, python-brace-format
 msgid "{proposed} noms proposés, {accepted} acceptés, {to_name} variables à nommer."
 msgstr "{proposed} names proposed, {accepted} accepted, {to_name} variables to name."
+
+#, python-brace-format
+msgid "{role} : de {least} à {most} variables."
+msgstr "{role}: {least} to {most} variables."
 
 #, python-brace-format
 msgid "{score} = {how} des {n} items"

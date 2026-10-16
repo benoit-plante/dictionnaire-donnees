@@ -528,3 +528,11 @@ Chaque étape se termine par une revue ; une étape est finie quand son critère
 | **Seuil de petits effectifs** | 5 par défaut, réglable. |
 | **Langue des prompts** | Français, ce qui aligne la langue des libellés produits sur celle de l'interface. |
 | **Lien avec outil-qualitatif** | Projets séparés, sans code partagé pour la v0.1 ; les bonnes pratiques (journal des décisions, JSON déterministe, réseau bloqué dans les tests) sont reprises. |
+
+## 15. Analyses (v0.9)
+
+Le catalogue est `docs/catalogue-analyses.md` (validé, D-077) ; le paquet `ddict.analysis` le met en œuvre (D-069 à D-077).
+
+- **Données prêtes pour l'analyse** (`ddict.analysis.data`, étape 3) : la base est retrouvée à côté du projet et reconnue par son empreinte, lue en mémoire comme pour le profilage, puis les décisions acceptées sont appliquées dans l'ordre des fichiers de commandes et du script de préparation : codes manquants déclarés et confirmés retirés, noms finaux, items inversés (`<item>_inv`), scores des cotations structurées (règle des items manquants comprise ; mêmes valeurs que le script de préparation R, vérifié dans R). Le fichier n'est jamais modifié et rien des données n'entre dans le projet.
+- **Catalogue comme données** (`ddict.analysis.catalogue`) : pour chaque analyse, ses rôles, les niveaux permis, le nombre de variables et de modalités, les options (la première par défaut : Welch pour le test t).
+- **Conditions** (`ddict.analysis.conditions`) : les variables offertes pour un rôle (niveau en vigueur, ou « échelle » pour un score ; jamais un identifiant, un texte, une date, une variable vide ou de types mélangés). Refus : rôle mal rempli, variable exclue, niveau non décidé (renvoi à la page Base), niveau qui ne convient pas, nombre de modalités observées, un groupe de moins de 2 personnes (test t, ANOVA), moins de 10 observations par prédicteur (une variable nominale compte autant de prédicteurs que de modalités moins une). Avertissements : moins de 5 personnes dans un groupe ou une modalité, une variable ordinale avec Pearson, une base en format long pour une analyse qui suppose l'indépendance, moins de 20 observations par prédicteur.
