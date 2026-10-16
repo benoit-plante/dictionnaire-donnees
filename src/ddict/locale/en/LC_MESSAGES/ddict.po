@@ -553,6 +553,9 @@ msgstr "Likely checkbox: only one value observed, empty cells probably mean \"no
 msgid "Cases vides"
 msgstr "Empty cells"
 
+msgid "Ce carnet a été fait avec une autre base que celle du projet."
+msgstr "This notebook was made with another database than the project's."
+
 msgid "Ce fichier projet est introuvable."
 msgstr "This project file cannot be found."
 
