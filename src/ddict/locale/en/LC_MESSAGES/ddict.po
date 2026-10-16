@@ -348,8 +348,16 @@ msgstr "Stops the tool. Your decisions are already saved in the project file."
 msgid "Arrêter"
 msgstr "Stop"
 
+#, python-brace-format
+msgid "Association entre {a} et {b} : χ²({df}) = {chi2}, {p}, V = {v} (n = {n})."
+msgstr "Association between {a} and {b}: χ²({df}) = {chi2}, {p}, V = {v} (n = {n})."
+
 msgid "Au début (t2_k6_1)"
 msgstr "At the start (t2_k6_1)"
+
+#, python-brace-format
+msgid "Au moins une case compte moins de {n} personnes."
+msgstr "At least one cell has fewer than {n} people."
 
 msgid "Aucun : tout le texte est reproduit"
 msgstr "None: all the text is reproduced"
@@ -708,6 +716,9 @@ msgstr "Correlation: relate continuous variables"
 msgid "Corrélation avec le reste du groupe"
 msgstr "Correlation with the rest of the group"
 
+msgid "Corrélations"
+msgstr "Correlations"
+
 msgid "Cotation"
 msgstr "Scoring"
 
@@ -858,6 +869,9 @@ msgstr ""
 "Counts below {n} masked, as well as a second count when the first could be worked out by "
 "subtraction."
 
+msgid "Effectifs observés"
+msgstr "Observed counts"
+
 msgid "Empreinte SHA-256"
 msgstr "SHA-256 fingerprint"
 
@@ -941,6 +955,10 @@ msgstr "Saved in {path}."
 
 msgid "Enregistré."
 msgstr "Saved."
+
+#, python-brace-format
+msgid "Ensemble ({n})"
+msgstr "All ({n})"
 
 msgid ""
 "Environ trois minutes avec un modèle de 7 milliards de paramètres et une carte graphique ; "
@@ -1069,6 +1087,13 @@ msgstr "AI"
 
 msgid "IA locale"
 msgstr "Local AI"
+
+msgid "IC 95 %"
+msgstr "95% CI"
+
+#, python-brace-format
+msgid "IC 95 % [{low} ; {high}]"
+msgstr "95% CI [{low}, {high}]"
 
 #, python-brace-format
 msgid "Identique à {name}"
@@ -1234,6 +1259,14 @@ msgid ""
 msgstr ""
 "The copy, read back, did not match the original ({n} cells differ): it was deleted. Use the "
 "command files instead, and report this problem."
+
+#, python-brace-format
+msgid "La corrélation de Spearman entre {a} et {b} était ρ = {r}, {p} (n = {n})."
+msgstr "The Spearman correlation between {a} and {b} was ρ = {r}, {p} (n = {n})."
+
+#, python-brace-format
+msgid "La corrélation entre {a} et {b} était r({df}) = {r}, {ci}, {p}."
+msgstr "The correlation between {a} and {b} was r({df}) = {r}, {ci}, {p}."
 
 msgid "La cotation exige une source documentée (manuel, article)."
 msgstr "The scoring requires a documented source (manual, article)."
@@ -1411,6 +1444,9 @@ msgstr ""
 msgid "Le sigle est vide."
 msgstr "The acronym is empty."
 
+msgid "Le test exact de Fisher convient mieux."
+msgstr "Fisher's exact test fits better."
+
 msgid ""
 "Le travail s'arrête après le bloc en cours si vous cliquez sur « Arrêter » ou changez de page. "
 "Les blocs terminés sont gardés ; une relance reprend là où il s'était arrêté."
@@ -1480,6 +1516,9 @@ msgstr "List cleared."
 msgid "Longueur maximale des noms"
 msgstr "Maximum length of the names"
 
+msgid "M (ÉT) ou effectif (%)"
+msgstr "M (SD) or count (%)"
+
 msgid "Manquant déclaré"
 msgstr "Declared missing"
 
@@ -1543,6 +1582,10 @@ msgstr "Model"
 
 msgid "Modèle local"
 msgstr "Local model"
+
+#, python-brace-format
+msgid "Moins de {n} personnes{where} : {cases}."
+msgstr "Fewer than {n} people{where}: {cases}."
 
 msgid "Moyenne"
 msgstr "Mean"
@@ -1899,6 +1942,9 @@ msgstr "Questions found"
 msgid "Quitter l'outil"
 msgstr "Quit the tool"
 
+msgid "R de base et haven seulement ; à exécuter dans le dossier du projet."
+msgstr "Base R and haven only; to run in the project's folder."
+
 #, python-brace-format
 msgid "Rapport : {path}"
 msgstr "Report: {path}"
@@ -2218,6 +2264,10 @@ msgstr "Table of names: {path}"
 
 msgid "Tableau 1 : décrire l'échantillon"
 msgstr "Table 1: describe the sample"
+
+#, python-brace-format
+msgid "Test exact de Fisher : {p}."
+msgstr "Fisher's exact test: {p}."
 
 msgid "Test t : comparer deux groupes"
 msgstr "t test: compare two groups"
@@ -2635,6 +2685,9 @@ msgstr "longitudinal, one wave per file"
 msgid "lue comme un paragraphe, retrouvée par la structure de la base"
 msgstr "read as a paragraph, found by the structure of the database"
 
+msgid "manquant"
+msgstr "missing"
+
 msgid "masqué"
 msgstr "masked"
 
@@ -2925,6 +2978,10 @@ msgid "vraie valeur"
 msgstr "real value"
 
 #, python-brace-format
+msgid "{analysis} : script R équivalent, produit par dictionnaire-donnees {version} le {date}."
+msgstr "{analysis}: equivalent R script, made by dictionnaire-donnees {version} on {date}."
+
+#, python-brace-format
 msgid "{base} : libellés et descriptions…"
 msgstr "{base}: labels and descriptions…"
 
@@ -2957,12 +3014,20 @@ msgid "{group} : cotation décrite en note seulement, score non calculé."
 msgstr "{group}: scoring described in a note only, score not computed."
 
 #, python-brace-format
+msgid "{group} : moins de {n} personnes dans {code}."
+msgstr "{group}: fewer than {n} people in {code}."
+
+#, python-brace-format
 msgid "{group} : un item inversé n'a pu être créé, score non calculé."
 msgstr "{group}: a reversed item could not be created, score not computed."
 
 #, python-brace-format
 msgid "{key} : nom de base refusé ({why})."
 msgstr "{key}: base name refused ({why})."
+
+#, python-brace-format
+msgid "{k} effectifs attendus sur {n} sont sous 5 (minimum {m})."
+msgstr "{k} expected counts out of {n} are below 5 (minimum {m})."
 
 #, python-brace-format
 msgid "{names} : niveau modifié et « Rejeter » choisi ; gardez l'un ou l'autre."
@@ -2975,6 +3040,10 @@ msgstr "{names}: name changed and \"Reject\" chosen; keep one or the other."
 #, python-brace-format
 msgid "{names} : variable ordinale ; la corrélation de Spearman convient mieux."
 msgstr "{names}: ordinal variable; Spearman's correlation fits better."
+
+#, python-brace-format
+msgid "{name} (score de {group})"
+msgstr "{name} (score of {group})"
 
 #, python-brace-format
 msgid "{name} : bornes de l'échelle inconnues, non inversé."
@@ -3267,6 +3336,9 @@ msgstr "Elements decided by the team, out of those that apply."
 
 msgid "Équipe"
 msgstr "Team"
+
+msgid "Étendue"
+msgstr "Range"
 
 msgid "Étendue invalide : le minimum doit être inférieur au maximum."
 msgstr "Invalid range: the minimum must be below the maximum."

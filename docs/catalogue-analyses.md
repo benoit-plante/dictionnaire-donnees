@@ -108,7 +108,7 @@ F(2, 185) = 1,05, p = ,351 ; η² = 0,01, ω² = 0,00. Moyennes : femmes 23,69 (
 
 χ²(4) = 6,98, p = ,137 ; V = 0,25. 1 effectif attendu sur 10 sous 5 (minimum 3,7) : sous le seuil de 20 %.
 
-> La part des personnes formées variait selon le secteur, de 47 % dans l'industrie à 83 % dans l'administration, χ²(4) = 6,98, p = ,137, V = 0,25.
+> Association entre le secteur et la formation en santé et sécurité au travail : χ²(4) = 6,98, p = ,137, V = 0,25 (n = 110).
 
 ## 6. Corrélation — relier deux variables continues
 
@@ -126,7 +126,7 @@ F(2, 185) = 1,05, p = ,351 ; η² = 0,01, ω² = 0,00. Moyennes : femmes 23,69 (
 
 r = 0,04, IC 95 % [−0,10 ; 0,18], p = ,585 ; Spearman : ρ = 0,03, p = ,732.
 
-> Le score de qualité du sommeil et l'âge étaient faiblement liés, r(187) = 0,04, IC 95 % [−0,10 ; 0,18], p = ,585.
+> La corrélation entre le score de qualité du sommeil et l'âge était r(187) = 0,04, IC 95 % [−0,10 ; 0,18], p = ,585.
 
 ## 7. Régression linéaire — prédire une variable continue
 

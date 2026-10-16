@@ -21,6 +21,7 @@ Toute nouvelle dépendance est ajoutée à ce tableau après vérification de sa
 | openpyxl | Écriture du codebook Excel ; lecture des bases Excel (v0.2) | MIT | Oui | 7 |
 | et-xmlfile | Écriture XML en flux (requis par openpyxl) | MIT | Oui | 7 |
 | pypdf | Lecture du texte des questionnaires PDF (D-017) | BSD-3-Clause | Oui | v0.2, 2 |
+| scipy | Tests statistiques des analyses du catalogue (khi-carré, corrélations, Fisher… ; D-071) | BSD-3-Clause | Oui | v0.9, 4 |
 
 ### Option « ia » : enrichissement par un modèle local
 
