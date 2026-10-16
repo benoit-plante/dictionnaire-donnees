@@ -22,6 +22,9 @@ Toute nouvelle dépendance est ajoutée à ce tableau après vérification de sa
 | et-xmlfile | Écriture XML en flux (requis par openpyxl) | MIT | Oui | 7 |
 | pypdf | Lecture du texte des questionnaires PDF (D-017) | BSD-3-Clause | Oui | v0.2, 2 |
 | scipy | Tests statistiques des analyses du catalogue (khi-carré, corrélations, Fisher… ; D-071) | BSD-3-Clause | Oui | v0.9, 4 |
+| statsmodels | ANOVA (Tukey), régression linéaire, facteurs d'inflation de la variance (D-071) | BSD-3-Clause | Oui | v0.9, 5 |
+| patsy, formulaic | Formules de modèles (requis par statsmodels) | BSD-2-Clause, MIT | Oui | v0.9, 5 |
+| interface-meta, wrapt | Utilitaires (requis par formulaic) | MIT, BSD-2-Clause | Oui | v0.9, 5 |
 
 ### Option « ia » : enrichissement par un modèle local
 

@@ -10,7 +10,8 @@ import math
 import pandas as pd
 from scipy import stats
 
-from ddict.analysis import conditions
+from ddict.analysis import conditions, models
+from ddict.analysis.book import Codebook
 from ddict.analysis.catalogue import CATALOGUE
 from ddict.analysis.data import PreparedData
 from ddict.analysis.results import (
@@ -21,45 +22,13 @@ from ddict.analysis.results import (
     number,
     p_part,
 )
-from ddict.export import wording as w
 from ddict.i18n import _
 from ddict.project.model import Project
-from ddict.questionnaire.labels import accepted_labels
 
 SMALL = conditions.SMALL
 
 
-class AnalysisRefused(Exception):
-    """The conditions refuse the analysis; `check` holds the reasons."""
-
-    def __init__(self, check: conditions.Check) -> None:
-        super().__init__("; ".join(check.refusals))
-        self.check = check
-
-
-# --- What the codebook says of a variable, by its final name. ---
-
-
-class Codebook:
-    def __init__(self, project: Project, prepared: PreparedData) -> None:
-        self.entries = {w.final_name(e): e for e in project.variables}
-        self.levels = conditions.levels(project)
-        self.prepared = prepared
-
-    def label(self, name: str) -> str:
-        entry = self.entries.get(name)
-        if entry is None:
-            group = self.prepared.scores.get(name)
-            return _("{name} (score de {group})").format(name=name, group=group) if group else name
-        return w.label_text(entry, "final") or name
-
-    def value_labels(self, name: str) -> dict:
-        entry = self.entries.get(name)
-        return {lab.code: lab.label for lab in accepted_labels(entry)} if entry else {}
-
-    def category(self, name: str, code) -> str:
-        labels = self.value_labels(name)
-        return labels.get(code, w.code_text(code))
+AnalysisRefused = conditions.AnalysisRefused
 
 
 def _options(key: str, options: dict[str, str] | None) -> dict[str, str]:
@@ -247,7 +216,14 @@ def chi_square(project, prepared, chosen, options) -> AnalysisResult:
                           warnings)  # fmt: skip
 
 
-COMPUTE = {"table1": table1, "correlation": correlation, "chi_square": chi_square}
+COMPUTE = {
+    "table1": table1,
+    "t_test": models.t_test,
+    "anova": models.anova,
+    "chi_square": chi_square,
+    "correlation": correlation,
+    "regression": models.regression,
+}
 
 
 def run(

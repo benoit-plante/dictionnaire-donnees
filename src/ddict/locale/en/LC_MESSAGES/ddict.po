@@ -644,6 +644,9 @@ msgstr "Suspect codes"
 msgid "Codes suspects à confirmer : {n}"
 msgstr "Suspect codes to confirm: {n}"
 
+msgid "Comparaisons deux à deux (Tukey)"
+msgstr "Pairwise comparisons (Tukey)"
+
 msgid "Complétude"
 msgstr "Completeness"
 
@@ -664,6 +667,9 @@ msgstr "Tip: first accept the glossary and review the proposed links; the model 
 
 msgid "Consigne donnée au modèle"
 msgstr "Instructions given to the model"
+
+msgid "Constante"
+msgstr "Intercept"
 
 msgid "Contexte (Markdown)"
 msgstr "Context (Markdown)"
@@ -786,6 +792,9 @@ msgstr "Working: with the pending proposals, marked as such"
 msgid "Dernier rapport : {name}"
 msgstr "Last report: {name}"
 
+msgid "Des prédicteurs sont redondants (l'un se déduit exactement des autres) : retirez-en un."
+msgstr "Some predictors are redundant (one follows exactly from the others): remove one."
+
 msgid "Description"
 msgstr "Description"
 
@@ -804,6 +813,13 @@ msgstr ""
 
 msgid "Dictionnaire de données"
 msgstr "Data dictionary"
+
+msgid "Différence"
+msgstr "Difference"
+
+#, python-brace-format
+msgid "Distribution peu normale pour {group} (Shapiro-Wilk {p}) avec moins de {n} personnes."
+msgstr "Distribution far from normal for {group} (Shapiro-Wilk {p}) with fewer than {n} people."
 
 msgid "Donnez un nom au score."
 msgstr "Give the score a name."
@@ -839,6 +855,9 @@ msgstr "Decision impossible: {detail}"
 
 msgid "Définition"
 msgstr "Definition"
+
+msgid "ET"
+msgstr "SE"
 
 msgid "Effacer la liste"
 msgstr "Clear the list"
@@ -1350,6 +1369,14 @@ msgstr ""
 "For each variable, the model chooses its question among the computed candidates ({n} variables "
 "have some), and answers with an identifier."
 
+#, python-brace-format, python-format
+msgid ""
+"Le modèle expliquait {pct} % de la variance de {outcome}, F({df1}, {df2}) = {f}, {p}, R² ajusté ="
+" {adj} (n = {n})."
+msgstr ""
+"The model explained {pct}% of the variance of {outcome}, F({df1}, {df2}) = {f}, {p}, adjusted R² "
+"= {adj} (n = {n})."
+
 msgid ""
 "Le modèle n'a pas répondu à temps. Sur un ordinateur sans carte graphique, réduisez la taille des"
 " blocs."
@@ -1515,6 +1542,9 @@ msgstr "List cleared."
 
 msgid "Longueur maximale des noms"
 msgstr "Maximum length of the names"
+
+msgid "M (ÉT)"
+msgstr "M (SD)"
 
 msgid "M (ÉT) ou effectif (%)"
 msgstr "M (SD) or count (%)"
@@ -1860,8 +1890,15 @@ msgstr "Proposed by the model"
 msgid "Provenance"
 msgstr "Provenance"
 
+msgid "Prédicteur"
+msgstr "Predictor"
+
 msgid "Prédicteurs"
 msgstr "Predictors"
+
+#, python-brace-format
+msgid "Prédicteurs très liés entre eux (VIF > {v}) : {names}."
+msgstr "Predictors closely related to each other (VIF > {v}): {names}."
 
 msgid "Préfixe des noms de ses items"
 msgstr "Prefix of its items' names"
@@ -2092,6 +2129,10 @@ msgstr ""
 
 msgid "Réservés aux personnes ; l'étendue et les seuils exigent une source."
 msgstr "For people only; the range and the thresholds require a source."
+
+#, python-brace-format
+msgid "Résidus peu normaux (Shapiro-Wilk {p}) avec moins de {n} observations."
+msgstr "Residuals far from normal (Shapiro-Wilk {p}) with fewer than {n} observations."
 
 msgid "Révision du dictionnaire"
 msgstr "Data dictionary review"
@@ -2500,6 +2541,14 @@ msgstr "Variables without a question: {n}"
 
 msgid "Variables sensibles"
 msgstr "Sensitive variables"
+
+#, python-brace-format
+msgid "Variances inégales (Levene {p}) : le test de Welch convient mieux."
+msgstr "Unequal variances (Levene {p}): Welch's test fits better."
+
+#, python-brace-format
+msgid "Variances inégales entre les groupes (Levene {p})."
+msgstr "Unequal variances between the groups (Levene {p})."
 
 msgid "Variantes d'écriture d'une même réponse"
 msgstr "Spelling variants of a same answer"
@@ -3206,6 +3255,28 @@ msgid "{old} n'est plus dans ce filtre ; voici la variable suivante : {new}."
 msgstr "{old} is no longer in this filter; here is the next variable: {new}."
 
 #, python-brace-format
+msgid ""
+"{outcome} : M = {m1} (ÉT = {s1}) pour {g1} et M = {m2} (ÉT = {s2}) pour {g2}, t({df}) = {t}, {p},"
+" d = {d}, {ci}."
+msgstr ""
+"{outcome}: M = {m1} (SD = {s1}) for {g1} and M = {m2} (SD = {s2}) for {g2}, t({df}) = {t}, {p}, d"
+" = {d}, {ci}."
+
+#, python-brace-format
+msgid "{outcome} : médiane de {m1} pour {g1} et de {m2} pour {g2}, U = {u}, {p}, r = {r} (n = {n})."
+msgstr "{outcome}: median of {m1} for {g1} and of {m2} for {g2}, U = {u}, {p}, r = {r} (n = {n})."
+
+#, python-brace-format
+msgid ""
+"{outcome} selon {group} : F({df1}, {df2}) = {f}, {p}, η² = {eta}, ω² = {omega} ; moyennes : "
+"{means}."
+msgstr "{outcome} by {group}: F({df1}, {df2}) = {f}, {p}, η² = {eta}, ω² = {omega}; means: {means}."
+
+#, python-brace-format
+msgid "{outcome} selon {group} : H({df}) = {h}, {p}, ε² = {e} (n = {n})."
+msgstr "{outcome} by {group}: H({df}) = {h}, {p}, ε² = {e} (n = {n})."
+
+#, python-brace-format
 msgid "{program} : préparation"
 msgstr "{program}: preparation"
 
@@ -3278,6 +3349,9 @@ msgstr "To check"
 #, python-brace-format
 msgid "À vérifier : {qid} ({reasons})."
 msgstr "To check: {qid} ({reasons})."
+
+msgid "Écart"
+msgstr "Gap"
 
 msgid "Écart-type"
 msgstr "Standard deviation"

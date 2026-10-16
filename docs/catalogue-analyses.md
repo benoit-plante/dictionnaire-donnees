@@ -49,7 +49,7 @@
 | **Conditions (refus)** | la variable dépendante est continue et n'est ni un identifiant ni un texte ; au moins 2 personnes par groupe ; pas une base en format long où une même personne serait dans les deux groupes |
 | **Options** | **Welch** (par défaut : ne suppose pas des variances égales) ou Student ; bilatéral (par défaut) ou unilatéral ; **Mann-Whitney** (non paramétrique) |
 | **Calcul** | `scipy.stats.ttest_ind` ; Levene (`scipy.stats.levene`, centré sur la médiane) ; Shapiro-Wilk par groupe ; `scipy.stats.mannwhitneyu` |
-| **Taille d'effet** | **d de Cohen** = (M₁ − M₂) / ÉT combiné, ÉT combiné = √[((n₁−1)s₁² + (n₂−1)s₂²) / (n₁+n₂−2)] ; IC 95 % par la loi t non centrale. Mann-Whitney : **corrélation bisériale de rang** r = 1 − 2U / (n₁n₂) |
+| **Taille d'effet** | **d de Cohen** = (M₁ − M₂) / ÉT combiné, ÉT combiné = √[((n₁−1)s₁² + (n₂−1)s₂²) / (n₁+n₂−2)] ; IC 95 % par la loi t non centrale. Mann-Whitney : **corrélation bisériale de rang** r = 2U₁ / (n₁n₂) − 1, U₁ étant la statistique du premier groupe (positive quand il est plus haut) |
 | **Avertissements** | un groupe de moins de 5 personnes ; Shapiro-Wilk p < ,05 avec un petit groupe (moins de 30) ; Levene p < ,05 avec l'option Student |
 | **Équivalent R** | `t.test(…, var.equal = FALSE)`, `wilcox.test` ; d et son intervalle par la loi t non centrale (`pt`, `uniroot`) |
 
@@ -62,7 +62,7 @@
 
 t(172,26) = 0,18, p = ,861 ; différence des moyennes 0,20, IC 95 % [−2,00 ; 2,39] ; d = 0,03, IC 95 % [−0,27 ; 0,32]. Levene : p = ,377 ; Shapiro-Wilk : p = ,089 et ,182. 14 participants écartés (score ou genre manquant, ou autre identité).
 
-> Le score moyen de qualité du sommeil était de 23,69 (ÉT = 7,86) chez les femmes et de 23,50 (ÉT = 7,18) chez les hommes, t(172,26) = 0,18, p = ,861, d = 0,03, IC 95 % [−0,27 ; 0,32].
+> Score de qualité du sommeil : M = 23,69 (ÉT = 7,86) pour Femme et M = 23,50 (ÉT = 7,18) pour Homme, t(172,26) = 0,18, p = ,861, d = 0,03, IC 95 % [−0,27 ; 0,32].
 
 ## 4. ANOVA à un facteur — comparer plusieurs groupes
 
@@ -82,7 +82,7 @@ F(2, 185) = 1,05, p = ,351 ; η² = 0,01, ω² = 0,00. Moyennes : femmes 23,69 (
 
 > ⚠ Le groupe « Autre identité » compte 2 personnes : sa moyenne est très incertaine, et l'analyse repose presque entièrement sur les deux autres groupes.
 
-> Le score moyen de qualité du sommeil était de 23,69 chez les femmes (n = 109), 23,50 chez les hommes (n = 77) et 15,86 chez les personnes d'une autre identité (n = 2), F(2, 185) = 1,05, p = ,351, η² = 0,01.
+> Score de qualité du sommeil selon le genre : F(2, 185) = 1,05, p = ,351, η² = 0,01, ω² = 0,00 ; moyennes : Femme 23,69 (n = 109) ; Homme 23,50 (n = 77) ; Autre identité 15,86 (n = 2).
 
 ## 5. Khi-carré — associer deux variables catégorielles
 
@@ -133,7 +133,7 @@ r = 0,04, IC 95 % [−0,10 ; 0,18], p = ,585 ; Spearman : ρ = 0,03, p = ,732.
 | | |
 |---|---|
 | **Rôles** | une variable dépendante continue ; un ou plusieurs prédicteurs continus ou catégoriels (codés en indicatrices, la première modalité en référence) |
-| **Conditions (refus)** | la variable dépendante est continue ; au moins 10 observations par prédicteur |
+| **Conditions (refus)** | la variable dépendante est continue ; au moins 10 observations par prédicteur ; aucun prédicteur qui se déduit exactement des autres |
 | **Calcul** | `statsmodels` (`ols`) : coefficients, erreurs types, t, p, IC 95 % ; coefficients standardisés (β) ; R², R² ajusté, F ; facteurs d'inflation de la variance (VIF) ; normalité des résidus (Shapiro-Wilk) |
 | **Avertissements** | un VIF supérieur à 5 ; résidus nettement non normaux avec moins de 30 observations ; moins de 20 observations par prédicteur |
 | **Équivalent R** | `lm`, `summary`, `confint` ; β en standardisant les variables ; VIF par sa formule |
@@ -148,7 +148,7 @@ r = 0,04, IC 95 % [−0,10 ; 0,18], p = ,585 ; Spearman : ρ = 0,03, p = ,732.
 
 R² = 0,51, R² ajusté = 0,51, F(2, 186) = 97,43, p < ,001. VIF : 1,00 et 1,00 ; résidus : Shapiro-Wilk p = ,396.
 
-> Le modèle expliquait 51 % de la variance du score de qualité du sommeil, F(2, 186) = 97,43, p < ,001. À âge égal, chaque heure de sommeil de plus était associée à un score plus élevé de 4,93 points (IC 95 % [4,24 ; 5,63], β = 0,72) ; l'âge n'y était presque pas associé (b = −0,00, IC 95 % [−0,05 ; 0,04]).
+> Le modèle expliquait 51,2 % de la variance du score de qualité du sommeil, F(2, 186) = 97,43, p < ,001, R² ajusté = 0,51 (n = 189). Les coefficients sont dans le tableau.
 
 ## 8. Le rapport téléchargé
 

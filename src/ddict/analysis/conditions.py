@@ -38,6 +38,14 @@ class Check:
         return not self.refusals
 
 
+class AnalysisRefused(Exception):
+    """The conditions refuse the analysis; `check` holds the reasons."""
+
+    def __init__(self, check: Check) -> None:
+        super().__init__("; ".join(check.refusals))
+        self.check = check
+
+
 def levels(project: Project) -> dict[str, str | None]:
     """The measure level of each variable an analysis may use, by final name: the level in
     force, and "scale" for a score of a structured scoring."""
