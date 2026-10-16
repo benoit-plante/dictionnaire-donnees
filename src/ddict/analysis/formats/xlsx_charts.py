@@ -7,7 +7,8 @@ Bars of means: one bar per group, with the error bars of the 95 % interval taken
 table (plus and minus). Grouped bars: one series per row category. Scatter: the points,
 and the regression line as a second series of two points. Coefficients: horizontal bars of
 β with the error bars of their interval (Excel has no dot plot that keeps the predictors'
-names on the axis).
+names on the axis). The flow of participants (v0.12, D-098): the table of its counts, with
+no chart (Excel has no chart for a flow diagram).
 """
 
 from __future__ import annotations
@@ -208,7 +209,27 @@ def _floor(low: float, high: float) -> float:
     return math.floor(low / step) * step
 
 
-DRAW = {"bars": _bars, "grouped_bars": _grouped, "scatter": _scatter, "coefficients": _coefficients}
+def _flow(sheet, figure: ApaFigure):
+    """The counts of the flow diagram, editable: the answers received, each rule, the
+    sample analysed."""
+    rows = [["", figure.x_label, None, figure.flow_start]]
+    rows += [[s.rule, s.reason, s.excluded, s.remaining] for s in figure.flow]
+    excluded = sum(s.excluded for s in figure.flow)
+    analysed = figure.flow[-1].remaining if figure.flow else figure.flow_start
+    rows.append(["", figure.y_label, excluded, analysed])
+    last = _write_rows(sheet, [_("Étape"), _("Raison"), _("Exclues"), _("Restantes")], rows)
+    for column in (1, 2, 3, 4):
+        sheet.cell(row=last, column=column).font = Font(bold=True)
+    return None, last
+
+
+DRAW = {
+    "bars": _bars,
+    "grouped_bars": _grouped,
+    "scatter": _scatter,
+    "coefficients": _coefficients,
+    "flow": _flow,
+}
 
 
 def _figure(book: Workbook, figure: ApaFigure) -> None:
@@ -218,16 +239,20 @@ def _figure(book: Workbook, figure: ApaFigure) -> None:
     sheet["A2"] = figure.title
     sheet["A2"].font = Font(italic=True)
     chart, last = DRAW[figure.kind](sheet, figure)
-    if figure.kind == "coefficients":  # horizontal bars: Excel's axes are the other way round
-        _axes(chart, figure, figure.y_label, figure.x_label)
-    else:
-        _axes(chart, figure, figure.x_label, figure.y_label)
-    sheet.add_chart(chart, f"{CHART_COLUMN}{FIRST_ROW - 1}")
+    if chart is not None:  # the flow has its table only
+        if figure.kind == "coefficients":  # horizontal bars: Excel's axes the other way round
+            _axes(chart, figure, figure.y_label, figure.x_label)
+        else:
+            _axes(chart, figure, figure.x_label, figure.y_label)
+        sheet.add_chart(chart, f"{CHART_COLUMN}{FIRST_ROW - 1}")
     note = sheet.cell(row=last + 2, column=1, value=f"{_('Note.')} {plain(figure.note)}".strip())
     note.font = Font(italic=False)
     sheet.column_dimensions["A"].width = 28
     for letter in "BCDE":
         sheet.column_dimensions[letter].width = 14
+    if figure.kind == "flow":  # the reasons
+        sheet.column_dimensions["A"].width = 10
+        sheet.column_dimensions["B"].width = 48
 
 
 def render(found: ApaDocument) -> bytes:

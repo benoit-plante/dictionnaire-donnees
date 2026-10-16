@@ -150,7 +150,17 @@ class ApaTable:
     note: Text = ()
 
 
-FigureKind = Literal["bars", "grouped_bars", "scatter", "coefficients"]
+FigureKind = Literal["bars", "grouped_bars", "scatter", "coefficients", "flow"]
+
+
+@dataclass(frozen=True)
+class FlowStep:
+    """A rule of the flow of participants (v0.12, D-098): who it excluded, who remain."""
+
+    rule: str  # "E1"
+    reason: str
+    excluded: int
+    remaining: int
 
 
 @dataclass(frozen=True)
@@ -178,6 +188,8 @@ class ApaFigure:
     y_max: float | None = None
     reference: float | None = None  # coefficients: the dashed line, at 0
     note: Text = ()
+    flow_start: int = 0  # flow (v0.12): the answers received, then each rule
+    flow: tuple[FlowStep, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -921,3 +933,36 @@ def edited(document: ApaDocument, edits: dict[str, Edit]) -> ApaDocument:
         tables=tuple(apply(t) for t in document.tables),
         figures=tuple(apply(f) for f in document.figures),
     )
+
+
+# --- The flow of participants (v0.12, step 4, D-098). ---
+
+
+def describe_flow(project: Project, flow, *, number: int = 1, language: str | None = None):
+    """The flow diagram of the exclusion rules, as a figure: the answers received, each
+    rule in its rank with who it excluded, the sample analysed. `flow` is
+    `PreparedData.flow`; None without a rule (no diagram, D-098)."""
+    if flow is None or not flow.excluded:
+        return None
+    reasons = {rule.id: rule.reason for rule in project.exclusions.rules}
+    with i18n.using(language):
+        steps, remaining = [], flow.start
+        for rule, excluded in flow.excluded:
+            remaining -= excluded
+            steps.append(FlowStep(rule, reasons.get(rule, rule), excluded, remaining))
+        return ApaFigure(
+            key="figure-flow",
+            number=number,
+            title=_("Flux des participants"),
+            kind="flow",
+            x_label=_("Réponses reçues"),
+            y_label=_("Échantillon analysé"),
+            note=rich(
+                _(
+                    "Les exclusions sont appliquées dans l'ordre ; une personne n'est "
+                    "comptée que par la première raison qui l'exclut."
+                )
+            ),
+            flow_start=flow.start,
+            flow=tuple(steps),
+        )

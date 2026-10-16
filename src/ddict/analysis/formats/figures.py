@@ -113,8 +113,102 @@ def _coefficients(ax, figure: ApaFigure) -> None:
 DRAW = {"bars": _bars, "grouped_bars": _grouped, "scatter": _scatter, "coefficients": _coefficients}
 
 
+# --- The flow of participants (v0.12, D-098): boxes and arrows, in centimetres. ---
+
+LINE_CM = 0.5  # the height of a line of text
+BOX_PAD_CM = 0.3
+LEFT_CENTRE, LEFT_WIDTH = 3.4, 6.6
+RIGHT_FROM, RIGHT_WIDTH = 7.6, 8.3
+WRAP = 38  # characters of a line of the exclusions box, its count included
+NBSP = chr(0xA0)  # keeps "(n = 14)" on one line
+FLOW_STYLE = {
+    **STYLE,
+    "mathtext.fontset": "custom",
+    "mathtext.rm": "Arial",
+    "mathtext.it": "Arial:italic",
+}
+
+
+def _count(symbol: str, value: int) -> str:
+    """ "(N = 400)", the symbol in italics."""
+    return f"($\\mathit{{{symbol}}}$ = {value})"
+
+
+def _escaped(text: str) -> str:
+    return text.replace("$", "\\$")
+
+
+def _box(ax, x: float, y: float, width: float, height: float) -> None:
+    from matplotlib.patches import Rectangle
+
+    ax.add_patch(Rectangle((x, y), width, height, fill=False, edgecolor="black", linewidth=0.8))
+
+
+def _arrow(ax, start: tuple[float, float], end: tuple[float, float]) -> None:
+    ax.annotate(
+        "",
+        xy=end,
+        xytext=start,
+        arrowprops={"arrowstyle": "-|>", "color": "black", "linewidth": 0.8, "shrinkA": 0,
+                    "shrinkB": 0},
+    )  # fmt: skip
+
+
+def _flow_lines(figure: ApaFigure) -> list[tuple[str, bool]]:
+    """The lines of the exclusions box: its heading, then each reason (wrapped)."""
+    import textwrap
+
+    from ddict.i18n import _
+
+    total = sum(step.excluded for step in figure.flow)
+    lines = [(f"{_escaped(_('Exclues'))} {_count('n', total)}", False)]
+    for step in figure.flow:
+        count = f"(n{NBSP}={NBSP}{step.excluded})"  # counted as it shows, never cut
+        wrapped = textwrap.wrap(f"{_escaped(step.reason)} {count}", WRAP)
+        wrapped[-1] = wrapped[-1].replace(count, _count("n", step.excluded))
+        lines += [(line, True) for line in wrapped]
+    return lines
+
+
+def _flow(figure: ApaFigure, kind: str) -> bytes:
+    lines = _flow_lines(figure)
+    right_height = len(lines) * LINE_CM + 2 * BOX_PAD_CM
+    small = LINE_CM + 2 * BOX_PAD_CM
+    height = max(right_height + 2 * small + 1.0, 2 * small + 2.0)
+    analysed = figure.flow[-1].remaining if figure.flow else figure.flow_start
+    with plt.rc_context(FLOW_STYLE):
+        fig = plt.figure(figsize=(WIDTH_CM / 2.54, height / 2.54))
+        ax = fig.add_axes((0, 0, 1, 1))
+        ax.set_xlim(-0.1, WIDTH_CM + 0.1)  # a margin: the frames do not touch the edge
+        ax.set_ylim(-0.1, height + 0.1)
+        ax.axis("off")
+        left = LEFT_CENTRE - LEFT_WIDTH / 2
+        for y, text in (
+            (height - small, f"{_escaped(figure.x_label)} {_count('N', figure.flow_start)}"),
+            (0, f"{_escaped(figure.y_label)} {_count('N', analysed)}"),
+        ):
+            _box(ax, left, y, LEFT_WIDTH, small)
+            ax.text(LEFT_CENTRE, y + small / 2, text, ha="center", va="center")
+        middle = height / 2
+        bottom = middle - right_height / 2
+        _box(ax, RIGHT_FROM, bottom, RIGHT_WIDTH, right_height)
+        for i, (text, indented) in enumerate(lines):
+            y = bottom + right_height - BOX_PAD_CM - (i + 0.5) * LINE_CM
+            x = RIGHT_FROM + BOX_PAD_CM + (0.4 if indented else 0)
+            ax.text(x, y, text, ha="left", va="center")
+        _arrow(ax, (LEFT_CENTRE, height - small), (LEFT_CENTRE, small))
+        _arrow(ax, (LEFT_CENTRE, middle), (RIGHT_FROM, middle))
+        out = io.BytesIO()
+        metadata = {"Software": None} if kind == "png" else None
+        fig.savefig(out, format=kind, dpi=DPI, metadata=metadata)
+        plt.close(fig)
+    return out.getvalue()
+
+
 def image(figure: ApaFigure, language: str, kind: str = "png") -> bytes:
     """The figure drawn, as PNG (or SVG) bytes."""
+    if figure.kind == "flow":
+        return _flow(figure, kind)
     with plt.rc_context(STYLE):
         fig, ax = plt.subplots(figsize=(WIDTH_CM / 2.54, HEIGHT_CM / 2.54))
         DRAW[figure.kind](ax, figure)
