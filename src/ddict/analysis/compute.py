@@ -108,8 +108,39 @@ def table1(project, prepared, chosen, options) -> AnalysisResult:
                 )
         tables.append(Table(title, columns, rows))
     excluded = len(table) - sum(len(part) for _code, part in parts)
+    kept = table[table[group].notna()] if group else table
+    statistics = _table1_statistics(book, variables, parts if group else [], kept)
     return AnalysisResult("table1", chosen, options, len(table) - excluded, excluded, tables,
-                          warnings=warnings)  # fmt: skip
+                          statistics, warnings=warnings)  # fmt: skip
+
+
+def code_key(code) -> str:
+    """A code inside a statistic's key: "1", "2p5" for 2.5, "m9" for −9."""
+    value = float(code)
+    text = str(int(value)) if value.is_integer() else repr(value)
+    return text.replace("-", "m").replace(".", "p")
+
+
+def _table1_statistics(book: Codebook, variables: list[str], parts, kept) -> dict[str, float]:
+    """The aggregates of Table 1, by position (v0.11, D-088), for the notebook: for the
+    variable i and the column c (a group's code, or "total"), its n, and its mean and SD for
+    a scale variable or the count of each code otherwise. Never the observed range."""
+    found: dict[str, float] = {}
+    columns = [(code_key(code), part) for code, part in parts] + [("total", kept)]
+    for i, name in enumerate(variables, start=1):
+        scale = book.levels.get(name) == "scale"
+        for column, part in columns:
+            x = part[name].dropna()
+            found[f"v{i}_n_{column}"] = float(len(x))
+            if scale:
+                if len(x):
+                    found[f"v{i}_m_{column}"] = float(x.mean())
+                if len(x) > 1:
+                    found[f"v{i}_sd_{column}"] = float(x.std(ddof=1))
+            else:
+                for code, count in x.value_counts().items():
+                    found[f"v{i}_k{code_key(code)}_{column}"] = float(count)
+    return found
 
 
 # --- Correlation. ---
@@ -133,10 +164,15 @@ def correlation(project, prepared, chosen, options) -> AnalysisResult:
     method = options["method"]
     symbol = "ρ" if method == "spearman" else "r"
     rows, found = [], {}
+    statistics: dict[str, float] = {}
     for i, first in enumerate(names):
-        for second in names[i + 1 :]:
+        for j, second in enumerate(names[i + 1 :], start=i + 1):
             pair = _pair(prepared.table[first], prepared.table[second], method)
             found[(first, second)] = pair
+            # By position (v0.11, D-088): row j + 1, column i + 1 of the APA matrix.
+            for stat, value in pair.items():
+                key = {"ci_low": "low", "ci_high": "high"}.get(stat, stat)
+                statistics[f"{key}_{j + 1}_{i + 1}"] = float(value)
             ci = interval(pair["ci_low"], pair["ci_high"]) if "ci_low" in pair else ""
             rows.append([book.label(first), book.label(second), str(pair["n"]),
                          number(pair["r"]), ci, p_part(pair["p"])])  # fmt: skip
@@ -144,10 +180,10 @@ def correlation(project, prepared, chosen, options) -> AnalysisResult:
     used = prepared.table[names].dropna()
     result = AnalysisResult("correlation", chosen, options, len(used),
                             len(prepared.table) - len(used),
-                            [Table(_("Corrélations"), columns, rows)])  # fmt: skip
+                            [Table(_("Corrélations"), columns, rows)], statistics)  # fmt: skip
     if len(names) == 2:
         pair = found[(names[0], names[1])]
-        result.statistics = pair
+        result.statistics = {**pair, **statistics}
         if method == "spearman":
             result.sentence = _(
                 "La corrélation de Spearman entre {a} et {b} était ρ = {r}, {p} (n = {n})."

@@ -1,6 +1,6 @@
 # Le carnet d'analyses : la fiche
 
-> Statut : **proposé à l'auteur le 2026-10-16** (v0.11, étape 1), à valider. Plan : [`plan-v0.11.md`](plan-v0.11.md) ; décisions D-087 à D-092. Chiffres : base fictive des analyses (`etude-analyses.sav`, échelle de bien-être cotée comme le dit le corrigé), et base fictive du sommeil pour le scénario d'une décision changée après coup (§ 6).
+> Statut : **validé par l'auteur le 2026-10-16** (v0.11, étape 1), avec les six points du § 8. Plan : [`plan-v0.11.md`](plan-v0.11.md) ; décisions D-087 à D-092. Chiffres : base fictive des analyses (`etude-analyses.sav`, échelle de bien-être cotée comme le dit le corrigé), et base fictive du sommeil pour le scénario d'une décision changée après coup (§ 6).
 
 Ce document fixe le format du carnet, ce qu'il garde, comment il se recalcule, comment il numérote et comment il nomme ses fichiers. Le code des étapes 2 à 6 le suivra.
 

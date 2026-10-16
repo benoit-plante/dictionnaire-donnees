@@ -3620,6 +3620,18 @@ msgid "{name} : identifiant, texte ou date, exclu des analyses."
 msgstr "{name}: identifier, text or date, left out of the analyses."
 
 #, python-brace-format
+msgid "{name} : l'item n'est plus inversé."
+msgstr "{name}: the item is no longer reversed."
+
+#, python-brace-format
+msgid "{name} : la variable n'est plus dans le projet."
+msgstr "{name}: the variable is no longer in the project."
+
+#, python-brace-format
+msgid "{name} : le groupe n'a plus de cotation, donc plus de score."
+msgstr "{name}: the group no longer has a scoring, so no score."
+
+#, python-brace-format
 msgid "{name} : le nom {new} est déjà pris ou invalide, non inversé."
 msgstr "{name}: the name {new} is taken or invalid, not reversed."
 
@@ -3646,6 +3658,10 @@ msgstr "{name}: name refused ({why})."
 #, python-brace-format
 msgid "{name} : un groupe de moins de {n} personnes ({codes})."
 msgstr "{name}: a group of fewer than {n} people ({codes})."
+
+#, python-brace-format
+msgid "{name} : variable inconnue du projet."
+msgstr "{name}: variable unknown to the project."
 
 #, python-brace-format
 msgid "{name} : variable inconnue."
