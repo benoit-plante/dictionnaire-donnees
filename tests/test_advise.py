@@ -10,6 +10,7 @@ import httpx
 import pytest
 from streamlit.testing.v1 import AppTest
 
+import ddict.llm.advise as advise_module
 import ddict.llm.client as client_module
 from ddict.cli import main
 from ddict.llm.advice_bench import (
@@ -20,9 +21,12 @@ from ddict.llm.advice_bench import (
     summary,
 )
 from ddict.llm.advise import (
+    MAX_LABEL_CHARS,
     MAX_OBJECTIVE_CHARS,
     AdviceError,
     Proposal,
+    _common_start,
+    _short,
     advice_schema,
     advise,
     build_advice_block,
@@ -86,19 +90,45 @@ def test_the_message_holds_metadata_only(project):
     assert [a["key"] for a in content["analyses"]] == [
         "table1", "t_test", "anova", "chi_square", "correlation", "regression"
     ]  # fmt: skip
-    variables = {v["name"]: v for v in content["variables"]}
-    assert variables["bienetre_total"] == {
-        "name": "bienetre_total",
-        "label": "bienetre_total (score de G1)",
-        "level": "scale",
-        "group": "G1",
+    # D-080: the variables by measure level, each [name, label]: no value, no statistic.
+    assert set(content["variables"]) == {"scale", "ordinal", "nominal"}
+    variables = {
+        name: (level, label)
+        for level, pairs in content["variables"].items()
+        for name, label in pairs
     }
-    assert variables["bienetre_1"]["group"] == "G1"
+    assert variables["bienetre_total"] == ("scale", "bienetre_total (score de G1)")
+    assert variables["groupe"] == ("nominal", "Groupe de l'étude")
     assert "id_participant" not in variables  # an identifier: left out, as from the analyses
-    for entry in variables.values():
-        assert set(entry) <= {"name", "label", "level", "group"}  # no value, no statistic
+    # D-080: a group of items is one entry, its items by name only.
+    assert content["groups"] == [
+        {
+            "group": "G1",
+            "label": "5 items, codes de 1 à 5, préfixe « bienetre »",
+            "level": "ordinal",
+            "items": ["bienetre_1", "bienetre_2", "bienetre_3", "bienetre_4", "bienetre_5"],
+            "score": "bienetre_total",
+        }
+    ]
+    assert "bienetre_1" not in variables and "bienetre_1" in block.names
     text = block.messages[1]["content"]
     assert "Nord" not in text and "999" not in text  # no value label, no missing code
+    assert "énergique" not in text  # an item's own label is left out of its group
+
+
+def test_a_long_label_and_the_common_start_of_a_grid():
+    assert _common_start(["Au travail, je me sens calme", "Au travail, je me sens las"]) == (
+        "Au travail, je me sens"
+    )
+    assert _common_start(["Calme", "Las"]) == ""  # nothing in common: the group's description
+    assert len(_short("mot " * 40)) == MAX_LABEL_CHARS
+
+
+def test_a_base_too_large_for_the_model(project, monkeypatch):
+    monkeypatch.setattr(advise_module, "MAX_MESSAGE_TOKENS", 500)
+    with pytest.raises(AdviceError) as error:
+        build_advice_block(project, GOAL)
+    assert error.value.reason == "too_large"
 
 
 def test_the_objective_is_checked(project):

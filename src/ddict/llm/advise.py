@@ -36,11 +36,18 @@ if TYPE_CHECKING:
     from ddict.llm.client import LocalModelClient
     from ddict.llm.run import BlockResult
 
-ADVICE_PROMPT_VERSION = "advise-v1"
+ADVICE_PROMPT_VERSION = "advise-v2"
 BLOCK_ID = "a-001"
 MAX_OBJECTIVE_CHARS = 1000
 MAX_PROPOSALS = 3
 MAX_REASON_CHARS = 400
+MAX_LABEL_CHARS = 60
+MIN_COMMON_CHARS = 15  # a shorter common start of the items' labels says nothing
+# The local model reads 4,096 tokens by default (Ollama), its answer included: the message
+# keeps about 800 for the answer (D-080). Measured with qwen2.5: 3.6 characters per token
+# for this message; 3.5 stays cautious.
+MAX_MESSAGE_TOKENS = 3300
+CHARS_PER_TOKEN = 3.5
 
 AnalysisKey = Literal["table1", "t_test", "anova", "chi_square", "correlation", "regression"]
 RoleKey = Literal["variables", "group", "outcome", "rows", "columns", "predictors"]
@@ -73,7 +80,8 @@ class AdviceResponse(BaseModel):
 
 
 class AdviceError(ValueError):
-    """The objective cannot be sent; `reason`: "empty" or "too_long"."""
+    """The objective cannot be sent; `reason`: "empty", "too_long", or "too_large" when
+    the message would not fit in the local model's context."""
 
     def __init__(self, reason: str) -> None:
         super().__init__(reason)
@@ -116,29 +124,76 @@ def advice_schema(project: Project) -> dict:
     return schema
 
 
-def _groups(project: Project) -> dict[str, str]:
+def _members(project: Project) -> dict[str, list[str]]:
+    """Group id -> the final names of its members, in the order of the group."""
     names = w.names_of(project)
-    found = {
-        names[member]: group.group_id
+    return {
+        group.group_id: [names[m] for m in group.members.value or [] if m in names]
         for group in project.groups
-        for member in group.members.value or []
-        if member in names
     }
-    for score in plan(project)[1]:
-        found[score.name] = score.group
-    return found
 
 
-def _variable(name: str, level: str, entries: dict, groups: dict[str, str]) -> dict:
-    entry = entries.get(name)
-    if entry is None:  # a score
-        label = i18n._("{name} (score de {group})").format(name=name, group=groups[name])
-    else:
-        label = w.label_text(entry, "final")
-    payload = {"name": name, "label": label, "level": level}
-    if name in groups:
-        payload["group"] = groups[name]
-    return payload
+def _short(text: str) -> str:
+    text = " ".join(text.split())
+    return text if len(text) <= MAX_LABEL_CHARS else text[: MAX_LABEL_CHARS - 1] + "…"
+
+
+def _common_start(labels: list[str]) -> str:
+    """What the labels of a group's items begin with, cut at a word: often the question of
+    a grid."""
+    if len(labels) < 2:
+        return ""
+    start = labels[0]
+    for label in labels[1:]:
+        while not label.startswith(start):
+            start = start[:-1]
+    if start != labels[0] and labels[0][len(start) : len(start) + 1] != " ":
+        start = start[: start.rfind(" ")] if " " in start else ""  # not in the middle of a word
+    return start.strip(" -:–—?.") if len(start) >= MIN_COMMON_CHARS else ""
+
+
+def _content(project: Project, objective: str) -> dict:
+    """The variables by measure level, each as [name, label]; groups of items as one entry
+    each, their items by name only; labels shortened; scores with their group (D-080)."""
+    found = usable(project)
+    entries = {w.final_name(e): e for e in project.variables}
+    scores = {s.name: s.group for s in plan(project)[1]}
+    groups, grouped = [], set()
+    for group in project.groups:
+        items = [n for n in _members(project)[group.group_id] if n in found]
+        if len(items) < 2:
+            continue
+        grouped.update(items)
+        labels = [w.label_text(entries[n], "final") for n in items]
+        levels = [found[n] for n in items]
+        entry = {
+            "group": group.group_id,
+            "label": _short(_common_start(labels) or w.group_description(group, "final")),
+            "level": max(levels, key=levels.count),  # the most frequent, first on a tie
+            "items": items,
+        }
+        score = next((s for s, g in scores.items() if g == group.group_id and s in found), None)
+        if score:
+            entry["score"] = score
+        groups.append(entry)
+    variables: dict[str, list[list[str]]] = {}
+    for name, level in found.items():
+        if name in grouped:
+            continue
+        if name in scores:
+            label = i18n._("{name} (score de {group})").format(name=name, group=scores[name])
+        else:
+            label = w.label_text(entries[name], "final")
+        variables.setdefault(level, []).append([name, _short(label)])
+    content = {
+        "block": BLOCK_ID,
+        "objective": objective,
+        "analyses": [_analysis(k) for k in CATALOGUE],
+        "variables": variables,
+    }
+    if groups:
+        content["groups"] = groups
+    return content
 
 
 def _analysis(key: str) -> dict:
@@ -156,8 +211,14 @@ def _analysis(key: str) -> dict:
     return payload
 
 
+def estimated_tokens(messages: tuple[dict, ...]) -> int:
+    """A cautious estimate of the tokens the model reads."""
+    return int(sum(len(m["content"]) for m in messages) / CHARS_PER_TOKEN)
+
+
 def build_advice_block(project: Project, objective: str) -> Block:
-    """The one message of an advice: the objective, the catalogue, the usable variables."""
+    """The one message of an advice: the objective, the catalogue, the usable variables.
+    Refused when it would not fit in the local model's context (D-080)."""
     objective = objective.strip()
     if not objective:
         raise AdviceError("empty")
@@ -165,22 +226,16 @@ def build_advice_block(project: Project, objective: str) -> Block:
         raise AdviceError("too_long")
     language = project.settings.language
     with i18n.using(language):
-        groups = _groups(project)
-        entries = {w.final_name(e): e for e in project.variables}
-        content = {
-            "block": BLOCK_ID,
-            "objective": objective,
-            "analyses": [_analysis(k) for k in CATALOGUE],
-            "variables": [_variable(n, lv, entries, groups) for n, lv in usable(project).items()],
-        }
+        content = _content(project, objective)
     system = system_prompt(ADVICE_PROMPT_VERSION, language)
+    text = json.dumps(content, ensure_ascii=False, separators=(",", ":"))
+    messages = ({"role": "system", "content": system}, {"role": "user", "content": text})
+    if estimated_tokens(messages) > MAX_MESSAGE_TOKENS:
+        raise AdviceError("too_large")
     return Block(
         block_id=BLOCK_ID,
-        names=tuple(v["name"] for v in content["variables"]),
-        messages=(
-            {"role": "system", "content": system},
-            {"role": "user", "content": json.dumps(content, ensure_ascii=False, indent=1)},
-        ),
+        names=tuple(usable(project)),
+        messages=messages,
         prompt_version=recorded_version(ADVICE_PROMPT_VERSION, language),
     )
 

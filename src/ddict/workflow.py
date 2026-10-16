@@ -620,6 +620,11 @@ def advice_error_text(error) -> str:
     """Why the objective was not sent to the model (v0.9, D-079)."""
     if error.reason == "empty":
         return _("Écrivez d'abord l'objectif de l'analyse.")
+    if error.reason == "too_large":
+        return _(
+            "La base compte trop de variables pour le modèle local : le message dépasserait ce "
+            "qu'il peut lire. Rien n'a été envoyé ; choisissez l'analyse vous-même."
+        )
     from ddict.llm.advise import MAX_OBJECTIVE_CHARS
 
     return _("L'objectif est trop long : {n} caractères au plus.").format(n=MAX_OBJECTIVE_CHARS)

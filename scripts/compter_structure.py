@@ -89,6 +89,8 @@ def _structure(variables) -> dict[str, dict[int, list]]:
             kinds["single"][rank] = [v for v, _part in members]
         elif all(len(v.value_labels) == 1 for v in items):
             kinds["checkbox"][rank] = items
+        elif len(items) == 1:  # a grid of one row is a single question: no group to make
+            kinds["single"][rank] = [v for v, _part in members]
         else:
             kinds["grid"][rank] = items
     return kinds

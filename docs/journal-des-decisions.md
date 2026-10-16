@@ -975,3 +975,15 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   1. Objectif envoyé tel quel, propositions en mémoire, échange gardé (ce choix).
   2. Propositions enregistrées dans le projet, avec les autres exécutions de l'IA.
 - **Justification :** l'objectif est un texte de l'équipe, non une donnée de participant ; c'est toutefois le premier texte libre envoyé tel quel, d'où la mise en garde et la trace complète de l'échange. Garder les propositions hors du projet le laisse un dictionnaire de données.
+
+### D-080 — Le message de l'IA conseillère tient dans le contexte du modèle local
+
+- **Date :** 2026-10-16
+- **Statut :** adoptée
+- **Remplace :** — (précise D-079)
+- **Décision :** le message de l'IA conseillère est raccourci pour tenir dans les 4 096 jetons que lit par défaut le modèle local, réponse comprise (consigne `advise-v2`). Les variables sont rangées par niveau de mesure, chacune sous la forme [nom, libellé] ; un groupe d'items forme une seule entrée (son libellé, le niveau de ses items, les noms de ses items sans leurs libellés, et son score s'il est calculé) ; les libellés sont coupés à 60 caractères ; le JSON est compact. Si le message dépasse encore environ 3 300 jetons (estimés à 3,5 caractères par jeton ; 3,6 mesurés avec qwen2.5), rien n'est envoyé et l'outil invite à choisir l'analyse soi-même, plutôt que d'envoyer un message que le modèle lirait coupé.
+- **Options considérées :**
+  1. Un message plus court et une limite vérifiée avant l'envoi (ce choix).
+  2. Demander d'agrandir le contexte du serveur local (réglage d'Ollama), une étape d'installation de plus.
+  3. Envoyer le message entier, au risque que le modèle n'en lise qu'une partie sans le dire.
+- **Justification :** une base réelle de 252 variables donnait un message d'environ 10 000 jetons au format de la v1 ; il en compte environ 3 000 au nouveau format. Sur le banc des 13 objectifs, le 7B passe de 11 à 10 propositions justes au premier rang ; les deux écarts restent défendables.
