@@ -1216,3 +1216,103 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   2. Recalculés à chaque export sans confirmation.
 - **Justification :** Le même principe pour tout le document : un chiffre ne change pas sans être vu.
 - **Références :** `docs/plan-v0.12.md`, § 2 et § 8.
+
+### D-101 — Où vit le plan d'analyse
+
+- **Date :** 2026-10-17
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Le plan d'analyse (règles générales et hypothèses) est gardé dans le projet, format 0.5.0 ; un projet 0.4.0 s'ouvre tel quel, sans plan. Ses variables sont désignées par leur clé du projet (nom d'origine, groupe d'un score, item inversé), comme dans le carnet. Le plan a sa propre empreinte, distincte de celle du codebook : l'écrire ne rend aucune analyse « changée, à confirmer ». Il ne contient aucune valeur des données ni aucun résultat.
+- **Options considérées :**
+  1. Dans le projet (ce choix).
+  2. Dans le carnet, à côté des analyses.
+  3. Dans un fichier à part.
+- **Justification :** Le plan est fait de décisions de l'équipe, comme le codebook et les règles d'exclusion ; le carnet garde les résultats (D-087).
+- **Références :** `docs/plan-v0.13.md`, § 3 et § 9.
+
+### D-102 — Gel du plan, amendements et honnêteté sur les dates
+
+- **Date :** 2026-10-17
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Figer le plan lui donne une date et une empreinte. Le gel n'interdit rien : ensuite, toute modification ou tout retrait d'une hypothèse exige une raison et devient un amendement daté, gardé et dit dans la Méthode. La Méthode dit la date du plan et, le cas échéant, qu'une analyse prévue avait déjà été calculée dans le carnet avant le gel. L'outil n'écrit jamais « préenregistré » : c'est l'équipe qui dépose.
+- **Options considérées :**
+  1. Gel avec amendements tracés et dates dites (ce choix).
+  2. Gel qui interdit toute modification.
+  3. Pas de gel.
+- **Justification :** La base existe déjà quand l'outil s'ouvre ; l'outil ne peut pas savoir ce que l'équipe a vu avant d'écrire son plan, mais il peut ne rien prétendre et dire ce qu'il sait.
+- **Références :** `docs/plan-v0.13.md`, § 2, § 3 et § 9.
+
+### D-103 — Effet testé et sens attendu d'une hypothèse
+
+- **Date :** 2026-10-17
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Une hypothèse porte sur un seul *p*, désigné par son effet testé parmi ceux de son analyse (la différence d'un test *t*, l'effet global d'une ANOVA, une paire d'une corrélation, le modèle ou un prédicteur d'une régression…). Le Tableau 1 ne peut pas porter une hypothèse. Le sens attendu, facultatif, règle le test unilatéral seulement là où le catalogue l'offre déjà (test *t*) ; ailleurs, le test reste bilatéral et le sens n'est que rappelé.
+- **Options considérées :**
+  1. Un seul *p* par hypothèse, désigné (ce choix).
+  2. Tous les *p* d'une analyse rattachés à l'hypothèse.
+- **Justification :** La correction pour comparaisons multiples et le rappel de la Discussion exigent de savoir quel *p* répond à quelle hypothèse.
+- **Références :** `docs/plan-v0.13.md`, § 4 et § 9.
+
+### D-104 — Correction pour comparaisons multiples
+
+- **Date :** 2026-10-17
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Holm par défaut dans chaque famille déclarée, Bonferroni au choix ; aucune correction pour une hypothèse sans famille ou seule dans la sienne, ni pour une analyse exploratoire. Les *p* bruts et corrigés figurent tous deux dans les tableaux et la phrase de résultat. Le *p* corrigé est gardé et confirmé dans le carnet comme les autres statistiques (D-089). Vérifié contre `p.adjust` de R.
+- **Options considérées :**
+  1. Holm par défaut, Bonferroni au choix (ce choix).
+  2. Bonferroni seulement.
+  3. Ajouter Benjamini-Hochberg.
+- **Justification :** Holm contrôle la même erreur que Bonferroni en étant toujours au moins aussi puissant ; le taux de fausses découvertes convient mal à des hypothèses confirmatoires peu nombreuses.
+- **Références :** `docs/plan-v0.13.md`, § 4 et § 9.
+
+### D-105 — Le gabarit de préenregistrement
+
+- **Date :** 2026-10-17
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Un seul gabarit dans la v0.13 : les rubriques OSF pour l'analyse de données secondaires (Van den Akker et al., 2021), adaptées à une base existante, si leur licence le permet (vérifiée à l'étape 1 et notée dans `docs/dependances.md`) ; sinon, des rubriques propres à l'outil. Le préenregistrement est rempli à partir du plan et du codebook, sans aucun effectif ni résultat ; la connaissance préalable des données est toujours un trou. Il est écrit à côté du projet, en Word et en Markdown, et n'est déposé nulle part par l'outil.
+- **Options considérées :**
+  1. OSF pour données secondaires (ce choix).
+  2. AsPredicted.
+  3. OSF Prereg standard.
+- **Justification :** L'outil part toujours d'une base existante ; les autres gabarits supposent une collecte à venir.
+- **Références :** `docs/plan-v0.13.md`, § 6 et § 9.
+
+### D-106 — L'ébauche d'article
+
+- **Date :** 2026-10-17
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Le document « Méthode et Résultats » (D-099) devient `<projet>-article.docx`, une ébauche IMRaD complète, avec `-article-graphiques.xlsx` et `-article-R.zip`. `ddict resultats` reste un autre nom de `ddict article` pendant une version. Les Références recopient les sources du codebook telles que l'équipe les a écrites, triées, sans reformatage.
+- **Options considérées :**
+  1. Un seul document renommé en article (ce choix).
+  2. Garder `-resultats.docx` et ajouter `-article.docx`.
+- **Justification :** Ne pas multiplier les fichiers (D-099) ; l'outil ne connaît ni les auteurs ni l'année d'une source avec certitude et ne peut donc pas la mettre en forme APA.
+- **Références :** `docs/plan-v0.13.md`, § 2 et § 9.
+
+### D-107 — La Discussion
+
+- **Date :** 2026-10-17
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Pour chaque hypothèse, la Discussion rappelle son énoncé, le sens observé et la phrase de résultat ; l'outil n'écrit jamais « soutenue », « rejetée », « confirmée » ou « significatif » ; l'interprétation reste un trou. Un test cherche ces mots dans les deux langues.
+- **Options considérées :**
+  1. Rappel descriptif, sans issue (ce choix).
+  2. Issue déduite du seuil α.
+- **Justification :** Le sens observé est un fait ; dire s'il confirme l'hypothèse est un jugement qui revient à l'équipe (principe de la phrase qui décrit sans juger, D-077).
+- **Références :** `docs/plan-v0.13.md`, § 5 et § 9.
+
+### D-108 — Reportés après la v0.13
+
+- **Date :** 2026-10-17
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Sont reportés : le calcul de puissance (la taille d'échantillon reste un texte du plan), le gabarit AsPredicted et une conseillère qui proposerait des hypothèses (la conseillère actuelle peut toujours remplir les choix de la page « Analyses »).
+- **Options considérées :**
+  1. Les reporter (ce choix).
+  2. Les inclure dans la v0.13.
+- **Justification :** Garder une version utile seule et de taille raisonnable.
+- **Références :** `docs/plan-v0.13.md`, § 9.
