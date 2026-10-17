@@ -1,6 +1,6 @@
 # Plan de la v0.13
 
-> Statut : **validé par l'auteur le 2026-10-17**, avec les décisions D-101 à D-108 (§ 9). Suit la feuille de route [`feuille-de-route-article.md`](feuille-de-route-article.md), § 6. Même cap que les v0.11 et v0.12 : de la base à une ébauche d'article IMRaD **sans aucune IA**. La v0.13 n'ajoute aucun usage de l'IA, locale ou non ; la règle « Rien ne quitte le poste » reste entière ; l'IA conseillère reste telle quelle.
+> Statut : **validé par l'auteur le 2026-10-17**, avec les décisions D-101 à D-108 (§ 9) ; D-105 remplacée le même jour par D-109 (deux gabarits de préenregistrement, selon l'origine des données). Suit la feuille de route [`feuille-de-route-article.md`](feuille-de-route-article.md), § 6. Même cap que les v0.11 et v0.12 : de la base à une ébauche d'article IMRaD **sans aucune IA**. La v0.13 n'ajoute aucun usage de l'IA, locale ou non ; la règle « Rien ne quitte le poste » reste entière ; l'IA conseillère reste telle quelle.
 
 ## 1. Pourquoi cette version
 
@@ -117,7 +117,7 @@ Le **sens observé** est un fait (« plus élevée », « positive ») ; dire s'
 
 ## 6. Conception — le préenregistrement
 
-Un seul gabarit dans cette version (D-105), conçu pour une **base existante** : les rubriques du gabarit OSF pour l'analyse de données secondaires (Van den Akker et al., 2021), dont la licence sera vérifiée à l'étape 1 et notée dans `docs/dependances.md`. Le gabarit AsPredicted, pensé pour une collecte à venir, attend.
+*Remplacé par D-109 : deux gabarits, OSF Prereg pour des données primaires et van den Akker et al. pour des données secondaires ; voir la fiche, § 8.* Version d'origine : un seul gabarit dans cette version (D-105), conçu pour une **base existante** : les rubriques du gabarit OSF pour l'analyse de données secondaires (Van den Akker et al., 2021), dont la licence sera vérifiée à l'étape 1 et notée dans `docs/dependances.md`. Le gabarit AsPredicted, pensé pour une collecte à venir, attend.
 
 Rempli à partir de l'outil :
 

@@ -1316,3 +1316,17 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   2. Les inclure dans la v0.13.
 - **Justification :** Garder une version utile seule et de taille raisonnable.
 - **Références :** `docs/plan-v0.13.md`, § 9.
+
+### D-109 — Deux gabarits de préenregistrement, selon l'origine des données
+
+- **Date :** 2026-10-17
+- **Statut :** adoptée
+- **Remplace :** D-105
+- **Décision :** Le plan reçoit deux champs déclarés par l'équipe et exigés pour le figer : l'origine des données (primaires ou secondaires) et leur état quand le plan a été écrit, selon les cinq réponses du gabarit OSF Prereg (avant leur création, avant toute observation, avant l'accès, avant l'analyse, après une analyse). Le préenregistrement suit le gabarit OSF Prereg (Bowman et al., 2020, CC0 1.0) pour des données primaires et celui de van den Akker et al. (2021, CC BY 4.0) pour des données secondaires, traduits en français, avec la même mention d'origine en tête. La Méthode écrit l'origine et l'état comme une déclaration de l'équipe (« selon l'équipe »), à côté de la date du gel dans l'outil. Le reste de D-105 demeure : aucun effectif ni résultat, connaissance préalable des données toujours en trou, rien n'est déposé par l'outil. Partir d'un export d'essai de la plateforme pour écrire le plan avant la collecte, puis brancher la vraie base, est reporté.
+- **Options considérées :**
+  1. Deux gabarits choisis par l'origine des données (ce choix).
+  2. Le seul gabarit pour données secondaires (D-105).
+  3. Ajouter AsPredicted.
+- **Justification :** Remarque de l'auteur : les données ne sont pas toujours secondaires. Ce qui compte est ce que l'équipe savait des données en écrivant son plan ; le gabarit OSF Prereg le demande explicitement et convient aux données primaires. La licence d'AsPredicted n'est pas claire.
+- **Conséquences :** l'export d'essai demandera de rattacher un projet et son carnet à une nouvelle version de la base (aujourd'hui, le carnet refuse une autre base) : une décision à part, plus tard.
+- **Références :** `docs/plan-analyse-article.md`, § 8 ; `docs/dependances.md`, contenus tiers.

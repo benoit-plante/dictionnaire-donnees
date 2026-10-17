@@ -83,3 +83,12 @@ Installée seulement sur demande (`pip install "ddict[revision]"`, ou `uv sync -
 
 - **R et son paquet haven** (R : GNU GPL ; haven : MIT). Ils écrivent la version SAS de la base fictive (`scripts/generer_sas.R`), que Python ne sait pas écrire ; le fichier produit est gardé dans le dépôt (v0.2, étape 8). Depuis la v0.4 (étape 3), un test exécute aussi le script R produit par l'outil sur la base fictive CSV.
 - **PSPP** (GNU GPL, D-027 ; essayé avec PSPP 2.1.2 pour Windows). Un test y exécute la syntaxe SPSS produite par l'outil (v0.4, étape 3).
+
+## Contenus tiers
+
+Textes repris ou adaptés dans les documents que l'outil produit ; aucun code.
+
+| Contenu | Usage | Licence | Compatible Apache-2.0 | Ajouté |
+|---|---|---|---|---|
+| Questions du gabarit de préenregistrement pour l'analyse de données secondaires (van den Akker et al., 2021, *Meta-Psychology*, 5, https://doi.org/10.15626/MP.2020.2625) | Les 25 questions et la déclaration d'intégrité, traduites en français et abrégées, dans le préenregistrement de données secondaires (D-109) ; attribution et mention de l'adaptation en tête du document | CC BY 4.0 (vérifiée le 2026-10-17 sur la page de la revue et dans l'article) | Oui, avec attribution | v0.13, 1 |
+| Questions du gabarit OSF Prereg (Bowman et al., 2020, MetaArXiv, https://doi.org/10.31222/osf.io/epgjd) | Les questions et les cinq réponses sur l'état des données, traduites en français et abrégées, dans le préenregistrement de données primaires et dans le champ `data_status` du plan (D-109) ; mention d'origine en tête du document | CC0 1.0 (vérifiée le 2026-10-17 dans les métadonnées de l'OSF) | Oui | v0.13, 1 |
