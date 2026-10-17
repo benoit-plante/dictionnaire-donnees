@@ -150,10 +150,11 @@ Une statistique exactement nulle donne « était nulle » ; deux moyennes égale
 
 **Figer le plan** :
 
-1. vérifie chaque hypothèse (§ 2) ; une seule refusée bloque le gel, avec sa raison ;
-2. exige `alpha`, `data_origin` et `data_status` ;
-3. écrit `"frozen": {"date": "2026-10-20", "fingerprint": "3f9c…", "prior": [...]}` ;
-4. lie chaque hypothèse à une entrée du carnet (§ 6).
+1. exige la base ouverte : chaque hypothèse devient une analyse du carnet, et une entrée n'existe qu'avec son calcul (« Ouvrez la base pour figer le plan : chaque hypothèse devient une analyse du carnet. ») ;
+2. vérifie chaque hypothèse sur la base (§ 2) ; une seule refusée bloque le gel, avec sa raison ;
+3. exige `alpha`, `data_origin` et `data_status` ;
+4. écrit `"frozen": {"date": "2026-10-20", "fingerprint": "3f9c…", "prior": [...]}` ;
+5. lie chaque hypothèse à une entrée du carnet (§ 6).
 
 `prior` liste les hypothèses dont l'analyse figurait déjà dans le carnet le jour du gel, avec l'identifiant et la date d'ajout de l'entrée : `{"hypothesis": "H2", "entry": "A3", "added": "2026-10-18"}`. L'outil ne sait rien des analyses faites sur la page « Analyses » sans les ajouter au carnet (D-078), ni de celles faites ailleurs : c'est pourquoi la connaissance préalable des données reste un trou du préenregistrement (§ 8).
 
@@ -168,14 +169,16 @@ Une statistique exactement nulle donne « était nulle » ; deux moyennes égale
 
 ## 6. Le rapprochement du carnet et du plan
 
-Le carnet passe en `carnet_version` 1.2.0 : une entrée peut porter `"hypothesis": "H1"`. Un carnet 1.1.0 s'ouvre tel quel.
+Le carnet passe en `carnet_version` 1.2.0 : une entrée peut porter `"hypothesis": "H1"` et, une fois remplacée, `"superseded": {"date": …, "hypothesis": "H2", "change": "modified" | "removed"}`. Un carnet 1.1.0 s'ouvre tel quel. Les variables par rôle se comparent sans tenir compte de leur ordre.
+
+**Une analyse prévue ne se retire pas du carnet** : « A5 est une analyse prévue par le plan : elle ne se retire pas du carnet. Ne la retenez plus, ou modifiez le plan. » L'outil ne perd ainsi jamais la trace de ce qui était prévu.
 
 **Au gel**, pour chaque hypothèse :
 
 - une entrée du carnet de même analyse, mêmes variables par rôle et mêmes options existe déjà → elle est liée (et notée dans `prior`) ;
 - sinon, une entrée est ajoutée à la fin du carnet, liée, retenue.
 
-**À un amendement** qui change l'analyse, les variables ou les options d'une hypothèse : l'entrée liée est déliée et n'est plus retenue ; une nouvelle entrée est ajoutée et liée. L'ancienne reste dans le carnet, avec l'état « remplacée par l'amendement du {date} ».
+**À un amendement** qui change l'analyse, les variables ou les options d'une hypothèse : l'entrée liée est déliée et n'est plus retenue ; l'hypothèse est liée à une entrée non liée qui calcule déjà exactement ce qu'elle prévoit (une variante, par exemple), sinon à une nouvelle entrée, calculée. L'ancienne reste dans le carnet, avec l'état « remplacée par l'amendement du {date} (H2) ». Une hypothèse retirée par un amendement délie la sienne : « H5 retirée du plan le {date} ». Sans la base, une hypothèse nouvelle attend : « H6 : l'analyse prévue sera calculée quand la base sera ouverte. »
 
 **L'état de chaque entrée**, montré sur la page « Carnet » et par `ddict carnet lister` :
 
@@ -193,12 +196,12 @@ Le carnet passe en `carnet_version` 1.2.0 : une entrée peut porter `"hypothesis
 | Écart | Exemple de texte |
 |---|---|
 | L'entrée liée n'est plus retenue | « H2 : l'analyse prévue n'est pas retenue dans le carnet. » |
-| L'entrée liée a été retirée du carnet | « H2 : l'analyse prévue a été retirée du carnet. » |
+| Aucune entrée liée (la base n'était pas ouverte) | « H6 : l'analyse prévue n'est pas dans le carnet. » |
 | L'entrée liée est impossible (variable retirée, niveau changé…) | « H2 : l'analyse prévue ne peut plus être faite : {raison}. » |
 
 Dans l'article, un écart devient un trou : « [à compléter : raison de l'écart au plan pour H2] ». Sans gel, il n'y a ni lien, ni état, ni écart : toutes les entrées gardent leur comportement de la v0.12.
 
-**Cas plantés** (étape 3), sur la base des analyses : une entrée déjà présente au gel (liée, dans `prior`) ; une variante de Spearman (H2) ; une entrée liée qu'on ne retient plus, puis qu'on retire ; une variable de H4 retirée du codebook (impossible) ; un amendement qui change la méthode de H2 (ancienne entrée remplacée, nouvelle liée).
+**Cas plantés** (étape 3), sur la base des analyses : une entrée déjà présente au gel (liée, dans `prior`) ; une variante de Spearman (H2) ; une entrée liée qu'on ne retient plus (et qu'on ne peut pas retirer) ; une variable de H4 retirée du codebook (impossible) ; un amendement qui change la méthode de H2 (ancienne entrée remplacée, nouvelle liée).
 
 ## 7. La correction pour comparaisons multiples (D-104)
 
@@ -206,7 +209,7 @@ Dans l'article, un écart devient un trou : « [à compléter : raison de l'éca
 - **On corrige** les *p* des hypothèses de la famille dont l'entrée liée est retenue et calculable. Une hypothèse écartée (non retenue, impossible) sort de la famille, et la Méthode le dit : « La famille F1 comptait 3 hypothèses ; 2 ont pu être testées. »
 - **Holm** : les *m* *p* triés en ordre croissant, *p*₍ᵢ₎ corrigé = max sur *j* ≤ *i* de min(1, (*m* − *j* + 1) · *p*₍ⱼ₎). **Bonferroni** : min(1, *m* · *p*). Ce sont les définitions de `p.adjust` de R ; les tests comparent à R à 10⁻¹² près, dont les égalités de *p* et les *p* qui atteignent 1.
 - **Exemple illustratif** (trois *p* choisis) : 0,010, 0,020, 0,030 donnent, avec Holm, 0,030, 0,040, 0,040 ; avec Bonferroni, 0,030, 0,060, 0,090.
-- **Gardé et confirmé** : le *p* corrigé de chaque entrée liée s'ajoute à ses statistiques (`p_adj`, et `p_adj_method` dans les options du calcul), comparé comme les autres (D-089). Ajouter, retirer ou écarter une hypothèse d'une famille change les *p* corrigés des autres, qui attendent alors leur confirmation.
+- **Gardé et confirmé** : le *p* corrigé de chaque entrée liée s'ajoute à ses statistiques (`p_adj`, et `adj_m`, le nombre de *p* corrigés ensemble), comparé comme les autres (D-089). Un *p* corrigé qui apparaît est gardé aussitôt, comme un agrégat seulement nouveau ; un *p* corrigé qui change ou disparaît attend une confirmation, même quand le codebook n'a pas changé (un amendement a changé la correction ou une famille). Ajouter, retirer ou écarter une hypothèse d'une famille change ainsi les *p* corrigés des autres, qui attendent leur confirmation.
 - **Dans la phrase** de l'effet testé, juste après le *p* brut : « …, *p* = ,020, *p* corrigé (Holm) = ,040, … » ; en anglais, « …, *p* = .020, Holm-adjusted *p* = .040, … ». Même convention que *p* : trois décimales, sans zéro initial, « < ,001 » en deçà.
 - **Dans le tableau** de l'analyse, une colonne « *p* corrigé (Holm) » à droite de *p*, sur la ligne de l'effet testé seulement ; tirets ailleurs. Une note du tableau : « *p* corrigé par la méthode de Holm dans la famille F1 (3 hypothèses). »
 

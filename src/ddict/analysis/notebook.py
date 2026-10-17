@@ -15,6 +15,11 @@ Since 1.1.0 (v0.12, D-100), the notebook keeps the figures of the Method too (`m
 the variables chosen to describe the sample, and the last confirmed computation of the
 flow, the description and the reliabilities, compared and confirmed as an analysis. A
 notebook 1.0.0 reads as it is.
+
+Since 1.2.0 (v0.13, D-102), an entry may be the planned analysis of an hypothesis of the
+project's frozen plan (`hypothesis`), or one an amendment replaced (`superseded`). A planned
+analysis is never removed from the notebook: it can stop being retained, or the plan be
+amended. A notebook 1.1.0 reads as it is.
 """
 
 from __future__ import annotations
@@ -23,6 +28,7 @@ import json
 import math
 from datetime import date
 from pathlib import Path
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
@@ -35,7 +41,7 @@ from ddict.i18n import _
 from ddict.project import fingerprint
 from ddict.project.model import Project, VariableRef
 
-NOTEBOOK_VERSION = "1.1.0"
+NOTEBOOK_VERSION = "1.2.0"
 METHOD = "M"  # the identifier of the Method in the states and the confirmations
 SUFFIX = "-carnet.json"
 
@@ -72,6 +78,15 @@ class Computed(_Strict):
     warnings: list[str]
 
 
+class Superseded(_Strict):
+    """An entry that was the planned analysis of an hypothesis until an amendment changed
+    the hypothesis (`modified`) or removed it (`removed`), on that date (v0.13)."""
+
+    date: str
+    hypothesis: str
+    change: Literal["modified", "removed"]
+
+
 class Entry(_Strict):
     id: str
     analysis: str
@@ -82,6 +97,8 @@ class Entry(_Strict):
     added: str
     computed: Computed
     pending: Computed | None = None
+    hypothesis: str | None = None  # v0.13: the planned analysis of this hypothesis
+    superseded: Superseded | None = None
 
 
 class MethodPart(_Strict):
@@ -166,6 +183,10 @@ def reason_text(error: NotebookError) -> str:
         "unknown_variable": _("{name} : variable inconnue du projet."),
         "unknown_entry": _("{name} : aucune analyse du carnet ne porte ce numéro."),
         "nothing_pending": _("{name} : aucun changement à confirmer."),
+        "planned": _(
+            "{name} est une analyse prévue par le plan : elle ne se retire pas du carnet. Ne "
+            "la retenez plus, ou modifiez le plan."
+        ),
         "unreadable": _("Le carnet ne peut pas être lu : {name}"),
         "version": _(
             "Ce carnet (version {name}) a été fait par une version plus récente de l'outil."
@@ -258,7 +279,11 @@ def add(
 
 
 def remove(notebook: Notebook, entry_id: str) -> None:
-    notebook.entries.remove(find(notebook, entry_id))
+    """Remove an entry; never a planned analysis (v0.13), which NotebookError refuses."""
+    entry = find(notebook, entry_id)
+    if entry.hypothesis is not None:
+        raise NotebookError("planned", entry_id)
+    notebook.entries.remove(entry)
 
 
 def move(notebook: Notebook, entry_id: str, position: int) -> None:

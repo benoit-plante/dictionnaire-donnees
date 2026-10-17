@@ -2719,6 +2719,9 @@ msgstr "Origin"
 msgid "Outil"
 msgstr "Tool"
 
+msgid "Ouvrez la base pour figer le plan : chaque hypothèse devient une analyse du carnet."
+msgstr "Open the database to finalise the plan: each hypothesis becomes an analysis of the notebook."
+
 msgid "Ouvrir"
 msgstr "Open"
 
@@ -4028,6 +4031,9 @@ msgstr "working (AI proposals included)"
 msgid "description de l'instrument du groupe {group}"
 msgstr "description of the instrument of group {group}"
 
+msgid "descriptive"
+msgstr "descriptive"
+
 msgid "deviné : la variable n'a pas d'étiquette dans le fichier"
 msgstr "guessed: the variable has no label in the file"
 
@@ -4059,6 +4065,9 @@ msgstr "and"
 #, python-brace-format
 msgid "et {n} autres"
 msgstr "and {n} more"
+
+msgid "exploratoire"
+msgstr "exploratory"
 
 msgid "exporté pour toutes les variables rattachées"
 msgstr "exported for all linked variables"
@@ -4302,6 +4311,14 @@ msgstr "prefix \"{prefix}\""
 msgid "présente l'étendue observée comme celle de l'échelle : à vérifier dans le manuel"
 msgstr "presents the observed range as the scale's range: check in the manual"
 
+#, python-brace-format
+msgid "prévue ({id})"
+msgstr "planned ({id})"
+
+#, python-brace-format
+msgid "prévue, exploratoire ({id})"
+msgstr "planned, exploratory ({id})"
+
 msgid "quasi-identifiant"
 msgstr "quasi-identifier"
 
@@ -4319,6 +4336,10 @@ msgstr "refused"
 
 msgid "rejeté"
 msgstr "rejected"
+
+#, python-brace-format
+msgid "remplacée par l'amendement du {date} ({id})"
+msgstr "replaced by the amendment of {date} ({id})"
 
 msgid "ressemble à un nom d'instrument"
 msgstr "looks like an instrument name"
@@ -4474,6 +4495,10 @@ msgstr "neighbouring variables"
 msgid "variables voisines aux mêmes étiquettes"
 msgstr "neighbouring variables with the same labels"
 
+#, python-brace-format
+msgid "variante de {id} : {detail}"
+msgstr "variant of {id}: {detail}"
+
 msgid "vide"
 msgstr "empty"
 
@@ -4592,6 +4617,22 @@ msgid "{id} : aucune règle ne porte ce numéro."
 msgstr "{id}: no rule has this number."
 
 #, python-brace-format
+msgid "{id} : l'analyse prévue n'est pas dans le carnet."
+msgstr "{id}: the planned analysis is not in the notebook."
+
+#, python-brace-format
+msgid "{id} : l'analyse prévue n'est pas retenue dans le carnet."
+msgstr "{id}: the planned analysis is not retained in the notebook."
+
+#, python-brace-format
+msgid "{id} : l'analyse prévue ne peut plus être faite : {reason}"
+msgstr "{id}: the planned analysis can no longer be run: {reason}"
+
+#, python-brace-format
+msgid "{id} : l'analyse prévue sera calculée quand la base sera ouverte."
+msgstr "{id}: the planned analysis will be computed when the database is open."
+
+#, python-brace-format
 msgid "{id} est maintenant au rang {rank}."
 msgstr "{id} is now at rank {rank}."
 
@@ -4602,6 +4643,10 @@ msgstr "{id} leaves the notebook; its number will not come back."
 #, python-brace-format
 msgid "{id} quitte les règles ; son numéro ne reviendra pas."
 msgstr "{id} leaves the rules; its number will not come back."
+
+#, python-brace-format
+msgid "{id} retirée du plan le {date}"
+msgstr "{id} removed from the plan on {date}"
 
 #, python-brace-format
 msgid "{key} : nom de base refusé ({why})."
@@ -4746,6 +4791,14 @@ msgid "{name} : « {value} » n'est pas un nombre."
 msgstr "{name}: “{value}” is not a number."
 
 #, python-brace-format
+msgid ""
+"{name} est une analyse prévue par le plan : elle ne se retire pas du carnet. Ne la retenez plus, "
+"ou modifiez le plan."
+msgstr ""
+"{name} is an analysis planned by the plan: it cannot be removed from the notebook. Stop retaining"
+" it, or amend the plan."
+
+#, python-brace-format
 msgid "{name} existe déjà : la remplacer"
 msgstr "{name} already exists: replace it"
 
@@ -4884,6 +4937,10 @@ msgstr "{n} variables, {rows} rows; {sensitive} sensitive variables; {flagged} w
 #, python-brace-format
 msgid "{old} n'est plus dans ce filtre ; voici la variable suivante : {new}."
 msgstr "{old} is no longer in this filter; here is the next variable: {new}."
+
+#, python-brace-format
+msgid "{option} : {new} au lieu de {old}"
+msgstr "{option}: {new} instead of {old}"
 
 #, python-brace-format
 msgid "{option} : « {value} » n'est pas un choix permis."

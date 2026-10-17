@@ -16,7 +16,7 @@ a document without a person having seen it.
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Literal
 
 from ddict.analysis import notebook as nb
@@ -180,10 +180,57 @@ def check_all(
     to be saved by the caller."""
     if prepared is not None and not nb.belongs(notebook, project):
         prepared, reason = None, _("Ce carnet a été fait avec une autre base que celle du projet.")
-    return [
+    statuses = [
         check(project, prepared, entry, today=today, reason=reason, always=always)
         for entry in notebook.entries
     ]
+    if prepared is not None:
+        statuses = _adjusted(notebook, project, prepared, statuses, today)
+    return statuses
+
+
+def _adjusted(notebook, project, prepared, statuses: list[Status], today: str) -> list[Status]:
+    """The adjusted p-values of a frozen plan's families (v0.13, D-104), kept with each
+    planned entry's statistics. A new one is kept at once, as a figure only new; one that
+    changes or disappears waits for a confirmation, even when the codebook did not change
+    (an amendment put an hypothesis in a family): no number changes without a person."""
+    from ddict.analysis import plan_notebook as pn
+
+    wanted = pn.corrections(notebook, project, prepared, statuses)
+    found = []
+    for entry, status in zip(notebook.entries, statuses, strict=True):
+        latest = entry.pending or entry.computed
+        have = latest.statistics.get(pn.P_ADJ)
+        want = wanted.get(entry.id)
+        size = latest.statistics.get(pn.ADJ_M)
+        if have is None and want is None:
+            found.append(status)
+            continue
+        if have is not None and want is not None and _same(have, want[0]) and size == want[1]:
+            found.append(status)
+            continue
+        statistics = {k: v for k, v in latest.statistics.items() if k not in (pn.P_ADJ, pn.ADJ_M)}
+        if want is not None:
+            statistics |= {pn.P_ADJ: float(want[0]), pn.ADJ_M: float(want[1])}
+        statistics = dict(sorted(statistics.items()))
+        if entry.pending is not None:
+            entry.pending = entry.pending.model_copy(update={"statistics": statistics})
+        elif have is None:
+            entry.computed = entry.computed.model_copy(update={"statistics": statistics})
+            found.append(status)
+            continue
+        else:
+            entry.pending = entry.computed.model_copy(
+                update={"statistics": statistics, "date": today}
+            )
+        change = _difference(pn.P_ADJ, have, want[0] if want else None)
+        status = replace(
+            status,
+            state="changed",
+            differences=(*[d for d in status.differences if d.key != pn.P_ADJ], change),
+        )
+        found.append(status)
+    return found
 
 
 def check_method(
