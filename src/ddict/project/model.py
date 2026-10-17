@@ -9,13 +9,22 @@ from __future__ import annotations
 
 from typing import Annotated, Generic, Literal, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    JsonValue,
+    StringConstraints,
+    model_serializer,
+    model_validator,
+)
 
 # 0.2.0 (v0.7, D-048): new fields only, all with a default; a 0.1.0 file reads as it is.
 # 0.3.0 (v0.8, D-061): the measure level a person decides; older files are converted on
 # opening (the rules propose their levels), and a 0.3.0 file no longer opens in v0.7.
 # 0.4.0 (v0.12, D-093): the exclusion rules, with a default; a 0.3.0 file reads as it is.
-SCHEMA_VERSION = "0.4.0"
+# 0.5.0 (v0.13, D-101): the analysis plan, with a default; a 0.4.0 file reads as it is.
+SCHEMA_VERSION = "0.5.0"
 
 Code = int | float | str
 # "questionnaire": computed from the questionnaire under a strict rule, and like an AI value
@@ -517,6 +526,138 @@ class Exclusions(Strict):
     rules: list[ExclusionRule] = []
 
 
+# --- The analysis plan (v0.13, D-101 to D-104, D-109): decisions of the team, never a value
+# of the data nor a result. The sheet is docs/plan-analyse-article.md (validated). ---
+
+
+class VariableRef(Strict):
+    """A variable by its key in the project, which survives a renaming: a variable of the
+    file (its original name), the score of a group's scoring, or a reversed item. Shared by
+    the plan and the analysis notebook (v0.11)."""
+
+    variable: str | None = None
+    score: str | None = None
+    reversed: str | None = None
+
+    @model_validator(mode="after")
+    def _one(self) -> VariableRef:
+        if sum(v is not None for v in (self.variable, self.score, self.reversed)) != 1:
+            raise ValueError("a variable reference names exactly one of variable, score, reversed")
+        return self
+
+    @model_serializer
+    def _only_the_one(self) -> dict[str, str]:
+        return {
+            k: v
+            for k, v in (
+                ("variable", self.variable),
+                ("score", self.score),
+                ("reversed", self.reversed),
+            )
+            if v is not None
+        }
+
+
+# The tested effect: the one p-value a hypothesis is about (D-103).
+class DifferenceEffect(Strict):
+    kind: Literal["difference"] = "difference"  # t test, Mann-Whitney
+
+
+class GroupEffect(Strict):
+    kind: Literal["group"] = "group"  # ANOVA, Kruskal-Wallis: the overall test
+
+
+class AssociationEffect(Strict):
+    kind: Literal["association"] = "association"  # chi-square, Fisher
+
+
+class ModelEffect(Strict):
+    kind: Literal["model"] = "model"  # a regression's overall F
+
+
+class PairEffect(Strict):
+    """A pair of a correlation, by its two variables, never by its position."""
+
+    kind: Literal["pair"] = "pair"
+    variables: list[VariableRef] = Field(min_length=2, max_length=2)
+
+
+class PredictorEffect(Strict):
+    """A predictor of a regression, by its variable: its one coefficient."""
+
+    kind: Literal["predictor"] = "predictor"
+    variable: VariableRef
+
+
+Effect = Annotated[
+    DifferenceEffect | GroupEffect | AssociationEffect | ModelEffect | PairEffect | PredictorEffect,
+    Field(discriminator="kind"),
+]
+Direction = Literal["first_higher", "second_higher", "positive", "negative"]
+DataOrigin = Literal["primary", "secondary"]
+# The five answers of the OSF Prereg form on existing data (D-109).
+DataStatus = Literal[
+    "before_creation", "before_observation", "before_access", "before_analysis", "after_analysis"
+]
+Statement = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=1000)]
+FamilyName = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=30)]
+
+
+class Hypothesis(Strict):
+    """An hypothesis written by the team: `id` (H1, H2...) is never given again after a
+    removal; the order of the list is the order of the article."""
+
+    id: str
+    statement: Statement
+    analysis: str
+    roles: dict[str, list[VariableRef]]
+    options: dict[str, str] = {}
+    effect: Effect
+    direction: Direction | None = None
+    kind: Literal["confirmatory", "exploratory"] = "confirmatory"
+    family: FamilyName | None = None
+
+
+class PriorAnalysis(Strict):
+    """A planned analysis the notebook already held the day the plan was frozen."""
+
+    hypothesis: str
+    entry: str
+    added: str
+
+
+class Frozen(Strict):
+    date: str
+    fingerprint: str  # the plan's, the day it was frozen
+    prior: list[PriorAnalysis] = []
+
+
+class Amendment(Strict):
+    """A change after the plan was frozen: dated, with its reason, never removed. `before`
+    and `after` keep only the fields that changed (a whole hypothesis when one is added or
+    removed)."""
+
+    date: str
+    target: str  # an hypothesis (H2) or "rules"
+    change: Literal["modified", "added", "removed"]
+    reason: NonEmptyText
+    before: dict[str, JsonValue] = {}
+    after: dict[str, JsonValue] = {}
+
+
+class Plan(Strict):
+    alpha: float | None = Field(default=None, gt=0, lt=1)  # typed by the team
+    correction: Literal["none", "holm", "bonferroni"] = "holm"
+    missing: Literal["listwise_by_analysis"] = "listwise_by_analysis"
+    sample_size: str = Field(default="", max_length=2000)
+    data_origin: DataOrigin | None = None  # declared by the team (D-109)
+    data_status: DataStatus | None = None
+    next_id: int = 1
+    hypotheses: list[Hypothesis] = []
+    frozen: Frozen | None = None
+    amendments: list[Amendment] = []
+
+
 class Project(Strict):
     schema_version: str = SCHEMA_VERSION
     source: SourceInfo
@@ -529,6 +670,7 @@ class Project(Strict):
     stems: list[QuestionStem] = []
     dataset: Dataset = Dataset()  # v0.8 (D-064)
     exclusions: Exclusions = Exclusions()  # v0.12 (D-093)
+    plan: Plan = Plan()  # v0.13 (D-101)
 
     def variable(self, name: str) -> VariableEntry:
         for entry in self.variables:

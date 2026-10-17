@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.4.0",
+  "schema_version": "0.5.0",
   "source": {
     "name": "etude-sommeil.sav",
     "format": "sav",
@@ -5385,5 +5385,17 @@
   "exclusions": {
     "next_id": 1,
     "rules": []
+  },
+  "plan": {
+    "alpha": null,
+    "correction": "holm",
+    "missing": "listwise_by_analysis",
+    "sample_size": "",
+    "data_origin": null,
+    "data_status": null,
+    "next_id": 1,
+    "hypotheses": [],
+    "frozen": null,
+    "amendments": []
   }
 }

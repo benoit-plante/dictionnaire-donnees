@@ -96,8 +96,8 @@ src = ["src", "tests"]
 select = ["E", "F", "W", "I", "UP", "B", "SIM", "PTH", "RUF"]
 # French typography in interface strings: en dash for ranges, non-breaking spaces.
 # French text: en dash, non-breaking spaces, typographic apostrophe.
-# Statistics (v0.9): the minus sign and rho.
-allowed-confusables = ["–", " ", " ", "’", "−", "ρ"]
+# Statistics (v0.9): the minus sign and rho; the alpha level (v0.13).
+allowed-confusables = ["–", " ", " ", "’", "−", "ρ", "α"]
 
 [tool.ruff.format]
 line-ending = "lf"

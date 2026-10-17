@@ -24,7 +24,7 @@ import math
 from datetime import date
 from pathlib import Path
 
-from pydantic import BaseModel, ConfigDict, model_serializer, model_validator
+from pydantic import BaseModel, ConfigDict
 
 from ddict.analysis.apa import Edit
 from ddict.analysis.catalogue import CATALOGUE
@@ -33,7 +33,7 @@ from ddict.export import wording as w
 from ddict.export.preparation import plan
 from ddict.i18n import _
 from ddict.project import fingerprint
-from ddict.project.model import Project
+from ddict.project.model import Project, VariableRef
 
 NOTEBOOK_VERSION = "1.1.0"
 METHOD = "M"  # the identifier of the Method in the states and the confirmations
@@ -51,33 +51,6 @@ class NotebookError(Exception):
 
 class _Strict(BaseModel):
     model_config = ConfigDict(extra="forbid")
-
-
-class VariableRef(_Strict):
-    """A variable by its key in the project, which survives a renaming: a variable of the
-    file (its original name), the score of a group's scoring, or a reversed item."""
-
-    variable: str | None = None
-    score: str | None = None
-    reversed: str | None = None
-
-    @model_validator(mode="after")
-    def _one(self) -> VariableRef:
-        if sum(v is not None for v in (self.variable, self.score, self.reversed)) != 1:
-            raise ValueError("a variable reference names exactly one of variable, score, reversed")
-        return self
-
-    @model_serializer
-    def _only_the_one(self) -> dict[str, str]:
-        return {
-            k: v
-            for k, v in (
-                ("variable", self.variable),
-                ("score", self.score),
-                ("reversed", self.reversed),
-            )
-            if v is not None
-        }
 
 
 class ItemEdit(_Strict):

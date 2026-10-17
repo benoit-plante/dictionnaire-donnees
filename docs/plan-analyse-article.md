@@ -47,21 +47,21 @@ Dans le projet, format 0.5.0. Un projet 0.4.0 s'ouvre tel quel, avec un plan vid
     {"id": "H1",
      "statement": "Le bien-être au travail est plus élevé dans le groupe d'intervention que dans le groupe contrôle.",
      "analysis": "t_test",
-     "roles": {"outcome": [{"group": "G1"}], "group": [{"name": "groupe"}]},
+     "roles": {"outcome": [{"score": "G1"}], "group": [{"variable": "groupe"}]},
      "options": {"method": "welch", "alternative": "greater"},
      "effect": {"kind": "difference"},
      "direction": "first_higher",
      "kind": "confirmatory",
      "family": "F1"},
     {"id": "H2", "statement": "…", "analysis": "correlation",
-     "roles": {"variables": [{"name": "heures_travail"}, {"name": "stress"}]},
+     "roles": {"variables": [{"variable": "heures_travail"}, {"variable": "stress"}]},
      "options": {"method": "pearson"},
-     "effect": {"kind": "pair", "variables": [{"name": "heures_travail"}, {"name": "stress"}]},
+     "effect": {"kind": "pair", "variables": [{"variable": "heures_travail"}, {"variable": "stress"}]},
      "direction": "positive", "kind": "confirmatory", "family": "F1"},
     {"id": "H4", "statement": "…", "analysis": "regression",
-     "roles": {"outcome": [{"name": "satisfaction"}], "predictors": [{"name": "soutien"}, {"name": "charge"}]},
+     "roles": {"outcome": [{"variable": "satisfaction"}], "predictors": [{"variable": "soutien"}, {"variable": "charge"}]},
      "options": {},
-     "effect": {"kind": "predictor", "variable": {"name": "soutien"}},
+     "effect": {"kind": "predictor", "variable": {"variable": "soutien"}},
      "direction": "positive", "kind": "confirmatory", "family": null}
   ],
   "frozen": null,
@@ -69,7 +69,7 @@ Dans le projet, format 0.5.0. Un projet 0.4.0 s'ouvre tel quel, avec un plan vid
 }
 ```
 
-- **Les variables** sont des `VariableRef` du carnet : `{"name": …}` (nom d'origine), `{"group": …}` (score d'un groupe), `{"reversed": …}` (item inversé). Elles survivent à un renommage.
+- **Les variables** sont des `VariableRef`, les mêmes que celles du carnet : `{"variable": …}` (nom d'origine), `{"score": …}` (score d'un groupe), `{"reversed": …}` (item inversé). Elles survivent à un renommage.
 - **`alpha`** : un nombre strictement entre 0 et 1, tapé par l'équipe ; `null` tant qu'il ne l'est pas. La page propose « 0,05 » dans le champ, sans l'enregistrer.
 - **`correction`** : `none`, `holm` (par défaut) ou `bonferroni`. Elle ne s'applique qu'aux familles (§ 7).
 - **`missing`** : une seule valeur aujourd'hui, `listwise_by_analysis`. Le champ existe pour qu'une autre méthode s'ajoute sans changer le format.
@@ -77,8 +77,8 @@ Dans le projet, format 0.5.0. Un projet 0.4.0 s'ouvre tel quel, avec un plan vid
 - **`data_origin`** et **`data_status`** : l'origine et l'état des données quand le plan a été écrit, déclarés par l'équipe (§ 8.1) ; `null` tant qu'ils ne le sont pas.
 - **`statement`** : 1 000 caractères au plus, non vide.
 - **`family`** : un nom court (`F1`, `Principal`…), ou `null`.
-- **Identifiants** `H<n>` jamais redonnés, comme les règles d'exclusion. L'ordre de la liste est l'ordre des hypothèses dans l'article.
-- **L'empreinte du plan** : SHA-256 du JSON canonique de `alpha`, `correction`, `missing`, `sample_size`, `data_origin`, `data_status` et `hypotheses`. Ni `frozen` ni `amendments` n'y entrent.
+- **Identifiants** `H<n>` jamais redonnés, comme les règles d'exclusion. L'ordre de la liste est l'ordre des hypothèses dans l'article ; le changer n'est pas une décision du plan (ni dans son empreinte, ni un amendement après le gel).
+- **L'empreinte du plan** : SHA-256 du JSON canonique de `alpha`, `correction`, `missing`, `sample_size`, `data_origin`, `data_status` et `hypotheses`, ces dernières dans l'ordre de leurs identifiants, en hexadécimal comme l'empreinte du codebook. Ni `frozen` ni `amendments` n'y entrent.
 
 **Refus, avec leur raison** (étape 2) :
 
@@ -133,7 +133,7 @@ Ailleurs, la phrase de l'analyse (v0.9) dit déjà l'effet testé et sert telle 
 | Régression (prédicteur) | `positive`, `negative` | aucun : le test reste bilatéral |
 | ANOVA, Kruskal-Wallis, khi-carré, Fisher, modèle d'une régression | aucun | — |
 
-Choisir un sens pour un test *t* écrit l'option `alternative` ; choisir ensuite une option contraire est refusé (§ 2). Laisser le sens vide garde le test bilatéral, sauf si l'équipe a choisi `alternative` elle-même.
+Choisir un sens pour un test *t* écrit l'option `alternative` ; choisir ensuite une option contraire est refusé (§ 2). Laisser le sens vide garde le test bilatéral, sauf si l'équipe a choisi `alternative` elle-même. Une équipe qui attend un sens mais veut un test bilatéral le choisit elle-même (`alternative` à `two_sided`) : le sens n'est alors que rappelé.
 
 **Le sens observé**, écrit par l'outil dans la Discussion, est un fait tiré du signe de la statistique :
 
@@ -152,7 +152,7 @@ Une statistique exactement nulle donne « était nulle » ; deux moyennes égale
 
 1. vérifie chaque hypothèse (§ 2) ; une seule refusée bloque le gel, avec sa raison ;
 2. exige `alpha`, `data_origin` et `data_status` ;
-3. écrit `"frozen": {"date": "2026-10-20", "fingerprint": "sha256:…", "prior": [...]}` ;
+3. écrit `"frozen": {"date": "2026-10-20", "fingerprint": "3f9c…", "prior": [...]}` ;
 4. lie chaque hypothèse à une entrée du carnet (§ 6).
 
 `prior` liste les hypothèses dont l'analyse figurait déjà dans le carnet le jour du gel, avec l'identifiant et la date d'ajout de l'entrée : `{"hypothesis": "H2", "entry": "A3", "added": "2026-10-18"}`. L'outil ne sait rien des analyses faites sur la page « Analyses » sans les ajouter au carnet (D-078), ni de celles faites ailleurs : c'est pourquoi la connaissance préalable des données reste un trou du préenregistrement (§ 8).
