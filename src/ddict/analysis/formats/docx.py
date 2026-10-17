@@ -173,14 +173,15 @@ def _figure(document, found: ApaFigure, language: str) -> None:
 
 def _apa_heading(document, level: int = 2) -> None:
     """An APA heading: bold, the document's font, black (not Word's blue); flush left at
-    level 2, centred at level 1 (v0.12: "Méthode", "Résultats")."""
+    level 2, centred at level 1 (v0.12: "Méthode", "Résultats"); bold italic at level 3
+    (v0.13: the questions of the preregistration)."""
     style = document.styles[f"Heading {level}"]
     if level == 1:
         style.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
     style.font.name = FONT
     style.font.size = SIZE
     style.font.bold = True
-    style.font.italic = False
+    style.font.italic = level == 3
     style.font.color.rgb = RGBColor(0, 0, 0)
     style.element.rPr.rFonts.set(qn("w:asciiTheme"), "")
     for attribute in ("w:asciiTheme", "w:hAnsiTheme", "w:eastAsiaTheme", "w:cstheme"):
@@ -212,6 +213,7 @@ def render(found: ApaDocument) -> bytes:
         if found.sections:  # v0.11: the results of several analyses
             _apa_heading(document)
             _apa_heading(document, level=1)
+            _apa_heading(document, level=3)
             for section in found.sections:
                 document.add_heading(section.heading, level=section.level)
                 for text in section.paragraphs:  # v0.12: the Method

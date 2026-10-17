@@ -252,9 +252,10 @@ Les deux licences permettent de reprendre et de traduire les questions ; CC BY e
   - *Variables mesurées* : les variables des hypothèses, par rôle (issue, prédicteur, groupe…), avec leur libellé (plan, codebook).
   - *Scores* : pour chaque score des hypothèses, l'instrument, sa source, ses items, sa cotation, ses items inversés (phrases I1 à I5 de la v0.12, sans l'alpha).
   - *Exclusions* : les règles d'exclusion, dans leur ordre, avec leur raison et leur condition en clair, **sans effectif**.
-  - *Manquants* : les codes manquants des variables des hypothèses ; la phrase A2 ; un trou pour ce que l'équipe sait des taux de manquants.
-  - *Modèles* : pour chaque hypothèse, la phrase de méthode (A3 de la v0.12), les variables par rôle, les options, l'effet testé, uni- ou bilatéral.
-  - *Critères d'inférence* : « Le seuil α est fixé à {α} ; les *p* sont {corrigés par la méthode de Holm dans chaque famille : F1 (H1, H2, H3) / non corrigés}. Les tailles d'effet sont données avec leur intervalle de confiance à 95 %. »
+  - *Manquants* : les codes manquants des variables des hypothèses (et des items de leurs scores), au futur : « Les codes {codes} seront traités comme des valeurs manquantes. » ; la phrase A2 au futur : « Les valeurs manquantes seront retirées analyse par analyse : chaque analyse portera sur les personnes qui ont répondu à toutes ses variables. » ; un trou pour ce que l'équipe sait des taux de manquants.
+  - *Modèles* : pour chaque hypothèse, sans temps de verbe (les phrases A3 de la v0.12 sont au passé), l'analyse et ses options avec les libellés du catalogue, les variables par rôle, l'effet testé, uni- ou bilatéral : « H1. Test t : comparer deux groupes ; méthode : Welch (variances inégales permises) ; variable dépendante : bienetre_total ; variable de groupe : groupe ; effet testé : la différence entre les deux groupes ; test unilatéral, le premier groupe plus élevé. »
+  - *Sens attendu* : il nomme les groupes quand l'outil les connaît (les modalités choisies, ou les deux étiquettes de valeurs de la variable de groupe) : « Intervention plus élevé que Contrôle » ; sinon « le premier groupe, dans l'ordre des codes, plus élevé ».
+  - *Critères d'inférence* : « Le seuil α est fixé à {α}. Les valeurs de *p* seront {corrigées par la méthode de Holm dans chaque famille : F1 (H1, H2, H3) / pas corrigées pour comparaisons multiples}. Les tailles d'effet seront données avec leur intervalle de confiance à 95 %. »
   - *Exploratoire* : les hypothèses exploratoires du plan, puis « Toute autre analyse sera présentée comme exploratoire. »
   - *Analyses déjà faites* : s'il y en a, « Le carnet de l'outil contenait déjà, le jour où le plan a été arrêté, les analyses prévues pour {H2 (A3, ajoutée le 18 octobre 2026)}. » (`prior`), toujours suivie d'un trou pour ce que l'équipe a vu ailleurs.
 
@@ -270,7 +271,7 @@ Les deux licences permettent de reprendre et de traduire les questions ; CC BY e
 | | Insu | trou |
 | | Devis | la structure de la base (D-064 : une ligne par personne, format large, vagues), puis un trou |
 | | Répartition aléatoire | trou |
-| Échantillonnage | Données existantes | le libellé de `data_status`, « selon l'équipe » |
+| Échantillonnage | Données existantes | le libellé de `data_status`, suivi de « (Déclaré par l'équipe.) » |
 | | Explication sur les données existantes | analyses déjà faites (commune), puis un trou |
 | | Procédure de collecte | le questionnaire documenté, s'il y en a un (D-012), puis un trou |
 | | Taille d'échantillon | le texte `sample_size`, ou un trou |
@@ -280,7 +281,7 @@ Les deux licences permettent de reprendre et de traduire les questions ; CC BY e
 | | Variables mesurées | commune |
 | | Indices | scores (commune) |
 | Plan d'analyse | Modèles statistiques | commune |
-| | Transformations | les items inversés et la règle des items manquants des scores ; un trou pour le reste |
+| | Transformations | « Les scores sont calculés comme décrit sous « Indices ». » (sans répéter la description) ; un trou pour le reste |
 | | Critères d'inférence | commune |
 | | Exclusion de données | exclusions (commune) ; « Le plan ne prévoit aucun retrait de valeurs extrêmes. » |
 | | Données manquantes | commune |
@@ -308,7 +309,7 @@ Les deux licences permettent de reprendre et de traduire les questions ; CC BY e
 | 15 | Valeurs extrêmes | « Le plan ne prévoit aucun retrait de valeurs extrêmes. » |
 | 16 | Pondérations | « Aucune pondération n'est utilisée. » (l'outil n'en applique pas) |
 | 17 | Travaux antérieurs sur ces données | trou |
-| 18 | Connaissance préalable des données | le libellé de `data_status`, « selon l'équipe » ; analyses déjà faites (commune) ; **toujours un trou** |
+| 18 | Connaissance préalable des données | le libellé de `data_status`, suivi de « (Déclaré par l'équipe.) » ; analyses déjà faites (commune) ; **toujours un trou** |
 | 19 | Modèle statistique par hypothèse | commune |
 | 20 | Taille d'effet prévue | trou |
 | 21 | Puissance statistique | trou (D-108) |

@@ -154,7 +154,14 @@ def _ends(book: Codebook, first: str, low: float, high: float) -> tuple[str, str
     return found if all(found) else None
 
 
-def _instrument(project: Project, prepared: PreparedData, found: Facts, group: Group) -> Text:
+def _instrument(
+    project: Project,
+    prepared: PreparedData | None,
+    found: Facts | None,
+    group: Group,
+) -> Text:
+    """I1 to I6; without the facts (the preregistration, v0.13), I1 to I5: no alpha, which
+    is a result."""
     scoring = group.scoring
     names = w.names_of(project)
     if not scorings.structured(scoring):
@@ -248,6 +255,8 @@ def _instrument(project: Project, prepared: PreparedData, found: Facts, group: G
     instrument_source = group.instrument_name.source if group.instrument_name else None
     if scoring.source != instrument_source:
         parts.append(rich(_("La cotation suit {source}.").format(source=scoring.source)))
+    if found is None:
+        return _sentences(parts)
     reliability = next((r for r in found.reliabilities if r.group == group.group_id), None)
     if reliability is not None and reliability.alpha is not None:
         parts.append(
@@ -267,6 +276,12 @@ def _instrument(project: Project, prepared: PreparedData, found: Facts, group: G
     else:
         parts.append((hole(_("fidélité, trop peu de réponses complètes")),))
     return _sentences(parts)
+
+
+def scale_description(project: Project, group: Group) -> Text:
+    """A scored group's description without the data: I1 to I5 (v0.13, the
+    preregistration)."""
+    return _instrument(project, None, None, group)
 
 
 def instruments(project: Project, prepared: PreparedData, found: Facts) -> list[Text]:
