@@ -98,7 +98,7 @@ Une nouvelle base fictive au format SurveyMonkey, générée par `scripts/` avec
 | 6 | Fidélité : alpha sur l'échantillon analysé et son IC de Feldt | Égaux au corrigé et à R, à 10⁻⁶ près |
 | 7 | Paragraphes, trous et document « Méthode et Résultats » ; chiffres de la Méthode gardés et confirmés dans le carnet | Chaque fait du texte retrouvé dans le codebook ou le carnet (test) ; un champ vide donne un trou ; numérotation continue sur tout le document ; vérifié dans Word |
 | 8 | Page « Méthode », bouton « Tout confirmer », `ddict exclusions`, `ddict resultats` | Parcours dans le navigateur ; mêmes fichiers depuis la page et la ligne de commande |
-| 9 | Essai sur une vraie base (aucun effectif ni résultat consigné, faits de structure seulement) ; guides, journal des changements, version 0.12.0 | Scénario refait dans le navigateur ; guides en français et en anglais |
+| 9 | Essai sur une vraie base (aucun effectif ni résultat consigné, faits de structure seulement) ; guides, journal des changements, version 0.12.0 | Scénario refait dans le navigateur ; guides en français et en anglais. *Essai : `docs/essais/2026-10-17-essai-methode.md`.* |
 
 Si la version s'allonge, les signaux de qualité (étape 5) passent en 0.12.1 : les règles d'exclusion écrites à la main suffisent pour la Méthode.
 

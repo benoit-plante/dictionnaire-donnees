@@ -209,14 +209,38 @@ Un article réunit souvent dix ou vingt résultats, numérotés à la suite, qui
    - **à jour** ou **recalculée, sans changement** : rien à faire ;
    - **changée, à confirmer** : la page montre ce qui a changé (par exemple « n_used : 200 → 196 », « r : ,05 → ,01 ») et la nouvelle phrase. **Confirmer le nouveau calcul** l'adopte. Tant qu'une analyse retenue attend sa confirmation, le document des résultats ne se produit pas ;
    - **impossible à calculer** : la raison s'affiche (une variable retirée, un niveau de mesure qui ne convient plus). L'analyse reste dans le carnet, mais elle est écartée du document, et la fin du document le dit.
-4. **Le document des résultats.** Réglez au besoin le **Premier tableau** et la **Première figure** (par exemple 3, si deux tableaux précèdent dans votre article), puis **Produire les résultats**. Trois fichiers sont écrits à côté du projet, et remplacés à chaque fois :
-   - `etude-sommeil-resultats.docx` : un intertitre par analyse (« A2 — Test t : comparer deux groupes »), sa phrase de résultat, ses tableaux et figures APA numérotés à la suite ; à la fin, l'empreinte du codebook, la date, les versions et la liste des analyses ;
+4. **Le document « Méthode et Résultats ».** Réglez au besoin le **Premier tableau** et la **Première figure** (par exemple 3, si deux tableaux précèdent dans votre article), puis **Produire le document**. Trois fichiers sont écrits à côté du projet, et remplacés à chaque fois :
+   - `etude-sommeil-resultats.docx` : depuis la 0.12, la section Méthode (section 15) ; puis un intertitre par analyse (« A2 — Test t : comparer deux groupes »), sa phrase de résultat, ses tableaux et figures APA, numérotés à la suite sur tout le document ; à la fin, l'empreinte du codebook, la date, les versions et la liste des analyses ;
    - `etude-sommeil-resultats-graphiques.xlsx` : le graphique Excel natif de chaque figure ;
    - `etude-sommeil-resultats-R.zip` : le **script R maître**, qui refait toutes les analyses retenues, dans l'ordre, avec le fichier de commandes et le script de préparation. Décompressez-le dans le dossier de la base, puis, dans R : `source("etude-sommeil-resultats.R", encoding = "UTF-8")`. Il donne les mêmes valeurs que l'outil (vérifié par des tests, à 10⁻⁶ près), rangées dans `resultats$A1`, `resultats$A2`…
 
 Chaque analyse est **recalculée** sur la base au moment de produire le document : rien n'est recopié du carnet. Le carnet, `etude-sommeil-carnet.json`, est à côté du projet ; il ne garde que des agrégats (effectifs, moyennes, statistiques, phrases), jamais une ligne de la base. Sans la base, la page affiche le carnet tel qu'il est, sans le recalculer, et **Choisir la base…** la retrouve.
 
 En ligne de commande : `ddict carnet ajouter` (mêmes options que `ddict analyser`), `lister`, `deplacer A3 1`, `retenir A2`, `ecarter A2`, `retirer A2`, `confirmer A1` (ou `--tout`), `numeros --tableau 3 --figure 2` ; puis `ddict resultats` écrit les trois fichiers. La page et les commandes lisent et écrivent le même carnet.
+
+## 15. La Méthode : exclusions, diagramme de flux et paragraphes
+
+La section Méthode d'un article dit qui a été exclu et pourquoi, décrit l'échantillon et les instruments, et nomme les analyses. La page **Méthode** (après **Carnet**) prépare tout cela à partir de vos décisions, sans aucune IA. Elle ne décide rien à votre place : chaque règle d'exclusion est la vôtre, écrite avec sa raison. Le détail des phrases est dans [`methode-gabarits.md`](methode-gabarits.md).
+
+1. **Les règles d'exclusion.** Ouvrez **Ajouter une règle** et choisissez la **Sorte de règle** :
+   - **Condition sur une variable** : par exemple `age` « < plus petit que » 18 ; ou « manquant » ;
+   - **Condition sur un score** : sur le score d'un groupe coté (page « Groupes », section « Cotation », voir la section 7) ;
+   - **Complétude d'un groupe** : exclure qui a répondu à moins de … items ;
+   - **Durée de passation** : entre une date de début et une date de fin, sous un seuil en secondes. L'outil ne propose aucun seuil : c'est un choix de l'équipe, et la **Source** est exigée (un procès-verbal, un article) ;
+   - **Grille en ligne droite** : tous les items d'une grille répondus avec la même valeur ;
+   - **Doublons** : une réponse qui en répète une antérieure sur les variables choisies (la première est gardée).
+
+   Écrivez la **Raison, telle que publiée** (« Moins de 18 ans »), puis **Ajouter la règle**. Les règles s'appliquent dans leur ordre : une personne est comptée par la première règle qui l'exclut. **Monter** et **Descendre** changent l'ordre (et donc les effectifs de chaque règle, jamais l'échantillon analysé) ; **Retirer** supprime une règle. L'outil refuse une condition qui nommerait une personne (une valeur d'un identifiant, d'un courriel, d'un texte libre) : une règle décrit qui exclure, jamais une liste de personnes.
+2. **Le diagramme de flux** montre les **Réponses reçues**, les **Exclues** (règle par règle) et l'**Échantillon analysé**, avec l'image qui sera la Figure 1 du document.
+3. **Les signaux de qualité de la passation** montrent combien de personnes une règle toucherait, sans jamais l'appliquer : les durées (avec le seuil que vous tapez), les grilles en ligne droite et les doublons. **En faire une règle** remplit le formulaire **Ajouter une règle**, plus haut ; il reste à écrire la raison et à ajouter la règle.
+4. **La description de l'échantillon** : choisissez les variables qui décrivent les participants (par exemple l'âge et le genre).
+5. **L'aperçu des paragraphes** montre les trois paragraphes de la Méthode, **Participants**, **Instruments** et **Analyses**, tels qu'ils seront dans le document. Ce que le codebook ne dit pas devient un trou surligné en jaune, « [à compléter : nom et source de l'instrument du groupe G1] » : l'outil ne devine jamais un nom d'instrument ni une source. Complétez-les dans Word, ou dans le projet (page « Groupes », nom de l'instrument avec sa source) pour qu'ils soient remplis à chaque document.
+
+**Les chiffres de la Méthode sont gardés par le carnet**, comme ceux d'une analyse. Quand une règle change, la page **Carnet** montre « M. Méthode — changée, à confirmer » et ce qui a changé ; une nouvelle règle change aussi les analyses, recalculées sur le nouvel échantillon. **Tout confirmer** adopte tous les nouveaux calculs d'un coup ; d'ici là, le document ne se produit pas.
+
+**Partout de la même façon.** Les règles s'appliquent avant chaque analyse de l'outil, dans le script de préparation SPSS et R (une variable `ddict_exclusion` : 0 pour une personne gardée, sinon le rang de la règle qui l'exclut) et dans le script R maître. La copie documentée de la base (section 9) n'en garde aucune trace : elle reste identique à l'original. La fidélité des scores (alpha de Cronbach et son intervalle de confiance à 95 %) est recalculée sur l'échantillon analysé.
+
+En ligne de commande : `ddict exclusions lister`, `ajouter` (`--condition age lt 18`, `--score G1 lt 10`, `--completude G1 5`, `--duree debut fin 180 --source "…"`, `--ligne-droite G2`, `--doublons courriel`, toujours avec `--raison "…"`), `retirer E2`, `deplacer E3 1` et `signaux` (`--debut`, `--fin`, `--duree-min`, `--doublons`) ; `ddict carnet echantillon etude-sommeil.dd.json age genre` choisit les variables de l'échantillon. La page et les commandes écrivent les mêmes règles.
 
 ## Mettre à jour ou désinstaller
 
@@ -242,7 +266,10 @@ ddict renommer etude-t2.dd.json --suffixe _t2 --reference etude-t1.dd.json   # n
 ddict analyser etude-sommeil.dd.json test_t --dependante sommeil_total --groupe genre --modalites 1,2
 ddict carnet ajouter etude-sommeil.dd.json correlation --variables heures_sommeil nb_reveils
 ddict carnet lister etude-sommeil.dd.json      # le carnet, recalculé
-ddict resultats etude-sommeil.dd.json         # le document des résultats et le script R maître
+ddict exclusions ajouter etude-sommeil.dd.json --condition age lt 18 --raison "Moins de 18 ans"
+ddict exclusions lister etude-sommeil.dd.json   # les règles et le diagramme de flux
+ddict carnet echantillon etude-sommeil.dd.json age genre   # les variables de l'échantillon
+ddict resultats etude-sommeil.dd.json         # le document « Méthode et Résultats » et le script R maître
 ddict conseiller etude-sommeil.dd.json "Comparer le sommeil des femmes et des hommes." --modele qwen2.5:7b-instruct-q4_K_M
 ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M   # banc d'essai d'un modèle
 ```

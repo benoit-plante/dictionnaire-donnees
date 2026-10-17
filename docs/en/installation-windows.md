@@ -211,14 +211,38 @@ An article often brings together ten or twenty results, numbered one after the o
    - **up to date** or **recomputed, unchanged**: nothing to do;
    - **changed, to confirm**: the page shows what changed (for example "n_used : 200 → 196", "r : ,05 → ,01") and the new sentence. **Confirm the new computation** adopts it. As long as a retained analysis waits for its confirmation, the results document is not produced;
    - **cannot be computed**: the reason shows (a variable removed, a measure level that no longer fits). The analysis stays in the notebook, but it is left out of the document, and the end of the document says so.
-4. **The results document.** Set the **First table** and the **First figure** if needed (for example 3, if two tables come before in your article), then **Produce the results**. Three files are written next to the project, and replaced each time:
-   - `sleep-study-resultats.docx`: a heading per analysis ("A2 — t test: compare two groups"), its result sentence, its APA tables and figures numbered one after the other; at the end, the codebook fingerprint, the date, the versions and the list of the analyses;
+4. **The "Method and Results" document.** Set the **First table** and the **First figure** if needed (for example 3, if two tables come before in your article), then **Produce the document**. Three files are written next to the project, and replaced each time:
+   - `sleep-study-resultats.docx`: since 0.12, the Method section (section 15); then a heading per analysis ("A2 — t test: compare two groups"), its result sentence, its APA tables and figures, numbered one after the other across the whole document; at the end, the codebook fingerprint, the date, the versions and the list of the analyses;
    - `sleep-study-resultats-graphiques.xlsx`: the native Excel chart of each figure;
    - `sleep-study-resultats-R.zip`: the **R master script**, which redoes all the retained analyses, in order, with the command file and the preparation script. Unzip it in the database's folder, then, in R: `source("sleep-study-resultats.R", encoding = "UTF-8")`. It gives the same values as the tool (checked by tests, within 10⁻⁶), stored in `resultats$A1`, `resultats$A2`…
 
 Each analysis is **recomputed** on the database when the document is produced: nothing is copied from the notebook. The notebook, `sleep-study-carnet.json`, is next to the project; it keeps aggregates only (counts, means, statistics, sentences), never a row of the database. Without the database, the page shows the notebook as it is, without recomputing it, and **Choose the database…** finds it.
 
 On the command line: `ddict notebook add` (same options as `ddict analyse`), `list`, `move A3 1`, `retain A2`, `leave-out A2`, `remove A2`, `confirm A1` (or `--all`), `numbers --table 3 --figure 2`; then `ddict results` writes the three files. The page and the commands read and write the same notebook.
+
+## 15. The Method: exclusions, flow diagram and paragraphs
+
+The Method section of an article says who was excluded and why, describes the sample and the measures, and names the analyses. The **Method** page (after **Notebook**) prepares all of this from your decisions, without any AI. It decides nothing for you: each exclusion rule is yours, written with its reason. The details of the sentences are in [`../methode-gabarits.md`](../methode-gabarits.md) (in French).
+
+1. **The exclusion rules.** Open **Add a rule** and choose the **Kind of rule**:
+   - **Condition on a variable**: for example `age` "< less than" 18; or "missing";
+   - **Condition on a score**: on the score of a scored group (Groups page, "Scoring" section, see section 7);
+   - **Completeness of a group**: exclude whoever answered fewer than … items;
+   - **Duration of administration**: between a start date and an end date, under a threshold in seconds. The tool proposes no threshold: it is the team's choice, and the **Source** is required (minutes of a meeting, an article);
+   - **Grid in a straight line**: every item of a grid answered with the same value;
+   - **Duplicates**: an answer that repeats an earlier one on the chosen variables (the first is kept).
+
+   Write the **Reason, as published** ("Under 18"), then **Add the rule**. The rules apply in their order: a person is counted by the first rule that excludes them. **Move up** and **Move down** change the order (and so the count of each rule, never the analysed sample); **Remove** deletes a rule. The tool refuses a condition that would name a person (a value of an identifier, an e-mail address, a free text): a rule describes whom to exclude, never a list of people.
+2. **The flow diagram** shows the **Answers received**, the **Excluded** (rule by rule) and the **Analysed sample**, with the picture that will be Figure 1 of the document.
+3. **The quality signals of the administration** show how many people a rule would touch, without ever applying it: the durations (with the threshold you type), the grids in a straight line and the duplicates. **Make it a rule** fills the **Add a rule** form, above; you still write the reason and add the rule.
+4. **The description of the sample**: choose the variables that describe the participants (for example age and gender).
+5. **The preview of the paragraphs** shows the three paragraphs of the Method, **Participants**, **Measures** and **Analyses**, as they will be in the document. What the codebook does not say becomes a hole highlighted in yellow, "[to complete: name and source of the instrument of group G1]": the tool never guesses an instrument's name or a source. Fill them in Word, or in the project (**Groups** page, name of the instrument with its source) so that they are filled in every document.
+
+**The Method's figures are kept by the notebook**, like those of an analysis. When a rule changes, the **Notebook** page shows "M. Method — changed, to confirm" and what changed; a new rule also changes the analyses, recomputed on the new sample. **Confirm everything** adopts all the new computations at once; until then, the document is not produced.
+
+**Everywhere the same way.** The rules apply before each analysis of the tool, in the SPSS and R preparation script (a variable `ddict_exclusion`: 0 for a person kept, otherwise the rank of the rule that excludes them) and in the R master script. The documented copy of the database (section 9) keeps no trace of them: it stays identical to the original. The reliability of the scores (Cronbach's alpha and its 95 % confidence interval) is computed again on the analysed sample.
+
+On the command line: `ddict exclusions list`, `add` (`--condition age lt 18`, `--score G1 lt 10`, `--completeness G1 5`, `--duration start end 180 --source "…"`, `--straightlining G2`, `--duplicates email`, always with `--reason "…"`), `remove E2`, `move E3 1` and `signals` (`--start`, `--end`, `--min-duration`, `--duplicates`); `ddict notebook sample sleep-study.dd.json age gender` chooses the sample's variables. The page and the commands write the same rules.
 
 ## Update or uninstall
 
@@ -244,7 +268,10 @@ ddict rename study-t2.dd.json --suffix _t2 --reference study-t1.dd.json   # name
 ddict analyse sleep-study.dd.json t_test --outcome sleep_total --group gender --levels 1,2
 ddict notebook add sleep-study.dd.json correlation --variables sleep_hours n_awakenings
 ddict notebook list sleep-study.dd.json      # the notebook, recomputed
-ddict results sleep-study.dd.json            # the results document and the R master script
+ddict exclusions add sleep-study.dd.json --condition age lt 18 --reason "Under 18"
+ddict exclusions list sleep-study.dd.json    # the rules and the flow diagram
+ddict notebook sample sleep-study.dd.json age gender   # the sample's variables
+ddict results sleep-study.dd.json            # the "Method and Results" document and the R master script
 ddict advise sleep-study.dd.json "Compare the sleep of women and men." --model qwen2.5:7b-instruct-q4_K_M
 ddict evaluate --model qwen2.5:7b-instruct-q4_K_M       # model bench
 ```

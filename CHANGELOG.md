@@ -1,5 +1,22 @@
 # Changements
 
+## 0.12.0 — 2026-10-17
+
+La section Méthode : qui a été exclu et pourquoi, la qualité de la passation, l'échantillon, les instruments et les analyses, rédigés à partir des décisions de l'équipe (plan : `docs/plan-v0.12.md`, D-093 à D-100 ; fiche validée : `docs/methode-gabarits.md`). Aucune IA dans cette version.
+
+- **Les règles d'exclusion** (D-093) : des décisions du projet, écrites par une personne, chacune avec sa raison en clair et son rang. Cinq sortes : condition sur une variable ou sur un score, complétude d'un groupe, durée de passation (son seuil exige une source), grille en ligne droite, doublons. Jamais une liste de personnes : une condition qui nommerait une valeur d'un identifiant, d'un courriel ou d'un texte libre est refusée. Le projet passe au format 0.4.0 (un projet plus ancien s'ouvre tel quel).
+- **Appliquées partout de la même façon** (D-094) : dans leur rang, après les codes manquants, les noms, les items inversés et les scores ; avant chaque analyse de l'outil, dans le script de préparation SPSS et R (`ddict_exclusion`) et dans le script R maître ; jamais dans la copie documentée. Les mêmes effectifs dans l'outil, dans R et dans PSPP.
+- **Le diagramme de flux** (D-098) : une figure APA dans Word, la Figure 1 du document, et le tableau de ses effectifs dans Excel.
+- **Les signaux de qualité de la passation** (D-095) : durées (aussi sur des dates en texte, dont le format est détecté), grilles en ligne droite et doublons, avec le nombre de personnes que chacun toucherait. Aucun seuil par défaut, jamais appliqués seuls ; **En faire une règle** remplit le formulaire, la raison reste à écrire.
+- **La fidélité** (D-096) : l'alpha de Cronbach de chaque score, recalculé sur l'échantillon analysé, avec son intervalle de confiance à 95 % (Feldt), vérifiés dans R. L'oméga est reporté.
+- **Les paragraphes de la Méthode** (D-097) : Participants, Instruments et Analyses, rédigés par des phrases fixes, en français et en anglais ; un fait que le codebook ne donne pas devient un trou « [à compléter : …] », surligné dans Word, jamais deviné ; aucune formulation qui juge.
+- **Le document « Méthode et Résultats »** (D-099) : les mêmes trois fichiers que la v0.11, la section Méthode avant les Résultats, tableaux et figures numérotés à la suite sur tout le document.
+- **Les chiffres de la Méthode, gardés et confirmés** (D-100) : le carnet garde aussi les effectifs du flux, la description de l'échantillon et les alphas ; une règle ajoutée rend la Méthode et les analyses « changées, à confirmer », et le document attend une personne. Bouton **Tout confirmer**. Le carnet passe en version 1.1.0 (un carnet 1.0.0 s'ouvre tel quel).
+- **La page « Méthode »**, après « Carnet » : les règles et leurs effectifs, le formulaire **Ajouter une règle**, le diagramme de flux, les signaux, les variables de l'échantillon et l'aperçu des paragraphes avec leurs trous. **En ligne de commande** : `ddict exclusions` (`lister`, `ajouter`, `retirer`, `deplacer`, `signaux`) et `ddict carnet echantillon` ; en anglais, `list`, `add`, `remove`, `move`, `signals` et `ddict notebook sample`. La page et les commandes écrivent les mêmes fichiers.
+- **Une correction en passant** : la phrase de résultat d'une corrélation écrit *r* sans zéro initial, comme les tableaux (« r(195) = ,07 »).
+- Une base fictive de passation (`etude-passation.sav`) et son corrigé, aux effectifs connus, pour les tests. Essai sur une vraie base : `docs/essais/2026-10-17-essai-methode.md`.
+- Guides : « La Méthode : exclusions, diagramme de flux et paragraphes », en français et en anglais.
+
 ## 0.11.0 — 2026-10-16
 
 Le carnet d'analyses : les analyses d'une étude, dans l'ordre de l'article, recalculées quand le codebook change, réunies dans un document des résultats et un script R maître (plan : `docs/plan-v0.11.md`, D-087 à D-092 ; fiche validée : `docs/carnet-analyses.md`). Aucune IA dans cette version.
