@@ -1664,6 +1664,10 @@ def _model_arguments(command: argparse.ArgumentParser, redo_help: str, block_siz
 
 def main(argv: list[str] | None = None) -> int:
     settings.apply()  # the language of this computer, or DDICT_LANG (v0.5)
+    for stream in (sys.stdout, sys.stderr):
+        # Redirected to a file, Windows writes in cp1252, which has no "−" (U+2212).
+        if hasattr(stream, "reconfigure") and not stream.isatty():
+            stream.reconfigure(encoding="utf-8")
     args = build_parser().parse_args(argv)
     try:
         return args.handler(args)

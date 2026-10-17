@@ -47,11 +47,13 @@ def _whole(value: float) -> str:
     return number(value, 0) if float(value).is_integer() else number(value)
 
 
-def _percent(value: float) -> str:
-    shown = number(value, 1)
-    if shown.endswith((",0", ".0")):  # "50 %", not "50,0 %"
-        shown = shown[:-2]
-    return _("{value} %").format(value=shown)
+def _percents(values: list[float]) -> list[str]:
+    """One decimal for every share of a variable, none if all are whole: "50 % ; 50 %",
+    but "56,9 % ; 42,0 % ; 1,1 %", never "42 %" next to "56,9 %"."""
+    shown = [number(v, 1) for v in values]
+    if all(s.endswith((",0", ".0")) for s in shown):
+        shown = [s[:-2] for s in shown]
+    return [_("{value} %").format(value=s) for s in shown]
 
 
 # --- Participants (P1 to P4). ---
@@ -61,16 +63,25 @@ def participants(project: Project, found: Facts, figure: int | None) -> Text:
     flow = found.flow
     reasons = {r.id: r.reason for r in project.exclusions.rules}
     parts = [marked(_("Au total, {n} personnes ont répondu au questionnaire."), n=str(flow.start))]
-    if flow.excluded:
-        listed = [
+    # A rule that excludes nobody stays in the figure, not in the sentence.
+    listed = [
+        marked(
+            _("{reason} ({n} = {count})"),
+            reason=_lower(reasons.get(rule, rule)),
+            n=it("n"),
+            count=str(count),
+        )
+        for rule, count in flow.excluded
+        if count
+    ]
+    if flow.excluded and not listed:
+        parts.append(
             marked(
-                _("{reason} ({n} = {count})"),
-                reason=_lower(reasons.get(rule, rule)),
-                n=it("n"),
-                count=str(count),
+                _("Aucune n'a été exclue par les règles d'exclusion (Figure {figure})."),
+                figure=str(figure),
             )
-            for rule, count in flow.excluded
-        ]
+        )
+    elif listed:
         parts.append(
             marked(
                 _(
@@ -88,9 +99,12 @@ def participants(project: Project, found: Facts, figure: int | None) -> Text:
         for d in found.described:
             label = _lower(d.label)
             if d.categories:
+                percents = _percents([percent for _code, _category, percent in d.categories])
                 shares = [
-                    rich(f"{_lower(category)}, {_percent(percent)}")
-                    for _code, category, percent in d.categories
+                    rich(f"{_lower(category)}, {shown}")
+                    for (_code, category, _percent), shown in zip(
+                        d.categories, percents, strict=True
+                    )
                 ]
                 items.append(
                     marked(_("{label} ({shares})"), label=label, shares=_join(shares, semicolon()))

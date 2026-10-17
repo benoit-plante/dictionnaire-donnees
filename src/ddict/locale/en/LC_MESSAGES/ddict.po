@@ -492,6 +492,10 @@ msgstr "None"
 msgid "Aucune analyse retenue dans le carnet."
 msgstr "No retained analysis in the notebook."
 
+#, python-brace-format
+msgid "Aucune n'a été exclue par les règles d'exclusion (Figure {figure})."
+msgstr "None were excluded by the exclusion rules (Figure {figure})."
+
 msgid "Aucune nouvelle proposition."
 msgstr "No new proposal."
 

@@ -127,8 +127,9 @@ Chaque phrase, avec l'origine de ses champs. Les trous sont surlignés en jaune 
 | P4 | Elles sont décrites par les variables suivantes : {libellé} (*M* = {M}, *ÉT* = {ÉT}) ; {libellé} ({modalité}, {p} % ; …). | They are described by the following variables: {label} (*M* = {M}, *SD* = {SD}); {label} ({category}, {p}%; …). | variables choisies sur la page « Méthode », calculées sur l'échantillon analysé |
 
 - P2 est omise sans règle d'exclusion ; P4, sans variable choisie.
+- Dans P2, une règle qui n'exclut personne est omise (elle reste dans le diagramme de flux). Si aucune règle n'exclut personne, P2 devient « Aucune n'a été exclue par les règles d'exclusion (Figure {k}). » (« None were excluded by the exclusion rules (Figure {k}). »).
 - Dans P4, un effectif plus petit que le *N* analysé est donné : « Âge (années) (*M* = 34,6, *ÉT* = 11,2, *n* = 341) ».
-- Les pourcentages ont une décimale au plus, sans décimale s'ils sont entiers ; les catégories suivent l'ordre des codes.
+- Les pourcentages d'une variable ont tous une décimale, ou aucun s'ils sont tous entiers (« 56,9 % ; 42,0 % », mais « 50 % ; 50 % ») ; les catégories suivent l'ordre des codes.
 - Ni minimum ni maximum : comme dans le carnet (D-088), aucune valeur observée isolée. L'équipe peut ajouter l'étendue dans Word.
 
 **Exemple** (statistiques illustratives) :

@@ -66,6 +66,21 @@ def _counts(out: str) -> dict[str, int]:
 # --- The command line. ---
 
 
+def test_redirected_output_is_written_in_utf8(tmp_path, monkeypatch):
+    """Redirected to a file, Windows gives cp1252, which has no "−" of the results."""
+    path = _folder(tmp_path)
+    written = io.BytesIO()
+    monkeypatch.setattr("sys.stdout", io.TextIOWrapper(written, encoding="cp1252"))
+    assert main(["exclusions", "lister", str(path)]) == 0
+    import sys
+
+    sys.stdout.write("r(195) = −,07\n")
+    sys.stdout.flush()
+    assert sys.stdout.encoding == "utf-8"
+    out = written.getvalue().decode("utf-8")
+    assert "Aucune règle d'exclusion" in out and "−,07" in out
+
+
 def test_the_exclusion_commands(tmp_path, capsys):
     path = _folder(tmp_path)
     assert main(["exclusions", "lister", str(path)]) == 0

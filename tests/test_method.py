@@ -181,6 +181,41 @@ def test_no_rule_no_exclusion_sentence():
                            "analysé compte 400 personnes.")  # fmt: skip
 
 
+def _participants_with(project, prepared, notebook, flow, language="fr"):
+    from dataclasses import replace
+
+    from ddict import i18n
+
+    found = replace(method.facts(project, prepared, notebook), flow=flow)
+    with i18n.using(language):
+        return plain(method_text.participants(project, found, 1))
+
+
+def test_a_rule_that_excludes_nobody_is_left_out_of_the_sentence(ready):
+    from dataclasses import replace
+
+    project, _table, prepared, notebook = ready
+    flow = method.facts(project, prepared, notebook).flow
+    first, second, *rest = flow.excluded
+    some = replace(flow, excluded=(first, (second[0], 0), *rest),
+                   analysed=flow.analysed + second[1])  # fmt: skip
+    text = _participants_with(project, prepared, notebook, some)
+    assert "moins de 18 ans" not in text and "(n = 0)" not in text
+    assert "46 ont été exclues" in text and "refus de consentement (n = 12)" in text
+    nobody = replace(flow, excluded=tuple((rule, 0) for rule, _n in flow.excluded),
+                     analysed=flow.start)  # fmt: skip
+    text = _participants_with(project, prepared, notebook, nobody)
+    assert "Aucune n'a été exclue par les règles d'exclusion (Figure 1)." in text
+    assert "0 ont été exclues" not in text and "(n = 0)" not in text
+    english = _participants_with(project, prepared, notebook, nobody, "en")
+    assert "None were excluded by the exclusion rules (Figure 1)." in english
+
+
+def test_the_shares_of_a_variable_have_the_same_decimals():
+    assert method_text._percents([56.9, 42.0, 1.1]) == ["56,9 %", "42,0 %", "1,1 %"]
+    assert method_text._percents([50.0, 50.0]) == ["50 %", "50 %"]
+
+
 def test_every_number_has_an_origin(ready):
     """Each number of the text is a count, a statistic, a code, a bound or a version that
     the codebook or the facts hold: nothing else (D-097)."""
