@@ -12,6 +12,8 @@ from ddict.review import logic
 from ddict.review.ui import bulk_view
 from ddict.review.ui import common as c
 
+NEW_TERM = "glossary-new-term"  # the acronym to add, which other pages may fill in (v0.16)
+
 
 def _glossary_entry(project: Project, item) -> None:
     term = item.term
@@ -99,20 +101,24 @@ def page(project: Project) -> None:
     if undefined:
         st.subheader(_("Sigles probables sans définition"))
         for part, names in undefined.items():
-            st.write(f"**{part.upper()}** : {', '.join(names)}")
+            text, button = st.columns([4, 1], vertical_alignment="center")
+            text.write(f"**{part.upper()}** : {', '.join(names)}")
+            with button:
+                c.offer(_("Définir {term}").format(term=part), f"define-{part}", NEW_TERM,
+                        part.upper())  # fmt: skip
 
     st.subheader(_("Ajouter un sigle"))
     with st.form("form-glossary-add", border=False):
         c1, c2 = st.columns([1, 3])
-        c1.text_input(_("Sigle"), key=c.field("glossary-new-term", str))
+        c1.text_input(_("Sigle"), key=c.field(NEW_TERM, str))
         c2.text_input(_("Définition"), key=c.field("glossary-new-meaning", str))
         c.button(
             _("Ajouter"),
             "glossary-add",
             logic.glossary_write,
-            c.state("glossary-new-term"),
+            c.state(NEW_TERM),
             c.state("glossary-new-meaning"),
             timed=True,
-            reset=("glossary-new-term", "glossary-new-meaning"),
+            reset=(NEW_TERM, "glossary-new-meaning"),
             submit=True,
         )

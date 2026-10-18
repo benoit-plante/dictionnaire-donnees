@@ -23,7 +23,7 @@ from ddict.i18n import N_, Texts, _
 from ddict.project.model import Project
 from ddict.review import logic
 from ddict.review.ui import common as c
-from ddict.review.ui import dialog
+from ddict.review.ui import dialog, names_view
 from ddict.workflow import (
     context_paths,
     copy_error_text,
@@ -41,6 +41,7 @@ KIND = "export-kind"
 LANGUAGE = "export-language"
 DATABASE = "copy-database"  # the database chosen by hand, when not next to the project
 REPLACE = "copy-replace"
+CONFLICTS = "copy-conflicts"  # the copy was refused for a conflict of names (v0.16)
 OMIT = "export-omit"
 STATISTICS = "context-statistics"
 KINDS = Texts(
@@ -129,6 +130,7 @@ def _write_copy() -> None:
             copy_error_text(error, project.source.name),
             "export-copy-write",
         )
+        st.session_state[CONFLICTS] = error.reason == "name_conflict"
         return
     st.session_state[REPLACE] = False
     text = _(
@@ -172,6 +174,9 @@ def _copy_section(project: Project) -> None:
         disabled=target.exists() and not st.session_state.get(REPLACE),
     )
     c.show_message("export-copy-write")
+    if st.session_state.pop(CONFLICTS, False):
+        c.go_button(_("Régler les conflits de noms"), "go-names-conflicts", "names",
+                    **{names_view.FILTER: "conflicts"})  # fmt: skip
 
 
 def _open_folder() -> None:

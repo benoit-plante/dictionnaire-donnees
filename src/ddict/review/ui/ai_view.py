@@ -251,6 +251,7 @@ def page(project: Project) -> None:
     if project.questionnaire is None:
         st.subheader(JOBS["link"][0])
         st.info(_("Ajoutez d'abord le questionnaire de l'étude (page « Questionnaire »)."))
+        c.go_button(_("Ajouter le questionnaire"), "go-questionnaire", "questionnaire")
     else:
         found = candidates(project)
         _job(

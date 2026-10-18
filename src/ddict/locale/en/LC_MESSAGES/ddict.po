@@ -406,6 +406,9 @@ msgstr "Add the hypothesis"
 msgid "Ajouter la règle"
 msgstr "Add the rule"
 
+msgid "Ajouter le questionnaire"
+msgstr "Add the questionnaire"
+
 msgid "Ajouter le questionnaire de l'étude"
 msgstr "Add the study questionnaire"
 
@@ -940,6 +943,9 @@ msgstr "Choose the manuscript"
 msgid "Choisir le manuscrit…"
 msgstr "Choose the manuscript…"
 
+msgid "Choisir le modèle (IA locale)"
+msgstr "Choose the model (Local AI)"
+
 msgid "Choisir le questionnaire"
 msgstr "Choose the questionnaire"
 
@@ -1177,6 +1183,9 @@ msgstr ""
 
 msgid "Comparé à l'ébauche que l'outil écrit, recalculée sur la base."
 msgstr "Compared with the draft the tool writes, recomputed on the database."
+
+msgid "Compléter les groupes"
+msgstr "Complete the groups"
 
 msgid "Complétude"
 msgstr "Completeness"
@@ -1646,6 +1655,9 @@ msgstr "Start"
 msgid "Décider le niveau d'une variable."
 msgstr "Decide the level of a variable."
 
+msgid "Décider les niveaux de mesure (page Base)"
+msgstr "Decide the measure levels (Database page)"
+
 msgid ""
 "Décidez dans le tableau : choisissez « Accepter » ou « Rejeter » dans la colonne « Décision », ou"
 " écrivez un autre nom dans « Nouveau nom » (il est alors décidé, et vérifié). Puis « Enregistrer "
@@ -1677,6 +1689,10 @@ msgid ""
 msgstr ""
 "Describes the participants: mean and standard deviation of the continuous variables, counts and "
 "percentages of the categories, by group if needed."
+
+#, python-brace-format
+msgid "Définir {term}"
+msgstr "Define {term}"
 
 msgid "Définition"
 msgstr "Definition"
@@ -3851,6 +3867,18 @@ msgstr "Open"
 msgid "Ouvrir l'interface de révision dans le navigateur (cet ordinateur seulement)."
 msgstr "Open the review interface in the browser (this computer only)."
 
+msgid "Ouvrir la page Analyses"
+msgstr "Open the Analyses page"
+
+msgid "Ouvrir la page Méthode"
+msgstr "Open the Method page"
+
+msgid "Ouvrir la page Variables"
+msgstr "Open the Variables page"
+
+msgid "Ouvrir le carnet"
+msgstr "Open the notebook"
+
 msgid "Ouvrir le dossier"
 msgstr "Open the folder"
 
@@ -4671,6 +4699,9 @@ msgstr "References (one per line)"
 
 msgid "Réglages de nommage"
 msgstr "Naming settings"
+
+msgid "Régler les conflits de noms"
+msgstr "Settle the name conflicts"
 
 msgid "Régler α, la correction, la taille d'échantillon, l'origine et l'état des données."
 msgstr "Set α, the correction, the sample size, the origin and the state of the data."
@@ -5561,6 +5592,9 @@ msgstr ""
 #, python-brace-format
 msgid "Valeurs sans groupe : {values}. Mettez-les dans un groupe, ou déclarez-les manquantes."
 msgstr "Values without a group: {values}. Put them in a group, or declare them missing."
+
+msgid "Valider les sigles"
+msgstr "Accept the acronyms"
 
 msgid "Valides"
 msgstr "Valid"

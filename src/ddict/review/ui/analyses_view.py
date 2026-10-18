@@ -103,6 +103,8 @@ def _choose_variables(project: Project, key: str, book: Codebook) -> dict[str, l
                     "page Base."
                 ).format(role=ROLES[role.key])
             )
+            c.go_button(_("Décider les niveaux de mesure (page Base)"),
+                        f"go-base-{widget}", "base")  # fmt: skip
             continue
         if role.most == 1:
             picked = st.selectbox(
@@ -374,6 +376,8 @@ def _notebook_button(project: Project, prepared: PreparedData, asked: tuple, res
         args=(project, prepared, asked, result),
     )
     c.show_message("analysis-add")
+    if done:
+        c.go_button(_("Ouvrir le carnet"), "go-notebook", "notebook")
 
 
 def page(project: Project) -> None:
@@ -410,6 +414,9 @@ def page(project: Project) -> None:
     if found is not None and not current:
         for reason in found.refusals:
             st.error(reason)
+        undecided = [n for names in chosen.values() for n in names if book.levels.get(n) is None]
+        if undecided:
+            c.go_button(_("Décider les niveaux de mesure (page Base)"), "go-base-levels", "base")
         for warning in found.warnings:
             st.warning(warning)
     st.button(

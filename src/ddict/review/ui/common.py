@@ -87,6 +87,25 @@ def field(key: str, fresh) -> str:
     return key
 
 
+def go_to(mode: str, **filled) -> None:
+    """Open another page with its fields filled (v0.16): the only place that knows how a
+    page is chosen, so that the navigation by phases changes only this function."""
+    st.session_state.mode = mode
+    st.session_state.update(filled)
+
+
+def go_button(label: str, key: str, mode: str, **filled) -> None:
+    """The button of a message that points to another page (v0.16, finding 11)."""
+    st.button(
+        label, key=key, on_click=go_to, args=(mode,), kwargs=filled, icon=":material/arrow_forward:"
+    )
+
+
+def variable_fields(name: str) -> dict:
+    """What `go_to` fills to open the page Variables on one variable."""
+    return {"filter": "all", "current": name, "variable": name}
+
+
 def offer(label: str, key: str, target: str, value) -> None:
     """A button that puts what the tool computes into the field `target`, without saving it
     (v0.16, D-126): a decision field never starts from a computed value."""

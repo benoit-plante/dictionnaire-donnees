@@ -264,6 +264,7 @@ def _method(status) -> None:
                 "et la fidélité des scores. Ils se règlent sur la page Méthode."
             )
         )
+        c.go_button(_("Ouvrir la page Méthode"), "go-method", "method")
         if status.reason:
             st.caption(status.reason)
         if status.state == "changed":
@@ -298,6 +299,7 @@ def page(project: Project) -> None:
                 "« Ajouter au carnet »."
             )
         )
+        c.go_button(_("Ouvrir la page Analyses"), "go-analyses", "analyses")
         return
     prepared = analyses_view.prepared_data(project, "notebook")
     statuses = _statuses(project, notebook, prepared)

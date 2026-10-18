@@ -261,7 +261,10 @@ def listing(project: Project) -> None:
                 "encadré « Recoder cette variable »."
             )
         )
+        c.go_button(_("Ouvrir la page Variables"), "go-variables-recode", "variables",
+                    filter="all")  # fmt: skip
         return
+    sources = {rule.id: rule.source.variable for rule in project.recodes.rules}
     for rule_id, name, label, level, source, parts, reason in rows:
         st.markdown(f"**{rule_id} — `{name}`** ({level}) : {label}")
         st.caption(
@@ -269,5 +272,15 @@ def listing(project: Project) -> None:
                 source=source, parts=parts, reason=reason
             )
         )
-        c.button(_("Retirer"), f"recode-list-remove-{rule_id}", _remove, rule_id)
+        with st.container(horizontal=True):
+            if sources[rule_id] is not None:  # a score's recoding has no variable page
+                c.go_button(
+                    _("Modifier {id}").format(id=rule_id),
+                    f"go-recode-{rule_id}",
+                    "variables",
+                    **c.variable_fields(sources[rule_id]),
+                )
+            c.button(_("Retirer"), f"recode-list-remove-{rule_id}", _remove, rule_id,
+                     message=False)  # fmt: skip
+        c.show_message(f"recode-list-remove-{rule_id}")
     st.caption(_("Pour modifier un recodage : page « Variables », sa variable source."))

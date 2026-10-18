@@ -495,6 +495,7 @@ def _preview(project: Project, prepared: PreparedData, notebook: nb.Notebook) ->
             "à compléter sur la page Groupes, ou dans Word."
         )
     )
+    c.go_button(_("Compléter les groupes"), "go-groups", "groups")
     found = method_facts.facts(project, prepared, notebook)
     flow = prepared.flow
     figure = notebook.first_figure if flow is not None and flow.excluded else None

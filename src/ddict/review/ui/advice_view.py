@@ -154,6 +154,7 @@ def panel(project: Project) -> None:
                 "l'objectif. Le modèle se choisit sur la page IA locale."
             ).format(model=model)
         )
+        c.go_button(_("Choisir le modèle (IA locale)"), "go-ai-advice", "ai")
         objective = str(st.session_state.get(GOAL) or "")
         left, right = st.columns(2)
         left.button(_("Voir ce qui serait envoyé"), key="advice-show", on_click=_toggle_preview)

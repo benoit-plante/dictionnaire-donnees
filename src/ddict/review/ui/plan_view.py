@@ -337,6 +337,8 @@ def _choose(project: Project, key: str, book: Codebook) -> dict[str, list[str]]:
                     "page Base."
                 ).format(role=ROLES[role.key])
             )
+            c.go_button(_("Décider les niveaux de mesure (page Base)"),
+                        f"go-base-{widget}", "base")  # fmt: skip
             continue
         if role.most == 1:
             picked = st.selectbox(

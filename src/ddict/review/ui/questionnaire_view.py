@@ -11,12 +11,13 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+from ddict import glossary
 from ddict.i18n import N_, Texts, _
 from ddict.io import ReadError
 from ddict.project import save_project
 from ddict.project.model import Project
 from ddict.review.ui import common as c
-from ddict.review.ui import dialog
+from ddict.review.ui import dialog, glossary_view
 from ddict.workflow import (
     KINDS,
     TO_CHECK,
@@ -97,6 +98,24 @@ def _chooser(replace: bool) -> None:
     )
 
 
+def _acronym_buttons(project: Project) -> None:
+    """Each message on acronyms leads to the glossary, the acronym filled in (v0.16)."""
+    pending = any(e.status == "proposed" for e in project.glossary)
+    undefined = list(glossary.undefined_acronyms(project))
+    if not pending and not undefined:
+        return
+    with st.container(horizontal=True):
+        if pending:
+            c.go_button(_("Valider les sigles"), "go-glossary-pending", "glossary")
+        for part in undefined:
+            c.go_button(
+                _("Définir {term}").format(term=part),
+                f"go-define-{part}",
+                "glossary",
+                **{glossary_view.NEW_TERM: part.upper()},
+            )
+
+
 def page(project: Project) -> None:
     st.header(_("Questionnaire de l'étude"))
     questionnaire = project.questionnaire
@@ -125,6 +144,7 @@ def page(project: Project) -> None:
         st.info(line)
     for line in acronym_summary(project):
         st.info(line)
+    _acronym_buttons(project)
     if any(q.to_check for q in questionnaire.questions):
         st.write(
             _(
