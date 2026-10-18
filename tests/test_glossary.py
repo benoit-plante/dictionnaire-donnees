@@ -16,6 +16,7 @@ from ddict.llm.schemas import VariableProposal
 from ddict.project import build_project, load_project, save_project
 from ddict.project.model import GlossaryEntry
 from ddict.questionnaire import load_questionnaire
+from ddict.review import logic
 
 NOW = "2026-10-13T22:00:00"
 APP = str(Path(__file__).resolve().parent.parent / "src" / "ddict" / "review" / "app.py")
@@ -184,3 +185,76 @@ def test_glossary_view(app):
     assert (added.meaning, added.origin) == ("Anxiété", "human")
     assert test.text_input(key="glossary-new-term").value == ""  # ready for the next one
     assert not any("ANX" in m.value for m in test.markdown if "sans définition" in m.value)
+
+
+# --- v0.16, step A2 (D-121): "Accepter" takes the meaning shown; grouped acceptance. ---
+
+
+def test_accept_takes_the_meaning_shown(project):
+    glossary.propose_from_questionnaire(project)
+    proposed = glossary.entry(project, "TCC").meaning
+    logic.glossary_accept(project, "TCC", "Thérapie cognitivo-comportementale", now=NOW)
+    tcc = glossary.entry(project, "TCC")
+    assert (tcc.meaning, tcc.status, tcc.proposed_meaning) == (
+        "Thérapie cognitivo-comportementale",
+        "corrected",
+        proposed,
+    )
+    logic.glossary_accept(project, "QFS", glossary.entry(project, "QFS").meaning, now=NOW)
+    assert glossary.entry(project, "QFS").status == "validated"
+    with pytest.raises(logic.ReviewError, match="n'attend plus de décision"):
+        logic.glossary_accept(project, "QFS", "Autre", now=NOW)
+    with pytest.raises(logic.ReviewError, match="Rejeter"):
+        logic.glossary_accept(project, "EFA", "  ", now=NOW)
+
+
+def test_accept_the_acronyms_of_a_list(project):
+    glossary.propose_from_questionnaire(project)
+    shown = {e.term: e.meaning for e in project.glossary}
+    shown["EFA"] = "Échelle fictive d'anxiété (version courte)"
+    with pytest.raises(logic.ReviewError, match="Aucun sigle coché"):
+        logic.accept_glossary(project, shown, [], now=NOW)
+    logic.accept_glossary(project, shown, ["QFS", "EFA"], now=NOW)
+    states = {e.term: e.status for e in project.glossary}
+    assert states == {"QFS": "validated", "EFA": "corrected", "TCC": "proposed"}
+    assert glossary.entry(project, "EFA").meaning == "Échelle fictive d'anxiété (version courte)"
+    with pytest.raises(logic.ReviewError, match="QFS"):
+        logic.accept_glossary(project, shown, ["QFS", "TCC"], now=NOW)
+    assert glossary.entry(project, "TCC").status == "proposed"  # all or nothing
+
+
+@pytest.mark.allow_hosts(["127.0.0.1"])
+def test_a_corrected_then_accepted_meaning_is_kept(app):
+    test, path = app
+    proposed = glossary.entry(load_project(path), "TCC").meaning
+    assert not [b for b in test.button if b.key == "save-glossary-TCC"]  # no third button
+    test.text_input(key="input-glossary-TCC").input("Thérapie cognitivo-comportementale").run()
+    assert any("enregistrera votre correction" in m.value for m in test.markdown)
+    test.button(key="accept-glossary-TCC").click().run()
+    assert not test.exception, test.exception
+    tcc = glossary.entry(load_project(path), "TCC")
+    assert (tcc.meaning, tcc.status, tcc.proposed_meaning) == (
+        "Thérapie cognitivo-comportementale",
+        "corrected",
+        proposed,
+    )
+    # Once decided, the meaning can still be changed with "Enregistrer".
+    assert [b for b in test.button if b.key == "save-glossary-TCC"]
+
+
+@pytest.mark.allow_hosts(["127.0.0.1"])
+def test_accept_all_shows_the_meanings_then_accepts_the_checked_ones(app):
+    test, path = app
+    corrected = "Échelle fictive d'anxiété (version courte)"
+    test.text_input(key="input-glossary-EFA").input(corrected).run()
+    test.button(key="bulk-glossary-open").click().run()
+    labels = [b.label for b in test.checkbox]
+    assert f"**EFA** : {corrected}" in labels, labels
+    test.checkbox(key="bulk-glossary-QFS").uncheck().run()
+    accept = test.button(key="bulk-glossary-accept")
+    assert accept.label == "Accepter ces 2 sigles"
+    accept.click().run()
+    assert not test.exception, test.exception
+    assert any("2 sigles acceptés." in s.value for s in test.success)
+    states = {e.term: e.status for e in load_project(path).glossary}
+    assert states == {"QFS": "proposed", "EFA": "corrected", "TCC": "validated"}

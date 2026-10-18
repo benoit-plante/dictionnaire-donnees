@@ -340,6 +340,10 @@ msgid "Accepter ces {n} rattachements"
 msgstr "Accept these {n} links"
 
 #, python-brace-format
+msgid "Accepter ces {n} sigles"
+msgstr "Accept these {n} acronyms"
+
+#, python-brace-format
 msgid "Accepter ces {n} étiquetages"
 msgstr "Accept these {n} sets of labels"
 
@@ -601,6 +605,9 @@ msgstr "No recoding. To create one: page “Variables”, the source variable, b
 msgid "Aucun score."
 msgstr "No score."
 
+msgid "Aucun sigle coché."
+msgstr "No acronym ticked."
+
 msgid "Aucun sigle pour l'instant."
 msgstr "No acronym yet."
 
@@ -841,6 +848,10 @@ msgstr "This project file cannot be found."
 msgid "Ce nom de score est déjà celui d'un autre groupe."
 msgstr "This score name is already another group's."
 
+#, python-brace-format
+msgid "Ce sigle n'attend plus de décision : {term}."
+msgstr "This acronym no longer waits for a decision: {term}."
+
 msgid "Centrer le prédicteur et le modérateur"
 msgstr "Centre the predictor and the moderator"
 
@@ -866,6 +877,10 @@ msgstr ""
 "These results come from the study's data: the team decides what may be published, in particular "
 "counts below 5."
 
+#, python-brace-format
+msgid "Ces sigles n'attendent plus de décision : {terms}."
+msgstr "These acronyms no longer wait for a decision: {terms}."
+
 msgid "Ces variables ne se lisent pas comme des dates."
 msgstr "These variables cannot be read as dates."
 
@@ -888,6 +903,13 @@ msgstr "Change this recoding instead of creating one."
 #, python-brace-format
 msgid "Chaque corrélation est calculée sur les personnes qui ont les deux valeurs ({n} de {a} à {b})."
 msgstr "Each correlation is computed on the people who have both values ({n} from {a} to {b})."
+
+msgid ""
+"Chaque sigle sera accepté avec la définition affichée ici, celle de son champ, corrigée ou non. "
+"Décochez ceux qui ne conviennent pas."
+msgstr ""
+"Each acronym will be accepted with the meaning shown here, the one in its field, corrected or "
+"not. Untick those that do not fit."
 
 #, python-brace-format
 msgid "Choisir de {least} à {most} variables"
@@ -4850,6 +4872,9 @@ msgstr "Likely acronyms without a definition"
 msgid "Sigles sans définition : {n}"
 msgstr "Acronyms without a definition: {n}"
 
+msgid "Sigles à valider"
+msgstr "Acronyms to accept"
+
 #, python-brace-format
 msgid "Sigles à valider : {n}"
 msgstr "Acronyms to accept: {n}"
@@ -5176,6 +5201,10 @@ msgstr "All files"
 
 msgid "Tous les items du groupe répondus, avec la même valeur."
 msgstr "Every item of the group answered, with the same value."
+
+#, python-brace-format
+msgid "Tout accepter ({n})…"
+msgstr "Accept all ({n})…"
 
 msgid "Tout confirmer"
 msgstr "Confirm everything"
@@ -7412,6 +7441,10 @@ msgid "{n} rattachements retirés : ils renvoyaient à l'ancien questionnaire. R
 msgstr "{n} links removed: they pointed to the former questionnaire. Run ddict link again."
 
 #, python-brace-format
+msgid "{n} sigles acceptés."
+msgstr "{n} acronyms accepted."
+
+#, python-brace-format
 msgid "{n} sigles, dont {p} à valider"
 msgstr "{n} acronyms, {p} of them to accept"
 
@@ -7616,6 +7649,11 @@ msgstr "{y} by {x}"
 #, python-brace-format
 msgid "§ {n}, phrase {k}"
 msgstr "§ {n}, sentence {k}"
+
+msgid ""
+"« Accepter » enregistrera votre correction ; la définition du questionnaire sera gardée comme "
+"origine."
+msgstr "“Accept” will save your correction; the questionnaire's meaning will be kept as its origin."
 
 msgid ""
 "« Non documenté » veut dire inconnu : ne pas le deviner. Ne citer aucun seuil, étendue ou "

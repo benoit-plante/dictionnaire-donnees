@@ -12,7 +12,7 @@ from pydantic import ValidationError
 
 from ddict import glossary, i18n
 from ddict.export.wording import entry_anomalies
-from ddict.i18n import N_, Texts, _
+from ddict.i18n import N_, Texts, _, quoted
 from ddict.project.decisions import DecisionError, correct, enter, reject, validate
 from ddict.project.model import (
     Group,
@@ -311,6 +311,36 @@ def glossary_write(project: Project, term: str, meaning: str, *, now: str) -> No
         glossary.write(project, term, meaning, now=now)
     except glossary.GlossaryError as error:
         raise ReviewError(str(error)) from error
+
+
+def glossary_accept(project: Project, term: str, shown: str, *, now: str) -> None:
+    """Accept the meaning shown in the field (v0.16, D-121): the questionnaire's, validated;
+    or the person's correction, kept with the questionnaire's as its origin."""
+    current = glossary.entry(project, term)
+    if current is None or current.status != "proposed":
+        raise ReviewError(
+            _("Ce sigle n'attend plus de décision : {term}.").format(term=quoted(term))
+        )
+    glossary_write(project, term, shown, now=now)
+
+
+def glossary_proposals(project: Project) -> list[str]:
+    """The acronyms of the questionnaire that wait for a decision."""
+    return [e.term for e in project.glossary if e.status == "proposed"]
+
+
+def accept_glossary(project: Project, shown: dict[str, str], terms: list[str], *, now: str) -> None:
+    """Accept these acronyms, each with the meaning shown in the list, one decision each."""
+    allowed = set(glossary_proposals(project))
+    outside = [t for t in terms if t not in allowed]
+    if outside:
+        raise ReviewError(
+            _("Ces sigles n'attendent plus de décision : {terms}.").format(terms=", ".join(outside))
+        )
+    if not terms:
+        raise ReviewError(_("Aucun sigle coché."))
+    for term in terms:
+        glossary_accept(project, term, shown[term], now=now)
 
 
 def set_instrument(project: Project, group_id: str, value: str, source: str) -> None:

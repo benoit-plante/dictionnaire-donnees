@@ -144,3 +144,49 @@ def labels_panel(project: Project, group_id: str) -> None:
         )
         right.button(_("Annuler"), key=f"bulk-labels-cancel-{group_id}", on_click=_close)
     st.divider()
+
+
+def glossary_panel(project: Project, shown: dict[str, str]) -> None:
+    """On the Glossary page (v0.16): the acronyms of the questionnaire that wait, each with
+    the meaning shown in its field, corrected or not (D-121)."""
+    terms = logic.glossary_proposals(project)
+    key = "bulk-glossary-accept"
+    if st.session_state.get(OPEN) != "glossary":
+        if terms:
+            st.button(
+                _("Tout accepter ({n})…").format(n=len(terms)),
+                key="bulk-glossary-open",
+                on_click=_open,
+                args=("glossary", "glossary", terms),
+            )
+        c.show_message(key)
+        return
+    with st.container(border=True):
+        st.markdown(f"**{_('Sigles à valider')}**")
+        st.write(
+            _(
+                "Chaque sigle sera accepté avec la définition affichée ici, celle de son champ, "
+                "corrigée ou non. Décochez ceux qui ne conviennent pas."
+            )
+        )
+        for term in terms:
+            st.checkbox(f"**{term}**{colon()}{shown[term]}", key=_box("glossary", term))
+        count = _checked_count("glossary", terms)
+        left, right = st.columns(2)
+        left.button(
+            _("Accepter ces {n} sigles").format(n=count),
+            key=key,
+            type="primary",
+            disabled=count == 0,
+            on_click=_accept,
+            args=(
+                logic.accept_glossary,
+                ({t: shown[t] for t in terms},),
+                "glossary",
+                terms,
+                key,
+                _("{n} sigles acceptés."),
+            ),
+        )
+        right.button(_("Annuler"), key="bulk-glossary-cancel", on_click=_close)
+    st.divider()

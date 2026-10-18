@@ -120,9 +120,11 @@ def button(
     primary: bool = False,
     reset: tuple[str, ...] = (),
     submit: bool = False,
+    message: bool = True,
 ) -> None:
     """A button that runs a decision; `submit` for the button of a form (st.form), whose
-    fields are sent together when it is clicked."""
+    fields are sent together when it is clicked. Without `message`, its message is shown
+    by the caller (buttons side by side, v0.16)."""
     widget = st.form_submit_button if submit else st.button
     widget(
         label,
@@ -132,7 +134,8 @@ def button(
         kwargs={"key": key, "timed": timed, "reset": reset},
         type="primary" if primary else "secondary",
     )
-    show_message(key)
+    if message:
+        show_message(key)
 
 
 def origin(project: Project, tracked: TrackedValue) -> str:

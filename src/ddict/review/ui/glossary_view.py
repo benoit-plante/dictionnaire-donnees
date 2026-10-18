@@ -9,6 +9,7 @@ from ddict.export import wording as w
 from ddict.i18n import _
 from ddict.project.model import Project
 from ddict.review import logic
+from ddict.review.ui import bulk_view
 from ddict.review.ui import common as c
 
 
@@ -28,20 +29,29 @@ def _glossary_entry(project: Project, item) -> None:
     if names:
         st.caption(_("Variables : {names}").format(names=", ".join(names)))
     reset = (f"input-{key}",)
+
+    def start() -> str:
+        current = glossary.entry(c.project(), term)
+        return "" if current is None or current.status == "rejected" else current.meaning
+
+    st.text_input(_("Définition"), key=c.field(f"input-{key}", start))
     if item.status == "proposed":
-        left, right = st.columns(2)
-        with left:
+        # One gesture (v0.16, D-121): "Accepter" takes the meaning shown, corrected or not.
+        if st.session_state[f"input-{key}"].strip() != item.meaning:
+            st.write(_("« Accepter » enregistrera votre correction ; la définition du "
+                       "questionnaire sera gardée comme origine."))  # fmt: skip
+        with st.container(horizontal=True):  # side by side (v0.16)
             c.button(
                 _("Accepter"),
                 f"accept-{key}",
-                logic.glossary_decide,
+                logic.glossary_accept,
                 term,
-                "accept",
+                c.state(f"input-{key}"),
                 timed=True,
                 primary=True,
                 reset=reset,
+                message=False,
             )
-        with right:
             c.button(
                 _("Rejeter"),
                 f"reject-{key}",
@@ -50,29 +60,20 @@ def _glossary_entry(project: Project, item) -> None:
                 "reject",
                 timed=True,
                 reset=reset,
+                message=False,
             )
-    else:
-        c.show_message(f"accept-{key}")
-        c.show_message(f"reject-{key}")
-
-    def start() -> str:
-        current = glossary.entry(c.project(), term)
-        return "" if current is None or current.status == "rejected" else current.meaning
-
-    st.text_input(
-        _("Définition"),
-        key=c.field(f"input-{key}", start),
-        label_visibility="collapsed",
-    )
-    c.button(
-        _("Enregistrer"),
-        f"save-{key}",
-        logic.glossary_write,
-        term,
-        c.state(f"input-{key}"),
-        timed=True,
-        reset=reset,
-    )
+    c.show_message(f"accept-{key}")
+    c.show_message(f"reject-{key}")
+    if item.status != "proposed":
+        c.button(
+            _("Enregistrer"),
+            f"save-{key}",
+            logic.glossary_write,
+            term,
+            c.state(f"input-{key}"),
+            timed=True,
+            reset=reset,
+        )
     st.divider()
 
 
@@ -84,6 +85,11 @@ def page(project: Project) -> None:
             "jamais. Une définition acceptée aide le modèle et figure dans le codebook."
         )
     )
+    shown = {  # what each field shows, corrected or not (D-121)
+        e.term: str(st.session_state.get(f"input-glossary-{e.term}") or e.meaning).strip()
+        for e in project.glossary
+    }
+    bulk_view.glossary_panel(project, shown)
     for item in list(project.glossary):
         _glossary_entry(project, item)
     if not project.glossary:
