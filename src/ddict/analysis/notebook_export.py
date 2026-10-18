@@ -50,7 +50,7 @@ from ddict.analysis.rscript import r_master
 from ddict.export.preparation import needed as preparation_needed
 from ddict.export.preparation import render_preparation
 from ddict.export.syntax import render_syntax
-from ddict.i18n import _, semicolon
+from ddict.i18n import _, colon, semicolon
 from ddict.project import fingerprint
 from ddict.project.model import Project
 
@@ -78,7 +78,7 @@ def _edits(entry: nb.Entry) -> dict[str, Edit]:
 def _variables(book: Codebook, chosen: dict[str, list[str]]) -> str:
     parts = []
     for role, names in chosen.items():
-        parts.append(f"{ROLES[role]} : " + ", ".join(book.label(n) for n in names))
+        parts.append(ROLES[role] + colon() + ", ".join(book.label(n) for n in names))
     return semicolon().join(parts)
 
 

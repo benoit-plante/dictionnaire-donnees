@@ -20,6 +20,7 @@ from pathlib import Path
 from ddict import __version__
 from ddict.export import wording as w
 from ddict.i18n import _, in_language
+from ddict.io.csv_reader import MISSING_TOKENS
 from ddict.project import fingerprint, measure
 from ddict.project.model import Code, Project, VariableEntry
 from ddict.questionnaire.labels import accepted_labels
@@ -204,6 +205,30 @@ def _r_code(code: Code, string: bool) -> str:
     return _r_text(str(code)) if string else _number(code)
 
 
+R_ENCODINGS = {"utf-8": "UTF-8", "utf-8-sig": "UTF-8-BOM", "cp1252": "CP1252"}
+
+
+def _r_csv(project: Project, name: str) -> str:
+    """read.csv as the tool read the file (v0.13): its separator, decimal mark and encoding,
+    the names as they are, an empty cell or a missing-value token as NA, and the columns the
+    tool read as text kept as text (a code "007" stays "007")."""
+    source = project.source
+    encoding = source.encoding or "utf-8"
+    parts = [name]
+    if source.delimiter and source.delimiter != ",":
+        parts.append(f"sep = {_r_text(source.delimiter)}")
+    if source.decimal and source.decimal != ".":
+        parts.append(f"dec = {_r_text(source.decimal)}")
+    parts.append(f"fileEncoding = {_r_text(R_ENCODINGS.get(encoding.lower(), encoding))}")
+    tokens = ", ".join(_r_text(t) for t in ("", *MISSING_TOKENS))
+    parts += [f"na.strings = c({tokens})", "check.names = FALSE"]
+    strings = [e.name for e in project.variables if e.file.storage_type == "string"]
+    if strings:
+        classes = ", ".join(f'{_r_text(n)} = "character"' for n in strings)
+        parts.append(f"colClasses = c({classes})")
+    return f"read.csv({', '.join(parts)})"
+
+
 def _r_reader(project: Project) -> str:
     name = _r_text(project.source.name)
     return {
@@ -211,7 +236,7 @@ def _r_reader(project: Project) -> str:
         "dta": f"haven::read_dta({name})",
         "sas7bdat": f"haven::read_sas({name})",
         "xlsx": f"readxl::read_excel({name})",
-    }.get(project.source.format, f'read.csv({name}, fileEncoding = "UTF-8")')
+    }.get(project.source.format) or _r_csv(project, name)
 
 
 def r_script(project: Project, today: str) -> str:

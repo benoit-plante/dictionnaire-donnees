@@ -127,6 +127,14 @@ def _effect(project: Project, hypothesis: Hypothesis) -> str:
     return EFFECT_NAMES[effect.kind]
 
 
+def _code(text: str):
+    """A code of the "levels" option: a number, or a text code as it is."""
+    try:
+        return float(text)
+    except ValueError:
+        return text
+
+
 def _groups(project: Project, hypothesis: Hypothesis) -> tuple[str, str] | None:
     """The two groups a t test compares, by their labels: the modalities chosen, or the two
     value labels of the group variable."""
@@ -137,8 +145,8 @@ def _groups(project: Project, hypothesis: Hypothesis) -> tuple[str, str] | None:
     labels = {lab.code: lab.label for lab in accepted_labels(entry)}
     chosen = hypothesis.options.get("levels")
     if chosen:
-        codes = [float(c) for c in chosen.split(",")]
-        found = [labels.get(c, labels.get(int(c))) for c in codes]
+        codes = [_code(c.strip()) for c in chosen.split(",")]
+        found = [labels.get(c, labels.get(int(c) if isinstance(c, float) else c)) for c in codes]
         return tuple(found) if all(found) and len(found) == 2 else None
     if len(labels) == 2:
         first, second = sorted(labels, key=lambda c: (isinstance(c, str), c))

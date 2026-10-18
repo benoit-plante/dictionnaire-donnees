@@ -14,6 +14,7 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 from ddict.analysis import conditions
 from ddict.analysis.book import Codebook
+from ddict.analysis.data import chosen_levels, code_key
 from ddict.analysis.results import AnalysisResult, Table, bounded, interval, number, p_part
 from ddict.i18n import _, semicolon
 
@@ -58,7 +59,7 @@ def t_test(project, prepared, chosen, options) -> AnalysisResult:
     data = prepared.table[[outcome, group]].dropna()
     codes = sorted(set(data[group]))  # in the order of their codes, as in the R script
     if options.get("levels"):
-        wanted = [float(c) for c in str(options["levels"]).split(",")]
+        wanted = chosen_levels(options["levels"], data[group])
         codes = [c for c in wanted if c in set(data[group])]
     first, second = codes[:2]
     a = data.loc[data[group] == first, outcome].to_numpy(float)
@@ -251,7 +252,7 @@ def anova(project, prepared, chosen, options) -> AnalysisResult:
         "omega2": float(omega2),
     }
     if options.get("post_hoc") == "tukey":
-        tukey = pairwise_tukeyhsd(values, data[group].to_numpy(float))
+        tukey = pairwise_tukeyhsd(values, data[group].to_numpy())
         groups = tukey.groupsunique
         pairs = [
             (groups[i], groups[j]) for i in range(len(groups)) for j in range(i + 1, len(groups))
@@ -273,10 +274,11 @@ def anova(project, prepared, chosen, options) -> AnalysisResult:
                     p_part(padj),
                 ]
             )
-            found[f"tukey_{int(g2)}_{int(g1)}"] = float(diff)
-            found[f"tukey_p_{int(g2)}_{int(g1)}"] = float(padj)
-            found[f"tukey_low_{int(g2)}_{int(g1)}"] = float(low)
-            found[f"tukey_high_{int(g2)}_{int(g1)}"] = float(high)
+            pair = f"{code_key(g2)}_{code_key(g1)}"
+            found[f"tukey_{pair}"] = float(diff)
+            found[f"tukey_p_{pair}"] = float(padj)
+            found[f"tukey_low_{pair}"] = float(low)
+            found[f"tukey_high_{pair}"] = float(high)
         tables.append(
             Table(
                 _("Comparaisons deux à deux (Tukey)"),

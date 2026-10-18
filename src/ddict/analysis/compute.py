@@ -13,7 +13,7 @@ from scipy import stats
 from ddict.analysis import conditions, models
 from ddict.analysis.book import Codebook
 from ddict.analysis.catalogue import CATALOGUE
-from ddict.analysis.data import PreparedData
+from ddict.analysis.data import PreparedData, code_key
 from ddict.analysis.results import (
     AnalysisResult,
     Table,
@@ -114,13 +114,6 @@ def table1(project, prepared, chosen, options) -> AnalysisResult:
     statistics = _table1_statistics(book, variables, parts if group else [], kept)
     return AnalysisResult("table1", chosen, options, len(table) - excluded, excluded, tables,
                           statistics, warnings=warnings)  # fmt: skip
-
-
-def code_key(code) -> str:
-    """A code inside a statistic's key: "1", "2p5" for 2.5, "m9" for −9."""
-    value = float(code)
-    text = str(int(value)) if value.is_integer() else repr(value)
-    return text.replace("-", "m").replace(".", "p")
 
 
 def _table1_statistics(book: Codebook, variables: list[str], parts, kept) -> dict[str, float]:

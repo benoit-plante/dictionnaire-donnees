@@ -153,7 +153,9 @@ def _choose_options(
 
 
 def _code_option(code) -> str:
-    """A code as the options carry it: "1", "2.5"."""
+    """A code as the options carry it: "1", "2.5"; a text code as it is."""
+    if isinstance(code, str):
+        return code
     return str(int(code)) if float(code).is_integer() else str(code)
 
 

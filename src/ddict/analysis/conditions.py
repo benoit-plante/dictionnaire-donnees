@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 import pandas as pd
 
 from ddict.analysis.catalogue import CATALOGUE, ROLES, SCALE, Analysis
-from ddict.analysis.data import PreparedData
+from ddict.analysis.data import PreparedData, chosen_levels
 from ddict.export import wording as w
 from ddict.export.preparation import plan
 from ddict.i18n import _
@@ -55,12 +55,19 @@ def levels(project: Project) -> dict[str, str | None]:
     return found
 
 
+def texts(project: Project) -> set[str]:
+    """The variables whose codes are texts ("oui", "non"), by final name (v0.13)."""
+    return {w.final_name(e) for e in project.variables if e.profile.inferred_type == "text"}
+
+
 def _sensitive(project: Project) -> set[str]:
     return {
         w.final_name(e)
         for e in project.variables
         if (e.privacy.privacy_class.value or "ordinary") in SENSITIVE
-        or e.profile.inferred_type in ("text", "empty", "mixed", "date", "datetime")
+        or e.profile.inferred_type in ("empty", "mixed", "date", "datetime")
+        # Categories written as text enter once nominal; free text is a privacy class.
+        or (e.profile.inferred_type == "text" and measure.level(e) != "nominal")
     }
 
 
@@ -150,7 +157,7 @@ def _with_data(project, analysis, chosen, options, table: pd.DataFrame, found: C
         for name in chosen.get(role.key, []):
             counts = complete[name].value_counts()
             if analysis.key == "t_test" and options.get("levels"):
-                wanted = [float(c) for c in str(options["levels"]).split(",")]
+                wanted = chosen_levels(options["levels"], complete[name])
                 counts = counts[counts.index.isin(wanted)]
             low, high = role.modalities
             n = len(counts)

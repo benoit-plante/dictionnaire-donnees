@@ -10,6 +10,7 @@ The original file is never changed, and nothing of the data is written in the pr
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -39,6 +40,25 @@ class PreparedData:
     scores: dict[str, str]  # score name -> group id
     reversed: dict[str, str]  # new variable -> final name of the item
     flow: exclusions.Flow | None = None  # v0.12: who the exclusion rules kept
+
+
+def code_key(code) -> str:
+    """A code inside a statistic's key: "1", "2p5" for 2.5, "m9" for −9; a text code with
+    "s" before it and "_" for each sign other than an ASCII letter or digit ("sin_service")."""
+    if isinstance(code, str):
+        return "s" + re.sub(r"[^0-9A-Za-z]", "_", code)
+    value = float(code)
+    text = str(int(value)) if value.is_integer() else repr(value)
+    return text.replace("-", "m").replace(".", "p")
+
+
+def chosen_levels(text: str, column: pd.Series) -> list:
+    """The codes of a t test's "levels" option ("1,3"; "non,oui" for a text variable), typed
+    as the column holds them."""
+    parts = [part.strip() for part in str(text).split(",")]
+    if column.dtype == object:
+        return parts
+    return [float(part) for part in parts]
 
 
 def find_database(project: Project, project_path: Path, given: Path | None = None) -> Path:
@@ -81,6 +101,8 @@ def apply_decisions(project: Project, table: pd.DataFrame) -> PreparedData:
             column
         ):
             column = pd.to_numeric(column, errors="coerce")
+        elif column.dtype == object:
+            column = column.mask(exclusions.blank(column))  # an empty text is missing, as profiled
         columns[names[entry.name]] = _without_missing(column, entry).reset_index(drop=True)
     data = pd.DataFrame(columns)
     reversals, scores, _notes = plan(project)

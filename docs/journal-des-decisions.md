@@ -1330,3 +1330,17 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
 - **Justification :** Remarque de l'auteur : les données ne sont pas toujours secondaires. Ce qui compte est ce que l'équipe savait des données en écrivant son plan ; le gabarit OSF Prereg le demande explicitement et convient aux données primaires. La licence d'AsPredicted n'est pas claire.
 - **Conséquences :** l'export d'essai demandera de rattacher un projet et son carnet à une nouvelle version de la base (aujourd'hui, le carnet refuse une autre base) : une décision à part, plus tard.
 - **Références :** `docs/plan-analyse-article.md`, § 8 ; `docs/dependances.md`, contenus tiers.
+
+### D-110 — Les catégories écrites en texte entrent dans les analyses
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Décision :** Une variable dont les valeurs sont des textes (« oui », « non », « in-service ») peut entrer dans une analyse dès que son niveau en vigueur est « nominal » : proposé par la règle des niveaux (D-066) puis accepté, ou décidé par l'équipe. Le texte libre, les identifiants, les dates et les variables vides ou de types mélangés restent exclus, comme avant ; le texte libre l'est par sa classe de confidentialité, quel que soit son niveau. Une case de texte vide est une valeur manquante dans l'analyse, comme dans le profil. Les codes de texte gardent l'ordre de leurs points de code, en Python comme en R ; dans la clé d'une statistique, un code de texte s'écrit « s » suivi du code, chaque signe autre qu'une lettre ASCII ou un chiffre devenant « _ » ; `--modalites` accepte les codes de texte tels que l'équipe les tape. Le script R lit le CSV comme l'outil l'a lu : séparateur, marque décimale et encodage détectés, cases vides et marques de manquants en NA, noms tels quels, colonnes de texte gardées en texte.
+- **Options considérées :**
+  1. Les catégories en texte entrent une fois nominales (ce choix).
+  2. Garder toute variable texte hors des analyses (CONCEPTION, § 15, « jamais un texte ») : l'équipe recode d'abord en nombres, hors de l'outil.
+  3. Recoder les textes en nombres dans l'outil, avec des étiquettes.
+- **Justification :** L'essai sur la base ouverte AMATUS (`docs/essais/2026-10-18-essai-plan-article-amatus.md`) : dans un CSV, les groupes sont souvent écrits en toutes lettres. L'outil leur proposait le niveau « nominal », puis les refusait dans toute analyse ; aucune hypothèse de l'article reproduit ne pouvait s'écrire. Le texte libre est déjà repéré à part, par la porte de confidentialité ; l'exclure par son type faisait double emploi et retirait aussi les catégories. Recoder dans l'outil ajouterait une décision par variable sans rien apprendre de plus.
+- **Conséquences :** `ddict.analysis.conditions` exclut le texte selon son niveau ; `ddict.analysis.data` traite une case de texte vide comme manquante ; `code_key` et `chosen_levels` (dans `ddict.analysis.data`) servent aux tests t, au tableau 1, au khi-carré et au test de Tukey ; le script R gagne `ddict_txt`, `ddict_tri` et `ddict_fac`, et sa lecture du CSV suit la détection de l'outil (un CSV séparé par des points-virgules ne se lisait pas). Les autres usages des codes restent numériques.
+- **Références :** `docs/CONCEPTION.md`, § 15 ; D-066 ; D-071 ; `tests/test_text_categories.py`.
+

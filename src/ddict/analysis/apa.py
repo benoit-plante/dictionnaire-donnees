@@ -22,7 +22,7 @@ from scipy import stats
 
 from ddict import i18n
 from ddict.analysis.book import Codebook
-from ddict.analysis.data import PreparedData
+from ddict.analysis.data import PreparedData, chosen_levels
 from ddict.analysis.models import _codes
 from ddict.analysis.results import MINUS, AnalysisResult, number, p_value
 from ddict.i18n import _
@@ -408,7 +408,7 @@ def _two_groups(book, prepared, result):
     data = prepared.table[[outcome, group]].dropna()
     codes = sorted(set(data[group]))
     if result.options.get("levels"):
-        wanted = [float(c) for c in str(result.options["levels"]).split(",")]
+        wanted = chosen_levels(result.options["levels"], data[group])
         codes = [c for c in wanted if c in set(data[group])]
     codes = codes[:2]
     samples = [data.loc[data[group] == c, outcome].to_numpy(float) for c in codes]
