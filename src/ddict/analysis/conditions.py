@@ -120,7 +120,7 @@ def check(
                 )
     roles_used = [n for names in chosen.values() for n in names]
     twice = sorted({n for n in roles_used if roles_used.count(n) > 1})
-    if analysis.same_person and twice:
+    if twice:
         found.refusals.append(
             _("{names} : la même variable dans deux rôles.").format(names=", ".join(twice))
         )
@@ -210,6 +210,36 @@ def _with_data(project, analysis, chosen, options, table: pd.DataFrame, found: C
         elif len(complete) < SMALL:
             found.warnings.append(
                 _("Moins de {n} personnes ont toutes les mesures.").format(n=SMALL)
+            )
+    for name in [*chosen.get("moderator", []), *chosen.get("covariates", [])]:
+        if _levels_of(project, name) == "nominal" and complete[name].nunique() != 2:
+            found.refusals.append(
+                _("{name} : {n} modalités observées ; une variable nominale en a deux ici.").format(
+                    name=name, n=complete[name].nunique()
+                )
+            )
+    if analysis.key == "partial":
+        least = len(chosen.get("covariates", [])) + 4
+        if len(complete) < least:
+            found.refusals.append(
+                _("{n} observations : il en faut au moins {least}.").format(
+                    n=len(complete), least=least
+                )
+            )
+    if analysis.key == "moderation":
+        terms = 3 + len(chosen.get("covariates", []))
+        per = len(complete) / terms
+        if per < PER_PREDICTOR_LEAST:
+            found.refusals.append(
+                _(
+                    "{n} observations pour {k} termes : il en faut au moins {least} par terme."
+                ).format(n=len(complete), k=terms, least=PER_PREDICTOR_LEAST)
+            )
+        elif per < PER_PREDICTOR_WARN:
+            found.warnings.append(
+                _("{n} observations pour {k} termes : moins de {warn} par terme.").format(
+                    n=len(complete), k=terms, warn=PER_PREDICTOR_WARN
+                )
             )
     if analysis.key == "regression":
         predictors = chosen.get("predictors", [])

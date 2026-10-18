@@ -575,6 +575,14 @@ class ModelEffect(Strict):
     kind: Literal["model"] = "model"  # a regression's overall F
 
 
+class PartialEffect(Strict):
+    kind: Literal["partial"] = "partial"  # v0.14: a partial correlation, of its two variables
+
+
+class InteractionEffect(Strict):
+    kind: Literal["interaction"] = "interaction"  # v0.14: a moderation's interaction
+
+
 class PairEffect(Strict):
     """A pair of a correlation, by its two variables, never by its position."""
 
@@ -590,7 +598,14 @@ class PredictorEffect(Strict):
 
 
 Effect = Annotated[
-    DifferenceEffect | GroupEffect | AssociationEffect | ModelEffect | PairEffect | PredictorEffect,
+    DifferenceEffect
+    | GroupEffect
+    | AssociationEffect
+    | ModelEffect
+    | PairEffect
+    | PredictorEffect
+    | PartialEffect
+    | InteractionEffect,
     Field(discriminator="kind"),
 ]
 Direction = Literal["first_higher", "second_higher", "positive", "negative"]

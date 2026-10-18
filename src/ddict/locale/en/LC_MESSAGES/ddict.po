@@ -222,9 +222,15 @@ msgstr "**Duration of administration**"
 msgid "**Grilles en ligne droite** (tous les items à la même valeur)"
 msgstr "**Grids in a straight line** (every item at the same value)"
 
+msgid "+1 ÉT"
+msgstr "+1 SD"
+
 #, python-brace-format
 msgid ", après inversion de {items} ({total} - x)"
 msgstr ", after reversing {items} ({total} - x)"
+
+msgid ", les covariables à leur moyenne"
+msgstr ", the covariates at their mean"
 
 #, python-brace-format
 msgid ", ligne {row}, colonne {column}"
@@ -763,6 +769,9 @@ msgstr "This project file cannot be found."
 msgid "Ce nom de score est déjà celui d'un autre groupe."
 msgstr "This score name is already another group's."
 
+msgid "Centrer le prédicteur et le modérateur"
+msgstr "Centre the predictor and the moderator"
+
 msgid "Ces items ne sont pas tous dans le groupe."
 msgstr "These items are not all in the group."
 
@@ -1142,11 +1151,30 @@ msgstr "Correlation: relate continuous variables"
 msgid "Corrélation avec le reste du groupe"
 msgstr "Correlation with the rest of the group"
 
+msgid "Corrélation partielle"
+msgstr "Partial correlation"
+
+msgid "Corrélation partielle : relier deux variables à covariables constantes"
+msgstr "Partial correlation: relate two variables with covariates held constant"
+
+#, python-brace-format
+msgid "Corrélation simple et partielle de {a} et {b}"
+msgstr "Simple and partial correlation of {a} and {b}"
+
 msgid "Corrélations"
 msgstr "Correlations"
 
 msgid "Corrélations de Pearson ; entre crochets, l'IC 95 %."
 msgstr "Pearson correlations; in brackets, the 95% CI."
+
+#, python-brace-format
+msgid ""
+"Corrélations de Pearson ; le {r} partiel est la corrélation des résidus des deux variables "
+"régressées sur les covariables : {held}. Le {p} est celui du {r} partiel ; celui du {r} simple : "
+"{simple}."
+msgstr ""
+"Pearson correlations; the partial {r} is the correlation of the residuals of the two variables "
+"regressed on the covariates: {held}. The {p} is the partial {r}'s; the simple {r}'s: {simple}."
 
 msgid "Corrélations de Spearman."
 msgstr "Spearman correlations."
@@ -1162,6 +1190,12 @@ msgstr "Scoring (source)"
 
 msgid "Cotation : non documentée."
 msgstr "Scoring: not documented."
+
+msgid "Covariables"
+msgstr "Covariates"
+
+msgid "Covariables (corrélation partielle, modération)."
+msgstr "Covariates (partial correlation, moderation)."
 
 msgid "Critères d'inférence"
 msgstr "Inference criteria"
@@ -1251,6 +1285,9 @@ msgstr ""
 
 msgid "Des prédicteurs sont redondants (l'un se déduit exactement des autres) : retirez-en un."
 msgstr "Some predictors are redundant (one follows exactly from the others): remove one."
+
+msgid "Des termes du modèle se déduisent les uns des autres."
+msgstr "Terms of the model follow from one another."
 
 msgid "Descendre"
 msgstr "Move down"
@@ -2027,6 +2064,23 @@ msgstr ""
 msgid "L'instrument {instrument} mesure {what} au moyen de {k} items, notés de {low} à {high} {missing}."
 msgstr "The {instrument} measures {what} with {k} items, rated from {low} to {high} {missing}."
 
+#, python-brace-format
+msgid ""
+"L'interaction entre {x} et {w} était b = {b}, {ci}, t({df}) = {t}, {p}, ΔR² = {dr2} (n = {n}). La"
+" pente de {x} était b = {where}."
+msgstr ""
+"The interaction between {x} and {w} was b = {b}, {ci}, t({df}) = {t}, {p}, ΔR² = {dr2} (n = {n})."
+" The slope of {x} was b = {where}."
+
+msgid "L'interaction observée était nulle au centième près."
+msgstr "The observed interaction was zero to two decimals."
+
+msgid "L'interaction observée était négative."
+msgstr "The observed interaction was negative."
+
+msgid "L'interaction observée était positive."
+msgstr "The observed interaction was positive."
+
 msgid ""
 "L'interface de révision n'est pas installée. Installez-la avec : uv tool install --reinstall "
 "\".[ia,revision]\" (voir docs/installation-windows.md)."
@@ -2156,6 +2210,23 @@ msgstr "The observed correlation was negative."
 msgid "La corrélation observée était positive."
 msgstr "The observed correlation was positive."
 
+#, python-brace-format
+msgid ""
+"La corrélation partielle entre {a} et {b} (covariables : {z}) était r({df}) = {r}, {ci}, {p} ; la"
+" corrélation simple était r = {simple} (n = {n})."
+msgstr ""
+"The partial correlation between {a} and {b} (covariates: {z}) was r({df}) = {r}, {ci}, {p}; the "
+"simple correlation was r = {simple} (n = {n})."
+
+msgid "La corrélation partielle observée était nulle au centième près."
+msgstr "The observed partial correlation was zero to two decimals."
+
+msgid "La corrélation partielle observée était négative."
+msgstr "The observed partial correlation was negative."
+
+msgid "La corrélation partielle observée était positive."
+msgstr "The observed partial correlation was positive."
+
 msgid "La cotation exige une source documentée (manuel, article)."
 msgstr "The scoring requires a documented source (manual, article)."
 
@@ -2198,6 +2269,15 @@ msgstr "The list is kept on this computer; it holds only the paths of the projec
 msgid "La longueur maximale doit être entre {low} et {high}."
 msgstr "The maximum length must be between {low} and {high}."
 
+msgid ""
+"La modération a été estimée par une régression avec un terme d'interaction, sur variables "
+"centrées ; les pentes simples sont données à −1 écart-type, à la moyenne et à +1 écart-type du "
+"modérateur, ou dans chacune de ses deux modalités."
+msgstr ""
+"Moderation was estimated by a regression with an interaction term, on centred variables; the "
+"simple slopes are given at −1 standard deviation, at the mean and at +1 standard deviation of the"
+" moderator, or in each of its two categories."
+
 #, python-brace-format
 msgid "La moyenne observée était plus élevée dans le groupe {a}."
 msgstr "The observed mean was higher in the {a} group."
@@ -2205,6 +2285,10 @@ msgstr "The observed mean was higher in the {a} group."
 #, python-brace-format
 msgid "La moyenne observée était plus élevée pour {a}."
 msgstr "The observed mean was higher for {a}."
+
+#, python-brace-format
+msgid "La pente de {x} à chaque valeur de {w}, avec son IC 95 %."
+msgstr "The slope of {x} at each value of {w}, with its 95% CI."
 
 msgid "La raison, en clair, telle que publiée."
 msgstr "The reason, in plain words, as published."
@@ -2713,6 +2797,13 @@ msgstr "Codes {codes} were treated as missing values."
 msgid "Les codes {codes} seront traités comme des valeurs manquantes."
 msgstr "Codes {codes} will be treated as missing values."
 
+msgid ""
+"Les corrélations partielles sont calculées à covariables constantes, par la corrélation des "
+"résidus ; leur intervalle de confiance à 95 % vient de la transformation de Fisher."
+msgstr ""
+"Partial correlations are computed with the covariates held constant, as the correlation of the "
+"residuals; their 95% confidence interval comes from Fisher's transformation."
+
 #, python-brace-format
 msgid ""
 "Les données sont {origin}. Selon l'équipe, le plan d'analyse a été écrit {written}. Il a été "
@@ -2872,6 +2963,9 @@ msgstr ""
 "Missing values will be removed analysis by analysis: each analysis will include the people who "
 "answered all its variables."
 
+msgid "Les variables continues du terme d'interaction sont centrées."
+msgstr "The continuous variables of the interaction term are centred."
+
 msgid "Les variables des doublons (défaut : celles que la plateforme désigne)."
 msgstr "The variables of the duplicates (default: those the platform names)."
 
@@ -3012,6 +3106,9 @@ msgstr "Measure"
 msgid "Mesure la force du lien entre deux variables continues ou plus."
 msgstr "Measures the strength of the relation between two continuous variables or more."
 
+msgid "Mesure le lien entre deux variables continues quand des covariables sont tenues constantes."
+msgstr "Measures the relation between two continuous variables when covariates are held constant."
+
 msgid "Mesurer ce modèle"
 msgstr "Measure this model"
 
@@ -3065,8 +3162,28 @@ msgstr "Statistical model for each hypothesis"
 msgid "Modèles statistiques"
 msgstr "Statistical models"
 
+msgid "Modérateur"
+msgstr "Moderator"
+
+msgid "Modérateur (modération)."
+msgstr "Moderator (moderation)."
+
+msgid "Modération : centrer le prédicteur et le modérateur (yes, par défaut, ou no)."
+msgstr "Moderation: centre the predictor and the moderator (yes, the default, or no)."
+
+msgid "Modération : un lien qui dépend d'une troisième variable"
+msgstr "Moderation: a relation that depends on a third variable"
+
+#, python-brace-format
+msgid "Modération de {outcome}"
+msgstr "Moderation of {outcome}"
+
 msgid "Moins de MIN items du groupe répondus."
 msgstr "Fewer than MIN items of the group answered."
+
+#, python-brace-format
+msgid "Moins de {n} observations."
+msgstr "Fewer than {n} observations."
 
 #, python-brace-format
 msgid "Moins de {n} personnes : {cases}."
@@ -3221,6 +3338,9 @@ msgstr "Names in conflict: {n}"
 msgid "Noms proposés à valider : {n}"
 msgstr "Proposed names to validate: {n}"
 
+msgid "Non"
+msgstr "No"
+
 #, python-brace-format
 msgid "Non documenté : {gaps}."
 msgstr "Not documented: {gaps}."
@@ -3310,6 +3430,9 @@ msgstr "Origin"
 msgid "Origine des données"
 msgstr "Origin of the data"
 
+msgid "Oui"
+msgstr "Yes"
+
 msgid "Outil"
 msgstr "Tool"
 
@@ -3352,6 +3475,14 @@ msgstr "Not in the group: {names}"
 
 msgid "Pearson"
 msgstr "Pearson"
+
+#, python-brace-format
+msgid "Pentes simples de {x}"
+msgstr "Simple slopes of {x}"
+
+#, python-brace-format
+msgid "Pentes simples de {x} selon {w}"
+msgstr "Simple slopes of {x} by {w}"
 
 msgid "Place de la marque"
 msgstr "Place of the mark"
@@ -3596,6 +3727,9 @@ msgstr "Provenance"
 msgid "Prédicteur"
 msgstr "Predictor"
 
+msgid "Prédicteur (modération)."
+msgstr "Predictor (moderation)."
+
 msgid "Prédicteur testé"
 msgstr "Tested predictor"
 
@@ -3827,6 +3961,13 @@ msgstr ""
 "Looks at whether two categorical variables are associated, for example the employment sector and "
 "remote work."
 
+msgid ""
+"Regarde si le lien entre un prédicteur et une variable continue change selon une troisième "
+"variable, le modérateur."
+msgstr ""
+"Looks at whether the relation between a predictor and a continuous variable changes with a third "
+"variable, the moderator."
+
 msgid "Rejeter"
 msgstr "Reject"
 
@@ -4044,6 +4185,18 @@ msgstr ""
 
 msgid "Réservés aux personnes ; l'étendue et les seuils exigent une source."
 msgstr "For people only; the range and the thresholds require a source."
+
+#, python-brace-format
+msgid "Résidus de {x}"
+msgstr "Residuals of {x}"
+
+#, python-brace-format
+msgid "Résidus de {y}"
+msgstr "Residuals of {y}"
+
+#, python-brace-format
+msgid "Résidus de {y} selon les résidus de {x}"
+msgstr "Residuals of {y} by the residuals of {x}"
 
 #, python-brace-format
 msgid "Résidus peu normaux (Shapiro-Wilk {p}) avec moins de {n} observations."
@@ -4342,6 +4495,10 @@ msgid "Tapé par l'équipe : la page n'en enregistre aucun d'office."
 msgstr "Typed by the team: the page never saves one by default."
 
 #, python-brace-format
+msgid "Termes très liés entre eux (VIF > {v}) : {names}."
+msgstr "Terms strongly related to one another (VIF > {v}): {names}."
+
+#, python-brace-format
 msgid ""
 "Test de Wilcoxon des rangs signés ; différences nulles écartées : {zeros}. {r} : corrélation "
 "bisériale de rang, positive quand la première mesure est plus élevée."
@@ -4536,6 +4693,9 @@ msgstr ""
 msgid "Une corrélation"
 msgstr "A correlation"
 
+msgid "Une corrélation partielle"
+msgstr "A partial correlation"
+
 #, python-brace-format
 msgid ""
 "Une décision a changé des chiffres : {ids}. Voyez ce qui a changé ci-dessous, puis confirmez un à"
@@ -4553,6 +4713,9 @@ msgstr "An exploratory hypothesis is not adjusted; remove its family."
 
 msgid "Une ligne représente"
 msgstr "A row is"
+
+msgid "Une modération"
+msgstr "A moderation"
 
 msgid ""
 "Une nouvelle copie de votre base au format SPSS (.sav), avec ce que vous avez accepté. Avant de "
@@ -4665,6 +4828,18 @@ msgstr "Distinct values"
 
 msgid "Valeurs extrêmes"
 msgstr "Outliers"
+
+#, python-brace-format
+msgid "Valeurs prédites de {y} selon {x} et {w}"
+msgstr "Predicted values of {y} by {x} and {w}"
+
+#, python-brace-format
+msgid ""
+"Valeurs prédites par le modèle, à −1 écart-type, à la moyenne et à +1 écart-type de "
+"{x}{covariates}. {N} = {n}."
+msgstr ""
+"Values predicted by the model, at −1 standard deviation, at the mean and at +1 standard deviation"
+" of {x}{covariates}. {N} = {n}."
 
 msgid "Valides"
 msgstr "Valid"
@@ -5159,12 +5334,26 @@ msgstr "the association"
 msgid "l'effet du groupe"
 msgstr "the effect of the group"
 
+msgid "l'interaction"
+msgstr "the interaction"
+
+#, python-brace-format
+msgid "l'interaction entre {x} et {w}"
+msgstr "the interaction between {x} and {w}"
+
 msgid "la Méthode (M)"
 msgstr "the Method (M)"
 
 #, python-brace-format
 msgid "la corrélation entre {a} et {b}"
 msgstr "the correlation between {a} and {b}"
+
+msgid "la corrélation partielle"
+msgstr "the partial correlation"
+
+#, python-brace-format
+msgid "la corrélation partielle entre {a} et {b}"
+msgstr "the partial correlation between {a} and {b}"
 
 msgid "la différence entre les deux groupes"
 msgstr "the difference between the two groups"
@@ -5448,6 +5637,9 @@ msgstr "questionnaire"
 msgid "questions de recherche"
 msgstr "research questions"
 
+msgid "r partiel"
+msgstr "partial r"
+
 #, python-brace-format
 msgid "raison de l'écart au plan pour {id}"
 msgstr "reason for the deviation from the plan for {id}"
@@ -5562,8 +5754,8 @@ msgstr "source"
 msgid "structure de la plateforme"
 msgstr "platform structure"
 
-msgid "tableau1, test_t, apparie, anova, khi2, correlation ou regression."
-msgstr "table1, t_test, paired, anova, chi_square, correlation or regression."
+msgid "tableau1, test_t, apparie, anova, khi2, correlation, regression, partielle ou moderation."
+msgstr "table1, t_test, paired, anova, chi_square, correlation, regression, partial or moderation."
 
 msgid "taille d'effet prévue"
 msgstr "predicted effect size"
@@ -5583,8 +5775,8 @@ msgstr "one-sided test, the first group lower"
 msgid "test unilatéral, le premier groupe plus élevé"
 msgstr "one-sided test, the first group higher"
 
-msgid "test_t, apparie, anova, khi2, correlation ou regression."
-msgstr "t_test, paired, anova, chi_square, correlation or regression."
+msgid "test_t, apparie, anova, khi2, correlation, regression, partielle ou moderation."
+msgstr "t_test, paired, anova, chi_square, correlation, regression, partial or moderation."
 
 msgid "texte"
 msgstr "text"
@@ -5653,6 +5845,12 @@ msgstr "one"
 msgid "une corrélation négative"
 msgstr "a negative correlation"
 
+msgid "une corrélation partielle négative"
+msgstr "a negative partial correlation"
+
+msgid "une corrélation partielle positive"
+msgstr "a positive partial correlation"
+
 msgid "une corrélation positive"
 msgstr "a positive correlation"
 
@@ -5667,6 +5865,12 @@ msgstr "a family"
 
 msgid "une fois"
 msgstr "once"
+
+msgid "une interaction négative"
+msgstr "a negative interaction"
+
+msgid "une interaction positive"
+msgstr "a positive interaction"
 
 msgid "une observation répétée"
 msgstr "a repeated observation"
@@ -5765,6 +5969,18 @@ msgid "zéro"
 msgstr "zero"
 
 #, python-brace-format
+msgid "{N} = {n}. Covariables : {held}. {r} partiel = {r_value}."
+msgstr "{N} = {n}. Covariates: {held}. Partial {r} = {r_value}."
+
+#, python-brace-format
+msgid ""
+"{N} = {n}. {R}² = {r2} ; interaction : Δ{R}² = {dr2}, {F}(1, {df}) = {f}, {p}. {b} : coefficient "
+"non standardisé ; {se} : erreur type."
+msgstr ""
+"{N} = {n}. {R}² = {r2}; interaction: Δ{R}² = {dr2}, {F}(1, {df}) = {f}, {p}. {b}: unstandardized "
+"coefficient; {se}: standard error."
+
+#, python-brace-format
 msgid ""
 "{N} = {n}. {R}² = {r2}, {R}² ajusté = {adj}, {F}({df1}, {df2}) = {f}, {p}. {b} : coefficient non "
 "standardisé ; β : coefficient standardisé ; {se} : erreur type."
@@ -5811,6 +6027,10 @@ msgstr "{base}: base names proposed by the model…"
 #, python-brace-format
 msgid "{base} : rattachements proposés par le modèle…"
 msgstr "{base}: links proposed by the model…"
+
+#, python-brace-format
+msgid "{b} pour {w}"
+msgstr "{b} for {w}"
 
 #, python-brace-format
 msgid "{code} (confirmé par l'équipe)"
@@ -5969,6 +6189,10 @@ msgid "{label} : {n} valeurs manquantes"
 msgstr "{label}: {n} missing values"
 
 #, python-brace-format
+msgid "{low} à −1 ÉT de {w}, {mid} à sa moyenne et {high} à +1 ÉT"
+msgstr "{low} at −1 SD of {w}, {mid} at its mean and {high} at +1 SD"
+
+#, python-brace-format
 msgid "{names} : la même variable dans deux rôles."
 msgstr "{names}: the same variable in two roles."
 
@@ -6085,6 +6309,10 @@ msgstr "{name}: {n} categories; choose two of them."
 #, python-brace-format
 msgid "{name} : {n} modalités observées ; il en faut de {low} à {high}."
 msgstr "{name}: {n} categories observed; {low} to {high} are needed."
+
+#, python-brace-format
+msgid "{name} : {n} modalités observées ; une variable nominale en a deux ici."
+msgstr "{name}: {n} categories observed; a nominal variable has two here."
 
 #, python-brace-format
 msgid "{name} : « {value} » n'est pas un nombre."
@@ -6205,12 +6433,24 @@ msgid "{n} noms enregistrés."
 msgstr "{n} names saved."
 
 #, python-brace-format
+msgid "{n} observations : il en faut au moins {least}."
+msgstr "{n} observations: at least {least} are needed."
+
+#, python-brace-format
 msgid "{n} observations pour {k} prédicteurs : il en faut au moins {least} par prédicteur."
 msgstr "{n} observations for {k} predictors: at least {least} per predictor are needed."
 
 #, python-brace-format
 msgid "{n} observations pour {k} prédicteurs : moins de {warn} par prédicteur."
 msgstr "{n} observations for {k} predictors: fewer than {warn} per predictor."
+
+#, python-brace-format
+msgid "{n} observations pour {k} termes : il en faut au moins {least} par terme."
+msgstr "{n} observations for {k} terms: at least {least} per term are needed."
+
+#, python-brace-format
+msgid "{n} observations pour {k} termes : moins de {warn} par terme."
+msgstr "{n} observations for {k} terms: fewer than {warn} per term."
 
 #, python-brace-format
 msgid "{n} ont été exclues, pour les raisons suivantes, dans cet ordre : {reasons} (Figure {figure})."
@@ -6357,6 +6597,10 @@ msgid "{rows} selon {columns}"
 msgstr "{rows} by {columns}"
 
 #, python-brace-format
+msgid "{r} partiel"
+msgstr "partial {r}"
+
+#, python-brace-format
 msgid "{score} = {how} des {n} items"
 msgstr "{score} = {how} of the {n} items"
 
@@ -6417,6 +6661,10 @@ msgstr "{what} missing"
 #, python-brace-format
 msgid "{what} parmi {values}"
 msgstr "{what} among {values}"
+
+#, python-brace-format
+msgid "{x} (centré)"
+msgstr "{x} (centred)"
 
 #, python-brace-format
 msgid "{x} : b = {b}, {ci}, β = {beta}, t({df}) = {t}, {p}."
@@ -6747,6 +6995,9 @@ msgstr "labels proposed from the options, assumed order, to check"
 
 msgid "étiquettes tirées des options de la question, ordre vérifié par l'équipe"
 msgstr "labels taken from the question's options, order checked by the team"
+
+msgid "−1 ÉT"
+msgstr "−1 SD"
 
 msgid "≠ différent de"
 msgstr "≠ different from"

@@ -33,12 +33,16 @@ EFFECTS = {
     "chi_square": ("association",),
     "correlation": ("pair",),
     "regression": ("model", "predictor"),
+    "partial": ("partial",),
+    "moderation": ("interaction",),
 }
 # The expected directions each effect may take; a t test's sets its one-sided option.
 DIRECTIONS = {
     "difference": ("first_higher", "second_higher"),
     "pair": ("positive", "negative"),
     "predictor": ("positive", "negative"),
+    "partial": ("positive", "negative"),
+    "interaction": ("positive", "negative"),
 }
 ALTERNATIVE = {"first_higher": "greater", "second_higher": "less"}
 ONE_SIDED = ("t_test", "paired")  # the analyses whose expected direction sets the test
@@ -54,6 +58,8 @@ NAMES = Texts(
         "chi_square": N_("Un khi-carré"),
         "correlation": N_("Une corrélation"),
         "regression": N_("Une régression"),
+        "partial": N_("Une corrélation partielle"),
+        "moderation": N_("Une modération"),
     }
 )
 EFFECT_NAMES = Texts(
@@ -64,6 +70,8 @@ EFFECT_NAMES = Texts(
         "model": N_("le modèle"),
         "pair": N_("une paire de variables"),
         "predictor": N_("un prédicteur"),
+        "partial": N_("la corrélation partielle"),
+        "interaction": N_("l'interaction"),
     }
 )
 

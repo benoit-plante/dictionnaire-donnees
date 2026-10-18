@@ -15,7 +15,15 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 from ddict.analysis import conditions
 from ddict.analysis.book import Codebook
 from ddict.analysis.data import chosen_levels, code_key
-from ddict.analysis.results import AnalysisResult, Table, bounded, interval, number, p_part
+from ddict.analysis.results import (
+    AnalysisResult,
+    Table,
+    bounded,
+    bounded_interval,
+    interval,
+    number,
+    p_part,
+)
 from ddict.i18n import _, semicolon
 
 SMALL = 5
@@ -567,4 +575,204 @@ def regression(project, prepared, chosen, options) -> AnalysisResult:
     )
     return AnalysisResult(
         "regression", chosen, options, n, len(prepared.table) - n, tables, found, sentence, warnings
+    )
+
+
+# --- Partial correlation (v0.14, D-111). ---
+
+
+def _residuals(y: pd.Series, Z: pd.DataFrame) -> np.ndarray:
+    fit = sm.OLS(y.astype(float), sm.add_constant(Z.astype(float), has_constant="add")).fit()
+    return fit.resid.to_numpy()
+
+
+def partial(project, prepared, chosen, options) -> AnalysisResult:
+    """The correlation of the residuals of the two variables regressed on the covariates;
+    t with n - 2 - k degrees of freedom, the interval by Fisher's transformation."""
+    book = Codebook(project, prepared)
+    (first, second), covariates = chosen["variables"], chosen["covariates"]
+    data = prepared.table[[first, second, *covariates]].dropna()
+    Z = design(book, data, covariates)
+    n, k = len(data), Z.shape[1]
+    rx, ry = _residuals(data[first], Z), _residuals(data[second], Z)
+    r = float(np.corrcoef(rx, ry)[0, 1])
+    df = n - 2 - k
+    t = r * math.sqrt(df / (1 - r**2))
+    p = float(2 * stats.t.sf(abs(t), df))
+    half = stats.norm.ppf(0.975) / math.sqrt(n - 3 - k)
+    low, high = math.tanh(math.atanh(r) - half), math.tanh(math.atanh(r) + half)
+    simple = stats.pearsonr(data[first].astype(float), data[second].astype(float))
+    found = {"n": n, "k": k, "r": r, "df": float(df), "t": float(t), "p": p,
+             "ci_low": float(low), "ci_high": float(high),
+             "r_simple": float(simple.statistic), "p_simple": float(simple.pvalue)}  # fmt: skip
+    names = [book.label(first), book.label(second)]
+    held = ", ".join(_mid(book.label(c)) for c in covariates)
+    warnings = []
+    if n < SHAPIRO_FEW:
+        warnings.append(_("Moins de {n} observations.").format(n=SHAPIRO_FEW))
+    rows = [[names[0], names[1], str(n), number(simple.statistic), number(r),
+             interval(low, high), number(t), p_part(p)]]  # fmt: skip
+    columns = [_("Variable"), _("Variable"), "n", "r", _("r partiel"), _("IC 95 %"), "t", "p"]
+    sentence = _(
+        "La corrélation partielle entre {a} et {b} (covariables : {z}) était r({df}) = {r}, "
+        "{ci}, {p} ; la corrélation simple était r = {simple} (n = {n})."
+    ).format(
+        a=_mid(names[0]),
+        b=_mid(names[1]),
+        z=held,
+        df=df,
+        r=bounded(r),
+        ci=bounded_interval(low, high),
+        p=p_part(p),
+        simple=bounded(simple.statistic),
+        n=n,
+    )
+    return AnalysisResult("partial", chosen, options, n, len(prepared.table) - n,
+                          [Table(_("Corrélation partielle"), columns, rows)], found, sentence,
+                          warnings)  # fmt: skip
+
+
+# --- Moderation (v0.14, D-111). ---
+
+
+def moderation_design(book: Codebook, data: pd.DataFrame, chosen, options):
+    """The model's columns in R's order (x, w, covariates, x:w), the moderator's values for
+    the simple slopes with their labels, and whether the moderator is nominal: its second
+    code is then 1, the first 0."""
+    outcome, focal = chosen["outcome"][0], chosen["focal"][0]
+    moderator, covariates = chosen["moderator"][0], chosen.get("covariates", [])
+    center = options.get("center", "yes") == "yes"
+    x = data[focal].astype(float)
+    nominal = book.levels.get(moderator) == "nominal"
+    if nominal:
+        codes = sorted(_codes(book, moderator, data[moderator]))
+        w = (data[moderator] == codes[1]).astype(float)
+        at = [(0.0, book.category(moderator, codes[0])), (1.0, book.category(moderator, codes[1]))]
+        if center:
+            x = x - x.mean()
+    else:
+        w = data[moderator].astype(float)
+        mean, sd = float(w.mean()), float(w.std(ddof=1))
+        if center:
+            x, w = x - x.mean(), w - mean
+            mean = 0.0
+        at = [(mean - sd, _("−1 ÉT")), (mean, _("moyenne")), (mean + sd, _("+1 ÉT"))]
+    columns = {focal: x, moderator: w}
+    columns |= dict(design(book, data, covariates).items())
+    columns["interaction"] = x * w
+    return data[outcome].astype(float), pd.DataFrame(columns, index=data.index), at, nominal
+
+
+def moderation(project, prepared, chosen, options) -> AnalysisResult:
+    book = Codebook(project, prepared)
+    outcome, focal = chosen["outcome"][0], chosen["focal"][0]
+    moderator, covariates = chosen["moderator"][0], chosen.get("covariates", [])
+    data = prepared.table[[outcome, focal, moderator, *covariates]].dropna()
+    y, X, at, nominal = moderation_design(book, data, chosen, options)
+    exog = sm.add_constant(X, has_constant="add")
+    if np.linalg.matrix_rank(exog.to_numpy()) < exog.shape[1]:
+        raise conditions.AnalysisRefused(
+            conditions.Check(refusals=[_("Des termes du modèle se déduisent les uns des autres.")])
+        )
+    fit = sm.OLS(y, exog).fit()
+    main = sm.OLS(y, exog.drop(columns="interaction")).fit()
+    n, last = int(fit.nobs), exog.shape[1] - 1
+    ci = fit.conf_int().to_numpy()
+    f_change = (fit.rsquared - main.rsquared) / ((1 - fit.rsquared) / fit.df_resid)
+    found: dict[str, float] = {
+        "n": n,
+        "r2": float(fit.rsquared),
+        "delta_r2": float(fit.rsquared - main.rsquared),
+        "f_change": float(f_change),
+        "f_change_p": float(stats.f.sf(f_change, 1, fit.df_resid)),
+        "df_resid": float(fit.df_resid),
+        "b": float(fit.params.iloc[last]),
+        "se": float(fit.bse.iloc[last]),
+        "t": float(fit.tvalues.iloc[last]),
+        "p": float(fit.pvalues.iloc[last]),
+        "low": float(ci[last, 0]),
+        "high": float(ci[last, 1]),
+    }
+    x_label, w_label = book.label(focal), book.label(moderator)
+    centred = options.get("center", "yes") == "yes"
+    names = [
+        _("Constante"),
+        _("{x} (centré)").format(x=x_label) if centred else x_label,
+        w_label if nominal or not centred else _("{x} (centré)").format(x=w_label),
+        *[book.label(c) if c in book.entries else c for c in X.columns[2:-1]],
+        f"{x_label} × {w_label}",  # noqa: RUF001 (the multiplication sign)
+    ]
+    rows = []
+    for i, label in enumerate(names):
+        found |= {f"coef_{i}": float(fit.params.iloc[i]), f"se_{i}": float(fit.bse.iloc[i]),
+                  f"t_{i}": float(fit.tvalues.iloc[i]), f"p_{i}": float(fit.pvalues.iloc[i]),
+                  f"low_{i}": float(ci[i, 0]), f"high_{i}": float(ci[i, 1])}  # fmt: skip
+        rows.append([label, number(fit.params.iloc[i]), number(fit.bse.iloc[i]),
+                     interval(ci[i, 0], ci[i, 1]), number(fit.tvalues.iloc[i]),
+                     p_part(fit.pvalues.iloc[i])])  # fmt: skip
+    cov = fit.cov_params().to_numpy()
+    q = stats.t.ppf(0.975, fit.df_resid)
+    slopes = []
+    for j, (value, label) in enumerate(at, start=1):
+        b = fit.params.iloc[1] + value * fit.params.iloc[last]
+        se = math.sqrt(cov[1, 1] + value**2 * cov[last, last] + 2 * value * cov[1, last])
+        t = b / se
+        p = float(2 * stats.t.sf(abs(t), fit.df_resid))
+        key = f"slope_{j}"
+        found |= {f"{key}_at": float(value), key: float(b), f"{key}_se": se,
+                  f"{key}_t": float(t), f"{key}_p": p, f"{key}_low": float(b - q * se),
+                  f"{key}_high": float(b + q * se)}  # fmt: skip
+        slopes.append((label, b, se, t, p))
+    tables = [
+        Table(book.label(outcome), [_("Prédicteur"), "b", _("ET"), _("IC 95 %"), "t", "p"], rows),
+        Table(
+            _("Pentes simples de {x}").format(x=_mid(x_label)),
+            [w_label, "b", _("ET"), "t", "p"],
+            [[label, number(b), number(se), number(t), p_part(p)] for label, b, se, t, p in slopes],
+        ),
+    ]
+    warnings = []
+    vif = [float(variance_inflation_factor(exog.to_numpy(), i)) for i in range(1, last + 1)]
+    high = [names[i + 1] for i, v in enumerate(vif) if v > VIF_HIGH]
+    if high:
+        warnings.append(
+            _("Termes très liés entre eux (VIF > {v}) : {names}.").format(
+                v=VIF_HIGH, names=", ".join(high)
+            )
+        )
+    shapiro = _shapiro(fit.resid.to_numpy())
+    if shapiro is not None:
+        found["shapiro_p"] = shapiro
+        if shapiro < 0.05 and n < SHAPIRO_FEW:
+            warnings.append(
+                _("Résidus peu normaux (Shapiro-Wilk {p}) avec moins de {n} observations.").format(
+                    p=p_part(shapiro), n=SHAPIRO_FEW
+                )
+            )
+    if nominal:
+        where = _(" et ").join(
+            _("{b} pour {w}").format(b=number(b), w=label) for label, b, *_rest in slopes
+        )
+    else:
+        where = _("{low} à −1 ÉT de {w}, {mid} à sa moyenne et {high} à +1 ÉT").format(
+            low=number(slopes[0][1]), w=_mid(w_label), mid=number(slopes[1][1]),
+            high=number(slopes[2][1]),
+        )  # fmt: skip
+    sentence = _(
+        "L'interaction entre {x} et {w} était b = {b}, {ci}, t({df}) = {t}, {p}, ΔR² = {dr2} "
+        "(n = {n}). La pente de {x} était b = {where}."
+    ).format(
+        x=_mid(x_label),
+        w=_mid(w_label),
+        b=number(found["b"]),
+        ci=interval(found["low"], found["high"]),
+        df=int(fit.df_resid),
+        t=number(found["t"]),
+        p=p_part(found["p"]),
+        dr2=bounded(found["delta_r2"]),
+        n=n,
+        where=where,
+    )
+    return AnalysisResult(
+        "moderation", chosen, options, n, len(prepared.table) - n, tables, found, sentence, warnings
     )

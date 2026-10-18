@@ -302,7 +302,7 @@ def effect_p_key(
     """The key of the tested effect's p-value among the entry's statistics (§ 3 of the
     sheet); None when it cannot be found (a predictor needs the data)."""
     effect = hypothesis.effect
-    if effect.kind in ("difference", "group"):
+    if effect.kind in ("difference", "group", "partial", "interaction"):
         return "p"
     if effect.kind == "association":
         return "fisher_p" if entry.options.get("method") == "fisher" else "p"

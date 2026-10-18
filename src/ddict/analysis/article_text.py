@@ -596,8 +596,10 @@ def adjusted_tables(document: ApaDocument, tested: Tested, method: str) -> ApaDo
     kind = tested.hypothesis.effect.kind
     headers = [plain(c.header) for c in table.columns]
     row = None
-    if kind == "difference":
+    if kind in ("difference", "partial"):
         row = 0
+    elif kind == "interaction":
+        row = len(table.rows) - 1  # the last term of the model, x by w
     elif kind == "predictor" and tested.key:
         row = int(tested.key.split("_")[1])
     shown = p_cell(tested.p_adj)
@@ -675,6 +677,22 @@ def observed(book: Codebook, prepared: PreparedData, tested: Tested) -> str:
             return _("Les moyennes observées étaient égales au centième près.")
         higher = names[0] if s["m1"] > s["m2"] else names[1]
         return _("La moyenne observée était plus élevée dans le groupe {a}.").format(a=higher)
+    if kind == "partial":
+        if _shown_zero(s["r"]):
+            return _("La corrélation partielle observée était nulle au centième près.")
+        return (
+            _("La corrélation partielle observée était positive.")
+            if s["r"] > 0
+            else _("La corrélation partielle observée était négative.")
+        )
+    if kind == "interaction":
+        if _shown_zero(s["b"]):
+            return _("L'interaction observée était nulle au centième près.")
+        return (
+            _("L'interaction observée était positive.")
+            if s["b"] > 0
+            else _("L'interaction observée était négative.")
+        )
     if kind == "pair" and tested.key:
         r = s["r" + tested.key[1:]]
         if _shown_zero(r):

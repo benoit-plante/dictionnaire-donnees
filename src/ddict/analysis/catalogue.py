@@ -84,6 +84,23 @@ CATALOGUE = {
             "regression",
             (Role("outcome", (SCALE,)), Role("predictors", (SCALE, ORDINAL, NOMINAL), most=10)),
         ),
+        Analysis(
+            "partial",
+            (
+                Role("variables", (SCALE,), least=2, most=2),
+                Role("covariates", (SCALE, NOMINAL), least=1, most=5),
+            ),
+        ),
+        Analysis(
+            "moderation",
+            (
+                Role("outcome", (SCALE,)),
+                Role("focal", (SCALE,)),
+                Role("moderator", (SCALE, NOMINAL)),
+                Role("covariates", (SCALE, NOMINAL), least=0, most=5),
+            ),
+            {"center": ("yes", "no")},
+        ),
     )
 }
 
@@ -96,6 +113,8 @@ TITLES = Texts(
         "chi_square": N_("Khi-carré : associer deux variables catégorielles"),
         "correlation": N_("Corrélation : relier des variables continues"),
         "regression": N_("Régression linéaire : prédire une variable continue"),
+        "partial": N_("Corrélation partielle : relier deux variables à covariables constantes"),
+        "moderation": N_("Modération : un lien qui dépend d'une troisième variable"),
     }
 )
 ROLES = Texts(
@@ -108,6 +127,9 @@ ROLES = Texts(
         "predictors": N_("Prédicteurs"),
         "first": N_("Première mesure"),
         "second": N_("Seconde mesure"),
+        "covariates": N_("Covariables"),
+        "focal": N_("Prédicteur"),
+        "moderator": N_("Modérateur"),
     }
 )
 PURPOSES = Texts(
@@ -132,6 +154,14 @@ PURPOSES = Texts(
         "regression": N_(
             "Estime comment plusieurs prédicteurs, ensemble, expliquent une variable continue."
         ),
+        "partial": N_(
+            "Mesure le lien entre deux variables continues quand des covariables sont tenues "
+            "constantes."
+        ),
+        "moderation": N_(
+            "Regarde si le lien entre un prédicteur et une variable continue change selon une "
+            "troisième variable, le modérateur."
+        ),
     }
 )
 OPTIONS = Texts(
@@ -140,6 +170,7 @@ OPTIONS = Texts(
         "alternative": N_("Hypothèse"),
         "post_hoc": N_("Comparaisons deux à deux"),
         "levels": N_("Modalités comparées"),
+        "center": N_("Centrer le prédicteur et le modérateur"),
     }
 )
 CHOICES = Texts(
@@ -159,5 +190,7 @@ CHOICES = Texts(
         "pearson": N_("Pearson"),
         "fisher": N_("Test exact de Fisher"),
         "spearman": N_("Spearman"),
+        "yes": N_("Oui"),
+        "no": N_("Non"),
     }
 )

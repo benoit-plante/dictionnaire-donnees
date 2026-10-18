@@ -178,6 +178,9 @@ ANALYSES = {
     "khi2": "chi_square",
     "correlation": "correlation",
     "regression": "regression",
+    "partial": "partial",
+    "partielle": "partial",
+    "moderation": "moderation",
 }
 ROLE_ARGUMENTS = {
     "variables": "variables",
@@ -188,6 +191,9 @@ ROLE_ARGUMENTS = {
     "predictors": "predicteurs",
     "first": "premiere",
     "second": "seconde",
+    "covariates": "covariables",
+    "focal": "focal",
+    "moderator": "moderateur",
 }
 # The actions of `ddict carnet`, in French or in English (v0.11).
 NOTEBOOK_ACTIONS = {
@@ -215,6 +221,7 @@ OPTION_ARGUMENTS = {
     "alternative": "hypothese",
     "post_hoc": "post_hoc",
     "levels": "modalites",
+    "center": "centrer",
 }
 
 
@@ -1617,7 +1624,10 @@ def _analysis_arguments(command: argparse.ArgumentParser) -> None:
     command.add_argument(
         "analyse",
         choices=list(ANALYSES),
-        help=_("tableau1, test_t, apparie, anova, khi2, correlation ou regression."),
+        help=_(
+            "tableau1, test_t, apparie, anova, khi2, correlation, regression, partielle ou "
+            "moderation."
+        ),
     )
     command.add_argument("--variables", nargs="+", help=_("Variables (Tableau 1, corrélation)."))
     command.add_argument("--groupe", "--group", nargs=1, help=_("Variable de groupe."))
@@ -1645,6 +1655,20 @@ def _analysis_arguments(command: argparse.ArgumentParser) -> None:
         "--second",
         nargs=1,
         help=_("Seconde mesure (test t apparié)."),
+    )
+    command.add_argument(
+        "--covariables",
+        "--covariates",
+        nargs="+",
+        help=_("Covariables (corrélation partielle, modération)."),
+    )
+    command.add_argument("--focal", nargs=1, help=_("Prédicteur (modération)."))
+    command.add_argument("--moderateur", "--moderator", nargs=1, help=_("Modérateur (modération)."))
+    command.add_argument(
+        "--centrer",
+        "--center",
+        choices=["yes", "no"],
+        help=_("Modération : centrer le prédicteur et le modérateur (yes, par défaut, ou no)."),
     )
     command.add_argument(
         "--methode",

@@ -127,6 +127,18 @@ def _effect(project: Project, hypothesis: Hypothesis) -> str:
         return _("le coefficient de {x}").format(x=_name(project, effect.variable))
     if hypothesis.analysis == "paired":
         return _("la différence entre les deux mesures")
+    if effect.kind == "partial":
+        refs = hypothesis.roles.get("variables", [])
+        if len(refs) == 2:
+            a, b = (_name(project, r) for r in refs)
+            return _("la corrélation partielle entre {a} et {b}").format(a=a, b=b)
+    if effect.kind == "interaction":
+        focal = hypothesis.roles.get("focal", [])
+        moderator = hypothesis.roles.get("moderator", [])
+        if focal and moderator:
+            return _("l'interaction entre {x} et {w}").format(
+                x=_name(project, focal[0]), w=_name(project, moderator[0])
+            )
     return EFFECT_NAMES[effect.kind]
 
 
@@ -199,6 +211,18 @@ def _direction(project: Project, hypothesis: Hypothesis) -> str:
             _("une corrélation positive")
             if direction == "positive"
             else _("une corrélation négative")
+        )
+    if hypothesis.effect.kind == "partial":
+        return (
+            _("une corrélation partielle positive")
+            if direction == "positive"
+            else _("une corrélation partielle négative")
+        )
+    if hypothesis.effect.kind == "interaction":
+        return (
+            _("une interaction positive")
+            if direction == "positive"
+            else _("une interaction négative")
         )
     return _("un coefficient positif") if direction == "positive" else _("un coefficient négatif")
 

@@ -998,10 +998,223 @@ def _regression(
     )
 
 
+# --- Partial correlation (v0.14). ---
+
+
+def _partial(b: _Builder, book: Codebook, prepared: PreparedData, result: AnalysisResult) -> None:
+    from ddict.analysis.models import _residuals, design
+
+    s = result.statistics
+    (first, second), covariates = result.chosen["variables"], result.chosen["covariates"]
+    data = prepared.table[[first, second, *covariates]].dropna()
+    n = int(s["n"])
+    half = float(stats.norm.ppf(0.975) / np.sqrt(n - 3))
+    simple = (np.tanh(np.arctanh(s["r_simple"]) - half), np.tanh(np.arctanh(s["r_simple"]) + half))
+    held = ", ".join(book.label(c) for c in covariates)
+    b.table(
+        _("Corrélation simple et partielle de {a} et {b}").format(
+            a=_mid(book.label(first)), b=_mid(book.label(second))
+        ),
+        [
+            _left(_("Variables")),
+            _col(rich(it("n"))),
+            _col(rich(it("r"))),
+            _col(marked(_("IC 95 % de {stat}"), stat=it("r"))),
+            _col(marked(_("{r} partiel"), r=it("r"))),
+            _col(marked(_("IC 95 % de {stat}"), stat=marked(_("{r} partiel"), r=it("r")))),
+            _col(rich(it("t"), f"({int(s['df'])})")),
+            _col(rich(it("p"))),
+        ],
+        [
+            _row(
+                f"{book.label(first)} — {book.label(second)}",
+                str(n),
+                apa(s["r_simple"], zero=False),
+                brackets(*simple, zero=False),
+                apa(s["r"], zero=False),
+                brackets(s["ci_low"], s["ci_high"], zero=False),
+                apa(s["t"]),
+                p_cell(s["p"]),
+            )
+        ],
+        note=[
+            marked(
+                _(
+                    "Corrélations de Pearson ; le {r} partiel est la corrélation des résidus des "
+                    "deux variables régressées sur les covariables : {held}. Le {p} est celui du "
+                    "{r} partiel ; celui du {r} simple : {simple}."
+                ),
+                r=it("r"),
+                held=held,
+                p=it("p"),
+                simple=p_text(s["p_simple"]),
+            )
+        ],
+    )
+    Z = design(book, data, covariates)
+    rx, ry = _residuals(data[first], Z), _residuals(data[second], Z)
+    slope = float(np.dot(rx, ry) / np.dot(rx, rx))
+    b.figure(
+        _("Résidus de {y} selon les résidus de {x}").format(
+            y=_mid(book.label(second)), x=_mid(book.label(first))
+        ),
+        "scatter",
+        _("Résidus de {x}").format(x=_mid(book.label(first))),
+        _("Résidus de {y}").format(y=_mid(book.label(second))),
+        points=tuple((float(u), float(v)) for u, v in zip(rx, ry, strict=True)),
+        line=(0.0, slope),
+        note=[
+            marked(
+                _("{N} = {n}. Covariables : {held}. {r} partiel = {r_value}."),
+                N=it("N"),
+                n=n,
+                held=held,
+                r=it("r"),
+                r_value=apa(s["r"], zero=False),
+            )
+        ],
+    )
+
+
+# --- Moderation (v0.14). ---
+
+
+def _moderation(
+    b: _Builder, book: Codebook, prepared: PreparedData, result: AnalysisResult
+) -> None:
+    from ddict.analysis.models import moderation_design
+
+    s = result.statistics
+    chosen = result.chosen
+    outcome, focal = chosen["outcome"][0], chosen["focal"][0]
+    moderator, covariates = chosen["moderator"][0], chosen.get("covariates", [])
+    data = prepared.table[[outcome, focal, moderator, *covariates]].dropna()
+    _y, X, at, nominal = moderation_design(book, data, chosen, result.options)
+    labels = [r[0] for r in result.tables[0].rows]
+    labels[0] = _("Constante")
+    rows = [
+        _row(
+            label,
+            apa(s[f"coef_{i}"]),
+            brackets(s[f"low_{i}"], s[f"high_{i}"]),
+            apa(s[f"se_{i}"]),
+            apa(s[f"t_{i}"]),
+            p_cell(s[f"p_{i}"]),
+        )
+        for i, label in enumerate(labels)
+    ]
+    centred = result.options.get("center", "yes") == "yes"
+    note = marked(
+        _(
+            "{N} = {n}. {R}² = {r2} ; interaction : Δ{R}² = {dr2}, {F}(1, {df}) = {f}, {p}. "
+            "{b} : coefficient non standardisé ; {se} : erreur type."
+        ),
+        N=it("N"),
+        n=int(s["n"]),
+        R=it("R"),
+        r2=apa(s["r2"], zero=False),
+        dr2=apa(s["delta_r2"], zero=False),
+        F=it("F"),
+        df=int(s["df_resid"]),
+        f=apa(s["f_change"]),
+        p=p_text(s["f_change_p"]),
+        b=it("b"),
+        se=it(_("ET")),
+    )
+    if centred:
+        note += rich(" " + _("Les variables continues du terme d'interaction sont centrées."))
+    b.table(
+        _("Modération de {outcome}").format(outcome=_mid(book.label(outcome))),
+        [
+            _left(_("Prédicteur")),
+            _col(rich(it("b"))),
+            _col(marked(_("IC 95 % de {stat}"), stat=it("b"))),
+            _col(rich(it(_("ET")))),
+            _col(rich(it("t"))),
+            _col(rich(it("p"))),
+        ],
+        rows,
+        note=[note],
+    )
+    slope_rows = [
+        _row(
+            label,
+            apa(s[f"slope_{j}"]),
+            brackets(s[f"slope_{j}_low"], s[f"slope_{j}_high"]),
+            apa(s[f"slope_{j}_se"]),
+            apa(s[f"slope_{j}_t"]),
+            p_cell(s[f"slope_{j}_p"]),
+        )
+        for j, (_value, label) in enumerate(at, start=1)
+    ]
+    b.table(
+        _("Pentes simples de {x} selon {w}").format(
+            x=_mid(book.label(focal)), w=_mid(book.label(moderator))
+        ),
+        [
+            _left(book.label(moderator)),
+            _col(rich(it("b"))),
+            _col(marked(_("IC 95 % de {stat}"), stat=it("b"))),
+            _col(rich(it(_("ET")))),
+            _col(rich(it("t"), f"({int(s['df_resid'])})")),
+            _col(rich(it("p"))),
+        ],
+        slope_rows,
+        note=[
+            marked(
+                _("La pente de {x} à chaque valeur de {w}, avec son IC 95 %."),
+                x=_mid(book.label(focal)),
+                w=_mid(book.label(moderator)),
+            )
+        ],
+    )
+    # The predicted values at -1 SD, the mean and +1 SD of the predictor, for each value of
+    # the moderator; the covariates at their mean.
+    x = X.iloc[:, 0]
+    sd = float(x.std(ddof=1))
+    points = [float(x.mean()) - sd, float(x.mean()), float(x.mean()) + sd]
+    last = X.shape[1]
+    others = sum(s[f"coef_{i + 1}"] * float(X.iloc[:, i].mean()) for i in range(2, last - 1))
+    series = []
+    for value, label in at:
+        values = tuple(
+            s["coef_0"] + s["coef_1"] * p + s["coef_2"] * value + s[f"coef_{last}"] * p * value
+            + others
+            for p in points
+        )  # fmt: skip
+        name = label if nominal else f"{book.label(moderator)} : {label}"
+        series.append(Series(name, values))
+    b.figure(
+        _("Valeurs prédites de {y} selon {x} et {w}").format(
+            y=_mid(book.label(outcome)), x=_mid(book.label(focal)), w=_mid(book.label(moderator))
+        ),
+        "line",
+        book.label(focal),
+        book.label(outcome),
+        categories=(_("−1 ÉT"), _("moyenne"), _("+1 ÉT")),
+        series=tuple(series),
+        legend_title=book.label(moderator),
+        note=[
+            marked(
+                _(
+                    "Valeurs prédites par le modèle, à −1 écart-type, à la moyenne et à +1 "
+                    "écart-type de {x}{covariates}. {N} = {n}."
+                ),
+                x=_mid(book.label(focal)),
+                covariates=_(", les covariables à leur moyenne") if covariates else "",
+                N=it("N"),
+                n=int(s["n"]),
+            )
+        ],
+    )
+
+
 BUILDERS = {
     "table1": _table1,
     "t_test": _t_test,
     "paired": _paired,
+    "partial": _partial,
+    "moderation": _moderation,
     "anova": _anova,
     "chi_square": _chi_square,
     "correlation": _correlation,

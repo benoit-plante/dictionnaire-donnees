@@ -340,6 +340,27 @@ def _method_sentences(analysis: str, method: str, post_hoc: str) -> list[Text]:
             )
         )
         return [marked(template, t=t, d=d)]
+    if analysis == "partial":
+        return [
+            rich(
+                _(
+                    "Les corrélations partielles sont calculées à covariables constantes, par la "
+                    "corrélation des résidus ; leur intervalle de confiance à 95 % vient de la "
+                    "transformation de Fisher."
+                )
+            )
+        ]
+    if analysis == "moderation":
+        return [
+            rich(
+                _(
+                    "La modération a été estimée par une régression avec un terme d'interaction, "
+                    "sur variables centrées ; les pentes simples sont données à −1 écart-type, à "
+                    "la moyenne et à +1 écart-type du modérateur, ou dans chacune de ses deux "
+                    "modalités."
+                )
+            )
+        ]
     if analysis == "paired" and method == "wilcoxon":
         return [
             rich(

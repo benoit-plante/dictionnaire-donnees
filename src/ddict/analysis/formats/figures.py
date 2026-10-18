@@ -111,14 +111,19 @@ def _coefficients(ax, figure: ApaFigure) -> None:
 
 
 def _line(ax, figure: ApaFigure) -> None:
-    """v0.14: the means of the measures of the same people, in their order, and their
-    intervals."""
-    series = figure.series[0]
+    """v0.14: the means of the measures of the same people, in their order, with their
+    intervals; or several series (a moderation's simple slopes), told apart by their marker
+    and their dashes, with a legend."""
     x = np.arange(len(figure.categories))
-    ax.errorbar(x, series.values, yerr=_errors(series), color="black", marker="o",
-                linewidth=1, capsize=6)  # fmt: skip
+    styles = [("o", "-", "black"), ("s", "--", "0.35"), ("^", ":", "0.55")]
+    for i, series in enumerate(figure.series):
+        marker, dashes, color = styles[i % len(styles)]
+        ax.errorbar(x, series.values, yerr=_errors(series), color=color, marker=marker,
+                    linestyle=dashes, linewidth=1, capsize=6, label=series.name)  # fmt: skip
     ax.set_xticks(x, figure.categories)
     ax.set_xlim(-0.5, len(x) - 0.5)
+    if len(figure.series) > 1:
+        ax.legend(title=figure.legend_title or None, frameon=False)
 
 
 DRAW = {"bars": _bars, "grouped_bars": _grouped, "scatter": _scatter,

@@ -126,7 +126,7 @@ def test_the_same_scores_as_the_r_preparation_script(make, base, score, tmp_path
 
 def test_the_catalogue():
     assert list(CATALOGUE) == ["table1", "t_test", "paired", "anova", "chi_square", "correlation",
-                               "regression"]  # fmt: skip
+                               "regression", "partial", "moderation"]  # fmt: skip
     assert CATALOGUE["t_test"].options["method"][0] == "welch"  # Welch by default (D-077)
 
 

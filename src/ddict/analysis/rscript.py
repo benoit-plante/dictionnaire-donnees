@@ -379,6 +379,104 @@ def _regression(chosen, options, levels, texts) -> list[str]:
     ]
 
 
+def _frame(names: list[str], levels, texts, prefix: str) -> list[str]:
+    """`name = column` for a data frame, a nominal variable as a factor in the tool's order."""
+    found = []
+    for i, name in enumerate(names, start=1):
+        value = _column(name, texts)
+        if levels.get(name) == "nominal":
+            value = f"ddict_fac({value})"
+        found.append(f"{prefix}{i} = {value}")
+    return found
+
+
+def _partial(chosen, options, levels, texts) -> list[str]:
+    """v0.14: the correlation of the residuals on the covariates; t with n - 2 - k degrees
+    of freedom, the interval by Fisher's transformation; the simple correlation."""
+    first, second = chosen["variables"]
+    columns = [f"x = {_column(first, texts)}", f"y = {_column(second, texts)}"]
+    columns += _frame(chosen["covariates"], levels, texts, "z")
+    return [
+        "d <- data.frame(" + ", ".join(columns) + ")",
+        "d <- droplevels(d[complete.cases(d), ])",
+        "z <- d[, -(1:2), drop = FALSE]",
+        "rx <- resid(lm(d$x ~ ., data = z)); ry <- resid(lm(d$y ~ ., data = z))",
+        "n <- nrow(d); k <- ncol(model.matrix(~ ., data = z)) - 1",
+        "r <- cor(rx, ry); ddl <- n - 2 - k; tt <- r * sqrt(ddl / (1 - r^2))",
+        "demi <- qnorm(0.975) / sqrt(n - 3 - k)",
+        "simple <- cor.test(d$x, d$y)",
+        "resultats <- list(n = n, k = k, r = r, df = ddl, t = tt, p = 2 * pt(-abs(tt), ddl),",
+        "                  ci_low = tanh(atanh(r) - demi), ci_high = tanh(atanh(r) + demi),",
+        "                  r_simple = unname(simple$estimate), p_simple = simple$p.value)",
+        "print(resultats)",
+    ]
+
+
+def _moderation(chosen, options, levels, texts) -> list[str]:
+    """v0.14: y on x, w, the covariates and x:w (R's order of the terms); the variables of
+    the interaction centred unless the team chose not to; a nominal moderator coded 0 and
+    1 (its second code); the simple slopes by their formula."""
+    outcome, focal = chosen["outcome"][0], chosen["focal"][0]
+    moderator, covariates = chosen["moderator"][0], chosen.get("covariates", [])
+    center = options.get("center", "yes") == "yes"
+    nominal = levels.get(moderator) == "nominal"
+    moderator_value = _column(moderator, texts)
+    if nominal:
+        moderator_value = f"ddict_fac({moderator_value})"
+    columns = [f"y = {_column(outcome, texts)}", f"x = {_column(focal, texts)}",
+               f"w = {moderator_value}", *_frame(covariates, levels, texts, "c")]  # fmt: skip
+    lines = [
+        "d <- data.frame(" + ", ".join(columns) + ")",
+        "d <- droplevels(d[complete.cases(d), ])",
+    ]
+    if nominal:
+        lines.append("niv <- levels(d$w); d$w <- as.numeric(d$w == niv[2])")
+    if center:
+        lines.append("d$x <- d$x - mean(d$x)")
+        if not nominal:
+            lines.append("d$w <- d$w - mean(d$w)")
+    terms = " + ".join(["x", "w", *[f"c{i}" for i in range(1, len(covariates) + 1)]])
+    at = "valeurs <- c(0, 1)" if nominal else "valeurs <- mean(d$w) + c(-1, 0, 1) * sd(d$w)"
+    return [
+        *lines,
+        f"m <- lm(y ~ {terms} + x:w, data = d)",
+        f"m0 <- lm(y ~ {terms}, data = d)",
+        "print(summary(m))",
+        "co <- summary(m)$coefficients; ci <- confint(m); V <- vcov(m)",
+        "chg <- anova(m0, m); last <- nrow(co)",
+        "resultats <- list(n = nrow(d), r2 = summary(m)$r.squared,",
+        "                  delta_r2 = summary(m)$r.squared - summary(m0)$r.squared,",
+        '                  f_change = chg$F[2], f_change_p = chg$"Pr(>F)"[2],',
+        "                  df_resid = m$df.residual, b = co[last, 1], se = co[last, 2],",
+        "                  t = co[last, 3], p = co[last, 4], low = ci[last, 1],",
+        "                  high = ci[last, 2])",
+        "for (i in seq_len(last)) {",
+        '  resultats[[paste0("coef_", i - 1)]] <- co[i, 1]',
+        '  resultats[[paste0("se_", i - 1)]] <- co[i, 2]',
+        '  resultats[[paste0("t_", i - 1)]] <- co[i, 3]',
+        '  resultats[[paste0("p_", i - 1)]] <- co[i, 4]',
+        '  resultats[[paste0("low_", i - 1)]] <- ci[i, 1]',
+        '  resultats[[paste0("high_", i - 1)]] <- ci[i, 2]',
+        "}",
+        "# Les pentes simples de x : b_x + w b_x:w, ET = racine(V_xx + w² V_ii + 2 w V_xi)",
+        at,
+        "q <- qt(0.975, m$df.residual)",
+        "for (j in seq_along(valeurs)) {",
+        "  w <- valeurs[j]",
+        '  b <- coef(m)["x"] + w * coef(m)["x:w"]',
+        '  se <- sqrt(V["x", "x"] + w^2 * V["x:w", "x:w"] + 2 * w * V["x", "x:w"])',
+        '  cle <- paste0("slope_", j)',
+        '  resultats[[cle]] <- unname(b); resultats[[paste0(cle, "_at")]] <- w',
+        '  resultats[[paste0(cle, "_se")]] <- se',
+        '  resultats[[paste0(cle, "_t")]] <- unname(b / se)',
+        '  resultats[[paste0(cle, "_p")]] <- 2 * pt(-abs(unname(b / se)), m$df.residual)',
+        '  resultats[[paste0(cle, "_low")]] <- unname(b - q * se)',
+        '  resultats[[paste0(cle, "_high")]] <- unname(b + q * se)',
+        "}",
+        "print(resultats)",
+    ]
+
+
 BODIES = {
     "table1": _table1,
     "t_test": _t_test,
@@ -387,6 +485,8 @@ BODIES = {
     "chi_square": lambda c, o, _l, t: _chi_square(c, o, t),
     "correlation": lambda c, o, _l, t: _correlation(c, o, t),
     "regression": _regression,
+    "partial": _partial,
+    "moderation": _moderation,
 }
 
 

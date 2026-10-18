@@ -120,29 +120,41 @@ def _bars(sheet, figure: ApaFigure):
 
 
 def _line(sheet, figure: ApaFigure):
-    """v0.14: the means of the measures in their order, joined, with their intervals."""
-    series = figure.series[0]
-    rows = [
-        [name, mean, high - mean, mean - low]
-        for name, mean, low, high in zip(
-            figure.categories, series.values, series.low, series.high, strict=True
-        )
-    ]
-    last = _write_rows(
-        sheet, [figure.x_label, figure.y_label, _("IC 95 % (+)"), _("IC 95 % (−)")], rows
-    )
+    """v0.14: the means of the measures in their order, joined, with their intervals; or
+    several series (a moderation's simple slopes), with a legend."""
+    single = len(figure.series) == 1 and bool(figure.series[0].low)
+    rows = []
+    for i, name in enumerate(figure.categories):
+        row = [name, *[s.values[i] for s in figure.series]]
+        if single:
+            series = figure.series[0]
+            row += [series.high[i] - series.values[i], series.values[i] - series.low[i]]
+        rows.append(row)
+    header = [figure.x_label, *[s.name for s in figure.series]]
+    if single:
+        header = [figure.x_label, figure.y_label, _("IC 95 % (+)"), _("IC 95 % (−)")]
+    last = _write_rows(sheet, header, rows)
     chart = LineChart()
-    chart.legend = None
+    if len(figure.series) == 1:
+        chart.legend = None
     chart.add_data(
-        Reference(sheet, min_col=2, min_row=FIRST_ROW - 1, max_row=last), titles_from_data=True
+        Reference(
+            sheet, min_col=2, max_col=1 + len(figure.series), min_row=FIRST_ROW - 1, max_row=last
+        ),
+        titles_from_data=True,
     )
     chart.set_categories(Reference(sheet, min_col=1, min_row=FIRST_ROW, max_row=last))
-    line = chart.series[0]
-    line.graphicalProperties.line.solidFill = "000000"
-    line.marker.symbol = "circle"
-    line.marker.graphicalProperties = GraphicalProperties(solidFill="000000")
-    line.smooth = False
-    line.errBars = _errors(sheet, 3, 4, FIRST_ROW, last)
+    styles = [("circle", "000000", None), ("square", "595959", "dash"),
+              ("triangle", "8C8C8C", "sysDot")]  # fmt: skip
+    for line, (symbol, color, dash) in zip(chart.series, styles, strict=False):
+        line.graphicalProperties.line.solidFill = color
+        if dash:
+            line.graphicalProperties.line.dashStyle = dash
+        line.marker.symbol = symbol
+        line.marker.graphicalProperties = GraphicalProperties(solidFill=color)
+        line.smooth = False
+    if single:
+        chart.series[0].errBars = _errors(sheet, 3, 4, FIRST_ROW, last)
     return chart, last
 
 
