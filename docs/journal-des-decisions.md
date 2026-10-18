@@ -1412,3 +1412,49 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
 - **Justification :** Choix de l'auteur : aucun chiffre de l'article ne change sans qu'on le voie (D-089).
 - **Références :** D-089, D-104 ; `docs/plan-v0.14.md`, § 8.
 
+
+### D-117 — Ce que lit le vérificateur des chiffres
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Décision :** Le vérificateur ne lit que les statistiques écrites au style APA (*t*(ddl), *F*(ddl, ddl), χ²(ddl), *r*, ρ, *p*, *M*, *ÉT*/*SD*, *d*, η², *b*, β, *z*, RC/OR, IC, *N*, *n*…), dans les paragraphes et les tableaux d'un `.docx`, en français et en anglais. Tout chiffre ambigu est dit « non reconnu » plutôt que deviné.
+- **Options considérées :**
+  1. Les statistiques au style APA seulement (ce choix).
+  2. Tous les nombres du manuscrit, rapprochés au mieux.
+- **Justification :** Un vérificateur qui devine produirait de fausses alertes et de faux « concorde » ; mieux vaut dire ce qu'il ne lit pas.
+- **Références :** `docs/plan-v0.15.md`, § 3 ; `docs/feuille-de-route-article.md`, § 8.
+
+### D-118 — La référence du vérificateur
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Décision :** Les valeurs du manuscrit sont comparées aux analyses du carnet recalculées sur la base actuelle, avec les décisions en vigueur, et aux faits de la Méthode. Sans la base, elles sont comparées aux valeurs gardées dans le carnet, et le rapport le dit en tête.
+- **Options considérées :**
+  1. Recalculer, et les valeurs du carnet à défaut de la base (ce choix).
+  2. Les valeurs du carnet seulement.
+- **Justification :** Comme le document (D-089), le contrôle porte sur les chiffres du codebook actuel ; une équipe sans accès à la base peut encore vérifier contre le carnet.
+- **Références :** D-089 ; `docs/plan-v0.15.md`, § 3.
+
+### D-119 — Le contenu du paquet de reproduction
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Décision :** Le paquet de reproduction contient le codebook (Excel, Markdown, `datapackage.json`), le préenregistrement, le carnet, le fichier de commandes, le script de préparation, le script R maître, un README de dépôt rédigé par gabarit et la liste des fichiers avec leur empreinte. Jamais la base, ni le fichier projet (son profil contient des valeurs observées), ni une base synthétique.
+- **Options considérées :**
+  1. Sans aucune donnée (ce choix).
+  2. Avec la base, au choix de l'équipe.
+  3. Avec une base synthétique (D-076).
+- **Justification :** Le dépôt de la base relève du certificat d'éthique de l'équipe, pas de l'outil ; le carnet ne garde que des agrégats (D-088). La base synthétique reste reportée (D-076).
+- **Références :** D-076, D-088 ; `docs/plan-v0.15.md`, § 4.
+
+### D-120 — Le recodage
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Décision :** Le recodage entre dans la v0.15, en premier : une variable dérivée, décrite comme une décision du projet (variable source, correspondances ou seuils, nouveau nom, étiquettes, niveau, raison), calculée en mémoire après les scores et avant les exclusions, appliquée partout comme un score. Deux sortes : regrouper des modalités, découper en classes. Jamais sur un identifiant, un texte libre ou une date.
+- **Options considérées :**
+  1. Le prendre dans la v0.15 (ce choix de l'auteur).
+  2. Le reporter.
+- **Justification :** C'est la dernière préparation que les essais AMATUS ont dû faire hors de l'outil, et elle reste du calcul déterministe. Comme il touche à tout, il vient avant le vérificateur ; si la version s'allonge, c'est le paquet de reproduction qui passe en 0.15.1.
+- **Conséquences :** le projet passe au format 0.7.0.
+- **Références :** D-093, D-113 ; `docs/plan-v0.15.md`, § 5.
