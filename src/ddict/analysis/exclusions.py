@@ -93,7 +93,10 @@ def hits(project: Project, data: pd.DataFrame, rule: ExclusionRule) -> pd.Series
     """The rows a rule excludes on its own, on the table with the decisions applied."""
     names = w.names_of(project)
     if isinstance(rule, ConditionRule):
-        name = _score_names(project)[rule.score] if rule.score else names[rule.variable]
+        if rule.recode is not None:  # v0.15
+            name = next(r.name for r in project.recodes.rules if r.id == rule.recode)
+        else:
+            name = _score_names(project)[rule.score] if rule.score else names[rule.variable]
         found = _condition(data[name], rule)
     elif isinstance(rule, CompletenessRule):
         items = [names[n] for n in members(_group(project, rule.group))]

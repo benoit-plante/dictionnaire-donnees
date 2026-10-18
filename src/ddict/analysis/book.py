@@ -14,16 +14,23 @@ class Codebook:
     def __init__(self, project: Project, prepared: PreparedData) -> None:
         self.entries = {w.final_name(e): e for e in project.variables}
         self.levels = conditions.levels(project)
+        self.recodes = {rule.name: rule for rule in project.recodes.rules}
         self.prepared = prepared
 
     def label(self, name: str) -> str:
         entry = self.entries.get(name)
+        if entry is None and name in self.recodes:  # v0.15
+            return self.recodes[name].label
         if entry is None:
             group = self.prepared.scores.get(name)
             return _("{name} (score de {group})").format(name=name, group=group) if group else name
         return w.label_text(entry, "final") or name
 
     def value_labels(self, name: str) -> dict:
+        if name in self.recodes:
+            from ddict.analysis.recode import labels
+
+            return labels(self.recodes[name])
         entry = self.entries.get(name)
         return {lab.code: lab.label for lab in accepted_labels(entry)} if entry else {}
 

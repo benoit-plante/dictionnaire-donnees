@@ -984,7 +984,7 @@ def rm_anova(project, prepared, chosen, options) -> AnalysisResult:
                 post,
             )
         )
-    means = " ; ".join(
+    means = semicolon().join(
         f"{label} {number(column.mean())}" for label, column in zip(labels, Y.T, strict=True)
     )
     if corrected:

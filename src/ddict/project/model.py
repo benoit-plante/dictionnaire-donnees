@@ -24,7 +24,7 @@ from pydantic import (
 # opening (the rules propose their levels), and a 0.3.0 file no longer opens in v0.7.
 # 0.4.0 (v0.12, D-093): the exclusion rules, with a default; a 0.3.0 file reads as it is.
 # 0.5.0 (v0.13, D-101): the analysis plan, with a default; a 0.4.0 file reads as it is.
-SCHEMA_VERSION = "0.6.0"
+SCHEMA_VERSION = "0.7.0"
 
 Code = int | float | str
 # "questionnaire": computed from the questionnaire under a strict rule, and like an AI value
@@ -438,13 +438,15 @@ Operator = Literal["eq", "ne", "lt", "le", "gt", "ge", "in", "missing"]
 
 
 class ConditionRule(Strict):
-    """A condition on a variable (its original name) or on the score of a group's scoring;
-    a missing value never meets it, except with `missing`."""
+    """A condition on a variable (its original name), on the score of a group's scoring or,
+    since v0.15, on a recoded variable (the id of its rule); a missing value never meets it,
+    except with `missing`."""
 
     id: str
     kind: Literal["condition"] = "condition"
     variable: str | None = None
     score: str | None = None
+    recode: str | None = None
     operator: Operator
     value: Code | list[Code] | None = None
     reason: NonEmptyText
@@ -452,8 +454,8 @@ class ConditionRule(Strict):
 
     @model_validator(mode="after")
     def _complete(self) -> ConditionRule:
-        if (self.variable is None) == (self.score is None):
-            raise ValueError("a condition names a variable or a score, not both")
+        if sum(v is not None for v in (self.variable, self.score, self.recode)) != 1:
+            raise ValueError("a condition names one variable, score or recoded variable")
         if self.operator == "missing" and self.value is not None:
             raise ValueError("'missing' takes no value")
         if self.operator == "in" and not (isinstance(self.value, list) and self.value):
@@ -532,17 +534,21 @@ class Exclusions(Strict):
 
 class VariableRef(Strict):
     """A variable by its key in the project, which survives a renaming: a variable of the
-    file (its original name), the score of a group's scoring, or a reversed item. Shared by
-    the plan and the analysis notebook (v0.11)."""
+    file (its original name), the score of a group's scoring, a reversed item or, since
+    v0.15, a recoded variable (the id of its rule). Shared by the plan and the analysis
+    notebook (v0.11)."""
 
     variable: str | None = None
     score: str | None = None
     reversed: str | None = None
+    recode: str | None = None
 
     @model_validator(mode="after")
     def _one(self) -> VariableRef:
-        if sum(v is not None for v in (self.variable, self.score, self.reversed)) != 1:
-            raise ValueError("a variable reference names exactly one of variable, score, reversed")
+        if sum(v is not None for v in (self.variable, self.score, self.reversed, self.recode)) != 1:
+            raise ValueError(
+                "a variable reference names exactly one of variable, score, reversed, recode"
+            )
         return self
 
     @model_serializer
@@ -553,9 +559,95 @@ class VariableRef(Strict):
                 ("variable", self.variable),
                 ("score", self.score),
                 ("reversed", self.reversed),
+                ("recode", self.recode),
             )
             if v is not None
         }
+
+
+# --- Recoding (v0.15, D-120): a derived variable as a decision of the team, never the
+# column itself, computed in memory after the scores and before the exclusion rules. The
+# sheet is docs/verification-depot.md, section 1 (validated). ---
+
+
+class RecodeGroup(Strict):
+    """A category of a regrouping: its code, its label and the source values it gathers."""
+
+    code: int
+    label: NonEmptyText
+    values: list[Code] = Field(min_length=1)
+
+
+class _Recode(Strict):
+    @model_validator(mode="after")
+    def _source(self):
+        if self.source.recode is not None:  # type: ignore[attr-defined]
+            raise ValueError("a recoded variable is recoded from its own source")
+        if self.source.reversed is not None:  # type: ignore[attr-defined]
+            raise ValueError("a reversed item is not recoded")
+        return self
+
+
+class GroupsRecode(_Recode):
+    """Categories gathered into new ones; `missing_values`: source values that become
+    missing. Every observed source value must have a place (checked on the data)."""
+
+    id: str
+    kind: Literal["groups"] = "groups"
+    source: VariableRef
+    name: NonEmptyText
+    label: NonEmptyText
+    level: Literal["nominal", "ordinal"] = "nominal"
+    groups: list[RecodeGroup] = Field(min_length=2)
+    missing_values: list[Code] = []
+    reason: NonEmptyText
+
+    @model_validator(mode="after")
+    def _groups(self) -> GroupsRecode:
+        codes = [g.code for g in self.groups]
+        if len(set(codes)) != len(codes):
+            raise ValueError("two groups have the same code")
+        values = [_same(v) for g in self.groups for v in g.values]
+        values += [_same(v) for v in self.missing_values]
+        if len(set(values)) != len(values):
+            raise ValueError("a source value is in two groups")
+        return self
+
+
+class ClassesRecode(_Recode):
+    """A number cut into classes: each class from its cut included to the next one
+    excluded; the first from −∞, the last to +∞. Codes 1, 2… in order."""
+
+    id: str
+    kind: Literal["classes"] = "classes"
+    source: VariableRef
+    name: NonEmptyText
+    label: NonEmptyText
+    level: Literal["ordinal"] = "ordinal"
+    cuts: list[float] = Field(min_length=1)
+    labels: list[NonEmptyText]
+    reason: NonEmptyText
+
+    @model_validator(mode="after")
+    def _cuts(self) -> ClassesRecode:
+        if any(b <= a for a, b in zip(self.cuts, self.cuts[1:], strict=False)):
+            raise ValueError("the cuts must increase")
+        if len(self.labels) != len(self.cuts) + 1:
+            raise ValueError("one label per class: one more than the cuts")
+        return self
+
+
+def _same(value: Code) -> Code:
+    """1 and 1.0 are the same source value; a text stays a text."""
+    return float(value) if isinstance(value, int | float) else value
+
+
+Recode = Annotated[GroupsRecode | ClassesRecode, Field(discriminator="kind")]
+
+
+class Recodes(Strict):
+    next_id: int = 1
+    rules: list[Recode] = []
 
 
 # The tested effect: the one p-value a hypothesis is about (D-103).
@@ -708,6 +800,7 @@ class Project(Strict):
     dataset: Dataset = Dataset()  # v0.8 (D-064)
     exclusions: Exclusions = Exclusions()  # v0.12 (D-093)
     plan: Plan = Plan()  # v0.13 (D-101)
+    recodes: Recodes = Recodes()  # v0.15 (D-120)
 
     def variable(self, name: str) -> VariableEntry:
         for entry in self.variables:

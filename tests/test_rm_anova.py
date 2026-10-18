@@ -60,6 +60,15 @@ def test_the_sentence_corrected_when_mauchly_rejects(ready):  # noqa: F811
     assert (result.n_used, result.n_excluded) == (203, 37)
 
 
+def test_the_english_sentence_has_english_punctuation(ready):  # noqa: F811
+    """v0.15: the means were joined by the French " ; " in English too."""
+    from ddict import i18n
+
+    with i18n.using("en"):
+        sentence = _run(ready).sentence
+    assert "21.60; Anxiété à la fin" in sentence and " ; " not in sentence
+
+
 def test_uncorrected_when_sphericity_holds(ready):  # noqa: F811
     """Compound symmetry (a person's level plus independent errors): Mauchly does not reject,
     and the sentence gives the plain degrees of freedom."""

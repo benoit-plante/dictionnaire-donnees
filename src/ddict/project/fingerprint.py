@@ -5,7 +5,7 @@ any accepted change gives another. In it: what the file says of each variable, t
 values, the team's decisions (suspect codes, sourced ranges and thresholds, notes), the
 groups, the accepted glossary, the questionnaire the question texts come from and, since
 v0.12, the exclusion rules (only when there are some: a project without rules keeps its
-fingerprint). Not in it:
+fingerprint), and since v0.15 the recodings, likewise. Not in it:
 proposals waiting or rejected, dates, model calls, settings, statistics computed on the
 data. Exports show its first 12 characters.
 """
@@ -95,6 +95,8 @@ def decided_content(project: Project) -> dict:
     }
     if project.exclusions.rules:
         content["exclusions"] = [r.model_dump(mode="json") for r in project.exclusions.rules]
+    if project.recodes.rules:  # v0.15: only when there are some, as the exclusions
+        content["recodes"] = [r.model_dump(mode="json") for r in project.recodes.rules]
     return content
 
 

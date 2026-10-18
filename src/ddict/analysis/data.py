@@ -1,8 +1,9 @@
 """The data ready for an analysis (v0.9, step 3, D-070): the database read in memory, with
 the team's accepted decisions applied in the order of the command files and the
 preparation script (D-062): missing codes removed (declared in the file or confirmed by the
-team), final names, reversed items (`<item>_inv`), scores of the structured scorings, and
-since v0.12 the exclusion rules (D-094): only the people they keep are analysed.
+team), final names, reversed items (`<item>_inv`), scores of the structured scorings,
+since v0.15 the recodings (D-120), and since v0.12 the exclusion rules (D-094): only the
+people they keep are analysed.
 
 The original file is never changed, and nothing of the data is written in the project
 (principle 2): the table lives in memory for the time of an analysis.
@@ -36,7 +37,7 @@ class DataError(Exception):
 
 @dataclass(frozen=True)
 class PreparedData:
-    table: pd.DataFrame  # columns: final names, then new variables (`_inv`, scores)
+    table: pd.DataFrame  # columns: final names, then new variables (`_inv`, scores, recodings)
     scores: dict[str, str]  # score name -> group id
     reversed: dict[str, str]  # new variable -> final name of the item
     flow: exclusions.Flow | None = None  # v0.12: who the exclusion rules kept
@@ -134,8 +135,11 @@ def _without_missing(column: pd.Series, entry: VariableEntry) -> pd.Series:
     return column.mask(missing)
 
 
-def apply_decisions(project: Project, table: pd.DataFrame) -> PreparedData:
-    """The accepted decisions applied to a table read from the database."""
+def decided(project: Project, table: pd.DataFrame) -> tuple[pd.DataFrame, list, dict]:
+    """The decisions before the exclusion rules: the table with its final names, missing
+    codes removed, reversed items, scores and recodings; the reversals and the scores."""
+    from ddict.analysis import recode
+
     names = w.names_of(project)
     columns = {}
     for entry in project.variables:
@@ -164,6 +168,13 @@ def apply_decisions(project: Project, table: pd.DataFrame) -> PreparedData:
             value = items.sum(axis=1, min_count=1)
         data[score.name] = value.where(answered >= score.least, np.nan)
         found_scores[score.name] = score.group
+    recode.apply(project, data)
+    return data, reversals, found_scores
+
+
+def apply_decisions(project: Project, table: pd.DataFrame) -> PreparedData:
+    """The accepted decisions applied to a table read from the database."""
+    data, reversals, found_scores = decided(project, table)
     rank = exclusions.ranks(project, data)
     kept = data[rank == 0].reset_index(drop=True)
     return PreparedData(

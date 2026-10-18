@@ -1,6 +1,6 @@
 # Fiche : le recodage, le vérificateur des chiffres et le paquet de reproduction (v0.15)
 
-> Statut : **proposée le 2026-10-18 (étape 1 de la v0.15), à valider par l'auteur.** Plan : [`plan-v0.15.md`](plan-v0.15.md), décisions D-117 à D-120. Les exemples viennent de la base fictive `etude-suivi` (240 participants, graine fixe) et d'une ébauche d'article que l'outil a produite sur elle avec cinq analyses au carnet (A1 test apparié, A2 régression logistique, A3 corrélation, A4 test *t*, A5 ANOVA à mesures répétées). Les questions à trancher sont rassemblées au § 4.
+> Statut : **validée par l'auteur le 2026-10-18 (étape 1 de la v0.15)**, avec les recommandations du § 4 : une classe « signe inversé » pour *t*, *z* et *d* ; les pourcentages lus seulement s'il reste du temps à l'étape 4 ; pas de recodage d'un recodage ; un encadré sur la page « Variables » et la liste sur la page « Groupes » ; `README.md` toujours, dans la langue choisie. Plan : [`plan-v0.15.md`](plan-v0.15.md), décisions D-117 à D-120. Les exemples viennent de la base fictive `etude-suivi` (240 participants, graine fixe) et d'une ébauche d'article que l'outil a produite sur elle avec cinq analyses au carnet (A1 test apparié, A2 régression logistique, A3 corrélation, A4 test *t*, A5 ANOVA à mesures répétées). Les questions à trancher sont rassemblées au § 4.
 
 ---
 
@@ -235,7 +235,7 @@ Une valeur rattachée à une analyse « changée, à confirmer » garde sa class
 
 | Fichier | Contenu |
 |---|---|
-| `LISEZMOI.md` (ou `README.md` en anglais) | le README de dépôt (§ 3.2) |
+| `README.md` | le README de dépôt (§ 3.2), dans la langue choisie |
 | `codebook/<projet>.xlsx`, `codebook/<projet>.md` | le codebook, export final |
 | `codebook/<projet>-datapackage.json` | la description Frictionless (v0.8) |
 | `plan/<projet>-preenregistrement.docx`, `.md` | si le plan existe ; le plan et ses amendements y sont |

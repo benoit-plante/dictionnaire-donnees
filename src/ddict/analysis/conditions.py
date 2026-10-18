@@ -48,10 +48,12 @@ class AnalysisRefused(Exception):
 
 def levels(project: Project) -> dict[str, str | None]:
     """The measure level of each variable an analysis may use, by final name: the level in
-    force, and "scale" for a score of a structured scoring."""
+    force, "scale" for a score of a structured scoring, the level of a recoding (v0.15)."""
     found = {w.final_name(e): measure.level(e) for e in project.variables}
     for score in plan(project)[1]:
         found[score.name] = SCALE
+    for rule in project.recodes.rules:
+        found[rule.name] = rule.level
     return found
 
 

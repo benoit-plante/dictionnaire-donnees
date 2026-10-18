@@ -54,6 +54,10 @@ def _variable(project: Project, name: str, found: list[str]) -> bool:
 
 
 def _condition(project: Project, rule: ConditionRule, found: list[str]) -> None:
+    if rule.recode is not None:  # v0.15: a recoded variable, codes as numbers
+        if all(r.id != rule.recode for r in project.recodes.rules):
+            found.append(_("{id} : aucun recodage ne porte ce numéro.").format(id=rule.recode))
+        return
     if rule.score is not None:
         group = _group(project, rule.score)
         scoring = group.scoring if group else None

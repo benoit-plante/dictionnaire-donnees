@@ -145,6 +145,9 @@ def reference(project: Project, name: str) -> VariableRef:
     for item in reversals:
         if item.new == name:
             return VariableRef(reversed=originals[item.name])
+    for rule in project.recodes.rules:  # v0.15
+        if rule.name == name:
+            return VariableRef(recode=rule.id)
     raise NotebookError("unknown_variable", name)
 
 
@@ -156,6 +159,11 @@ def resolve(project: Project, ref: VariableRef) -> str:
         if ref.variable not in names:
             raise NotebookError("variable_removed", ref.variable)
         return names[ref.variable]
+    if ref.recode is not None:  # v0.15
+        for rule in project.recodes.rules:
+            if rule.id == ref.recode:
+                return rule.name
+        raise NotebookError("recode_removed", ref.recode)
     reversals, scores, _notes = plan(project)
     if ref.score is not None:
         for score in scores:
@@ -200,6 +208,7 @@ def reason_text(error: NotebookError) -> str:
         "variable_removed": _("{name} : la variable n'est plus dans le projet."),
         "score_removed": _("{name} : le groupe n'a plus de cotation, donc plus de score."),
         "not_reversed": _("{name} : l'item n'est plus inversé."),
+        "recode_removed": _("{name} : le recodage n'est plus dans le projet."),
         "unknown_variable": _("{name} : variable inconnue du projet."),
         "unknown_entry": _("{name} : aucune analyse du carnet ne porte ce numéro."),
         "nothing_pending": _("{name} : aucun changement à confirmer."),

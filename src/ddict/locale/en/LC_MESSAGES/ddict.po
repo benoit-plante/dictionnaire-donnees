@@ -925,6 +925,10 @@ msgstr "Class"
 msgid "Classe de confidentialité inconnue : {c}"
 msgstr "Unknown privacy class: {c}"
 
+#, python-brace-format
+msgid "Classe vide : {label}."
+msgstr "Empty class: {label}."
+
 msgid "Code"
 msgstr "Code"
 
@@ -1343,6 +1347,9 @@ msgstr ""
 "Two distributions were compared with the Mann-Whitney test; the effect size is the rank-biserial "
 "correlation."
 
+msgid "Deux groupes ont le même code."
+msgstr "Two groups have the same code."
+
 msgid ""
 "Deux mesures d'une même personne ont été comparées par le test de Wilcoxon des rangs signés ; la "
 "taille d'effet est la corrélation bisériale des rangs."
@@ -1413,6 +1420,9 @@ msgstr "Give the origin of the data and their state when the plan was written."
 
 msgid "Donnez la raison de la règle, en clair."
 msgstr "Give the reason of the rule, in plain words."
+
+msgid "Donnez la raison du recodage, en clair."
+msgstr "Give the reason for the recoding, in plain words."
 
 msgid "Donnez le seuil de durée, en secondes."
 msgstr "Give the duration threshold, in seconds."
@@ -1961,6 +1971,12 @@ msgid ""
 msgstr ""
 "It is computed when at least {m} of the {k} items are answered; a missing item is replaced by the"
 " mean of the person's answered items."
+
+msgid "Il faut au moins deux groupes."
+msgstr "At least two groups are needed."
+
+msgid "Il faut au moins un seuil."
+msgstr "At least one cut is needed."
 
 msgid "Il faut deux variables de date et d'heure : le début et la fin."
 msgstr "Two date and time variables are needed: the start and the end."
@@ -3014,6 +3030,9 @@ msgstr "The rules apply in this order:"
 msgid "Les scores sont calculés comme décrit sous « Indices »."
 msgstr "The scores are computed as described under “Indices”."
 
+msgid "Les seuils doivent aller croissant."
+msgstr "The cuts must increase."
+
 msgid ""
 "Les signaux de qualité de la passation, parmi les personnes que les règles gardent : durées, "
 "lignes droites, doublons. Aucun n'est appliqué."
@@ -3316,6 +3335,10 @@ msgstr "Fewer than {n} people have all the measures."
 #, python-brace-format
 msgid "Moins de {n} personnes{where} : {cases}."
 msgstr "Fewer than {n} people{where}: {cases}."
+
+#, python-brace-format
+msgid "Moins de {small} personnes : {label} ({n})."
+msgstr "Fewer than {small} people: {label} ({n})."
 
 #, python-brace-format
 msgid "Moins de {threshold} : **{count}** personnes."
@@ -4084,6 +4107,10 @@ msgstr "Recomputing the notebook…"
 msgid "Recalculer et lister les analyses du carnet, avec ce qui a changé."
 msgstr "Recompute and list the notebook's analyses, with what changed."
 
+#, python-brace-format
+msgid "Recodage incomplet : {field} ({detail})."
+msgstr "Incomplete recoding: {field} ({detail})."
+
 msgid "Refaire l'analyse dans R"
 msgstr "Redo the analysis in R"
 
@@ -4846,6 +4873,9 @@ msgstr ""
 msgid "Un groupe de cases à cocher n'a pas de cotation."
 msgstr "A group of check boxes has no scoring."
 
+msgid "Un item inversé ne se recode pas ; recodez l'item d'origine."
+msgstr "A reversed item is not recoded; recode the original item."
+
 msgid "Un khi-carré"
 msgstr "A chi-square test"
 
@@ -4985,6 +5015,15 @@ msgstr "An answer that repeats an earlier answer on all these variables."
 msgid "Une source documentée est obligatoire."
 msgstr "A documented source is required."
 
+msgid "Une valeur est dans deux groupes."
+msgstr "A value is in two groups."
+
+msgid "Une variable recodée se recode depuis sa propre source."
+msgstr "A recoded variable is recoded from its own source."
+
+msgid "Une étiquette par classe : une de plus que les seuils."
+msgstr "One label per class: one more than the cuts."
+
 msgid "Unilatérale : la première mesure moins élevée"
 msgstr "One-sided: the first measure lower"
 
@@ -5077,6 +5116,10 @@ msgid ""
 msgstr ""
 "Values predicted by the model, at −1 standard deviation, at the mean and at +1 standard deviation"
 " of {x}{covariates}. {N} = {n}."
+
+#, python-brace-format
+msgid "Valeurs sans groupe : {values}. Mettez-les dans un groupe, ou déclarez-les manquantes."
+msgstr "Values without a group: {values}. Put them in a group, or declare them missing."
 
 msgid "Valides"
 msgstr "Valid"
@@ -6413,6 +6456,10 @@ msgid "{id} ({kind})."
 msgstr "{id} ({kind})."
 
 #, python-brace-format
+msgid "{id} : aucun recodage ne porte ce numéro."
+msgstr "{id}: no recoding has this number."
+
+#, python-brace-format
 msgid "{id} : aucune hypothèse ne porte ce numéro."
 msgstr "{id}: no hypothesis has this number."
 
@@ -6435,6 +6482,10 @@ msgstr "{id}: the planned analysis can no longer be run: {reason}"
 #, python-brace-format
 msgid "{id} : l'analyse prévue sera calculée quand la base sera ouverte."
 msgstr "{id}: the planned analysis will be computed when the database is open."
+
+#, python-brace-format
+msgid "{id} : utilisé par {users} ; retirez-les ou changez-les d'abord."
+msgstr "{id}: used by {users}; remove or change them first."
 
 #, python-brace-format
 msgid "{id} est maintenant au rang {rank}."
@@ -6539,6 +6590,10 @@ msgid "{name} : des catégories en texte n'ont pas d'ordre ; utilisez = , ≠ ou
 msgstr "{name}: categories written as text have no order; use =, ≠ or among."
 
 #, python-brace-format
+msgid "{name} : identifiant, texte libre ou date ; une variable ne se recode pas ainsi."
+msgstr "{name}: identifier, free text or date; such a variable is not recoded."
+
+#, python-brace-format
 msgid "{name} : identifiant, texte ou date ; un sous-groupe ne se décrit pas ainsi."
 msgstr "{name}: identifier, text or date; a subgroup is not described this way."
 
@@ -6567,12 +6622,20 @@ msgid "{name} : le nom {new} est déjà pris ou invalide, non inversé."
 msgstr "{name}: the name {new} is taken or invalid, not reversed."
 
 #, python-brace-format
+msgid "{name} : le recodage n'est plus dans le projet."
+msgstr "{name}: the recoding is no longer in the project."
+
+#, python-brace-format
 msgid "{name} : moins de {n} personnes dans {codes}."
 msgstr "{name}: fewer than {n} people in {codes}."
 
 #, python-brace-format
 msgid "{name} : niveau de mesure inconnu."
 msgstr "{name}: unknown measure level."
+
+#, python-brace-format
+msgid "{name} : niveau de mesure non décidé ; décidez-le d'abord."
+msgstr "{name}: measure level not decided; decide it first."
 
 #, python-brace-format
 msgid "{name} : niveau de mesure non décidé ; décidez-le sur la page Base."
@@ -6583,8 +6646,32 @@ msgid "{name} : niveau « {level} », ne convient pas au rôle « {role} »."
 msgstr "{name}: level \"{level}\", does not fit the role \"{role}\"."
 
 #, python-brace-format
+msgid "{name} : nom déjà pris."
+msgstr "{name}: name already taken."
+
+#, python-brace-format
+msgid ""
+"{name} : nom invalide (lettres minuscules, chiffres et _, au plus {n} caractères, pas un mot "
+"réservé)."
+msgstr ""
+"{name}: invalid name (lowercase letters, digits and _, at most {n} characters, not a reserved "
+"word)."
+
+#, python-brace-format
 msgid "{name} : nom refusé ({why})."
 msgstr "{name}: name refused ({why})."
+
+#, python-brace-format
+msgid ""
+"{name} : seul un nombre (une échelle ou un score) se découpe en classes ; des catégories se "
+"regroupent."
+msgstr "{name}: only a number (a scale or a score) is cut into classes; categories are regrouped."
+
+#, python-brace-format
+msgid ""
+"{name} : seules des catégories (nominales ou ordinales) se regroupent ; un nombre se découpe en "
+"classes."
+msgstr "{name}: only categories (nominal or ordinal) are regrouped; a number is cut into classes."
 
 #, python-brace-format
 msgid "{name} : un groupe de moins de {n} personnes ({codes})."
@@ -6601,6 +6688,10 @@ msgstr ""
 #, python-brace-format
 msgid "{name} : une variable texte ne se compare pas par plus petit ou plus grand."
 msgstr "{name}: a text variable is not compared by smaller or greater."
+
+#, python-brace-format
+msgid "{name} : variable absente de la base."
+msgstr "{name}: variable not in the database."
 
 #, python-brace-format
 msgid "{name} : variable inconnue du projet."
@@ -6975,6 +7066,14 @@ msgstr "{used} observations used, {excluded} excluded ({why})."
 #, python-brace-format
 msgid "{value} %"
 msgstr "{value}%"
+
+#, python-brace-format
+msgid "{value} ({label}, {n} personnes)"
+msgstr "{value} ({label}, {n} people)"
+
+#, python-brace-format
+msgid "{value} ({n} personnes)"
+msgstr "{value} ({n} people)"
 
 #, python-brace-format
 msgid "{what} manquant"

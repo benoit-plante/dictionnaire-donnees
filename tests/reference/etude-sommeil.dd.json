@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.6.0",
+  "schema_version": "0.7.0",
   "source": {
     "name": "etude-sommeil.sav",
     "format": "sav",
@@ -5397,5 +5397,9 @@
     "hypotheses": [],
     "frozen": null,
     "amendments": []
+  },
+  "recodes": {
+    "next_id": 1,
+    "rules": []
   }
 }
