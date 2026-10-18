@@ -24,7 +24,7 @@ from pydantic import (
 # opening (the rules propose their levels), and a 0.3.0 file no longer opens in v0.7.
 # 0.4.0 (v0.12, D-093): the exclusion rules, with a default; a 0.3.0 file reads as it is.
 # 0.5.0 (v0.13, D-101): the analysis plan, with a default; a 0.4.0 file reads as it is.
-SCHEMA_VERSION = "0.5.0"
+SCHEMA_VERSION = "0.6.0"
 
 Code = int | float | str
 # "questionnaire": computed from the questionnaire under a strict rule, and like an AI value
@@ -618,6 +618,27 @@ Statement = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1
 FamilyName = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=30)]
 
 
+SubgroupOperator = Literal["eq", "ne", "lt", "le", "gt", "ge", "in"]
+
+
+class Subgroup(Strict):
+    """v0.14 (D-113): the people an analysis or an hypothesis is about, by a condition on a
+    variable (by its key, as the roles); never an identifier nor a free text, never a list
+    of people."""
+
+    variable: VariableRef
+    operator: SubgroupOperator
+    value: Code | list[Code]
+
+    @model_validator(mode="after")
+    def _values(self) -> Subgroup:
+        if (self.operator == "in") != isinstance(self.value, list):
+            raise ValueError("'in' takes a list of values, the other operators one value")
+        if self.operator == "in" and not self.value:
+            raise ValueError("'in' takes at least one value")
+        return self
+
+
 class Hypothesis(Strict):
     """An hypothesis written by the team: `id` (H1, H2...) is never given again after a
     removal; the order of the list is the order of the article."""
@@ -631,6 +652,7 @@ class Hypothesis(Strict):
     direction: Direction | None = None
     kind: Literal["confirmatory", "exploratory"] = "confirmatory"
     family: FamilyName | None = None
+    subgroup: Subgroup | None = None  # v0.14 (D-113)
 
 
 class PriorAnalysis(Strict):

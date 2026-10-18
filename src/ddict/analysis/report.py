@@ -61,6 +61,8 @@ def versions() -> dict[str, str]:
 
 def excluded_reason(result: AnalysisResult) -> str:
     """Why observations were left out of the analysis."""
+    if result.subgroup is not None:
+        return _("valeurs manquantes, ou hors du sous-groupe")
     if result.options.get("levels"):
         return _("valeurs manquantes, ou hors des deux groupes comparés")
     return _("valeurs manquantes")
@@ -106,6 +108,7 @@ def _about(
         (_("Versions"), _versions_text()),
         *_variables(result, book),
         *_options(result, book),
+        *([(_("Sous-groupe"), result.subgroup_text)] if result.subgroup_text else []),
         (_("Observations retenues"), str(result.n_used)),
         (_("Observations écartées"), f"{result.n_excluded} ({excluded_reason(result)})"),
         (_("Script R équivalent"), files.r.name),
@@ -204,7 +207,13 @@ def _r_files(
 ) -> dict[str, str]:
     found = {
         files.r.name: r_script(
-            project, stem, result.analysis, result.chosen, result.options, today
+            project,
+            stem,
+            result.analysis,
+            result.chosen,
+            result.options,
+            today,
+            subgroup=result.subgroup,
         ),
         files.syntax.name: render_syntax(project, "r", today),
     }

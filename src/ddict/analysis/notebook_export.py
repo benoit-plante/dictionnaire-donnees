@@ -102,6 +102,26 @@ def _front(project) -> list[Section]:
     ]  # fmt: skip
 
 
+def _subgroups(project, notebook) -> tuple:
+    """v0.14 (D-113): the retained analyses on a subgroup, said in the Method."""
+    from ddict.analysis.apa import rich
+    from ddict.analysis.prereg import subgroup_plain
+
+    found = []
+    for entry in notebook.entries:
+        if entry.retained and entry.superseded is None and entry.subgroup is not None:
+            try:
+                condition = subgroup_plain(project, entry.subgroup)
+            except nb.NotebookError:
+                continue
+            found.append(
+                _("L'analyse {id} porte sur un sous-groupe : {condition}.").format(
+                    id=entry.id, condition=condition
+                )
+            )
+    return (rich(" ".join(found)),) if found else ()
+
+
 def _method(project, prepared, notebook, found, table: int, figure: int, tested=None):
     """The sections of the Method, and the numbers of the next table and figure."""
     flow = describe_flow(project, prepared.flow, number=figure)
@@ -125,7 +145,7 @@ def _method(project, prepared, notebook, found, table: int, figure: int, tested=
             "analyses",
             _("Analyses"),
             "",
-            paragraphs=(method_text.analyses(found, script),),
+            paragraphs=(method_text.analyses(found, script), *_subgroups(project, notebook)),
         )
     )
     if plan_notebook.frozen(project):
@@ -241,7 +261,9 @@ class _Results:
                     document.tables, document.figures, level=level)
         )  # fmt: skip
         self.listed.append(f"{heading(entry)} — {_variables(self.book, result.chosen)}")
-        self.analyses.append((entry.id, entry.analysis, result.chosen, dict(entry.options)))
+        self.analyses.append(
+            (entry.id, entry.analysis, result.chosen, dict(entry.options), result.subgroup)
+        )
         self.table += len(document.tables)
         self.figure += len(document.figures)
 

@@ -231,6 +231,53 @@ OPTION_ARGUMENTS = {
 }
 
 
+SUBGROUP_OPERATORS = ("eq", "ne", "lt", "le", "gt", "ge", "in")
+
+
+class SubgroupError(ValueError):
+    """A subgroup typed on the command line that cannot be read; the message says why."""
+
+
+def subset_from_args(project, values: list[str] | None):
+    """A subgroup as typed (`sexe eq 1`, `sexe in 1 2`), its values typed as its variable
+    holds them (v0.14, D-113); None without one. Raises SubgroupError."""
+    from ddict.analysis import conditions
+    from ddict.analysis.results import Subset
+
+    if not values:
+        return None
+    if len(values) < 3 or values[1] not in SUBGROUP_OPERATORS:
+        raise SubgroupError(
+            _("Sous-groupe : variable, opérateur ({ops}) et valeur(s), p. ex. sexe eq 1.").format(
+                ops=", ".join(SUBGROUP_OPERATORS)
+            )
+        )
+    name, operator, typed = values[0], values[1], values[2:]
+    if operator != "in" and len(typed) != 1:
+        raise SubgroupError(_("Sous-groupe : une seule valeur avec « {op} ».").format(op=operator))
+    if name in conditions.texts(project):
+        found = [t.strip() for t in typed]
+    else:
+        from ddict.export import wording as w
+        from ddict.questionnaire.labels import accepted_labels
+
+        entry = next((e for e in project.variables if w.final_name(e) == name), None)
+        labels = {lab.label.casefold(): lab.code for lab in accepted_labels(entry)} if entry else {}
+        found = []
+        for text in typed:
+            try:
+                found.append(float(text.replace(",", ".")))
+            except ValueError:
+                if text.strip().casefold() not in labels:  # a value label, as people type it
+                    raise SubgroupError(
+                        _("Sous-groupe : {name} prend des nombres ou ses étiquettes.").format(
+                            name=name
+                        )
+                    ) from None
+                found.append(float(labels[text.strip().casefold()]))
+    return Subset(name, operator, found if operator == "in" else found[0])
+
+
 def _asked(args: argparse.Namespace) -> tuple[dict[str, list[str]], dict[str, str]]:
     """The variables by role and the options of an analysis, as the command line gives
     them."""
@@ -281,7 +328,11 @@ def cmd_analyse(args: argparse.Namespace) -> int:
         print(copy_error_text(error, project.source.name), file=sys.stderr)
         return EXIT_ERROR
     try:
-        result = run(project, prepared, ANALYSES[args.analyse], *_asked(args))
+        subset = subset_from_args(project, args.sous_groupe)
+        result = run(project, prepared, ANALYSES[args.analyse], *_asked(args), subset)
+    except SubgroupError as error:
+        print(error, file=sys.stderr)
+        return EXIT_ERROR
     except AnalysisRefused as error:
         _print_refusal(error)
         return EXIT_ERROR
@@ -334,6 +385,11 @@ def notebook_lines(project, notebook, statuses) -> list[str]:
             lines.append(
                 "   " + " ; ".join(f"{ROLES[role]} : {', '.join(n)}" for role, n in names.items())
             )
+            if entry.subgroup is not None:  # v0.14 (D-113)
+                from ddict.analysis.prereg import subgroup_plain
+
+                lines.append("   " + _("Sous-groupe : {condition}").format(
+                    condition=subgroup_plain(project, entry.subgroup)))  # fmt: skip
         except nb.NotebookError:
             pass
         if status.reason:
@@ -398,7 +454,11 @@ def _notebook_action(action, args, project, project_path, notebook) -> int:
             print(reason, file=sys.stderr)
             return EXIT_ERROR
         try:
-            result = run(project, prepared, ANALYSES[args.analyse], *_asked(args))
+            subset = subset_from_args(project, args.sous_groupe)
+            result = run(project, prepared, ANALYSES[args.analyse], *_asked(args), subset)
+        except SubgroupError as error:
+            print(error, file=sys.stderr)
+            return EXIT_ERROR
         except AnalysisRefused as error:
             _print_refusal(error)
             return EXIT_ERROR
@@ -1661,6 +1721,16 @@ def _analysis_arguments(command: argparse.ArgumentParser) -> None:
         "--second",
         nargs=1,
         help=_("Seconde mesure (test t apparié)."),
+    )
+    command.add_argument(
+        "--sous-groupe",
+        "--subgroup",
+        nargs="+",
+        metavar="X",
+        help=_(
+            "Un sous-groupe : variable, opérateur (eq, ne, lt, le, gt, ge, in) et valeur(s), "
+            "p. ex. sexe eq 1 ; aucun pour le retirer (plan modifier)."
+        ),
     )
     command.add_argument(
         "--mesures",

@@ -138,7 +138,7 @@ def test_round_trip_byte_for_byte(ready):
     data = json.loads(first)
     assert list(data) == ["carnet_version", "project", "next_id", "first_table", "first_figure",
                           "entries", "method"]  # fmt: skip
-    assert data["carnet_version"] == "1.2.0" and data["project"]["file"] == project_path.name
+    assert data["carnet_version"] == "1.3.0" and data["project"]["file"] == project_path.name
 
 
 def test_a_notebook_of_v0_11_reads_as_it_is(ready):
@@ -154,7 +154,7 @@ def test_a_notebook_of_v0_11_reads_as_it_is(ready):
     assert old.entries == notebook.entries
 
 
-@pytest.mark.parametrize("version", ["2.0.0", "1.9.0", "1.3.0", "0.9.0", "un"])
+@pytest.mark.parametrize("version", ["2.0.0", "1.9.0", "1.4.0", "0.9.0", "un"])
 def test_a_notebook_of_another_version_is_refused(ready, version):
     notebook = _filled(ready)
     path = ready[2].with_name("carnet.json")

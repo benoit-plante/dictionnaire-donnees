@@ -126,7 +126,8 @@ def recompute(project: Project, prepared: PreparedData, entry: nb.Entry) -> Anal
     """The entry's analysis on the database as it is now, with the decisions in force.
     Raises NotebookError (a key leads nowhere) or AnalysisRefused (the conditions refuse)."""
     chosen = nb.resolved(project, entry)
-    return run(project, prepared, entry.analysis, chosen, dict(entry.options))
+    subset = nb.resolved_subgroup(project, entry.subgroup)
+    return run(project, prepared, entry.analysis, chosen, dict(entry.options), subset)
 
 
 def check(

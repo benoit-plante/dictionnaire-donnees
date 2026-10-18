@@ -261,8 +261,10 @@ def _clear_form() -> None:
             st.session_state[key] = empty[name]
         elif name.startswith("role-"):
             st.session_state[key] = [] if isinstance(st.session_state[key], list) else None
-        elif name.startswith("levels-"):
+        elif name.startswith("levels-") or name == "subgroup-values":
             st.session_state[key] = []
+        elif name in ("subgroup-variable", "subgroup-value", "subgroup-number"):
+            st.session_state[key] = None
     st.session_state.pop(EDITING, None)
 
 
@@ -298,6 +300,18 @@ def _edit(hypothesis_id: str) -> None:
         pair = _names(project, h.effect.variables)
         if len(pair) == 2:
             st.session_state[NEW + "pair"] = pair
+    if h.subgroup is not None:
+        try:
+            subset = nb.resolved_subgroup(project, h.subgroup)
+        except nb.NotebookError:
+            subset = None
+        if subset is not None:
+            st.session_state[NEW + "subgroup-variable"] = subset.name
+            st.session_state[NEW + "subgroup-operator"] = subset.operator
+            if subset.operator == "in":
+                st.session_state[NEW + "subgroup-values"] = list(subset.value)
+            else:
+                st.session_state[NEW + "subgroup-value"] = subset.value
     st.session_state[NEW + "direction"] = h.direction or ""
     st.session_state[NEW + "kind"] = h.kind
     st.session_state[NEW + "family"] = h.family or ""
@@ -346,6 +360,23 @@ def _choose(project: Project, key: str, book: Codebook) -> dict[str, list[str]]:
                 ),
             )
     return {k: v for k, v in chosen.items() if v}
+
+
+def _compared(key, chosen, options, prepared: PreparedData | None, book: Codebook):
+    """The two groups of a t test or the two measures of a paired one, by their names, in
+    the order the test takes them (v0.14); None while they are not known."""
+    if key == "paired" and chosen.get("first") and chosen.get("second"):
+        return book.label(chosen["first"][0]), book.label(chosen["second"][0])
+    group = (chosen.get("group") or [None])[0]
+    if key != "t_test" or group is None or prepared is None:
+        return None
+    used = [n for names in chosen.values() for n in names]
+    codes = sorted(set(prepared.table[used].dropna()[group]))
+    if options.get("levels"):
+        codes = [c for c in chosen_levels(options["levels"], prepared.table[group]) if c in codes]
+    if len(codes) != 2:
+        return None
+    return book.category(group, codes[0]), book.category(group, codes[1])
 
 
 def _levels(key, chosen, options, prepared: PreparedData | None, book: Codebook) -> None:
@@ -425,18 +456,29 @@ def _form_data(project: Project, prepared: PreparedData | None) -> dict | None:
     )
     allowed = planning.DIRECTIONS.get(kind_of_effect, ())
     direction = ""
+    named = _compared(key, chosen, options, prepared, book)
+
+    def shown(code: str) -> str:
+        if named and code in ("first_higher", "second_higher"):
+            high, low = named if code == "first_higher" else named[::-1]
+            return _("{high} plus élevé que {low}").format(high=high, low=low)
+        return DIRECTION_LABELS[code]
+
     if allowed:
         direction = st.radio(
             _("Sens attendu"),
             ["", *allowed],
             key=NEW + "direction",
-            format_func=DIRECTION_LABELS.__getitem__,
+            format_func=shown,
             horizontal=True,
             help=_(
                 "Pour un test t, un sens rend le test unilatéral ; les groupes suivent l'ordre "
                 "de leurs codes."
             ),
         )
+    subset = None
+    if prepared is not None:
+        subset = analyses_view.subgroup_widgets(project, prepared, book, NEW + "subgroup")
     left, right = st.columns(2)
     kind = left.radio(
         _("Caractère"),
@@ -460,6 +502,7 @@ def _form_data(project: Project, prepared: PreparedData | None) -> dict | None:
         "direction": direction,
         "kind": kind,
         "family": family if kind == "confirmatory" else "",
+        "subgroup": subset,
     }
 
 
@@ -476,6 +519,7 @@ def _submit(project: Project, form: dict) -> None:
         direction=form["direction"],
         kind=form["kind"],
         family=form["family"].strip(),
+        subgroup=form.get("subgroup"),
     )
     editing = st.session_state.get(EDITING)
     if editing:

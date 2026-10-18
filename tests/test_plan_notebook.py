@@ -203,7 +203,7 @@ def test_a_notebook_of_v0_12_reads_as_it_is(ready, tmp_path):
     path = tmp_path / "carnet.json"
     path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
     old = nb.load_notebook(path)
-    assert old.carnet_version == "1.2.0" and old.entries == notebook.entries
+    assert old.carnet_version == "1.3.0" and old.entries == notebook.entries
 
 
 # --- The tested effect's p-value. ---

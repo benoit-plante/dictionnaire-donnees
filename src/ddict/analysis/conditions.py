@@ -71,6 +71,32 @@ def _sensitive(project: Project) -> set[str]:
     }
 
 
+def check_subgroup(project: Project, subset, data: PreparedData | None) -> list[str]:
+    """Why a subgroup cannot be taken (v0.14, D-113): an unknown variable, an identifier, a
+    free text or a date; an order on categories written as text; nobody in it."""
+    known = levels(project)
+    if subset.name not in known:
+        return [_("{name} : variable inconnue.").format(name=subset.name)]
+    if subset.name in _sensitive(project):
+        return [
+            _(
+                "{name} : identifiant, texte ou date ; un sous-groupe ne se décrit pas ainsi."
+            ).format(name=subset.name)
+        ]
+    if subset.name in texts(project) and subset.operator in ("lt", "le", "gt", "ge"):
+        return [
+            _(
+                "{name} : des catégories en texte n'ont pas d'ordre ; utilisez = , ≠ ou parmi."
+            ).format(name=subset.name)
+        ]
+    if data is not None:
+        from ddict.analysis.data import subset_mask
+
+        if not subset_mask(data.table, subset).any():
+            return [_("Personne n'est dans le sous-groupe.")]
+    return []
+
+
 def candidates(project: Project, analysis: Analysis, role: str) -> list[str]:
     """The variables a role may take, by final name, in the order of the codebook."""
     allowed = analysis.role(role).levels

@@ -79,6 +79,13 @@ TESTS = Texts(
         "less": N_("test unilatéral, le premier groupe moins élevé"),
     }
 )
+PAIRED_TESTS = Texts(
+    {
+        "two_sided": N_("test bilatéral"),
+        "greater": N_("test unilatéral, la première mesure plus élevée"),
+        "less": N_("test unilatéral, la première mesure moins élevée"),
+    }
+)
 
 
 def long_date(iso: str) -> str:
@@ -163,6 +170,27 @@ def levels_text(project: Project, roles: dict, value: str) -> str:
     codes = level_codes(value)
     parts = [p.strip() for p in str(value).split(",")]
     return ", ".join(_label(labels, c) or p for c, p in zip(codes, parts, strict=True))
+
+
+SUBGROUP_SYMBOLS = {"eq": "=", "ne": "≠", "lt": "<", "le": "≤", "gt": ">", "ge": "≥"}
+
+
+def subgroup_plain(project: Project, subgroup) -> str:
+    """ "sexe = Femme": a kept subgroup (v0.14) from the project alone, the values by their
+    accepted labels, else as coded."""
+    data = subgroup.model_dump(mode="json") if hasattr(subgroup, "model_dump") else subgroup
+    ref = VariableRef.model_validate(data["variable"])
+    name = _name(project, ref)
+    entry = _entry(project, name)
+    labels = {lab.code: lab.label for lab in accepted_labels(entry)} if entry else {}
+
+    def shown(value) -> str:
+        return _label(labels, value) or w.code_text(value)
+
+    if data["operator"] == "in":
+        values = ", ".join(shown(v) for v in data["value"])
+        return _("{name} parmi {values}").format(name=name, values=values)
+    return f"{name} {SUBGROUP_SYMBOLS[data['operator']]} {shown(data['value'])}"
 
 
 def _measures(project: Project, hypothesis: Hypothesis) -> tuple[str, str] | None:
@@ -347,8 +375,12 @@ def _models(project: Project) -> list[Text]:
         for role, refs in h.roles.items():
             names = ", ".join(_name(project, r) for r in refs)
             parts.append(f"{ROLES.get(role, role).lower()} : {names}")
+        if h.subgroup is not None:
+            parts.append(_("sous-groupe : {condition}").format(
+                condition=subgroup_plain(project, h.subgroup)))  # fmt: skip
         parts.append(_("effet testé : {effect}").format(effect=_effect(project, h)))
-        parts.append(TESTS[h.options.get("alternative", "two_sided")])
+        tests = PAIRED_TESTS if h.analysis == "paired" else TESTS
+        parts.append(tests[h.options.get("alternative", "two_sided")])
         found.append(rich(f"{h.id}. {semicolon().join(parts)}."))
     return found or [(hole(_("modèles statistiques")),)]
 

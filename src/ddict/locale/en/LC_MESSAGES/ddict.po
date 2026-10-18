@@ -519,6 +519,9 @@ msgstr "None"
 msgid "Aucun : tout le texte est reproduit"
 msgstr "None: all the text is reproduced"
 
+msgid "Aucun : toutes les personnes"
+msgstr "None: everyone"
+
 msgid "Aucun amendement."
 msgstr "No amendment."
 
@@ -845,6 +848,9 @@ msgstr "Choose the two variables of the pair"
 msgid "Choisir les items"
 msgstr "Choose the items"
 
+msgid "Choisir les valeurs"
+msgstr "Choose the values"
+
 msgid "Choisir les variables"
 msgstr "Choose the variables"
 
@@ -856,6 +862,9 @@ msgstr "Choose a project file…"
 
 msgid "Choisir une base…"
 msgstr "Choose a database…"
+
+msgid "Choisir une valeur"
+msgstr "Choose a value"
 
 msgid "Choisir une variable"
 msgstr "Choose a variable"
@@ -2076,6 +2085,17 @@ msgstr ""
 " database with the decisions in force and numbered in sequence, the Discussion and the "
 "References, with highlighted holes: a Word document, its Excel charts and the master R script, "
 "next to the project. These results come from the study's data: store them with care."
+
+msgid ""
+"L'analyse ne porte que sur les personnes qui remplissent cette condition, après les règles "
+"d'exclusion ; la phrase, les tableaux, la Méthode et le script R le disent."
+msgstr ""
+"The analysis is only about the people who meet this condition, after the exclusion rules; the "
+"sentence, the tables, the Method and the R script say so."
+
+#, python-brace-format
+msgid "L'analyse {id} porte sur un sous-groupe : {condition}."
+msgstr "Analysis {id} is about a subgroup: {condition}."
 
 #, python-brace-format
 msgid ""
@@ -3584,6 +3604,9 @@ msgstr "Simple slopes of {x}"
 msgid "Pentes simples de {x} selon {w}"
 msgstr "Simple slopes of {x} by {w}"
 
+msgid "Personne n'est dans le sous-groupe."
+msgstr "Nobody is in the subgroup."
+
 msgid "Place de la marque"
 msgstr "Place of the mark"
 
@@ -4529,6 +4552,39 @@ msgstr "Source of the label"
 msgid "Source du seuil"
 msgstr "Source of the threshold"
 
+msgid "Sous-groupe"
+msgstr "Subgroup"
+
+msgid "Sous-groupe (facultatif)"
+msgstr "Subgroup (optional)"
+
+#, python-brace-format
+msgid "Sous-groupe ({condition}). {sentence}"
+msgstr "Subgroup ({condition}). {sentence}"
+
+msgid "Sous-groupe : seules ces lignes entrent dans l'analyse."
+msgstr "Subgroup: only these rows enter the analysis."
+
+#, python-brace-format
+msgid "Sous-groupe : une seule valeur avec « {op} »."
+msgstr "Subgroup: a single value with “{op}”."
+
+#, python-brace-format
+msgid "Sous-groupe : variable, opérateur ({ops}) et valeur(s), p. ex. sexe eq 1."
+msgstr "Subgroup: variable, operator ({ops}) and value(s), e.g. sex eq 1."
+
+#, python-brace-format
+msgid "Sous-groupe : {condition}"
+msgstr "Subgroup: {condition}"
+
+#, python-brace-format
+msgid "Sous-groupe : {condition}."
+msgstr "Subgroup: {condition}."
+
+#, python-brace-format
+msgid "Sous-groupe : {name} prend des nombres ou ses étiquettes."
+msgstr "Subgroup: {name} takes numbers or its labels."
+
 msgid "Spearman"
 msgstr "Spearman"
 
@@ -4821,6 +4877,13 @@ msgstr ""
 
 msgid "Un seuil de durée est un choix de l'équipe : donnez sa source."
 msgstr "A duration threshold is the team's choice: give its source."
+
+msgid ""
+"Un sous-groupe : variable, opérateur (eq, ne, lt, le, gt, ge, in) et valeur(s), p. ex. sexe eq 1 "
+"; aucun pour le retirer (plan modifier)."
+msgstr ""
+"A subgroup: variable, operator (eq, ne, lt, le, gt, ge, in) and value(s), e.g. sex eq 1; none to "
+"remove it (plan modify)."
 
 msgid "Un test t"
 msgstr "A t test"
@@ -5748,6 +5811,9 @@ msgstr "e.g. F1"
 msgid "p. ex. Moins de 18 ans"
 msgstr "e.g. Under 18"
 
+msgid "parmi"
+msgstr "among"
+
 msgid "parmi (valeurs séparées par des virgules)"
 msgstr "among (values separated by commas)"
 
@@ -5929,6 +5995,14 @@ msgstr "sum"
 msgid "source"
 msgstr "source"
 
+#, python-brace-format
+msgid "sous-groupe : {condition}"
+msgstr "subgroup: {condition}"
+
+#, python-brace-format
+msgid "sous-groupe : {new} au lieu de {old}"
+msgstr "subgroup: {new} instead of {old}"
+
 msgid "structure de la plateforme"
 msgstr "platform structure"
 
@@ -5950,6 +6024,12 @@ msgstr "sample size reworded"
 
 msgid "test bilatéral"
 msgstr "two-sided test"
+
+msgid "test unilatéral, la première mesure moins élevée"
+msgstr "one-sided test, the first measure lower"
+
+msgid "test unilatéral, la première mesure plus élevée"
+msgstr "one-sided test, the first measure higher"
 
 msgid "test unilatéral, le premier groupe moins élevé"
 msgstr "one-sided test, the first group lower"
@@ -6090,6 +6170,9 @@ msgstr "missing values"
 
 msgid "valeurs manquantes, ou hors des deux groupes comparés"
 msgstr "missing values, or outside the two groups compared"
+
+msgid "valeurs manquantes, ou hors du sous-groupe"
+msgstr "missing values, or outside the subgroup"
 
 msgid "validé"
 msgstr "accepted"
@@ -6446,6 +6529,14 @@ msgid ""
 msgstr "{name}: not a date with a time; the duration is computed between two date-and-time variables only."
 
 #, python-brace-format
+msgid "{name} : des catégories en texte n'ont pas d'ordre ; utilisez = , ≠ ou parmi."
+msgstr "{name}: categories written as text have no order; use =, ≠ or among."
+
+#, python-brace-format
+msgid "{name} : identifiant, texte ou date ; un sous-groupe ne se décrit pas ainsi."
+msgstr "{name}: identifier, text or date; a subgroup is not described this way."
+
+#, python-brace-format
 msgid "{name} : identifiant, texte ou date, exclu des analyses."
 msgstr "{name}: identifier, text or date, left out of the analyses."
 
@@ -6560,6 +6651,10 @@ msgstr "{name} is not a variable of this correlation."
 #, python-brace-format
 msgid "{name} n'est plus le fichier d'où vient le projet : son contenu a changé. Rien n'a été écrit."
 msgstr "{name} is no longer the file the project comes from: its content has changed. Nothing was written."
+
+#, python-brace-format
+msgid "{name} parmi {values}"
+msgstr "{name} among {values}"
 
 #, python-brace-format
 msgid "{new} au lieu de {old}"

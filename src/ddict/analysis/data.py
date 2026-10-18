@@ -73,6 +73,38 @@ def chosen_levels(text: str, column: pd.Series) -> list:
     return [float(part) for part in parts]
 
 
+def subset_values(texts: list[str], column: pd.Series) -> list:
+    """The values of a subgroup as typed ("1", "Femme"), typed as the column holds them.
+    Raises ValueError for a word where the column holds numbers."""
+    if column.dtype == object:
+        return [t.strip() for t in texts]
+    return [float(t.replace(",", ".")) for t in texts]
+
+
+def subset_mask(table: pd.DataFrame, subset) -> pd.Series:
+    """Who is in a subgroup (v0.14, D-113): as an exclusion condition, a missing value never
+    meets it."""
+    column = table[subset.name]
+    present = ~exclusions.blank(column)
+    if subset.operator == "in":
+        return present & column.isin(list(subset.value))
+    compare = {
+        "eq": lambda c: c == subset.value,
+        "ne": lambda c: c != subset.value,
+        "lt": lambda c: c < subset.value,
+        "le": lambda c: c <= subset.value,
+        "gt": lambda c: c > subset.value,
+        "ge": lambda c: c >= subset.value,
+    }[subset.operator]
+    return present & compare(column).fillna(False).astype(bool)
+
+
+def apply_subset(prepared: PreparedData, subset) -> PreparedData:
+    """The data of a subgroup only, after the exclusion rules; the flow does not change."""
+    kept = prepared.table[subset_mask(prepared.table, subset)].reset_index(drop=True)
+    return PreparedData(kept, prepared.scores, prepared.reversed, prepared.flow)
+
+
 def find_database(project: Project, project_path: Path, given: Path | None = None) -> Path:
     """The database the project was made from: the given file, or the one of the same name
     next to the project; its fingerprint must be the project's."""

@@ -10,12 +10,13 @@ import math
 import pandas as pd
 from scipy import stats
 
-from ddict.analysis import conditions, models
+from ddict.analysis import conditions, data, models
 from ddict.analysis.book import Codebook
 from ddict.analysis.catalogue import CATALOGUE
 from ddict.analysis.data import PreparedData, code_key
 from ddict.analysis.results import (
     AnalysisResult,
+    Subset,
     Table,
     bounded,
     bounded_interval,
@@ -262,17 +263,49 @@ COMPUTE = {
 }
 
 
+SYMBOLS = {"eq": "=", "ne": "≠", "lt": "<", "le": "≤", "gt": ">", "ge": "≥"}
+
+
+def subgroup_text(project: Project, prepared: PreparedData, subset: Subset) -> str:
+    """ "sexe = Femme", "age ≥ 40", "sexe parmi Femme, Homme": the variable by its final
+    name, the values by their labels."""
+    book = Codebook(project, prepared)
+    if subset.operator == "in":
+        values = ", ".join(book.category(subset.name, v) for v in subset.value)
+        return _("{name} parmi {values}").format(name=subset.name, values=values)
+    value = book.category(subset.name, subset.value)
+    return f"{subset.name} {SYMBOLS[subset.operator]} {value}"
+
+
 def run(
     project: Project,
     prepared: PreparedData,
     key: str,
     chosen: dict[str, list[str]],
     options: dict[str, str] | None = None,
+    subgroup: Subset | None = None,
 ) -> AnalysisResult:
-    """Check the conditions, then compute. Raises AnalysisRefused when they refuse."""
+    """Check the conditions, then compute; with a subgroup (v0.14, D-113), on its people
+    only, said before the sentence. Raises AnalysisRefused when they refuse."""
+    outside = 0
+    text = ""
+    if subgroup is not None:
+        refused = conditions.check_subgroup(project, subgroup, prepared)
+        if refused:
+            raise AnalysisRefused(conditions.Check(refusals=refused))
+        text = subgroup_text(project, prepared, subgroup)
+        kept = data.apply_subset(prepared, subgroup)
+        outside = len(prepared.table) - len(kept.table)
+        prepared = kept
     found = conditions.check(project, key, chosen, options, prepared)
     if not found.ok:
         raise AnalysisRefused(found)
     result = COMPUTE[key](project, prepared, chosen, _options(key, options))
     result.warnings = found.warnings + [x for x in result.warnings if x not in found.warnings]
+    if subgroup is not None:
+        result.subgroup, result.subgroup_text = subgroup, text
+        result.n_excluded += outside
+        result.sentence = _("Sous-groupe ({condition}). {sentence}").format(
+            condition=text, sentence=result.sentence
+        )
     return result

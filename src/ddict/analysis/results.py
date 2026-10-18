@@ -20,6 +20,16 @@ class Table:
     rows: list[list[str]]
 
 
+@dataclass(frozen=True)
+class Subset:
+    """v0.14 (D-113): a subgroup as the analyses take it, by the final name of its
+    variable; its values typed as the column holds them."""
+
+    name: str
+    operator: str
+    value: object  # a code, or a list of codes for "in"
+
+
 @dataclass
 class AnalysisResult:
     analysis: str
@@ -31,6 +41,8 @@ class AnalysisResult:
     statistics: dict[str, float] = field(default_factory=dict)  # raw values, for tests and R
     sentence: str = ""  # the result, APA style; it describes, it does not judge
     warnings: list[str] = field(default_factory=list)
+    subgroup: Subset | None = None  # v0.14: the people the analysis was about
+    subgroup_text: str = ""  # "sexe = Femme"
 
 
 def number(value: float | None, digits: int = 2) -> str:

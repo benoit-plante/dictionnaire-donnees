@@ -49,9 +49,17 @@ def same_variables(entry: nb.Entry, hypothesis: Hypothesis) -> bool:
     )
 
 
+def _subgroup(found) -> dict | None:
+    return found.model_dump(mode="json") if found is not None else None
+
+
 def identical(entry: nb.Entry, hypothesis: Hypothesis) -> bool:
-    """The same analysis, variables by role and options."""
-    return same_variables(entry, hypothesis) and dict(entry.options) == dict(hypothesis.options)
+    """The same analysis, variables by role, options and subgroup (v0.14)."""
+    return (
+        same_variables(entry, hypothesis)
+        and dict(entry.options) == dict(hypothesis.options)
+        and _subgroup(entry.subgroup) == _subgroup(hypothesis.subgroup)
+    )
 
 
 def frozen(project: Project) -> bool:
@@ -75,7 +83,8 @@ def _create(notebook, project, prepared, hypothesis: Hypothesis, today: str) -> 
     AnalysisRefused."""
     roles = hypothesis.roles.items()
     chosen = {role: [nb.resolve(project, r) for r in refs] for role, refs in roles}
-    result = run(project, prepared, hypothesis.analysis, chosen, dict(hypothesis.options))
+    subset = nb.resolved_subgroup(project, hypothesis.subgroup)
+    result = run(project, prepared, hypothesis.analysis, chosen, dict(hypothesis.options), subset)
     entry = nb.add(notebook, project, result, today=today)
     entry.hypothesis = hypothesis.id
     return entry

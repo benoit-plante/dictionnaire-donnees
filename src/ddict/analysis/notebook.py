@@ -39,9 +39,9 @@ from ddict.export import wording as w
 from ddict.export.preparation import plan
 from ddict.i18n import _
 from ddict.project import fingerprint
-from ddict.project.model import Project, VariableRef
+from ddict.project.model import Project, Subgroup, VariableRef
 
-NOTEBOOK_VERSION = "1.2.0"
+NOTEBOOK_VERSION = "1.3.0"
 METHOD = "M"  # the identifier of the Method in the states and the confirmations
 SUFFIX = "-carnet.json"
 
@@ -99,6 +99,7 @@ class Entry(_Strict):
     pending: Computed | None = None
     hypothesis: str | None = None  # v0.13: the planned analysis of this hypothesis
     superseded: Superseded | None = None
+    subgroup: Subgroup | None = None  # v0.14 (D-113): the people the analysis is about
 
 
 class MethodPart(_Strict):
@@ -166,6 +167,25 @@ def resolve(project: Project, ref: VariableRef) -> str:
         if item.name == final:
             return item.new
     raise NotebookError("not_reversed", ref.reversed or "")
+
+
+def resolved_subgroup(project: Project, subgroup: Subgroup | None):
+    """A subgroup kept by its key, as the analyses take it (v0.14); None for none. Raises
+    NotebookError when its variable leads nowhere."""
+    from ddict.analysis.results import Subset
+
+    if subgroup is None:
+        return None
+    return Subset(resolve(project, subgroup.variable), subgroup.operator, subgroup.value)
+
+
+def kept_subgroup(project: Project, subset) -> Subgroup | None:
+    """A subgroup as the notebook and the plan keep it: its variable by its key."""
+    if subset is None:
+        return None
+    value = list(subset.value) if subset.operator == "in" else subset.value
+    return Subgroup(variable=reference(project, subset.name), operator=subset.operator,
+                    value=value)  # fmt: skip
 
 
 def resolved(project: Project, entry: Entry) -> dict[str, list[str]]:
@@ -272,6 +292,7 @@ def add(
         retained=True,
         added=today,
         computed=computed(project, result, today),
+        subgroup=kept_subgroup(project, result.subgroup),
     )
     notebook.entries.append(entry)
     notebook.next_id += 1

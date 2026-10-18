@@ -1437,11 +1437,18 @@ def describe(
         book = Codebook(project, prepared)
         builder = _Builder(first_table, first_figure)
         BUILDERS[result.analysis](builder, book, prepared, result)
+        tables, figures = builder.tables, builder.figures
+        if result.subgroup_text:  # v0.14 (D-113): every note says who was analysed
+            said = rich(
+                _("Sous-groupe : {condition}.").format(condition=result.subgroup_text) + " "
+            )
+            tables = [replace(t, note=said + t.note) for t in tables]
+            figures = [replace(f, note=said + f.note) for f in figures]
         return ApaDocument(
             result.analysis,
             language or i18n.language(),
-            tuple(builder.tables),
-            tuple(builder.figures),
+            tuple(tables),
+            tuple(figures),
             result.sentence,
             fingerprint.short(project),
         )

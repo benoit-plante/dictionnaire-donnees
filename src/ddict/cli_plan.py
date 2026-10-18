@@ -195,6 +195,16 @@ def _changes(args, project, old) -> dict:
         changes["kind"] = "confirmatory"
     if args.famille is not None:
         changes["family"] = None if args.famille.lower() in ("aucune", "none") else args.famille
+    if args.sous_groupe:
+        from ddict.cli import subset_from_args
+
+        if args.sous_groupe[0].lower() in ("aucun", "none"):
+            changes["subgroup"] = None
+        else:
+            subset = subset_from_args(project, args.sous_groupe)
+            changes["subgroup"] = planning.data_from_names(
+                project, old.statement, analysis, {}, {}, subgroup=subset
+            )["subgroup"]
     return changes
 
 
@@ -230,7 +240,7 @@ def cmd_plan(args: argparse.Namespace) -> int:
     from ddict.analysis import notebook as nb
     from ddict.analysis import plan_notebook as pn
     from ddict.analysis import planning, prereg
-    from ddict.cli import ANALYSES, _database
+    from ddict.cli import ANALYSES, SubgroupError, _database, subset_from_args
 
     project_path = Path(args.projet)
     project = load_project(project_path)
@@ -273,6 +283,7 @@ def cmd_plan(args: argparse.Namespace) -> int:
                 direction=DIRECTIONS[args.sens] if args.sens else None,
                 kind="exploratory" if args.exploratoire else "confirmatory",
                 family=args.famille,
+                subgroup=subset_from_args(project, args.sous_groupe),
             )
             hypothesis = planning.add(project, data, prepared, reason, today)
             print(_("Hypothèse ajoutée : {id}").format(id=hypothesis.id))
@@ -317,6 +328,8 @@ def cmd_plan(args: argparse.Namespace) -> int:
             print(_("Plan retiré."))
     except planning.PlanRefused as error:
         return _refused(error.reasons)
+    except SubgroupError as error:
+        return _refused([str(error)])
     save_project(project, project_path)
     if action == "freeze" or (action == "clear" and nb.notebook_path(project_path).is_file()):
         nb.save_notebook(notebook, nb.notebook_path(project_path))
@@ -380,6 +393,16 @@ def _hypothesis_arguments(command: argparse.ArgumentParser, adding: bool) -> Non
         "--second",
         nargs=1,
         help=_("Seconde mesure (test t apparié)."),
+    )
+    command.add_argument(
+        "--sous-groupe",
+        "--subgroup",
+        nargs="+",
+        metavar="X",
+        help=_(
+            "Un sous-groupe : variable, opérateur (eq, ne, lt, le, gt, ge, in) et valeur(s), "
+            "p. ex. sexe eq 1 ; aucun pour le retirer (plan modifier)."
+        ),
     )
     command.add_argument(
         "--mesures",

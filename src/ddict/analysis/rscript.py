@@ -33,6 +33,8 @@ HELPER = [
     # The codes in the tool's order: "radix" sorts text by code points, as Python does.
     'ddict_tri <- function(x) sort(unique(x[!is.na(x)]), method = "radix")',
     "ddict_fac <- function(x) factor(x, levels = ddict_tri(x))",
+    # A subgroup (v0.14): a missing value never meets its condition.
+    "ddict_vrai <- function(x) !is.na(x) & x",
 ]
 
 
@@ -572,6 +574,34 @@ BODIES = {
 }
 
 
+SUBSET_SYMBOLS = {"eq": "==", "ne": "!=", "lt": "<", "le": "<=", "gt": ">", "ge": ">="}
+
+
+def _r_code_value(value, text: bool) -> str:
+    if text:
+        return _text(str(value))
+    number = float(value)
+    return str(int(number)) if number.is_integer() else repr(number)
+
+
+def subset_lines(subset, texts) -> list[str]:
+    """v0.14 (D-113): the rows of the subgroup only, first in the analysis."""
+    if subset is None:
+        return []
+    text = subset.name in texts
+    column = _column(subset.name, texts)
+    if subset.operator == "in":
+        values = ", ".join(_r_code_value(v, text) for v in subset.value)
+        condition = f"{column} %in% c({values})"
+    else:
+        symbol = SUBSET_SYMBOLS[subset.operator]
+        condition = f"{column} {symbol} {_r_code_value(subset.value, text)}"
+    return [
+        "# " + _("Sous-groupe : seules ces lignes entrent dans l'analyse."),
+        f"donnees <- donnees[ddict_vrai({condition}), , drop = FALSE]",
+    ]
+
+
 @in_language
 def r_script(
     project: Project,
@@ -580,11 +610,14 @@ def r_script(
     chosen: dict[str, list[str]],
     options: dict[str, str] | None = None,
     today: str | None = None,
+    subgroup=None,
 ) -> str:
     """The R script of an analysis; `stem` names the files next to the project."""
     options = {k: v[0] for k, v in CATALOGUE[key].options.items()} | (options or {})
     lines = _header(project, stem, TITLES[key], today or date.today().isoformat())
-    lines += BODIES[key](chosen, options, conditions.levels(project), conditions.texts(project))
+    texts = conditions.texts(project)
+    lines += subset_lines(subgroup, texts)
+    lines += BODIES[key](chosen, options, conditions.levels(project), texts)
     return "\n".join(lines) + "\n"
 
 
@@ -602,10 +635,12 @@ def r_master(
     levels, texts = conditions.levels(project), conditions.texts(project)
     lines = _header(project, stem, _("Résultats du carnet"), today or date.today().isoformat())
     lines += ["resultats <- list()", ""]
-    for entry_id, key, chosen, options in analyses:
+    for entry_id, key, chosen, options, *rest in analyses:
         options = {k: v[0] for k, v in CATALOGUE[key].options.items()} | dict(options)
+        body = subset_lines(rest[0] if rest else None, texts)  # the subgroup, v0.14
+        body += BODIES[key](chosen, options, levels, texts)
         lines += [f"# {entry_id} — {TITLES[key]}", f"resultats${entry_id} <- local({{"]
-        lines += [f"  {line}" for line in BODIES[key](chosen, options, levels, texts)]
+        lines += [f"  {line}" for line in body]
         lines += ["  resultats", "})", ""]
     lines.append("invisible(resultats)")
     return "\n".join(lines) + "\n"

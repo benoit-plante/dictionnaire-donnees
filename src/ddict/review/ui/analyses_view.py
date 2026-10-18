@@ -20,7 +20,13 @@ from ddict.analysis import notebook as nb
 from ddict.analysis.book import Codebook
 from ddict.analysis.catalogue import CATALOGUE, CHOICES, OPTIONS, PURPOSES, ROLES, TITLES
 from ddict.analysis.compute import AnalysisRefused, run
-from ddict.analysis.data import DataError, PreparedData, apply_decisions, find_database
+from ddict.analysis.data import (
+    DataError,
+    PreparedData,
+    apply_decisions,
+    apply_subset,
+    find_database,
+)
 from ddict.analysis.report import (
     _markdown_table,
     excluded_reason,
@@ -159,18 +165,88 @@ def _code_option(code) -> str:
     return str(int(code)) if float(code).is_integer() else str(code)
 
 
-def _asked(project: Project, key: str, chosen, options) -> tuple:
+OPERATORS = {"eq": "=", "ne": "≠", "lt": "<", "le": "≤", "gt": ">", "ge": "≥"}
+CODES_LISTED = 30  # more distinct values than this: a number is typed instead
+
+
+def _operator(code: str) -> str:
+    return OPERATORS.get(code) or _("parmi")
+
+
+def subgroup_widgets(project: Project, prepared, book: Codebook, prefix: str):
+    """v0.14 (D-113): an optional subgroup, shared by the pages "Analyses" and "Plan": a
+    variable, a condition and its values among those observed; None without one."""
+    from ddict.analysis.results import Subset
+
+    levels = conditions.levels(project)
+    excluded = conditions._sensitive(project)
+    texts = conditions.texts(project)
+    names = [n for n, lv in levels.items() if lv and n not in excluded
+             and n in prepared.table.columns]  # fmt: skip
+    with st.expander(_("Sous-groupe (facultatif)"), key=f"{prefix}-open", on_change="rerun"):
+        st.caption(
+            _(
+                "L'analyse ne porte que sur les personnes qui remplissent cette condition, "
+                "après les règles d'exclusion ; la phrase, les tableaux, la Méthode et le "
+                "script R le disent."
+            )
+        )
+        name = st.selectbox(
+            _("Variable"),
+            names,
+            index=None,
+            key=f"{prefix}-variable",
+            format_func=lambda n: n if book.label(n) == n else f"{n} — {book.label(n)}",
+            placeholder=_("Aucun : toutes les personnes"),
+        )
+        if name is None:
+            return None
+        column = prepared.table[name].dropna()
+        ordered = name not in texts and levels.get(name) != "nominal"
+        operators = ["eq", "ne", "lt", "le", "gt", "ge", "in"] if ordered else ["eq", "ne", "in"]
+        operator = st.radio(
+            _("Condition"),
+            operators,
+            key=f"{prefix}-operator",
+            format_func=_operator,
+            horizontal=True,
+        )
+        codes = sorted(set(column))
+        if operator == "in":
+            values = st.multiselect(
+                _("Valeurs"),
+                codes,
+                key=f"{prefix}-values",
+                format_func=lambda code: book.category(name, code),
+                placeholder=_("Choisir les valeurs"),
+            )
+            return Subset(name, "in", list(values)) if values else None
+        if len(codes) > CODES_LISTED and name not in texts:
+            value = st.number_input(_("Valeur"), value=None, key=f"{prefix}-number")
+        else:
+            value = st.selectbox(
+                _("Valeur"),
+                codes,
+                index=None,
+                key=f"{prefix}-value",
+                format_func=lambda code: book.category(name, code),
+                placeholder=_("Choisir une valeur"),
+            )
+        return Subset(name, operator, value) if value is not None else None
+
+
+def _asked(project: Project, key: str, chosen, options, subset=None) -> tuple:
     return (key, repr(sorted(chosen.items())), repr(sorted(options.items())),
-            fingerprint.fingerprint(project), i18n.language())  # fmt: skip
+            fingerprint.fingerprint(project), i18n.language(), repr(subset))  # fmt: skip
 
 
-def _run(project: Project, key: str, chosen, options) -> None:
+def _run(project: Project, key: str, chosen, options, subset=None) -> None:
     prepared = st.session_state[PREPARED][1]
     try:
-        result = run(project, prepared, key, chosen, options)
+        result = run(project, prepared, key, chosen, options, subset)
     except AnalysisRefused:
         return  # shown before the button already
-    st.session_state[RESULT] = (_asked(project, key, chosen, options), result)
+    st.session_state[RESULT] = (_asked(project, key, chosen, options, subset), result)
 
 
 def _write(project: Project) -> None:
@@ -319,10 +395,18 @@ def page(project: Project) -> None:
     st.caption(PURPOSES[key])
     chosen = _choose_variables(project, key, book)
     options = _choose_options(key, chosen, prepared, book)
+    subset = subgroup_widgets(project, prepared, book, "analysis-subgroup")
     complete = all(len(chosen.get(r.key, [])) >= r.least for r in CATALOGUE[key].roles)
-    found = conditions.check(project, key, chosen, options, prepared) if complete else None
+    found = None
+    if complete:
+        refused = conditions.check_subgroup(project, subset, prepared) if subset else []
+        if refused:
+            found = conditions.Check(refusals=refused)
+        else:
+            data = apply_subset(prepared, subset) if subset else prepared
+            found = conditions.check(project, key, chosen, options, data)
     last = st.session_state.get(RESULT)
-    current = last is not None and last[0] == _asked(project, key, chosen, options)
+    current = last is not None and last[0] == _asked(project, key, chosen, options, subset)
     if found is not None and not current:
         for reason in found.refusals:
             st.error(reason)
@@ -334,7 +418,7 @@ def page(project: Project) -> None:
         type="primary",
         disabled=found is None or not found.ok,
         on_click=_run,
-        args=(project, key, chosen, options),
+        args=(project, key, chosen, options, subset),
     )
     if current:
         _show(project, prepared, last[0], last[1])

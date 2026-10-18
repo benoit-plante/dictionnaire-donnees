@@ -204,6 +204,11 @@ def _changed(key: str, before: dict, after: dict, project: Project) -> list[str]
                 new=new or _("aucune"), old=old or _("aucune")
             )
         ]
+    if key == "subgroup":
+        from ddict.analysis.prereg import subgroup_plain
+
+        shown = [subgroup_plain(project, v) if v else _("aucun") for v in (new, old)]
+        return [_("sous-groupe : {new} au lieu de {old}").format(new=shown[0], old=shown[1])]
     if key == "correction":
         return [
             _("correction : {new} au lieu de {old}").format(

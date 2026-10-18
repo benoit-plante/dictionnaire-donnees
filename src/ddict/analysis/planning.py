@@ -241,6 +241,18 @@ def review(
             _("Une hypothèse exploratoire n'est pas corrigée ; retirez sa famille.")
         )
     chosen = _resolved(project, hypothesis, check)
+    if hypothesis.subgroup is not None and check.ok:  # v0.14 (D-113)
+        from ddict.analysis.data import apply_subset
+        from ddict.analysis.notebook import resolved_subgroup
+
+        try:
+            subset = resolved_subgroup(project, hypothesis.subgroup)
+        except NotebookError as error:
+            check.refusals.append(reason_text(error))
+        else:
+            check.refusals += conditions.check_subgroup(project, subset, data)
+            if data is not None and check.ok:
+                data = apply_subset(data, subset)
     if check.ok:
         found = conditions.check(project, key, chosen, hypothesis.options, data)
         check.refusals += found.refusals
@@ -541,6 +553,7 @@ def data_from_names(
     direction: str | None = None,
     kind: str = "confirmatory",
     family: str | None = None,
+    subgroup=None,
 ) -> dict:
     """The fields of an hypothesis from final names, as `add` and `modify` take them; the
     effect from the pair, the predictor or the model chosen (none: the default one).
@@ -561,7 +574,12 @@ def data_from_names(
         "direction": direction or None,
         "kind": kind,
         "family": family or None,
+        "subgroup": None,
     }
+    if subgroup is not None:  # v0.14 (D-113): a Subset, by final name
+        value = list(subgroup.value) if subgroup.operator == "in" else subgroup.value
+        data["subgroup"] = {"variable": ref(subgroup.name), "operator": subgroup.operator,
+                            "value": value}  # fmt: skip
     if pair:
         data["effect"] = {"kind": "pair", "variables": [ref(n) for n in pair]}
     elif predictor:

@@ -1401,3 +1401,14 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
 - **Justification :** Une conseillère qui ignore la moitié du catalogue proposerait des analyses moins adaptées (un test *t* indépendant pour deux mesures d'une même personne).
 - **Références :** `docs/plan-v0.14.md`, § 3 ; D-073, D-079, D-080.
 
+### D-116 — Un p corrigé qui change se confirme toujours
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Décision :** Un *p* corrigé (Holm ou Bonferroni) qui change sans que son analyse change, parce qu'une autre hypothèse de la même famille a été amendée, rend l'analyse « changée, à confirmer », comme tout autre chiffre gardé par le carnet ; l'ébauche d'article attend une personne.
+- **Options considérées :**
+  1. Toujours confirmer (ce choix, la conduite de la v0.13).
+  2. Mettre le *p* corrigé à jour sans confirmation.
+- **Justification :** Choix de l'auteur : aucun chiffre de l'article ne change sans qu'on le voie (D-089).
+- **Références :** D-089, D-104 ; `docs/plan-v0.14.md`, § 8.
+

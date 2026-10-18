@@ -135,9 +135,15 @@ def _write(project: Project) -> None:
 def _variables(project: Project, entry: nb.Entry) -> str:
     try:
         names = nb.resolved(project, entry)
+        parts = [f"{ROLES[role]} : {', '.join(n)}" for role, n in names.items()]
+        if entry.subgroup is not None:  # v0.14 (D-113)
+            from ddict.analysis.prereg import subgroup_plain
+
+            parts.append(_("Sous-groupe : {condition}").format(
+                condition=subgroup_plain(project, entry.subgroup)))  # fmt: skip
     except nb.NotebookError:
         return ""
-    return " ; ".join(f"{ROLES[role]} : {', '.join(n)}" for role, n in names.items())
+    return " ; ".join(parts)
 
 
 def _entry(project: Project, notebook: nb.Notebook, rank: int, entry, status) -> None:
