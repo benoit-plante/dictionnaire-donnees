@@ -63,6 +63,13 @@ CATALOGUE = {
             same_person=True,
         ),
         Analysis(
+            "rm_anova",
+            (Role("measures", (SCALE,), least=3, most=10),),
+            {"post_hoc": ("none", "holm")},
+            independent=False,
+            same_person=True,
+        ),
+        Analysis(
             "anova",
             (Role("outcome", (SCALE,)), Role("group", CATEGORICAL, modalities=(3, 10))),
             {"method": ("anova", "kruskal_wallis"), "post_hoc": ("none", "tukey")},
@@ -117,6 +124,7 @@ TITLES = Texts(
         "table1": N_("Tableau 1 : décrire l'échantillon"),
         "t_test": N_("Test t : comparer deux groupes"),
         "paired": N_("Test t apparié : comparer deux mesures d'une même personne"),
+        "rm_anova": N_("ANOVA à mesures répétées : comparer trois mesures ou plus"),
         "anova": N_("ANOVA : comparer plusieurs groupes"),
         "chi_square": N_("Khi-carré : associer deux variables catégorielles"),
         "correlation": N_("Corrélation : relier des variables continues"),
@@ -137,6 +145,7 @@ ROLES = Texts(
         "first": N_("Première mesure"),
         "second": N_("Seconde mesure"),
         "covariates": N_("Covariables"),
+        "measures": N_("Mesures, dans l'ordre du temps"),
         "focal": N_("Prédicteur"),
         "moderator": N_("Modérateur"),
     }
@@ -153,6 +162,10 @@ PURPOSES = Texts(
         ),
         "paired": N_(
             "Compare deux mesures d'une même personne, par exemple avant et après une intervention."
+        ),
+        "rm_anova": N_(
+            "Compare trois mesures ou plus d'une même personne, par exemple au début, à la fin "
+            "et trois mois après un programme."
         ),
         "anova": N_("Compare la moyenne d'une variable continue entre trois groupes ou plus."),
         "chi_square": N_(
@@ -201,6 +214,7 @@ CHOICES = Texts(
         "kruskal_wallis": N_("Kruskal-Wallis (sans supposer la normalité)"),
         "none": N_("Aucune"),
         "tukey": N_("Tukey"),
+        "holm": N_("Tests t appariés corrigés par Holm"),
         "pearson": N_("Pearson"),
         "fisher": N_("Test exact de Fisher"),
         "spearman": N_("Spearman"),

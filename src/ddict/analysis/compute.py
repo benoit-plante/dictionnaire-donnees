@@ -251,6 +251,7 @@ COMPUTE = {
     "table1": table1,
     "t_test": models.t_test,
     "paired": models.paired,
+    "rm_anova": models.rm_anova,
     "anova": models.anova,
     "chi_square": chi_square,
     "correlation": correlation,

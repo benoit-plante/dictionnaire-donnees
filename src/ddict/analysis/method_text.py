@@ -340,6 +340,26 @@ def _method_sentences(analysis: str, method: str, post_hoc: str) -> list[Text]:
             )
         )
         return [marked(template, t=t, d=d)]
+    if analysis == "rm_anova":
+        found = [
+            rich(
+                _(
+                    "Les mesures répétées ont été comparées par une ANOVA à mesures répétées ; la "
+                    "taille d'effet est η² partiel ; les degrés de liberté sont corrigés par "
+                    "l'epsilon de Greenhouse-Geisser quand le test de Mauchly donne p < ,05."
+                )
+            )
+        ]
+        if post_hoc == "holm":
+            found.append(
+                rich(
+                    _(
+                        "Les mesures ont été comparées deux à deux par des tests t appariés, "
+                        "corrigés par la méthode de Holm."
+                    )
+                )
+            )
+        return found
     if analysis == "logistic":
         return [
             rich(

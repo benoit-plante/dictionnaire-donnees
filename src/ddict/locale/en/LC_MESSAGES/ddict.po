@@ -291,11 +291,14 @@ msgstr "> greater than"
 msgid "ANOVA : comparer plusieurs groupes"
 msgstr "ANOVA: compare several groups"
 
-msgid "ANOVA : none ou tukey."
-msgstr "ANOVA: none or tukey."
+msgid "ANOVA : none ou tukey ; mesures répétées : none ou holm."
+msgstr "ANOVA: none or tukey; repeated measures: none or holm."
 
 msgid "ANOVA de Fisher"
 msgstr "Fisher's ANOVA"
+
+msgid "ANOVA à mesures répétées : comparer trois mesures ou plus"
+msgstr "Repeated-measures ANOVA: compare three measures or more"
 
 msgid "Accepter"
 msgstr "Accept"
@@ -997,8 +1000,15 @@ msgstr "How the data can be accessed"
 msgid "Comparaison"
 msgstr "Comparison"
 
+#, python-brace-format
+msgid "Comparaison de {k} mesures : {test} ; moyennes : {means} (n = {n})."
+msgstr "Comparison of {k} measures: {test}; means: {means} (n = {n})."
+
 msgid "Comparaisons deux à deux"
 msgstr "Pairwise comparisons"
+
+msgid "Comparaisons deux à deux (Holm)"
+msgstr "Pairwise comparisons (Holm)"
 
 msgid "Comparaisons deux à deux (Tukey)"
 msgstr "Pairwise comparisons (Tukey)"
@@ -1006,6 +1016,9 @@ msgstr "Pairwise comparisons (Tukey)"
 #, python-brace-format
 msgid "Comparaisons deux à deux de {outcome} (Tukey)"
 msgstr "Pairwise comparisons of {outcome} (Tukey)"
+
+msgid "Comparaisons deux à deux des mesures"
+msgstr "Pairwise comparisons of the measures"
 
 msgid "Compare deux mesures d'une même personne, par exemple avant et après une intervention."
 msgstr "Compares two measures of the same person, for example before and after an intervention."
@@ -1019,6 +1032,13 @@ msgstr ""
 
 msgid "Compare la moyenne d'une variable continue entre trois groupes ou plus."
 msgstr "Compares the mean of a continuous variable between three groups or more."
+
+msgid ""
+"Compare trois mesures ou plus d'une même personne, par exemple au début, à la fin et trois mois "
+"après un programme."
+msgstr ""
+"Compares three measures or more of the same person, for example at the start, at the end and "
+"three months after a programme."
 
 msgid "Complétude"
 msgstr "Completeness"
@@ -1692,6 +1712,14 @@ msgstr "Export"
 #, python-brace-format
 msgid "Export {platform} reconnu."
 msgstr "{platform} export recognized."
+
+#, python-brace-format
+msgid "F({df1} ; {df2}) = {f}, {p}, η²p = {eta}, ε = {eps} (Greenhouse-Geisser)"
+msgstr "F({df1}, {df2}) = {f}, {p}, η²p = {eta}, ε = {eps} (Greenhouse-Geisser)"
+
+#, python-brace-format
+msgid "F({df1}, {df2}) = {f}, {p}, η²p = {eta}"
+msgstr "F({df1}, {df2}) = {f}, {p}, η²p = {eta}"
 
 #, python-brace-format
 msgid "Face au plan : {state}"
@@ -2795,6 +2823,14 @@ msgstr ""
 "measures."
 
 #, python-brace-format, python-format
+msgid ""
+"Les barres d'erreur représentent l'intervalle de confiance à 95 % de la moyenne. {N} = {n}, les "
+"mêmes personnes à chaque mesure."
+msgstr ""
+"Error bars represent the 95% confidence interval of the mean. {N} = {n}, the same people at each "
+"measure."
+
+#, python-brace-format, python-format
 msgid "Les barres d'erreur représentent l'intervalle de confiance à 95 % de la moyenne. {N} = {n}."
 msgstr "Error bars represent the 95% confidence interval of the mean. {N} = {n}."
 
@@ -2901,6 +2937,20 @@ msgstr ""
 
 msgid "Les liens entre variables sont décrits par la corrélation de Spearman."
 msgstr "The relations between variables are described by Spearman's correlation."
+
+msgid ""
+"Les mesures ont été comparées deux à deux par des tests t appariés, corrigés par la méthode de "
+"Holm."
+msgstr "The measures were compared pairwise by paired t tests, corrected by Holm's method."
+
+msgid ""
+"Les mesures répétées ont été comparées par une ANOVA à mesures répétées ; la taille d'effet est "
+"η² partiel ; les degrés de liberté sont corrigés par l'epsilon de Greenhouse-Geisser quand le "
+"test de Mauchly donne p < ,05."
+msgstr ""
+"The repeated measures were compared by a repeated-measures ANOVA; the effect size is partial η²; "
+"the degrees of freedom are corrected by the Greenhouse-Geisser epsilon when Mauchly's test gives "
+"p < .05."
 
 msgid "Les moyennes observées étaient égales au centième près."
 msgstr "The observed means were equal to two decimals."
@@ -3158,6 +3208,16 @@ msgstr ""
 
 msgid "Mesures"
 msgstr "Measures"
+
+#, python-brace-format
+msgid "Mesures répétées de {first} à {last}"
+msgstr "Repeated measures from {first} to {last}"
+
+msgid "Mesures répétées, dans l'ordre du temps (ANOVA à mesures répétées)."
+msgstr "Repeated measures, in the order of time (repeated-measures ANOVA)."
+
+msgid "Mesures, dans l'ordre du temps"
+msgstr "Measures, in the order of time"
 
 msgid "Mettre une analyse à un autre rang."
 msgstr "Put an analysis at another rank."
@@ -4472,6 +4532,14 @@ msgstr "Source of the threshold"
 msgid "Spearman"
 msgstr "Spearman"
 
+#, python-brace-format
+msgid ""
+"Sphéricité rejetée (Mauchly {p}) : les degrés de liberté sont corrigés par Greenhouse-Geisser (ε "
+"= {eps})."
+msgstr ""
+"Sphericity rejected (Mauchly {p}): the degrees of freedom are corrected by Greenhouse-Geisser (ε "
+"= {eps})."
+
 msgid "Statistiques descriptives et corrélations"
 msgstr "Descriptive statistics and correlations"
 
@@ -4617,6 +4685,12 @@ msgstr ""
 "Paired {t} test; the difference is the first measure minus the second, with its 95% CI. {d}: mean"
 " of the differences divided by their standard deviation."
 
+msgid "Tests t appariés ; la différence est la première mesure moins la seconde."
+msgstr "Paired t tests; the difference is the first measure minus the second."
+
+msgid "Tests t appariés corrigés par Holm"
+msgstr "Paired t tests corrected by Holm"
+
 msgid "Texte"
 msgstr "Text"
 
@@ -4756,6 +4830,9 @@ msgstr "A paired t test"
 
 msgid "Une ANOVA"
 msgstr "An ANOVA"
+
+msgid "Une ANOVA à mesures répétées"
+msgstr "A repeated-measures ANOVA"
 
 msgid "Une autre analyse du catalogue."
 msgstr "Another analysis of the catalogue."
@@ -5425,6 +5502,9 @@ msgstr "the association"
 msgid "l'effet du groupe"
 msgstr "the effect of the group"
 
+msgid "l'effet du temps"
+msgstr "the effect of time"
+
 msgid "l'interaction"
 msgstr "the interaction"
 
@@ -5652,6 +5732,9 @@ msgstr "open"
 msgid "ouvertes"
 msgstr "open"
 
+msgid "p corrigé (Holm)"
+msgstr "Holm-adjusted p"
+
 #, python-brace-format
 msgid "p corrigé ({method}) {value}"
 msgstr "{method}-adjusted p {value}"
@@ -5850,11 +5933,11 @@ msgid "structure de la plateforme"
 msgstr "platform structure"
 
 msgid ""
-"tableau1, test_t, apparie, anova, khi2, correlation, regression, logistique, partielle ou "
-"moderation."
+"tableau1, test_t, apparie, anova, anova_rm, khi2, correlation, regression, logistique, partielle "
+"ou moderation."
 msgstr ""
-"table1, t_test, paired, anova, chi_square, correlation, regression, logistic, partial or "
-"moderation."
+"table1, t_test, paired, anova, rm_anova, chi_square, correlation, regression, logistic, partial "
+"or moderation."
 
 msgid "taille d'effet prévue"
 msgstr "predicted effect size"
@@ -5874,8 +5957,12 @@ msgstr "one-sided test, the first group lower"
 msgid "test unilatéral, le premier groupe plus élevé"
 msgstr "one-sided test, the first group higher"
 
-msgid "test_t, apparie, anova, khi2, correlation, regression, logistique, partielle ou moderation."
-msgstr "t_test, paired, anova, chi_square, correlation, regression, logistic, partial or moderation."
+msgid ""
+"test_t, apparie, anova, anova_rm, khi2, correlation, regression, logistique, partielle ou "
+"moderation."
+msgstr ""
+"t_test, paired, anova, rm_anova, chi_square, correlation, regression, logistic, partial or "
+"moderation."
 
 msgid "texte"
 msgstr "text"
@@ -6082,6 +6169,15 @@ msgstr ""
 "{N} = {n}, of whom {k} “{event}”, the predicted category. χ²({df}) = {chi2}, {p}, against the "
 "model without predictor; McFadden {R}² = {mf}, Nagelkerke {R}² = {ng}. {b}: coefficient; {se}: "
 "standard error; OR: odds ratio, with its 95% CI (Wald)."
+
+#, python-brace-format
+msgid ""
+"{N} = {n}, les mêmes personnes à chaque mesure. {F}({df1}, {df2}) = {f}, {p}, η² partiel = {eta}."
+" Sphéricité : {W} de Mauchly = {w}, {wp} ; Greenhouse-Geisser : ε = {eps}, {F}({gdf1} ; {gdf2}), "
+"{gp}."
+msgstr ""
+"{N} = {n}, the same people at each measure. {F}({df1}, {df2}) = {f}, {p}, partial η² = {eta}. "
+"Sphericity: Mauchly's {W} = {w}, {wp}; Greenhouse-Geisser: ε = {eps}, {F}({gdf1}, {gdf2}), {gp}."
 
 #, python-brace-format
 msgid "{N} = {n}. Covariables : {held}. {r} partiel = {r_value}."

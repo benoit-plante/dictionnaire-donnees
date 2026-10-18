@@ -29,6 +29,7 @@ from ddict.project.model import Amendment, Frozen, Hypothesis, Plan, Project
 EFFECTS = {
     "t_test": ("difference",),
     "paired": ("difference",),
+    "rm_anova": ("group",),
     "anova": ("group",),
     "chi_square": ("association",),
     "correlation": ("pair",),
@@ -55,6 +56,7 @@ NAMES = Texts(
         "table1": N_("Le Tableau 1"),
         "t_test": N_("Un test t"),
         "paired": N_("Un test t apparié"),
+        "rm_anova": N_("Une ANOVA à mesures répétées"),
         "anova": N_("Une ANOVA"),
         "chi_square": N_("Un khi-carré"),
         "correlation": N_("Une corrélation"),

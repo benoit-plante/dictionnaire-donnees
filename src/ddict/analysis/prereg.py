@@ -129,6 +129,8 @@ def _effect(project: Project, hypothesis: Hypothesis) -> str:
         return _("le coefficient de {x}").format(x=_name(project, effect.variable))
     if hypothesis.analysis == "paired":
         return _("la différence entre les deux mesures")
+    if hypothesis.analysis == "rm_anova":
+        return _("l'effet du temps")
     if effect.kind == "partial":
         refs = hypothesis.roles.get("variables", [])
         if len(refs) == 2:

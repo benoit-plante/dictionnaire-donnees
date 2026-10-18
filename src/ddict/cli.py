@@ -173,6 +173,8 @@ ANALYSES = {
     "test_t": "t_test",
     "paired": "paired",
     "apparie": "paired",
+    "rm_anova": "rm_anova",
+    "anova_rm": "rm_anova",
     "anova": "anova",
     "chi_square": "chi_square",
     "khi2": "chi_square",
@@ -194,6 +196,7 @@ ROLE_ARGUMENTS = {
     "first": "premiere",
     "second": "seconde",
     "covariates": "covariables",
+    "measures": "mesures",
     "focal": "focal",
     "moderator": "moderateur",
 }
@@ -1628,8 +1631,8 @@ def _analysis_arguments(command: argparse.ArgumentParser) -> None:
         "analyse",
         choices=list(ANALYSES),
         help=_(
-            "tableau1, test_t, apparie, anova, khi2, correlation, regression, logistique, "
-            "partielle ou moderation."
+            "tableau1, test_t, apparie, anova, anova_rm, khi2, correlation, regression, "
+            "logistique, partielle ou moderation."
         ),
     )
     command.add_argument("--variables", nargs="+", help=_("Variables (Tableau 1, corrélation)."))
@@ -1658,6 +1661,12 @@ def _analysis_arguments(command: argparse.ArgumentParser) -> None:
         "--second",
         nargs=1,
         help=_("Seconde mesure (test t apparié)."),
+    )
+    command.add_argument(
+        "--mesures",
+        "--measures",
+        nargs="+",
+        help=_("Mesures répétées, dans l'ordre du temps (ANOVA à mesures répétées)."),
     )
     command.add_argument(
         "--covariables",
@@ -1695,7 +1704,9 @@ def _analysis_arguments(command: argparse.ArgumentParser) -> None:
         "--alternative",
         help=_("Test t et test t apparié : two_sided, greater ou less."),
     )
-    command.add_argument("--post-hoc", help=_("ANOVA : none ou tukey."))
+    command.add_argument(
+        "--post-hoc", help=_("ANOVA : none ou tukey ; mesures répétées : none ou holm.")
+    )
     command.add_argument(
         "--modalites",
         "--levels",

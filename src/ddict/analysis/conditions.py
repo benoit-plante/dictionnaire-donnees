@@ -201,10 +201,11 @@ def _with_data(project, analysis, chosen, options, table: pd.DataFrame, found: C
                     )
                 )
     if analysis.same_person:
-        if len(complete) < GROUP_LEAST:
+        least = 3 if analysis.key == "rm_anova" else GROUP_LEAST
+        if len(complete) < least:
             found.refusals.append(
                 _("{n} personnes ont toutes les mesures : il en faut au moins {least}.").format(
-                    n=len(complete), least=GROUP_LEAST
+                    n=len(complete), least=least
                 )
             )
         elif len(complete) < SMALL:

@@ -881,3 +881,125 @@ def logistic(project, prepared, chosen, options) -> AnalysisResult:
     return AnalysisResult(
         "logistic", chosen, options, n, len(prepared.table) - n, tables, found, sentence, warnings
     )
+
+
+# --- Repeated-measures ANOVA (v0.14, D-111). ---
+
+MAUCHLY_ALPHA = 0.05  # below it, the sentence gives the Greenhouse-Geisser correction
+
+
+def holm(p_values: list[float]) -> list[float]:
+    """Holm's step-down adjustment, as R's p.adjust(method = "holm")."""
+    m = len(p_values)
+    order = sorted(range(m), key=lambda i: p_values[i])
+    adjusted, running = [0.0] * m, 0.0
+    for rank, i in enumerate(order):
+        running = max(running, min(1.0, (m - rank) * p_values[i]))
+        adjusted[i] = running
+    return adjusted
+
+
+def sphericity(Y: np.ndarray) -> tuple[float, float, float]:
+    """Mauchly's W and its p (R's mauchly.test), and the Greenhouse-Geisser epsilon, from
+    the covariance of the measures on orthonormal contrasts."""
+    n, k = Y.shape
+    contrasts = np.linalg.qr(np.column_stack([np.ones(k), np.eye(k)[:, :-1]]))[0][:, 1:]
+    T = contrasts.T @ np.cov(Y, rowvar=False) @ contrasts
+    p = k - 1
+    w = float(np.linalg.det(T) / (np.trace(T) / p) ** p)
+    rho = 1 - (2 * p**2 + p + 2) / (6 * p * (n - 1))
+    statistic = -(n - 1) * rho * math.log(w)
+    w_p = float(stats.chi2.sf(statistic, p * (p + 1) / 2 - 1))
+    epsilon = float(np.trace(T) ** 2 / (p * np.trace(T @ T)))
+    return w, w_p, epsilon
+
+
+def rm_anova(project, prepared, chosen, options) -> AnalysisResult:
+    """One within-person factor, the measures in their order: F, partial eta squared,
+    Mauchly's test and the Greenhouse-Geisser correction, reported when Mauchly's p is below
+    ,05 (the sheet, § 9); pairwise paired t tests corrected by Holm."""
+    book = Codebook(project, prepared)
+    names = chosen["measures"]
+    data = prepared.table[names].dropna()
+    Y = data.to_numpy(float)
+    n, k = Y.shape
+    grand = Y.mean()
+    ss_time = n * float(((Y.mean(axis=0) - grand) ** 2).sum())
+    ss_person = k * float(((Y.mean(axis=1) - grand) ** 2).sum())
+    ss_error = float(((Y - grand) ** 2).sum()) - ss_time - ss_person
+    df1, df2 = k - 1, (k - 1) * (n - 1)
+    f = (ss_time / df1) / (ss_error / df2)
+    p_plain = float(stats.f.sf(f, df1, df2))
+    w, w_p, epsilon = sphericity(Y)
+    gg_p = float(stats.f.sf(f, epsilon * df1, epsilon * df2))
+    corrected = w_p < MAUCHLY_ALPHA
+    found: dict[str, float] = {
+        "n": n,
+        "F": float(f),
+        "df1": float(df1),
+        "df2": float(df2),
+        "p_uncorrected": p_plain,
+        "eta2p": ss_time / (ss_time + ss_error),
+        "mauchly_W": w,
+        "mauchly_p": w_p,
+        "gg_eps": epsilon,
+        "gg_df1": epsilon * df1,
+        "gg_df2": epsilon * df2,
+        "gg_p": gg_p,
+        "p": gg_p if corrected else p_plain,
+        "corrected": float(corrected),
+    }
+    labels = [book.label(name) for name in names]
+    rows = []
+    for i, (label, column) in enumerate(zip(labels, Y.T, strict=True), start=1):
+        found |= {f"m_{i}": float(column.mean()), f"sd_{i}": float(column.std(ddof=1))}
+        rows.append([label, f"{number(column.mean())} ({number(column.std(ddof=1))})"])
+    tables = [Table(_("Mesures"), [_("Mesure"), _("M (ÉT)")], rows)]
+    warnings = []
+    if n < SMALL:
+        warnings.append(_("Moins de {n} personnes ont toutes les mesures.").format(n=SMALL))
+    if corrected:
+        warnings.append(
+            _(
+                "Sphéricité rejetée (Mauchly {p}) : les degrés de liberté sont corrigés par "
+                "Greenhouse-Geisser (ε = {eps})."
+            ).format(p=p_part(w_p), eps=number(epsilon))
+        )
+    if options.get("post_hoc") == "holm":
+        pairs = [(i, j) for i in range(k) for j in range(i + 1, k)]
+        tests = [stats.ttest_rel(Y[:, i], Y[:, j]) for i, j in pairs]
+        adjusted = holm([float(t.pvalue) for t in tests])
+        post = []
+        for (i, j), test, p_holm in zip(pairs, tests, adjusted, strict=True):
+            key = f"ph_{i + 1}_{j + 1}"
+            diff = float((Y[:, i] - Y[:, j]).mean())
+            found |= {f"{key}_diff": diff, f"{key}_t": float(test.statistic),
+                      f"{key}_p": float(test.pvalue), f"{key}_p_holm": p_holm}  # fmt: skip
+            post.append([f"{labels[i]} − {labels[j]}", number(diff), number(test.statistic),
+                         p_part(test.pvalue), p_part(p_holm)])  # fmt: skip
+        tables.append(
+            Table(
+                _("Comparaisons deux à deux (Holm)"),
+                [_("Paire"), _("Différence"), f"t({n - 1})", "p", _("p corrigé (Holm)")],
+                post,
+            )
+        )
+    means = " ; ".join(
+        f"{label} {number(column.mean())}" for label, column in zip(labels, Y.T, strict=True)
+    )
+    if corrected:
+        test_text = _("F({df1} ; {df2}) = {f}, {p}, η²p = {eta}, ε = {eps} (Greenhouse-Geisser)")
+        test_text = test_text.format(
+            df1=number(epsilon * df1), df2=number(epsilon * df2), f=number(f), p=p_part(gg_p),
+            eta=bounded(found["eta2p"]), eps=number(epsilon),
+        )  # fmt: skip
+    else:
+        test_text = _("F({df1}, {df2}) = {f}, {p}, η²p = {eta}").format(
+            df1=df1, df2=df2, f=number(f), p=p_part(p_plain), eta=bounded(found["eta2p"])
+        )
+    sentence = _("Comparaison de {k} mesures : {test} ; moyennes : {means} (n = {n}).").format(
+        k=k, test=test_text, means=means, n=n
+    )
+    return AnalysisResult(
+        "rm_anova", chosen, options, n, len(prepared.table) - n, tables, found, sentence, warnings
+    )

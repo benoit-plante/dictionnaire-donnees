@@ -335,8 +335,8 @@ def _hypothesis_arguments(command: argparse.ArgumentParser, adding: bool) -> Non
             "analyse",
             choices=list(ANALYSES),
             help=_(
-                "test_t, apparie, anova, khi2, correlation, regression, logistique, partielle "
-                "ou moderation."
+                "test_t, apparie, anova, anova_rm, khi2, correlation, regression, logistique, "
+                "partielle ou moderation."
             ),
         )
         command.add_argument(
@@ -382,6 +382,12 @@ def _hypothesis_arguments(command: argparse.ArgumentParser, adding: bool) -> Non
         help=_("Seconde mesure (test t apparié)."),
     )
     command.add_argument(
+        "--mesures",
+        "--measures",
+        nargs="+",
+        help=_("Mesures répétées, dans l'ordre du temps (ANOVA à mesures répétées)."),
+    )
+    command.add_argument(
         "--covariables",
         "--covariates",
         nargs="+",
@@ -417,7 +423,9 @@ def _hypothesis_arguments(command: argparse.ArgumentParser, adding: bool) -> Non
         "--alternative",
         help=_("Test t et test t apparié : two_sided, greater ou less."),
     )
-    command.add_argument("--post-hoc", help=_("ANOVA : none ou tukey."))
+    command.add_argument(
+        "--post-hoc", help=_("ANOVA : none ou tukey ; mesures répétées : none ou holm.")
+    )
     command.add_argument(
         "--modalites",
         "--levels",

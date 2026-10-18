@@ -1308,10 +1308,111 @@ def _logistic(b: _Builder, book: Codebook, prepared: PreparedData, result: Analy
     )
 
 
+# --- Repeated-measures ANOVA (v0.14). ---
+
+
+def _rm_anova(b: _Builder, book: Codebook, prepared: PreparedData, result: AnalysisResult) -> None:
+    s = result.statistics
+    names = result.chosen["measures"]
+    labels = [book.label(name) for name in names]
+    data = prepared.table[names].dropna()
+    n = int(s["n"])
+    rows = [
+        _row(label, apa(s[f"m_{i}"]), apa(s[f"sd_{i}"])) for i, label in enumerate(labels, start=1)
+    ]
+    note = marked(
+        _(
+            "{N} = {n}, les mêmes personnes à chaque mesure. {F}({df1}, {df2}) = {f}, {p}, "
+            "η² partiel = {eta}. Sphéricité : {W} de Mauchly = {w}, {wp} ; Greenhouse-Geisser : "
+            "ε = {eps}, {F}({gdf1} ; {gdf2}), {gp}."
+        ),
+        N=it("N"),
+        n=n,
+        F=it("F"),
+        df1=int(s["df1"]),
+        df2=int(s["df2"]),
+        f=apa(s["F"]),
+        p=p_text(s["p_uncorrected"]),
+        eta=apa(s["eta2p"], zero=False),
+        W=it("W"),
+        w=apa(s["mauchly_W"]),
+        wp=p_text(s["mauchly_p"]),
+        eps=apa(s["gg_eps"]),
+        gdf1=apa(s["gg_df1"]),
+        gdf2=apa(s["gg_df2"]),
+        gp=p_text(s["gg_p"]),
+    )
+    title = _("Mesures répétées de {first} à {last}").format(
+        first=_mid(labels[0]), last=_mid(labels[-1])
+    )
+    b.table(
+        title,
+        [_left(_("Mesure")), _col(rich(it("M"))), _col(rich(it(_("ÉT"))))],
+        rows,
+        note=[note],
+    )
+    if result.options.get("post_hoc") == "holm":
+        k = len(names)
+        post = []
+        for i in range(k):
+            for j in range(i + 1, k):
+                key = f"ph_{i + 1}_{j + 1}"
+                post.append(
+                    _row(
+                        f"{labels[i]} − {labels[j]}",
+                        apa(s[f"{key}_diff"]),
+                        apa(s[f"{key}_t"]),
+                        p_cell(s[f"{key}_p"]),
+                        p_cell(s[f"{key}_p_holm"]),
+                    )
+                )
+        b.table(
+            _("Comparaisons deux à deux des mesures"),
+            [
+                _left(_("Paire")),
+                _col(_("Différence")),
+                _col(rich(it("t"), f"({n - 1})")),
+                _col(rich(it("p"))),
+                _col(marked(_("{p} corrigé ({method})"), p=it("p"), method="Holm")),
+            ],
+            post,
+            note=[
+                rich(_("Tests t appariés ; la différence est la première mesure moins la seconde."))
+            ],
+        )
+    ci = [_mean_ci(data[name].to_numpy(float)) for name in names]
+    b.figure(
+        title,
+        "line",
+        _("Mesure"),
+        _("Moyenne"),
+        categories=tuple(labels),
+        series=(
+            Series(
+                _("Moyenne"),
+                tuple(m for m, _l, _h in ci),
+                tuple(lo for _m, lo, _h in ci),
+                tuple(hi for _m, _l, hi in ci),
+            ),
+        ),
+        note=[
+            marked(
+                _(
+                    "Les barres d'erreur représentent l'intervalle de confiance à 95 % de la "
+                    "moyenne. {N} = {n}, les mêmes personnes à chaque mesure."
+                ),
+                N=it("N"),
+                n=n,
+            )
+        ],
+    )
+
+
 BUILDERS = {
     "table1": _table1,
     "t_test": _t_test,
     "paired": _paired,
+    "rm_anova": _rm_anova,
     "logistic": _logistic,
     "partial": _partial,
     "moderation": _moderation,

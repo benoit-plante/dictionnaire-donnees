@@ -512,10 +512,56 @@ def _logistic(chosen, options, levels, texts) -> list[str]:
     ]
 
 
+def _rm_anova(chosen, options, _levels, texts) -> list[str]:
+    """v0.14: anova.mlm with test = "Spherical" (F and the Greenhouse-Geisser p), Mauchly's
+    test, epsilon on orthonormal (polynomial) contrasts, partial eta squared from F; the p
+    reported corrected when Mauchly's p is below ,05; pairwise paired t tests and Holm."""
+    names = chosen["measures"]
+    lines = [
+        "Y <- cbind(" + ", ".join(_column(n, texts) for n in names) + ")",
+        "Y <- Y[complete.cases(Y), , drop = FALSE]; n <- nrow(Y); k <- ncol(Y)",
+        "fit <- lm(Y ~ 1)",
+        'sph <- anova(fit, X = ~1, test = "Spherical"); print(sph)',
+        "mau <- mauchly.test(fit, X = ~1); print(mau)",
+        "M <- contr.poly(k); T <- t(M) %*% cov(Y) %*% M",
+        "eps <- sum(diag(T))^2 / ((k - 1) * sum(diag(T %*% T)))",
+        "f <- sph$F[1]; df1 <- k - 1; df2 <- (k - 1) * (n - 1)",
+        "resultats <- list(n = n, F = f, df1 = df1, df2 = df2,",
+        '                  p_uncorrected = sph$"Pr(>F)"[1], eta2p = f * df1 / (f * df1 + df2),',
+        "                  mauchly_W = unname(mau$statistic), mauchly_p = mau$p.value,",
+        "                  gg_eps = eps, gg_df1 = eps * df1, gg_df2 = eps * df2,",
+        '                  gg_p = sph$"G-G Pr"[1])',
+        "resultats$corrected <- as.numeric(mau$p.value < 0.05)",
+        "resultats$p <- if (resultats$corrected == 1) resultats$gg_p else resultats$p_uncorrected",
+        "for (i in seq_len(k)) {",
+        '  resultats[[paste0("m_", i)]] <- mean(Y[, i])',
+        '  resultats[[paste0("sd_", i)]] <- sd(Y[, i])',
+        "}",
+    ]
+    if options.get("post_hoc") == "holm":
+        lines += [
+            "paires <- combn(k, 2); bruts <- numeric(ncol(paires))",
+            "for (c in seq_len(ncol(paires))) {",
+            "  i <- paires[1, c]; j <- paires[2, c]",
+            "  test <- t.test(Y[, i], Y[, j], paired = TRUE)",
+            '  cle <- paste0("ph_", i, "_", j); bruts[c] <- test$p.value',
+            '  resultats[[paste0(cle, "_diff")]] <- mean(Y[, i] - Y[, j])',
+            '  resultats[[paste0(cle, "_t")]] <- unname(test$statistic)',
+            '  resultats[[paste0(cle, "_p")]] <- test$p.value',
+            "}",
+            'holm <- p.adjust(bruts, method = "holm")',
+            "for (c in seq_len(ncol(paires))) {",
+            '  resultats[[paste0("ph_", paires[1, c], "_", paires[2, c], "_p_holm")]] <- holm[c]',
+            "}",
+        ]
+    return [*lines, "print(resultats)"]
+
+
 BODIES = {
     "table1": _table1,
     "t_test": _t_test,
     "paired": _paired,
+    "rm_anova": _rm_anova,
     "anova": _anova,
     "chi_square": lambda c, o, _l, t: _chi_square(c, o, t),
     "correlation": lambda c, o, _l, t: _correlation(c, o, t),
