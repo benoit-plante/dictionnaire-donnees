@@ -95,9 +95,13 @@ def dash(value) -> str:
     return DASH if value is None or value == "" else str(value)
 
 
+GOTO = "goto"  # the page a button asks for; the navigation opens it (v0.16, D-122)
+
+
 def go_to(mode: str, **filled) -> None:
     """Open another page with its fields filled (v0.16): the only place that knows how a
-    page is chosen, so that the navigation by phases changes only this function."""
+    page is chosen."""
+    st.session_state[GOTO] = mode
     st.session_state.mode = mode
     st.session_state.update(filled)
 

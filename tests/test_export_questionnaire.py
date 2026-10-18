@@ -187,7 +187,8 @@ def test_omit_choice_in_the_interface(project, tmp_path):
     test = AppTest.from_file(APP, default_timeout=30)
     test.session_state["project_path"] = str(path)
     test.run()
-    test.sidebar.radio(key="mode").set_value("groups").run()
+    test.session_state["mode"] = "groups"  # v0.16: the pages are a navigation, no longer a radio
+    test.run()
     test.checkbox(key="omit-text-G1").check()
     test.button(key="save-omit-text-G1").click().run()
     assert not test.exception, test.exception

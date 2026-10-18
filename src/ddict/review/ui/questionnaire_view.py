@@ -195,3 +195,17 @@ def page(project: Project) -> None:
             )
         )
         _chooser(replace=True)
+    ai_link("questionnaire")
+
+
+def ai_link(where: str) -> None:
+    """The local model is a setting, outside the steps (v0.16, D-122): the pages that use it
+    lead to it."""
+    st.divider()
+    st.write(
+        _(
+            "Facultatif : l'IA locale peut proposer les rattachements aux questions, puis des "
+            "libellés et des descriptions ; chaque proposition attendra votre décision."
+        )
+    )
+    c.go_button(_("Réglages de l'IA locale"), f"go-ai-{where}", "ai")

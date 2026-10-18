@@ -271,7 +271,8 @@ def test_guessed_label_is_shown_as_a_warning(app):
 @pytest.mark.allow_hosts(["127.0.0.1"])
 def test_groups_view(app):
     test, path = app
-    test.sidebar.radio(key="mode").set_value("groups").run()
+    test.session_state["mode"] = "groups"  # v0.16: the pages are a navigation, no longer a radio
+    test.run()
     assert test.header[0].value.startswith("G1")
     test.text_input(key="instrument-G1").input("Questionnaire fictif")
     test.text_input(key="instrument-source-G1").input("Manuel fictif")

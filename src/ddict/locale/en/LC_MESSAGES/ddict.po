@@ -478,6 +478,9 @@ msgstr "Unknown analysis: {key}."
 msgid "Analyse refusée :"
 msgstr "Analysis refused:"
 
+msgid "Analyser"
+msgstr "Analyse"
+
 msgid "Analyses"
 msgstr "Analyses"
 
@@ -1570,6 +1573,9 @@ msgstr "Say how many items must be answered, at least (0: all)."
 msgid "Dites l'origine des données et leur état quand le plan a été écrit."
 msgstr "Give the origin of the data and their state when the plan was written."
 
+msgid "Documenter"
+msgstr "Document"
+
 msgid "Documents Word"
 msgstr "Word documents"
 
@@ -1923,6 +1929,13 @@ msgstr "F({df1}, {df2}) = {f}, {p}, η²p = {eta}"
 #, python-brace-format
 msgid "Face au plan : {state}"
 msgstr "Against the plan: {state}"
+
+msgid ""
+"Facultatif : l'IA locale peut proposer les rattachements aux questions, puis des libellés et des "
+"descriptions ; chaque proposition attendra votre décision."
+msgstr ""
+"Optional: the local AI can propose the links to the questions, then labels and descriptions; each"
+" proposal will wait for your decision."
 
 msgid ""
 "Facultative. Chaque proposition attend votre décision, et l'IA ne définit jamais un sigle. Ordre "
@@ -4725,6 +4738,9 @@ msgstr "General rules"
 msgid "Règles seules"
 msgstr "Rules alone"
 
+msgid "Rédiger"
+msgstr "Write"
+
 msgid "Référence"
 msgstr "Reference"
 
@@ -4737,6 +4753,12 @@ msgstr "References"
 
 msgid "Références (une par ligne)"
 msgstr "References (one per line)"
+
+msgid "Réglages"
+msgstr "Settings"
+
+msgid "Réglages de l'IA locale"
+msgstr "Local AI settings"
 
 msgid "Réglages de nommage"
 msgstr "Naming settings"

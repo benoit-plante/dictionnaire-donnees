@@ -167,7 +167,8 @@ def app(project, tmp_path):
     test = AppTest.from_file(APP, default_timeout=30)
     test.session_state["project_path"] = str(path)
     test.run()
-    test.sidebar.radio(key="mode").set_value("glossary").run()
+    test.session_state["mode"] = "glossary"  # v0.16: the pages are a navigation, no longer a radio
+    test.run()
     assert not test.exception, test.exception
     return test, path
 

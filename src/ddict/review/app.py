@@ -11,8 +11,8 @@ from __future__ import annotations
 import streamlit as st
 
 from ddict import settings
-from ddict.i18n import N_, Texts, _
-from ddict.review import logic, shutdown
+from ddict.i18n import _
+from ddict.review import logic, navigation, shutdown
 from ddict.review.ui import (
     ai_view,
     analyses_view,
@@ -34,25 +34,6 @@ from ddict.review.ui import (
 from ddict.review.ui import common as c
 from ddict.workflow import tasks
 
-# In the recommended order (v0.3): the database, the questionnaire and its acronyms first.
-MODES = Texts(
-    {
-        "base": N_("Base"),
-        "questionnaire": N_("Questionnaire"),
-        "glossary": N_("Glossaire"),
-        "ai": N_("IA locale"),
-        "variables": N_("Variables"),
-        "groups": N_("Groupes"),
-        "names": N_("Noms"),
-        "plan": N_("Plan"),
-        "analyses": N_("Analyses"),
-        "notebook": N_("Carnet"),
-        "verify": N_("Vérifier"),
-        "method": N_("Méthode"),
-        "export": N_("Export"),
-    }
-)
-
 
 def _messages_start():
     """A message goes next to its button; at the top only when that button is not shown."""
@@ -68,16 +49,16 @@ def _messages_end(top) -> None:
 
 
 def _go(mode: str, which: str | None) -> None:
-    st.session_state.mode = mode
     if which is not None and mode == "names":
-        st.session_state[names_view.FILTER] = which
+        c.go_to(mode, **{names_view.FILTER: which})
     elif which is not None:
-        st.session_state.filter = which
+        c.go_to(mode, filter=which)
+    else:
+        c.go_to(mode)
 
 
-def _dashboard(project) -> None:
+def _dashboard(waiting) -> None:
     """What waits for the team, in the recommended order; each line leads to its page."""
-    waiting = tasks(project)
     st.caption(_("À faire") if waiting else _("Rien en attente."))
     for index, task in enumerate(waiting):
         st.button(
@@ -111,12 +92,50 @@ def _stopped() -> None:
     st.stop()
 
 
+def _navigation(project, waiting):
+    """The pages by phase (v0.16, D-122), each with its state. The session's "mode" names the
+    page shown at the root address (the first one, or the one a test chooses); a page asked
+    for by a button ("goto", set by `c.go_to`) is opened with `st.switch_page`."""
+    counts = navigation.waiting(waiting)
+    current = st.session_state.get("mode")
+    if current not in navigation.PAGES:
+        current = navigation.FIRST
+    pages = {
+        info.mode: st.Page(
+            lambda: None,  # the page is drawn below, with the sidebar it needs
+            title=navigation.title(project, info.mode, counts),
+            icon=info.icon,
+            url_path=info.mode,
+            default=info.mode == current,
+        )
+        for info in navigation.PAGES.values()
+    }
+    sections = {
+        _(section): [pages[info.mode] for info in infos]
+        for section, infos in navigation.SECTIONS.items()
+    }
+    shown = st.navigation(sections, position="sidebar", expanded=True)
+    mode = next(m for m, page in pages.items() if page.url_path == shown.url_path)
+    goto = st.session_state.pop(c.GOTO, None)
+    if goto in pages and goto != mode:
+        st.switch_page(pages[goto])
+    st.session_state.mode = mode
+    shown.run()
+    return mode
+
+
 def main() -> None:
     settings.apply()  # read at each run: a change on the home page applies at once
     st.set_page_config(page_title=_("Révision du dictionnaire"), layout="wide")
     if st.session_state.get(QUITTING):
         _stopped()
     if not c.has_project():
+        # The home page is a page of its own, without the project's (v0.16): the menu of the
+        # project's pages would stay on screen otherwise.
+        st.navigation(
+            [st.Page(lambda: None, title=_("Accueil"), url_path="accueil", default=True)],
+            position="hidden",
+        ).run()
         with st.sidebar:
             _quit_button()
         top = _messages_start()
@@ -125,6 +144,8 @@ def main() -> None:
         return
     project = c.project()
     done, total = logic.progress(project)
+    waiting = tasks(project)
+    mode = _navigation(project, waiting)
     with st.sidebar:
         st.button(_("Accueil"), key="home", on_click=c.close_project, icon=":material/home:")
         st.title(project.source.name)
@@ -134,8 +155,7 @@ def main() -> None:
                 done=done, total=total
             ),
         )
-        _dashboard(project)
-        mode = st.radio(_("Afficher"), list(MODES), key="mode", format_func=MODES.__getitem__)
+        _dashboard(waiting)
         chosen = None
         if mode == "variables":
             filters = [
@@ -209,6 +229,7 @@ def main() -> None:
         variables_view.neighbours(names, chosen)  # v0.16 (finding 23): at the top
         bulk_view.links_panel(project)
         variables_view.page(project, project.variable(chosen))
+        questionnaire_view.ai_link("variables")
     elif mode == "groups":
         if chosen is not None:
             groups_view.page(project, chosen)
