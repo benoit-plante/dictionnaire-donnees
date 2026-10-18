@@ -64,7 +64,7 @@ def links_panel(project: Project) -> None:
         return
     with st.container(border=True):
         st.markdown(f"**{_('Rattachements où le modèle et le calcul s’accordent')}**")
-        st.caption(
+        st.write(
             _(
                 "Lisez chaque ligne : à l'essai sur une vraie base, environ un rattachement sur "
                 "cinq de cette liste était faux, surtout pour les scores calculés, les options "
@@ -115,7 +115,7 @@ def labels_panel(project: Project, group_id: str) -> None:
         return
     with st.container(border=True):
         st.markdown(f"**{_('Étiquettes de valeurs proposées pour ce groupe')}**")
-        st.caption(
+        st.write(
             _(
                 "Tirées des options de la question de chaque variable, dans l'ordre supposé "
                 "des codes. Décochez celles qui ne conviennent pas."

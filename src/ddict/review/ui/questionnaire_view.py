@@ -126,7 +126,7 @@ def page(project: Project) -> None:
     for line in acronym_summary(project):
         st.info(line)
     if any(q.to_check for q in questionnaire.questions):
-        st.caption(
+        st.write(
             _(
                 "Une question « à vérifier » a été lue, mais sa mise en page est douteuse : "
                 "l'outil ne propose pas d'étiquettes de valeurs à partir de ses colonnes. Un "
@@ -168,7 +168,7 @@ def page(project: Project) -> None:
         )
 
     with st.expander(_("Remplacer le questionnaire")):
-        st.caption(
+        st.write(
             _(
                 "Pour une nouvelle version du fichier. Les rattachements qui renvoyaient à "
                 "l'ancienne version sont retirés ; les sigles déjà décidés sont gardés."

@@ -189,7 +189,7 @@ def _table(project: Project) -> None:
     if not rows:
         st.info(_("Aucune variable dans ce filtre."))
         return
-    st.caption(
+    st.write(
         _(
             "Décidez dans le tableau : choisissez « Accepter » ou « Rejeter » dans la colonne "
             "« Décision », ou écrivez un autre nom dans « Nouveau nom » (il est alors décidé, "

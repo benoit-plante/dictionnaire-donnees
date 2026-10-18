@@ -406,7 +406,7 @@ def _sourced(entry: VariableEntry) -> None:
     keys = ("clear-range", "save-range", "remove-threshold", "add-threshold", "save-notes")
     opened = any(c.message_for(f"{k}-{name}") for k in keys)
     with st.expander(title, expanded=opened):
-        st.caption(_("Réservés aux personnes ; l'étendue et les seuils exigent une source."))
+        st.write(_("Réservés aux personnes ; l'étendue et les seuils exigent une source."))
         r = entry.theoretical_range
         if r:
             st.write(

@@ -78,7 +78,7 @@ def _scoring(project: Project, group_id: str) -> None:
     group = logic.group(project, group_id)
     if group.scoring:
         st.success(w.scoring_text(project, group))
-    st.caption(
+    st.write(
         _(
             "Réservée aux personnes, avec une source documentée (manuel, article) ; jamais "
             "proposée par l'IA. Les items inversés sont ceux confirmés ci-dessus ; l'étendue "
@@ -235,7 +235,7 @@ def _prefix(project: Project, group_id: str) -> None:
 def _instrument_and_text(project: Project, group_id: str) -> None:
     """The instrument's name, with its source, and the choice not to reproduce its text."""
     st.divider()
-    st.caption(_("Nom de l'instrument : réservé aux personnes, avec une source documentée."))
+    st.write(_("Nom de l'instrument : réservé aux personnes, avec une source documentée."))
 
     def instrument(part: str) -> str:
         current = logic.group(c.project(), group_id).instrument_name
@@ -273,7 +273,7 @@ def _instrument_and_text(project: Project, group_id: str) -> None:
                 ),
                 key=c.field(key, lambda: logic.group(c.project(), group_id).omit_question_text),
             )
-            st.caption(
+            st.write(
                 _(
                     "Reproduire les items d'un instrument protégé relève de l'équipe ; le "
                     "codebook donnera alors la référence de la question (Q12.r3, p. 4) sans "

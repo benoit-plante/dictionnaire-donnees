@@ -617,7 +617,7 @@ def _frozen(project: Project, prepared: PreparedData | None) -> None:
     st.subheader(_("Figer le plan"))
     plan = project.plan
     if plan.frozen is None:
-        st.caption(
+        st.write(
             _(
                 "Le plan figé reçoit sa date et son empreinte ; chaque hypothèse devient une "
                 "analyse du carnet. Ensuite, toute modification exige une raison et devient un "

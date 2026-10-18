@@ -145,7 +145,7 @@ def _write_copy() -> None:
 
 def _copy_section(project: Project) -> None:
     st.subheader(_("Copie documentée de la base"))
-    st.caption(
+    st.write(
         _(
             "Une nouvelle copie de votre base au format SPSS (.sav), avec ce que vous avez "
             "accepté. Avant de l'annoncer, l'outil la relit et la compare à l'original case par "

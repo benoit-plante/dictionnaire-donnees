@@ -187,7 +187,7 @@ def _prefill_levels(which: str, table_key: str) -> None:
 def _levels(project: Project) -> None:
     """The measure levels (v0.8, D-063): proposed by rules, decided in the table."""
     st.subheader(_("Niveaux de mesure"))
-    st.caption(
+    st.write(
         _(
             "Proposés par des règles quand le fichier n'en donne pas, ou quand celui du fichier "
             "est douteux. Choisissez « Accepter » ou « Rejeter » dans la colonne « Décision », "

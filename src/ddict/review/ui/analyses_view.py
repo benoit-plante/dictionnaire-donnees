@@ -357,7 +357,7 @@ def _add(project: Project, prepared: PreparedData, asked: tuple, result) -> None
 
 def _notebook_button(project: Project, prepared: PreparedData, asked: tuple, result) -> None:
     st.subheader(_("Carnet d'analyses"))
-    st.caption(
+    st.write(
         _(
             "Le carnet garde les analyses de l'étude pour l'ébauche d'article, avec les "
             "titres et les notes changés ci-dessus. Il ne garde que des agrégats."
@@ -423,4 +423,4 @@ def page(project: Project) -> None:
     if current:
         _show(project, prepared, last[0], last[1])
     elif last is not None and last[0][0] == key:
-        st.caption(_("Les choix ont changé depuis la dernière analyse : relancez-la."))
+        st.write(_("Les choix ont changé depuis la dernière analyse : relancez-la."))

@@ -111,7 +111,7 @@ def _show(project: Project, proposals: tuple[Proposal, ...]) -> None:
     if not proposals:
         st.info(_("Le modèle ne propose aucune analyse du catalogue pour cet objectif."))
         return
-    st.caption(_("Propositions du modèle, à vérifier : rien n'est calculé sans vous."))
+    st.write(_("Propositions du modèle, à vérifier : rien n'est calculé sans vous."))
     for number, proposal in enumerate(proposals, start=1):
         lines = [f"**{number}. {TITLES[proposal.analysis]}**"]
         for role, names in proposal.chosen.items():

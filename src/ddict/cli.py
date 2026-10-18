@@ -38,6 +38,7 @@ from ddict.project import (
 )
 from ddict.questionnaire.labels import propose_value_labels
 from ddict.questionnaire.link import candidates
+from ddict.review import theme
 from ddict.waves import ReferenceError
 from ddict.workflow import (
     ProjectExists,
@@ -1090,6 +1091,8 @@ def review_command(project_path: Path | None, port: int) -> tuple[list[str], dic
         # No "Deploy" button offering to put the interface online.
         "--client.toolbarMode",
         "minimal",
+        # The colours (v0.16, D-123): red for errors only, contrasts of at least 4.5:1.
+        *theme.options(),
     ]
     if project_path is not None:
         command += ["--", str(project_path.resolve())]

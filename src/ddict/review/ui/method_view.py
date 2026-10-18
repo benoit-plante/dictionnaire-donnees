@@ -348,7 +348,7 @@ def _flow(project: Project, prepared: PreparedData) -> None:
 
 def _signals(project: Project, prepared: PreparedData) -> None:
     st.subheader(_("Signaux de qualité de la passation"))
-    st.caption(
+    st.write(
         _(
             "Combien de personnes chaque signal toucherait, parmi les {n} que les règles "
             "gardent. Aucun n'est appliqué : un signal devient une exclusion quand vous "
