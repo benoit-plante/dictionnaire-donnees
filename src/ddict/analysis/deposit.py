@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import io
+import re
 import zipfile
 from datetime import date
 from pathlib import Path
@@ -120,6 +121,27 @@ def readme(project, project_path: Path, notebook, files: list[str], today: str) 
     return "\n".join(lines) + "\n"
 
 
+CORE_DATES = re.compile(r"(<dcterms:(?:created|modified)[^>]*>)[^<]*(</dcterms:)")
+
+
+def steady_xlsx(data: bytes, today: str) -> bytes:
+    """The same workbook, the same bytes: openpyxl writes the time of the saving into the
+    workbook's properties and into the dates of its zip entries; both take `today`."""
+    stamp = f"{today}T00:00:00Z"
+    year, month, day = (int(part) for part in today.split("-"))
+    out = io.BytesIO()
+    with zipfile.ZipFile(io.BytesIO(data)) as source, zipfile.ZipFile(out, "w") as archive:
+        for entry in source.infolist():
+            content = source.read(entry.filename)
+            if entry.filename == "docProps/core.xml":
+                text = CORE_DATES.sub(rf"\g<1>{stamp}\g<2>", content.decode("utf-8"))
+                content = text.encode("utf-8")
+            info = zipfile.ZipInfo(entry.filename, date_time=(year, month, day, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            archive.writestr(info, content)
+    return out.getvalue()
+
+
 def _fingerprints(project, files: dict[str, bytes]) -> str:
     lines = [
         _("# Empreintes SHA-256 des fichiers du paquet."),
@@ -161,7 +183,7 @@ def package(project, prepared, notebook, project_path: Path, *, language=None, t
         files: dict[str, bytes] = {}
         book = io.BytesIO()
         write_xlsx(project, book)
-        files[f"codebook/{stem}.xlsx"] = book.getvalue()
+        files[f"codebook/{stem}.xlsx"] = steady_xlsx(book.getvalue(), today)
         files[f"codebook/{stem}.md"] = render_markdown(project).encode("utf-8")
         files[f"codebook/{stem}-datapackage.json"] = package_text(context_package(project)).encode(
             "utf-8"

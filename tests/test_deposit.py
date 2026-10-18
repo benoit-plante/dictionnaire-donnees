@@ -75,6 +75,43 @@ def test_what_the_package_holds(study):
     assert deposit.zipped(files) == deposit.zipped(again)  # the same bytes each time
 
 
+def test_the_workbook_does_not_depend_on_the_clock(study, monkeypatch):
+    """openpyxl writes the time of the saving: two packages a second apart were different."""
+    import datetime as dt
+    import time
+
+    import openpyxl.writer.excel as excel
+
+    from ddict.export.xlsx import write_xlsx
+
+    project = study[0]
+
+    def saved_at(moment: float) -> bytes:
+        class Clock(dt.datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return dt.datetime.fromtimestamp(moment, tz)
+
+        monkeypatch.setattr(excel.datetime, "datetime", Clock)
+        monkeypatch.setattr(time, "time", lambda: moment)
+        monkeypatch.setattr(
+            time, "localtime", lambda seconds=None: dt.datetime.fromtimestamp(moment).timetuple()
+        )
+        book = io.BytesIO()
+        write_xlsx(project, book)
+        return book.getvalue()
+
+    first, second = saved_at(1_800_000_000), saved_at(1_800_003_661)
+    assert first != second  # the clock shows in the raw workbook
+    steady = deposit.steady_xlsx(first, TODAY)
+    assert steady == deposit.steady_xlsx(second, TODAY)
+    with zipfile.ZipFile(io.BytesIO(steady)) as archive:
+        core = archive.read("docProps/core.xml").decode("utf-8")
+        assert core.count(f"{TODAY}T00:00:00Z") == 2
+        assert {i.date_time[:3] for i in archive.infolist()} == {(2026, 10, 18)}
+    pd.read_excel(io.BytesIO(steady), sheet_name=None)  # still a workbook
+
+
 def test_with_a_plan(study):
     from ddict.analysis import planning as pl
 
