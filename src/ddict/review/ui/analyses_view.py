@@ -283,7 +283,7 @@ def _notebook_button(project: Project, prepared: PreparedData, asked: tuple, res
     st.subheader(_("Carnet d'analyses"))
     st.caption(
         _(
-            "Le carnet garde les analyses de l'étude pour le document des résultats, avec les "
+            "Le carnet garde les analyses de l'étude pour l'ébauche d'article, avec les "
             "titres et les notes changés ci-dessus. Il ne garde que des agrégats."
         )
     )

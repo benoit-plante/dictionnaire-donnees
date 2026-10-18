@@ -244,10 +244,10 @@ def page(project: Project) -> None:
     st.header(_("Carnet"))
     st.caption(
         _(
-            "Les analyses ajoutées depuis la page Analyses, dans l'ordre du document des "
-            "résultats. Chacune est recalculée quand une décision change : ce qui a changé "
-            "attend votre confirmation. Le carnet est un fichier à côté du projet ; il ne "
-            "garde que des agrégats, jamais une ligne de la base."
+            "Les analyses ajoutées depuis la page Analyses ou par le gel du plan, dans "
+            "l'ordre de l'ébauche d'article. Chacune est recalculée quand une décision change : "
+            "ce qui a changé attend votre confirmation. Le carnet est un fichier à côté du "
+            "projet ; il ne garde que des agrégats, jamais une ligne de la base."
         )
     )
     top = st.empty()

@@ -33,7 +33,15 @@ from ddict.analysis.data import PreparedData
 from ddict.analysis.method import _used
 from ddict.analysis.method_text import _lower
 from ddict.analysis.notebook import Notebook
-from ddict.analysis.prereg import KINDS, _alpha, _direction, _families, _name, long_date
+from ddict.analysis.prereg import (
+    KINDS,
+    _alpha,
+    _direction,
+    _families,
+    _name,
+    levels_text,
+    long_date,
+)
 from ddict.analysis.results import (
     AnalysisResult,
     bounded,
@@ -156,11 +164,15 @@ def _changed(key: str, before: dict, after: dict, project: Project) -> list[str]
         found = []
         for option in sorted(set(old) | set(new)):
             if option != "alternative" and old.get(option) != new.get(option):
+                shown = [CHOICES.get(v, v or "—") for v in (new.get(option), old.get(option))]
+                if option == "levels":
+                    raw = after.get("roles") or before.get("roles") or {}
+                    roles = {k: [VariableRef.model_validate(r) for r in v] for k, v in raw.items()}
+                    shown = [levels_text(project, roles, v) if v else "—"
+                             for v in (new.get(option), old.get(option))]  # fmt: skip
                 found.append(
                     _("{option} : {new} au lieu de {old}").format(
-                        option=OPTIONS.get(option, option).lower(),
-                        new=CHOICES.get(new.get(option), new.get(option) or "—"),
-                        old=CHOICES.get(old.get(option), old.get(option) or "—"),
+                        option=OPTIONS.get(option, option).lower(), new=shown[0], old=shown[1]
                     )
                 )
         return found
@@ -627,25 +639,33 @@ def adjusted_tables(document: ApaDocument, tested: Tested, method: str) -> ApaDo
     return replace(document, tables=(table, *document.tables[1:]))
 
 
+def _shown_zero(value: float) -> bool:
+    """Zero as the text shows it, to two decimals: the direction then goes unsaid."""
+    return abs(value) < 0.005
+
+
 def observed(book: Codebook, prepared: PreparedData, tested: Tested) -> str:
-    """The observed direction (§ 4): a fact drawn from the sign of the statistic."""
+    """The observed direction (§ 4): a fact drawn from the sign of the statistic, unless
+    the statistic shows as zero, to two decimals, as printed beside it."""
     s = tested.result.statistics
     kind = tested.hypothesis.effect.kind
     if kind == "difference":
         names = _two_groups(book, prepared, tested.result)[2]
         if "rb" in s:
-            if s["rb"] == 0:
-                return _("Les rangs observés étaient les mêmes dans les deux groupes.")
+            if _shown_zero(s["rb"]):
+                return _(
+                    "Les rangs observés étaient les mêmes dans les deux groupes, au centième près."
+                )
             higher = names[0] if s["rb"] > 0 else names[1]
             return _("Les rangs observés étaient plus élevés dans le groupe {a}.").format(a=higher)
-        if s["m1"] == s["m2"]:
-            return _("La moyenne observée était la même dans les deux groupes.")
+        if number(s["m1"]) == number(s["m2"]):
+            return _("Les moyennes observées étaient égales au centième près.")
         higher = names[0] if s["m1"] > s["m2"] else names[1]
         return _("La moyenne observée était plus élevée dans le groupe {a}.").format(a=higher)
     if kind == "pair" and tested.key:
         r = s["r" + tested.key[1:]]
-        if r == 0:
-            return _("La corrélation observée était nulle.")
+        if _shown_zero(r):
+            return _("La corrélation observée était nulle au centième près.")
         return (
             _("La corrélation observée était positive.")
             if r > 0
@@ -654,8 +674,8 @@ def observed(book: Codebook, prepared: PreparedData, tested: Tested) -> str:
     if kind == "predictor" and tested.key:
         coefficient = s["coef_" + tested.key.split("_")[1]]
         x = book.label(tested.variable or "")
-        if coefficient == 0:
-            return _("Le coefficient observé de {x} était nul.").format(x=x)
+        if _shown_zero(coefficient):
+            return _("Le coefficient observé de {x} était nul au centième près.").format(x=x)
         return (
             _("Le coefficient observé de {x} était positif.")
             if coefficient > 0

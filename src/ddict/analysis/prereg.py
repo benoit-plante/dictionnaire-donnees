@@ -19,6 +19,7 @@ from pathlib import Path
 from ddict import i18n
 from ddict.analysis.apa import ApaDocument, Section, Text, apa, hole, it, marked, rich
 from ddict.analysis.catalogue import CHOICES, OPTIONS, ROLES, TITLES
+from ddict.analysis.data import level_codes
 from ddict.analysis.method import _missing
 from ddict.analysis.method_text import scale_description
 from ddict.analysis.notebook import NotebookError, resolve
@@ -127,12 +128,23 @@ def _effect(project: Project, hypothesis: Hypothesis) -> str:
     return EFFECT_NAMES[effect.kind]
 
 
-def _code(text: str):
-    """A code of the "levels" option: a number, or a text code as it is."""
-    try:
-        return float(text)
-    except ValueError:
-        return text
+def _label(labels: dict, code) -> str | None:
+    if code in labels:
+        return labels[code]
+    if isinstance(code, float) and code.is_integer():
+        return labels.get(int(code))
+    return None
+
+
+def levels_text(project: Project, roles: dict, value: str) -> str:
+    """ "Femme, Homme": the two groups a t test compares, by their labels, else their codes
+    as typed."""
+    refs = roles.get("group", [])
+    entry = _entry(project, _name(project, refs[0])) if refs else None
+    labels = {lab.code: lab.label for lab in accepted_labels(entry)} if entry else {}
+    codes = level_codes(value)
+    parts = [p.strip() for p in str(value).split(",")]
+    return ", ".join(_label(labels, c) or p for c, p in zip(codes, parts, strict=True))
 
 
 def _groups(project: Project, hypothesis: Hypothesis) -> tuple[str, str] | None:
@@ -145,8 +157,7 @@ def _groups(project: Project, hypothesis: Hypothesis) -> tuple[str, str] | None:
     labels = {lab.code: lab.label for lab in accepted_labels(entry)}
     chosen = hypothesis.options.get("levels")
     if chosen:
-        codes = [_code(c.strip()) for c in chosen.split(",")]
-        found = [labels.get(c, labels.get(int(c) if isinstance(c, float) else c)) for c in codes]
+        found = [_label(labels, c) for c in level_codes(chosen)]
         return tuple(found) if all(found) and len(found) == 2 else None
     if len(labels) == 2:
         first, second = sorted(labels, key=lambda c: (isinstance(c, str), c))
@@ -281,7 +292,9 @@ def _models(project: Project) -> list[Text]:
     for h in project.plan.hypotheses:
         parts = [TITLES.get(h.analysis, h.analysis)]
         for key, value in h.options.items():
-            if key != "alternative":
+            if key == "levels":
+                parts.append(f"{OPTIONS[key].lower()} : {levels_text(project, h.roles, value)}")
+            elif key != "alternative":
                 parts.append(f"{OPTIONS.get(key, key).lower()} : {CHOICES.get(value, value)}")
         for role, refs in h.roles.items():
             names = ", ".join(_name(project, r) for r in refs)

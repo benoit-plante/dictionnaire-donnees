@@ -815,6 +815,15 @@ msgstr "Choose the questionnaire…"
 msgid "Choisir les deux groupes à comparer"
 msgstr "Choose the two groups to compare"
 
+msgid "Choisir les deux variables de la paire"
+msgstr "Choose the two variables of the pair"
+
+msgid "Choisir les items"
+msgstr "Choose the items"
+
+msgid "Choisir les variables"
+msgstr "Choose the variables"
+
 msgid "Choisir un fichier projet"
 msgstr "Choose a project file"
 
@@ -2090,8 +2099,8 @@ msgstr "The Spearman correlation between {a} and {b} was ρ = {r}, {p} (n = {n})
 msgid "La corrélation entre {a} et {b} était r({df}) = {r}, {ci}, {p}."
 msgstr "The correlation between {a} and {b} was r({df}) = {r}, {ci}, {p}."
 
-msgid "La corrélation observée était nulle."
-msgstr "The observed correlation was zero."
+msgid "La corrélation observée était nulle au centième près."
+msgstr "The observed correlation was zero to two decimals."
 
 msgid "La corrélation observée était négative."
 msgstr "The observed correlation was negative."
@@ -2140,9 +2149,6 @@ msgstr "The list is kept on this computer; it holds only the paths of the projec
 #, python-brace-format
 msgid "La longueur maximale doit être entre {low} et {high}."
 msgstr "The maximum length must be between {low} and {high}."
-
-msgid "La moyenne observée était la même dans les deux groupes."
-msgstr "The observed mean was the same in both groups."
 
 #, python-brace-format
 msgid "La moyenne observée était plus élevée dans le groupe {a}."
@@ -2240,11 +2246,11 @@ msgid ""
 msgstr "The notebook is empty. Run an analysis on the Analyses page, then click \"Add to the notebook\"."
 
 msgid ""
-"Le carnet garde les analyses de l'étude pour le document des résultats, avec les titres et les "
-"notes changés ci-dessus. Il ne garde que des agrégats."
+"Le carnet garde les analyses de l'étude pour l'ébauche d'article, avec les titres et les notes "
+"changés ci-dessus. Il ne garde que des agrégats."
 msgstr ""
-"The notebook keeps the study's analyses for the results document, with the titles and notes "
-"changed above. It keeps aggregates only."
+"The notebook keeps the study's analyses for the article draft, with the titles and notes changed "
+"above. It keeps aggregates only."
 
 #, python-brace-format
 msgid "Le carnet ne peut pas être lu : {name}"
@@ -2266,8 +2272,8 @@ msgstr ""
 "decide, not the tool."
 
 #, python-brace-format
-msgid "Le coefficient observé de {x} était nul."
-msgstr "The observed coefficient of {x} was zero."
+msgid "Le coefficient observé de {x} était nul au centième près."
+msgstr "The observed coefficient of {x} was zero to two decimals."
 
 #, python-brace-format
 msgid "Le coefficient observé de {x} était négatif."
@@ -2561,13 +2567,15 @@ msgid "Lecture de la base…"
 msgstr "Reading the database…"
 
 msgid ""
-"Les analyses ajoutées depuis la page Analyses, dans l'ordre du document des résultats. Chacune "
-"est recalculée quand une décision change : ce qui a changé attend votre confirmation. Le carnet "
-"est un fichier à côté du projet ; il ne garde que des agrégats, jamais une ligne de la base."
+"Les analyses ajoutées depuis la page Analyses ou par le gel du plan, dans l'ordre de l'ébauche "
+"d'article. Chacune est recalculée quand une décision change : ce qui a changé attend votre "
+"confirmation. Le carnet est un fichier à côté du projet ; il ne garde que des agrégats, jamais "
+"une ligne de la base."
 msgstr ""
-"The analyses added from the Analyses page, in the order of the results document. Each is "
-"recomputed when a decision changes: what changed waits for your confirmation. The notebook is a "
-"file next to the project; it keeps aggregates only, never a row of the database."
+"The analyses added from the Analyses page or by freezing the plan, in the order of the article "
+"draft. Each one is recomputed when a decision changes: what changed waits for your confirmation. "
+"The notebook is a file next to the project; it keeps aggregates only, never a row of the "
+"database."
 
 msgid "Les analyses du carnet seront recalculées : voyez ce qui a changé avec « ddict carnet lister »."
 msgstr "The notebook's analyses will be recomputed: see what changed with “ddict notebook list”."
@@ -2688,14 +2696,17 @@ msgstr ""
 msgid "Les liens entre variables sont décrits par la corrélation de Spearman."
 msgstr "The relations between variables are described by Spearman's correlation."
 
+msgid "Les moyennes observées étaient égales au centième près."
+msgstr "The observed means were equal to two decimals."
+
 msgid "Les propositions sont à réviser dans « Variables »."
 msgstr "The proposals are to be reviewed in \"Variables\"."
 
 msgid "Les questions suivantes ont été examinées de façon exploratoire :"
 msgstr "The following questions were examined in an exploratory way:"
 
-msgid "Les rangs observés étaient les mêmes dans les deux groupes."
-msgstr "The observed ranks were the same in both groups."
+msgid "Les rangs observés étaient les mêmes dans les deux groupes, au centième près."
+msgstr "The observed ranks were the same in both groups, to two decimals."
 
 #, python-brace-format
 msgid "Les rangs observés étaient plus élevés dans le groupe {a}."
@@ -3746,8 +3757,8 @@ msgstr ""
 msgid "Restantes"
 msgstr "Remaining"
 
-msgid "Retenir des analyses pour le document des résultats."
-msgstr "Retain analyses for the results document."
+msgid "Retenir des analyses pour l'ébauche d'article."
+msgstr "Retain analyses for the article draft."
 
 msgid "Retenue pour le document"
 msgstr "Retained for the document"

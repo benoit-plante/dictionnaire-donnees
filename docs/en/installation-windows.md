@@ -175,7 +175,7 @@ The analysis context (section 8) is made to be given as it is to an assistant th
 
 The **Analyses** page (after **Names** in the sidebar) computes, on your database and with your accepted decisions, six analyses written and checked in advance: **Table 1** (describe the sample), **t test** (compare two groups), **ANOVA** (several groups), **chi-square** (two categorical variables), **correlation** and **linear regression**. Each one is described in detail (conditions, options, formulas, examples, in French) in [`../catalogue-analyses.md`](../catalogue-analyses.md). Nothing is sent outside your computer, and your file is never changed.
 
-**Before you start**, your decisions count: the confirmed missing codes (999, −9) are removed, the new names applied, the reversed items and the scores computed from your scoring (section 7). The **measure level** of each variable (**Database** page) decides which analyses it may enter: a variable without a decided level is offered nowhere. Identifiers, free texts and dates are always left out.
+**Before you start**, your decisions count: the confirmed missing codes (999, −9) are removed, the new names applied, the reversed items and the scores computed from your scoring (section 7). The **measure level** of each variable (**Database** page) decides which analyses it may enter: a variable without a decided level is offered nowhere. Identifiers, free texts and dates are always left out. Since 0.13, a category written out in a CSV ("yes", "no") enters the analyses once its level is "nominal"; an empty cell counts there as a missing value.
 
 1. **Find the database.** The page looks for the database next to the project and checks that it is the one the project comes from. Otherwise, **Choose the database…**. It is read once, in memory, for the session.
 2. **Choose the analysis**, then its variables, role by role (for example **Dependent variable** and **Grouping variable**): each list offers only the variables whose level fits. With the fictional database: **t test**, dependent variable your sleep score (the name you gave it in the scoring, for example `sleep_total`), grouping variable `gender`. As `gender` has three categories, choose the two to compare in **Levels compared**: Woman and Man.
@@ -201,24 +201,24 @@ The **Analyses** page (after **Names** in the sidebar) computes, on your databas
 
 What to expect (trials `docs/essais/2026-10-16-ia-conseillere.md` and `2026-10-16-essai-analyses.md`, in French): on the fictional database, the right analysis and the right variables 9 times out of 13; on a real database of 250 variables, the right kind of analysis two times out of three, but less reliable variables. The model proposes an analysis even when none fits, and sometimes picks a less fitting method (Student rather than Welch). **It helps to find the kind of analysis; the choice stays yours.** For a very large database, the tool may refuse to send the message, too long for the model: then choose the analysis yourself.
 
-## 14. The analysis notebook and the results document
+## 14. The analysis notebook and the article draft
 
-An article often brings together ten or twenty results, numbered one after the other, that must stay right when the codebook changes. The **notebook** keeps the study's analyses, in your article's order, and brings them together in a single "Results" document. It uses no AI. The details are in [`../carnet-analyses.md`](../carnet-analyses.md) (in French).
+An article often brings together ten or twenty results, numbered one after the other, that must stay right when the codebook changes. The **notebook** keeps the study's analyses, in your article's order, and brings them together in an article draft. It uses no AI. The details are in [`../carnet-analyses.md`](../carnet-analyses.md) (in French).
 
 1. **Add an analysis.** On the **Analyses** page, after **Run the analysis**, the **Analysis notebook** section has an **Add to the notebook** button. The analysis goes at the end of the notebook, retained, with the titles and notes you changed in the APA tables and figures (not their numbers: the notebook numbers in its order). The button becomes "Already in the notebook (A1)".
 2. **The Notebook page** (after **Analyses**) lists the analyses in their order: number (A1, A2…), title, variables, result sentence and state. **Move up** and **Move down** change the order; **Retained for the document** leaves an analysis out of the document without removing it; **Remove** deletes it (its number does not come back).
 3. **When a decision changes** (a missing code confirmed, a measure level corrected), each analysis is recomputed when the page opens:
    - **up to date** or **recomputed, unchanged**: nothing to do;
-   - **changed, to confirm**: the page shows what changed (for example "n_used : 200 → 196", "r : ,05 → ,01") and the new sentence. **Confirm the new computation** adopts it. As long as a retained analysis waits for its confirmation, the results document is not produced;
+   - **changed, to confirm**: the page shows what changed (for example "n_used : 200 → 196", "r : ,05 → ,01") and the new sentence. **Confirm the new computation** adopts it. As long as a retained analysis waits for its confirmation, the article draft is not produced;
    - **cannot be computed**: the reason shows (a variable removed, a measure level that no longer fits). The analysis stays in the notebook, but it is left out of the document, and the end of the document says so.
-4. **The "Method and Results" document.** Set the **First table** and the **First figure** if needed (for example 3, if two tables come before in your article), then **Produce the document**. Three files are written next to the project, and replaced each time:
-   - `sleep-study-resultats.docx`: since 0.12, the Method section (section 15); then a heading per analysis ("A2 — t test: compare two groups"), its result sentence, its APA tables and figures, numbered one after the other across the whole document; at the end, the codebook fingerprint, the date, the versions and the list of the analyses;
-   - `sleep-study-resultats-graphiques.xlsx`: the native Excel chart of each figure;
-   - `sleep-study-resultats-R.zip`: the **R master script**, which redoes all the retained analyses, in order, with the command file and the preparation script. Unzip it in the database's folder, then, in R: `source("sleep-study-resultats.R", encoding = "UTF-8")`. It gives the same values as the tool (checked by tests, within 10⁻⁶), stored in `resultats$A1`, `resultats$A2`…
+4. **The article draft.** Set the **First table** and the **First figure** if needed (for example 3, if two tables come before in your article), then **Produce the article draft**. Three files are written next to the project, and replaced each time:
+   - `sleep-study-article.docx`: since 0.13, an APA article draft, from the title page to the References (section 16): the Method (section 15), then a heading per analysis ("A2 — t test: compare two groups"), or per hypothesis when the study has a plan, with its result sentence and its APA tables and figures, numbered one after the other across the whole document; at the end, the codebook fingerprint, the date, the versions and the list of the analyses;
+   - `sleep-study-article-graphiques.xlsx`: the native Excel chart of each figure;
+   - `sleep-study-article-R.zip`: the **R master script**, which redoes all the retained analyses, in order, with the command file and the preparation script. Unzip it in the database's folder, then, in R: `source("sleep-study-article.R", encoding = "UTF-8")`. It gives the same values as the tool (checked by tests, within 10⁻⁶), stored in `resultats$A1`, `resultats$A2`…
 
 Each analysis is **recomputed** on the database when the document is produced: nothing is copied from the notebook. The notebook, `sleep-study-carnet.json`, is next to the project; it keeps aggregates only (counts, means, statistics, sentences), never a row of the database. Without the database, the page shows the notebook as it is, without recomputing it, and **Choose the database…** finds it.
 
-On the command line: `ddict notebook add` (same options as `ddict analyse`), `list`, `move A3 1`, `retain A2`, `leave-out A2`, `remove A2`, `confirm A1` (or `--all`), `numbers --table 3 --figure 2`; then `ddict results` writes the three files. The page and the commands read and write the same notebook.
+On the command line: `ddict notebook add` (same options as `ddict analyse`), `list`, `move A3 1`, `retain A2`, `leave-out A2`, `remove A2`, `confirm A1` (or `--all`), `numbers --table 3 --figure 2`; then `ddict paper` (or `ddict article`) writes the three files (`ddict results`, its former name, still works in this version). The page and the commands read and write the same notebook.
 
 ## 15. The Method: exclusions, flow diagram and paragraphs
 
@@ -243,6 +243,35 @@ The Method section of an article says who was excluded and why, describes the sa
 **Everywhere the same way.** The rules apply before each analysis of the tool, in the SPSS and R preparation script (a variable `ddict_exclusion`: 0 for a person kept, otherwise the rank of the rule that excludes them) and in the R master script. The documented copy of the database (section 9) keeps no trace of them: it stays identical to the original. The reliability of the scores (Cronbach's alpha and its 95 % confidence interval) is computed again on the analysed sample.
 
 On the command line: `ddict exclusions list`, `add` (`--condition age lt 18`, `--score G1 lt 10`, `--completeness G1 5`, `--duration start end 180 --source "…"`, `--straightlining G2`, `--duplicates email`, always with `--reason "…"`), `remove E2`, `move E3 1` and `signals` (`--start`, `--end`, `--min-duration`, `--duplicates`); `ddict notebook sample sleep-study.dd.json age gender` chooses the sample's variables. The page and the commands write the same rules.
+
+## 16. The analysis plan, the preregistration and the article
+
+A confirmatory study writes its hypotheses before analysing, and its article then says what was planned and what changed. The **Plan** page (before **Analyses**) keeps this plan: the team's hypotheses, each tied to an analysis of the catalogue, the general rules, the freezing and the amendments. It uses no AI, and nothing is sent outside your computer. The details are in [`../plan-analyse-article.md`](../plan-analyse-article.md) (in French).
+
+1. **The general rules**, saved at once:
+   - the **α level**, typed by the team: the page never offers one by default;
+   - the **Correction for multiple comparisons** (Holm by default, Bonferroni or none), applied within each family of hypotheses;
+   - the **Sample size rationale**, as text;
+   - the **Origin of the data** (primary or secondary) and their **State when the plan was written** (before their creation, before any observation, before access, before analysis, after an analysis). This is the team's declaration: the article writes it "according to the team".
+2. **Add a hypothesis**: its statement, as the team writes it, the analysis and its variables role by role, as on the **Analyses** page (section 13), then:
+   - the **Tested effect**: for a regression, the whole model or a predictor; for a correlation of more than two variables, the pair;
+   - the **Expected direction** (the first or the second group higher, in the order of the codes; positive or negative). For a t test, it makes the test one-sided;
+   - the **Kind**: confirmatory (by default) or exploratory;
+   - the **Family (correction)**, for example F1: the hypotheses of the same family have their *p* values adjusted together.
+
+   The conditions of the analysis are checked on the database, as on the **Analyses** page. **Move up** and **Move down** set the article's order; **Remove** deletes a hypothesis (its number does not come back).
+3. **Freeze the plan.** The plan receives its date and fingerprint, and each hypothesis becomes an analysis of the notebook (section 14). The button says what prevents it: no hypothesis, α not typed, origin or state not stated. Afterwards, **every change needs a reason**, typed at the top of the page, and becomes an **amendment**, kept forever: the article cites it with its date and reason. The original analysis stays in the notebook, left out, and the new one takes its place. The **Notebook** page gives the state of each analysis against the plan: "planned (H1)", "replaced by the amendment of …", "variant of H1", "exploratory".
+4. **The preregistration.** **Write the preregistration next to the project** gives `sleep-study-preenregistrement.docx` and `.md`. The template follows the origin of the data: OSF Prereg for primary data, van den Akker et al. (2021) for secondary data. It is written from the plan and the codebook only, **never from the database**: no count, no result. What the tool cannot know (what the team already knew of the data, where it is registered) stays a highlighted hole, to complete in Word. The tool registers nothing and never says the study was preregistered.
+5. **The article draft** (**Notebook** page, section 14) follows the plan once it is frozen:
+   - the Introduction states the hypotheses, and the Method gains an **Analysis plan** paragraph (declared origin and state, date of the freezing, α, correction and families, one-sided tests, amendments);
+   - the Results follow the hypotheses, with, for a hypothesis of a family, the adjusted *p* next to the raw *p*; then the "Exploratory analysis";
+   - the Discussion recalls each hypothesis, the expected and the observed direction, then leaves a hole for its interpretation.
+
+   **The tool never writes that a hypothesis is "supported" or "rejected"**, nor "significant": it describes what was observed, and the judgement belongs to the authors. The title, authors, abstract, background, limitations and conclusion stay holes.
+
+On the command line: `ddict plan list`, `add` (the variables as for `ddict notebook add`, and `--pair A B`, `--predictor X` or `--model`, `--direction positive`, `--family F1`, `--exploratory`), `modify H2 --method spearman --reason "…"` (or `amend`), `remove H2`, `move H3 1`, `rules --alpha 0.05 --correction holm --origin primary --status before-analysis --sample-size "…"`, `freeze`, `clear --confirm` and `preregistration`; then `ddict paper`. The page and the commands write the same plan, the same preregistration and the same article.
+
+A trial on an open database and its published article is described (in French) in [`../essais/2026-10-18-essai-plan-article-amatus.md`](../essais/2026-10-18-essai-plan-article-amatus.md): the tool's figures there are those of the article and of R.
 
 ## Update or uninstall
 
@@ -271,7 +300,11 @@ ddict notebook list sleep-study.dd.json      # the notebook, recomputed
 ddict exclusions add sleep-study.dd.json --condition age lt 18 --reason "Under 18"
 ddict exclusions list sleep-study.dd.json    # the rules and the flow diagram
 ddict notebook sample sleep-study.dd.json age gender   # the sample's variables
-ddict results sleep-study.dd.json            # the "Method and Results" document and the R master script
+ddict plan add sleep-study.dd.json t_test --statement "Women sleep better." --outcome sleep_total --group gender --levels 1,2 --direction first
+ddict plan rules sleep-study.dd.json --alpha 0.05 --origin primary --status before-analysis
+ddict plan freeze sleep-study.dd.json        # the plan finalised; afterwards, --reason for each change
+ddict plan preregistration sleep-study.dd.json   # the preregistration (Word and Markdown)
+ddict paper sleep-study.dd.json              # the article draft and the R master script
 ddict advise sleep-study.dd.json "Compare the sleep of women and men." --model qwen2.5:7b-instruct-q4_K_M
 ddict evaluate --model qwen2.5:7b-instruct-q4_K_M       # model bench
 ```
@@ -295,6 +328,7 @@ ddict evaluate --model qwen2.5:7b-instruct-q4_K_M       # model bench
 | "Cannot write the files" when exporting | The codebook is probably open in Excel: close it, then try again. |
 | Documented copy: "The database … cannot be found next to the project" | Put the database in the project's folder, or **Choose the database…**. |
 | Documented copy: "… is no longer the file the project comes from" | The database changed since the project was created (new export, corrected data). Create a new project from the current database. |
+| "The plan is finalised: give the reason for this change." | After the freezing, each change is an amendment: type its reason at the top of the **Plan** page (or `--reason "…"`), then try again. |
 | R: "there is no package called 'haven'" | In R, once: `install.packages("haven")`. |
 | The tool seems frozen | Close its window, then double-click the icon again. The decisions already taken are saved. |
 

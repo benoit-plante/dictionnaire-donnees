@@ -173,7 +173,7 @@ Le contexte d'analyse (section 8) est fait pour être donné tel quel à un assi
 
 La page **Analyses** (après **Noms** dans la barre latérale) calcule, sur votre base et avec vos décisions acceptées, six analyses écrites et vérifiées d'avance : **Tableau 1** (décrire l'échantillon), **test t** (comparer deux groupes), **ANOVA** (plusieurs groupes), **khi-carré** (deux variables catégorielles), **corrélation** et **régression linéaire**. Le détail de chacune (conditions, options, formules, exemples) est dans [`catalogue-analyses.md`](catalogue-analyses.md). Rien n'est envoyé hors de votre ordinateur, et votre fichier n'est jamais modifié.
 
-**Avant de commencer**, vos décisions comptent : les codes manquants confirmés (999, −9) sont retirés, les nouveaux noms appliqués, les items inversés et les scores calculés selon votre cotation (section 7). Le **niveau de mesure** de chaque variable (page **Base**) décide des analyses où elle peut entrer : une variable sans niveau décidé n'est proposée nulle part. Les identifiants, les textes libres et les dates sont toujours exclus.
+**Avant de commencer**, vos décisions comptent : les codes manquants confirmés (999, −9) sont retirés, les nouveaux noms appliqués, les items inversés et les scores calculés selon votre cotation (section 7). Le **niveau de mesure** de chaque variable (page **Base**) décide des analyses où elle peut entrer : une variable sans niveau décidé n'est proposée nulle part. Les identifiants, les textes libres et les dates sont toujours exclus. Depuis la 0.13, une catégorie écrite en toutes lettres dans un CSV (« oui », « non ») entre dans les analyses dès que son niveau est « nominal » ; une case vide y compte comme une valeur manquante.
 
 1. **Retrouver la base.** La page cherche la base à côté du projet et vérifie que c'est bien celle d'où vient le projet. Sinon, **Choisir la base…**. Elle est lue une fois, en mémoire, le temps de la séance.
 2. **Choisir l'analyse**, puis ses variables, rôle par rôle (par exemple **Variable dépendante** et **Variable de groupe**) : chaque liste ne propose que les variables dont le niveau convient. Avec la base fictive : **Test t**, variable dépendante `sommeil_total`, variable de groupe `genre`. Comme `genre` a trois modalités, choisissez les deux à comparer dans **Modalités comparées** : Femme et Homme.
@@ -199,24 +199,24 @@ La page **Analyses** (après **Noms** dans la barre latérale) calcule, sur votr
 
 Ce qu'il faut en attendre (essais `docs/essais/2026-10-16-ia-conseillere.md` et `2026-10-16-essai-analyses.md`) : sur la base fictive, la bonne analyse et les bonnes variables 9 fois sur 13 ; sur une vraie base de 250 variables, le bon type d'analyse deux fois sur trois, mais des variables moins sûres. Le modèle propose une analyse même quand aucune ne convient, et choisit parfois une méthode moins adaptée (Student plutôt que Welch). **C'est une aide pour retrouver le type d'analyse ; le choix reste le vôtre.** Pour une très grande base, l'outil peut refuser d'envoyer le message, trop long pour le modèle : choisissez alors l'analyse vous-même.
 
-## 14. Le carnet d'analyses et le document des résultats
+## 14. Le carnet d'analyses et l'ébauche d'article
 
-Un article réunit souvent dix ou vingt résultats, numérotés à la suite, qui doivent rester justes quand le codebook change. Le **carnet** garde les analyses de l'étude, dans l'ordre de votre article, et les réunit dans un seul document « Résultats ». Il ne fait appel à aucune IA. Le détail est dans [`carnet-analyses.md`](carnet-analyses.md).
+Un article réunit souvent dix ou vingt résultats, numérotés à la suite, qui doivent rester justes quand le codebook change. Le **carnet** garde les analyses de l'étude, dans l'ordre de votre article, et les réunit dans une ébauche d'article. Il ne fait appel à aucune IA. Le détail est dans [`carnet-analyses.md`](carnet-analyses.md).
 
 1. **Ajouter une analyse.** Sur la page **Analyses**, après **Lancer l'analyse**, la section **Carnet d'analyses** a un bouton **Ajouter au carnet**. L'analyse va à la fin du carnet, retenue, avec les titres et les notes que vous avez changés dans les tableaux et figures APA (pas leurs numéros : le carnet numérote dans son ordre). Le bouton devient « Déjà dans le carnet (A1) ».
 2. **La page Carnet** (après **Analyses**) liste les analyses dans leur ordre : numéro (A1, A2…), titre, variables, phrase de résultat et état. **Monter** et **Descendre** changent l'ordre ; **Retenue pour le document** écarte une analyse du document sans la retirer ; **Retirer** la supprime (son numéro ne revient pas).
 3. **Quand une décision change** (un code manquant confirmé, un niveau de mesure corrigé), chaque analyse est recalculée à l'ouverture de la page :
    - **à jour** ou **recalculée, sans changement** : rien à faire ;
-   - **changée, à confirmer** : la page montre ce qui a changé (par exemple « n_used : 200 → 196 », « r : ,05 → ,01 ») et la nouvelle phrase. **Confirmer le nouveau calcul** l'adopte. Tant qu'une analyse retenue attend sa confirmation, le document des résultats ne se produit pas ;
+   - **changée, à confirmer** : la page montre ce qui a changé (par exemple « n_used : 200 → 196 », « r : ,05 → ,01 ») et la nouvelle phrase. **Confirmer le nouveau calcul** l'adopte. Tant qu'une analyse retenue attend sa confirmation, l'ébauche d'article ne se produit pas ;
    - **impossible à calculer** : la raison s'affiche (une variable retirée, un niveau de mesure qui ne convient plus). L'analyse reste dans le carnet, mais elle est écartée du document, et la fin du document le dit.
-4. **Le document « Méthode et Résultats ».** Réglez au besoin le **Premier tableau** et la **Première figure** (par exemple 3, si deux tableaux précèdent dans votre article), puis **Produire le document**. Trois fichiers sont écrits à côté du projet, et remplacés à chaque fois :
-   - `etude-sommeil-resultats.docx` : depuis la 0.12, la section Méthode (section 15) ; puis un intertitre par analyse (« A2 — Test t : comparer deux groupes »), sa phrase de résultat, ses tableaux et figures APA, numérotés à la suite sur tout le document ; à la fin, l'empreinte du codebook, la date, les versions et la liste des analyses ;
-   - `etude-sommeil-resultats-graphiques.xlsx` : le graphique Excel natif de chaque figure ;
-   - `etude-sommeil-resultats-R.zip` : le **script R maître**, qui refait toutes les analyses retenues, dans l'ordre, avec le fichier de commandes et le script de préparation. Décompressez-le dans le dossier de la base, puis, dans R : `source("etude-sommeil-resultats.R", encoding = "UTF-8")`. Il donne les mêmes valeurs que l'outil (vérifié par des tests, à 10⁻⁶ près), rangées dans `resultats$A1`, `resultats$A2`…
+4. **L'ébauche d'article.** Réglez au besoin le **Premier tableau** et la **Première figure** (par exemple 3, si deux tableaux précèdent dans votre article), puis **Produire l'ébauche d'article**. Trois fichiers sont écrits à côté du projet, et remplacés à chaque fois :
+   - `etude-sommeil-article.docx` : depuis la 0.13, une ébauche d'article APA, de la page de titre aux Références (section 16) : la Méthode (section 15), puis un intertitre par analyse (« A2 — Test t : comparer deux groupes »), ou par hypothèse quand l'étude a un plan, avec sa phrase de résultat et ses tableaux et figures APA, numérotés à la suite sur tout le document ; à la fin, l'empreinte du codebook, la date, les versions et la liste des analyses ;
+   - `etude-sommeil-article-graphiques.xlsx` : le graphique Excel natif de chaque figure ;
+   - `etude-sommeil-article-R.zip` : le **script R maître**, qui refait toutes les analyses retenues, dans l'ordre, avec le fichier de commandes et le script de préparation. Décompressez-le dans le dossier de la base, puis, dans R : `source("etude-sommeil-article.R", encoding = "UTF-8")`. Il donne les mêmes valeurs que l'outil (vérifié par des tests, à 10⁻⁶ près), rangées dans `resultats$A1`, `resultats$A2`…
 
 Chaque analyse est **recalculée** sur la base au moment de produire le document : rien n'est recopié du carnet. Le carnet, `etude-sommeil-carnet.json`, est à côté du projet ; il ne garde que des agrégats (effectifs, moyennes, statistiques, phrases), jamais une ligne de la base. Sans la base, la page affiche le carnet tel qu'il est, sans le recalculer, et **Choisir la base…** la retrouve.
 
-En ligne de commande : `ddict carnet ajouter` (mêmes options que `ddict analyser`), `lister`, `deplacer A3 1`, `retenir A2`, `ecarter A2`, `retirer A2`, `confirmer A1` (ou `--tout`), `numeros --tableau 3 --figure 2` ; puis `ddict resultats` écrit les trois fichiers. La page et les commandes lisent et écrivent le même carnet.
+En ligne de commande : `ddict carnet ajouter` (mêmes options que `ddict analyser`), `lister`, `deplacer A3 1`, `retenir A2`, `ecarter A2`, `retirer A2`, `confirmer A1` (ou `--tout`), `numeros --tableau 3 --figure 2` ; puis `ddict article` écrit les trois fichiers (`ddict resultats`, son ancien nom, marche encore dans cette version). La page et les commandes lisent et écrivent le même carnet.
 
 ## 15. La Méthode : exclusions, diagramme de flux et paragraphes
 
@@ -241,6 +241,35 @@ La section Méthode d'un article dit qui a été exclu et pourquoi, décrit l'é
 **Partout de la même façon.** Les règles s'appliquent avant chaque analyse de l'outil, dans le script de préparation SPSS et R (une variable `ddict_exclusion` : 0 pour une personne gardée, sinon le rang de la règle qui l'exclut) et dans le script R maître. La copie documentée de la base (section 9) n'en garde aucune trace : elle reste identique à l'original. La fidélité des scores (alpha de Cronbach et son intervalle de confiance à 95 %) est recalculée sur l'échantillon analysé.
 
 En ligne de commande : `ddict exclusions lister`, `ajouter` (`--condition age lt 18`, `--score G1 lt 10`, `--completude G1 5`, `--duree debut fin 180 --source "…"`, `--ligne-droite G2`, `--doublons courriel`, toujours avec `--raison "…"`), `retirer E2`, `deplacer E3 1` et `signaux` (`--debut`, `--fin`, `--duree-min`, `--doublons`) ; `ddict carnet echantillon etude-sommeil.dd.json age genre` choisit les variables de l'échantillon. La page et les commandes écrivent les mêmes règles.
+
+## 16. Le plan d'analyse, le préenregistrement et l'article
+
+Une étude confirmatoire écrit ses hypothèses avant d'analyser, et son article dit ensuite ce qui était prévu et ce qui a changé. La page **Plan** (avant **Analyses**) garde ce plan : les hypothèses de l'équipe, chacune liée à une analyse du catalogue, les règles générales, le gel et les amendements. Elle ne fait appel à aucune IA, et rien n'est envoyé hors de votre ordinateur. Le détail est dans [`plan-analyse-article.md`](plan-analyse-article.md).
+
+1. **Les règles générales**, enregistrées aussitôt :
+   - le **Seuil α**, tapé par l'équipe : la page n'en propose aucun d'office ;
+   - la **Correction pour comparaisons multiples** (Holm par défaut, Bonferroni ou aucune), appliquée au sein de chaque famille d'hypothèses ;
+   - la **Justification de la taille d'échantillon**, en texte ;
+   - l'**Origine des données** (primaires ou secondaires) et leur **État quand le plan a été écrit** (avant leur création, avant toute observation, avant l'accès, avant l'analyse, après une analyse). C'est une déclaration de l'équipe : l'article l'écrit « selon l'équipe ».
+2. **Ajouter une hypothèse** : son énoncé, tel que l'équipe l'écrit, l'analyse et ses variables rôle par rôle, comme sur la page **Analyses** (section 13), puis :
+   - l'**Effet testé** : pour une régression, le modèle entier ou un prédicteur ; pour une corrélation de plus de deux variables, la paire ;
+   - le **Sens attendu** (le premier ou le second groupe plus élevé, dans l'ordre des codes ; positif ou négatif). Pour un test t, il rend le test unilatéral ;
+   - le **Caractère** : confirmatoire (par défaut) ou exploratoire ;
+   - la **Famille (correction)**, par exemple F1 : les hypothèses d'une même famille voient leurs *p* corrigés ensemble.
+
+   Les conditions de l'analyse sont vérifiées sur la base, comme sur la page **Analyses**. **Monter** et **Descendre** fixent l'ordre de l'article ; **Retirer** supprime une hypothèse (son numéro ne revient pas).
+3. **Figer le plan.** Le plan reçoit sa date et son empreinte, et chaque hypothèse devient une analyse du carnet (section 14). Le bouton dit ce qui l'empêche : aucune hypothèse, α non tapé, origine ou état non dit. Ensuite, **toute modification exige une raison**, tapée en tête de page, et devient un **amendement**, gardé pour toujours : l'article le cite avec sa date et sa raison. L'analyse d'origine reste dans le carnet, écartée, et la nouvelle prend sa place. La page **Carnet** dit l'état de chaque analyse face au plan : « prévue (H1) », « remplacée par l'amendement du … », « variante de H1 », « exploratoire ».
+4. **Le préenregistrement.** **Écrire le préenregistrement à côté du projet** donne `etude-sommeil-preenregistrement.docx` et `.md`. Le gabarit suit l'origine des données : OSF Prereg pour des données primaires, celui de van den Akker et al. (2021) pour des données secondaires. Il est écrit à partir du plan et du codebook seulement, **jamais de la base** : aucun effectif, aucun résultat. Ce que l'outil ne peut pas savoir (ce que l'équipe connaissait déjà des données, le lieu du dépôt) reste un trou surligné, à compléter dans Word. L'outil ne dépose rien et ne dit jamais que l'étude a été préenregistrée.
+5. **L'ébauche d'article** (page **Carnet**, section 14) suit le plan quand il est figé :
+   - l'Introduction annonce les hypothèses, et la Méthode gagne un paragraphe **Plan d'analyse** (origine et état déclarés, date du gel, α, correction et familles, tests unilatéraux, amendements) ;
+   - les Résultats suivent les hypothèses, avec, pour une hypothèse d'une famille, le *p* corrigé à côté du *p* brut ; puis les « Analyses exploratoires » ;
+   - la Discussion rappelle chaque hypothèse, le sens attendu et le sens observé, puis laisse un trou pour son interprétation.
+
+   **L'outil n'écrit jamais qu'une hypothèse est « soutenue » ou « rejetée »**, ni « significatif » : il décrit ce qui a été observé, et le jugement revient aux auteurs. Le titre, les auteurs, le résumé, le contexte, les limites et la conclusion restent des trous.
+
+En ligne de commande : `ddict plan lister`, `ajouter` (les variables comme pour `ddict carnet ajouter`, et `--paire A B`, `--predicteur X` ou `--modele`, `--sens positif`, `--famille F1`, `--exploratoire`), `modifier H2 --methode spearman --raison "…"` (ou `amender`), `retirer H2`, `deplacer H3 1`, `regles --alpha 0.05 --correction holm --origine primaires --etat avant-analyse --taille "…"`, `figer`, `effacer --confirmer` et `preenregistrement` ; puis `ddict article`. La page et les commandes écrivent le même plan, le même préenregistrement et le même article.
+
+Un essai sur une base ouverte et son article publié est décrit dans [`essais/2026-10-18-essai-plan-article-amatus.md`](essais/2026-10-18-essai-plan-article-amatus.md) : les chiffres de l'outil y sont ceux de l'article et de R.
 
 ## Mettre à jour ou désinstaller
 
@@ -269,7 +298,11 @@ ddict carnet lister etude-sommeil.dd.json      # le carnet, recalculé
 ddict exclusions ajouter etude-sommeil.dd.json --condition age lt 18 --raison "Moins de 18 ans"
 ddict exclusions lister etude-sommeil.dd.json   # les règles et le diagramme de flux
 ddict carnet echantillon etude-sommeil.dd.json age genre   # les variables de l'échantillon
-ddict resultats etude-sommeil.dd.json         # le document « Méthode et Résultats » et le script R maître
+ddict plan ajouter etude-sommeil.dd.json test_t --enonce "Les femmes dorment mieux." --dependante sommeil_total --groupe genre --modalites 1,2 --sens premier
+ddict plan regles etude-sommeil.dd.json --alpha 0.05 --origine primaires --etat avant-analyse
+ddict plan figer etude-sommeil.dd.json         # le plan arrêté ; ensuite, --raison à chaque changement
+ddict plan preenregistrement etude-sommeil.dd.json   # le préenregistrement (Word et Markdown)
+ddict article etude-sommeil.dd.json           # l'ébauche d'article et le script R maître
 ddict conseiller etude-sommeil.dd.json "Comparer le sommeil des femmes et des hommes." --modele qwen2.5:7b-instruct-q4_K_M
 ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M   # banc d'essai d'un modèle
 ```
@@ -292,6 +325,7 @@ Les commandes et leurs options ont aussi des noms anglais (`ddict export --work`
 | « Impossible d'écrire les fichiers » à l'export | Le codebook est probablement ouvert dans Excel : fermez-le, puis recommencez. |
 | Copie documentée : « La base … est introuvable à côté du projet » | Placez la base dans le dossier du projet, ou **Choisir la base…**. |
 | Copie documentée : « n'est plus le fichier d'où vient le projet » | La base a changé depuis la création du projet (nouvelle exportation, données corrigées). Créez un nouveau projet à partir de la base actuelle. |
+| « Le plan est arrêté : donnez la raison de cette modification » | Après le gel, chaque changement est un amendement : tapez sa raison en tête de la page **Plan** (ou `--raison "…"`), puis recommencez. |
 | R : « there is no package called 'haven' » | Dans R, une seule fois : `install.packages("haven")`. |
 | L'outil semble figé | Fermez sa fenêtre, puis double-cliquez de nouveau sur l'icône. Les décisions déjà prises sont enregistrées. |
 

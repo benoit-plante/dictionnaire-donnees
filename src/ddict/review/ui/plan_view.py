@@ -21,7 +21,7 @@ from ddict.analysis import plan_notebook as pn
 from ddict.analysis.apa import plain
 from ddict.analysis.book import Codebook
 from ddict.analysis.catalogue import CATALOGUE, CHOICES, OPTIONS, ROLES, TITLES
-from ddict.analysis.data import PreparedData
+from ddict.analysis.data import PreparedData, chosen_levels
 from ddict.i18n import N_, Texts, _
 from ddict.project import save_project
 from ddict.project.model import Hypothesis, Project
@@ -33,6 +33,7 @@ EDITING = "plan-editing"  # the hypothesis the form modifies; none: the form add
 CLEARING = "plan-clearing"  # the removal of the whole plan, waiting for its confirmation
 NEW = "plan-new-"
 FORM = "plan-form-open"
+OPENED = "plan-form-opened"  # once true, `expanded` never changes back
 ANALYSES = [k for k in CATALOGUE if k in planning.EFFECTS]
 DIRECTION_LABELS = Texts(
     {
@@ -260,6 +261,8 @@ def _clear_form() -> None:
             st.session_state[key] = empty[name]
         elif name.startswith("role-"):
             st.session_state[key] = [] if isinstance(st.session_state[key], list) else None
+        elif name.startswith("levels-"):
+            st.session_state[key] = []
     st.session_state.pop(EDITING, None)
 
 
@@ -281,6 +284,11 @@ def _edit(hypothesis_id: str) -> None:
     for option, value in h.options.items():
         if option in CATALOGUE[h.analysis].options:
             st.session_state[f"{NEW}option-{h.analysis}-{option}"] = value
+    group = (_names(project, h.roles.get("group", [])) or [None])[0]
+    prepared = _prepared()
+    if h.options.get("levels") and group and prepared is not None:
+        codes = chosen_levels(h.options["levels"], prepared.table[group])
+        st.session_state[f"{NEW}levels-{group}"] = codes
     if h.effect.kind == "predictor":
         st.session_state[NEW + "effect"] = "predictor"
         st.session_state[NEW + "predictor"] = (_names(project, [h.effect.variable]) or [None])[0]
@@ -340,6 +348,28 @@ def _choose(project: Project, key: str, book: Codebook) -> dict[str, list[str]]:
     return {k: v for k, v in chosen.items() if v}
 
 
+def _levels(key, chosen, options, prepared: PreparedData | None, book: Codebook) -> None:
+    """A t test whose group has more than two categories: the two compared, as on the page
+    "Analyses" and with `--modalites`."""
+    group = (chosen.get("group") or [None])[0]
+    if key != "t_test" or group is None or prepared is None:
+        return
+    used = [n for names in chosen.values() for n in names]
+    codes = sorted(set(prepared.table[used].dropna()[group]))
+    if len(codes) <= 2:
+        return
+    picked = st.multiselect(
+        OPTIONS["levels"],
+        codes,
+        key=f"{NEW}levels-{group}",
+        max_selections=2,
+        format_func=lambda code: book.category(group, code),
+        placeholder=_("Choisir les deux groupes à comparer"),
+    )
+    if len(picked) == 2:
+        options["levels"] = ",".join(analyses_view._code_option(code) for code in picked)
+
+
 def _form_data(project: Project, prepared: PreparedData | None) -> dict | None:
     """The form's widgets, and the fields of the hypothesis they describe."""
     book = Codebook(project, prepared)
@@ -357,6 +387,7 @@ def _form_data(project: Project, prepared: PreparedData | None) -> dict | None:
             format_func=CHOICES.__getitem__,
             horizontal=True,
         )
+    _levels(key, chosen, options, prepared, book)
     effect: dict = {}
     kinds = planning.EFFECTS[key]
     if key == "regression":
@@ -384,6 +415,7 @@ def _form_data(project: Project, prepared: PreparedData | None) -> dict | None:
             chosen["variables"],
             key=NEW + "pair",
             max_selections=2,
+            placeholder=_("Choisir les deux variables de la paire"),
             format_func=_shown(book),
         )
         if len(pair) == 2:
@@ -462,10 +494,14 @@ def _submit(project: Project, form: dict) -> None:
 def _form(project: Project, prepared: PreparedData | None) -> None:
     editing = st.session_state.get(EDITING)
     title = _("Modifier {id}").format(id=editing) if editing else _("Ajouter une hypothèse")
-    # A key keeps it open or closed from one run to the next, whatever shows above it.
+    # A key keeps it open or closed from one run to the next, whatever shows above it; once
+    # opened by a modification or a message, `expanded` stays true: its change would fold
+    # the form at the next keystroke, as on the page "Méthode".
+    opened = st.session_state.get(OPENED, False) or bool(editing) or c.message_for("plan-form")
+    st.session_state[OPENED] = opened
     with st.expander(
         title,
-        expanded=bool(editing) or c.message_for("plan-form"),
+        expanded=opened,
         key=FORM,
         on_change="rerun",
     ):

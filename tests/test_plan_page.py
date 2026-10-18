@@ -236,3 +236,20 @@ def test_the_page_gives_the_command_files(tmp_path):
         ]
     name = "etude-analyses-article-R.zip"
     assert page_path.with_name(name).read_bytes() == command_path.with_name(name).read_bytes()
+
+
+@pytest.mark.allow_hosts(["127.0.0.1"])
+def test_two_levels_of_a_group_on_the_page(tmp_path):
+    """A t test on a group of three categories: the two compared, chosen on the page, are
+    those of `--modalites` (step 7)."""
+    page_path = _folder(tmp_path, "page")
+    app = _open(page_path)
+    _hypothesis(app, H1, "t_test", {"outcome": "stress", "group": "niveau_etudes"},
+                **{"levels-niveau_etudes": [1.0, 3.0]})  # fmt: skip
+    assert load_project(page_path).plan.hypotheses[0].options["levels"] == "1,3"
+    app.button(key="plan-h-H1-edit").click().run()
+    assert app.multiselect(key="plan-new-levels-niveau_etudes").value == [1.0, 3.0]
+    command_path = _folder(tmp_path, "commande")
+    assert _plan(command_path, "ajouter", "test_t", "--enonce", H1, "--dependante", "stress",
+                 "--groupe", "niveau_etudes", "--modalites", "1,3") == 0  # fmt: skip
+    assert load_project(page_path).plan == load_project(command_path).plan

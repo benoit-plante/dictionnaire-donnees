@@ -108,6 +108,26 @@ def test_two_text_levels_chosen(base, capsys):
                  "--modalites", "secondaire,université"]  # fmt: skip
     assert main(arguments) == 0, capsys.readouterr().err
     assert load_project(path).plan.hypotheses[0].options["levels"] == "secondaire,université"
+    capsys.readouterr()
+    assert main(["plan", "lister", str(path)]) == 0
+    assert "modalités comparées : secondaire, université ;" in capsys.readouterr().out
+    # The analysis report names them too.
+    arguments = [
+        "analyser",
+        str(path),
+        "test_t",
+        "--dependante",
+        "satisfaction",
+        "--groupe",
+        "niveau_etudes",
+        "--modalites",
+        "secondaire,université",
+        "--format",
+        "aucun",
+    ]
+    assert main(arguments) == 0, capsys.readouterr().err
+    report = path.with_name("etude-textes-analyse-1.md").read_text(encoding="utf-8")
+    assert "secondaire, université" in report
 
 
 def test_text_codes_in_keys():

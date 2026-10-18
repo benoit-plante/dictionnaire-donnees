@@ -52,6 +52,18 @@ def code_key(code) -> str:
     return text.replace("-", "m").replace(".", "p")
 
 
+def level_codes(text: str) -> list:
+    """The codes of a "levels" option without the data: a number where it reads as one,
+    else the text code as it is."""
+    found: list = []
+    for part in str(text).split(","):
+        try:
+            found.append(float(part.strip()))
+        except ValueError:
+            found.append(part.strip())
+    return found
+
+
 def chosen_levels(text: str, column: pd.Series) -> list:
     """The codes of a t test's "levels" option ("1,3"; "non,oui" for a text variable), typed
     as the column holds them."""

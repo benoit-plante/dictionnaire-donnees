@@ -17,6 +17,8 @@ from ddict.analysis import notebook_export as export
 from ddict.analysis import plan_notebook as pn
 from ddict.analysis import planning as pl
 from ddict.analysis.apa import plain
+from ddict.analysis.book import Codebook
+from ddict.analysis.compute import run
 from test_analysis_data import KEY, _prepared, analyses_project
 from test_plan import EXAMPLE
 from test_plan_notebook import LATER, _frozen
@@ -399,6 +401,21 @@ def test_the_discussion_as_the_sheet(amended):
     ]
     bold = [r.text for r in _section(document, "discussion").paragraphs[1] if r.bold]
     assert bold == ["H1."]
+
+
+def test_a_direction_shown_as_zero_goes_unsaid(amended):
+    """Means equal to two decimals, as printed beside them, have no higher group (step 7,
+    seen in the browser: 23,35 and 23,35)."""
+    project, prepared, _notebook = amended
+    result = run(project, prepared, "t_test", {"outcome": ["bienetre_total"], "group": ["groupe"]})
+    result.statistics |= {"m1": 23.351, "m2": 23.349}
+    book = Codebook(project, prepared)
+    tested = article.Tested(project.plan.hypotheses[0], result, "p")
+    assert article.observed(book, prepared, tested) == (
+        "Les moyennes observées étaient égales au centième près."
+    )
+    result.statistics["m2"] = 23.34
+    assert "plus élevée dans le groupe" in article.observed(book, prepared, tested)
 
 
 FORBIDDEN = [

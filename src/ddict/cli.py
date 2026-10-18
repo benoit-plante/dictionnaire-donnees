@@ -1274,7 +1274,7 @@ def build_parser() -> argparse.ArgumentParser:
     moved.add_argument("numero", help=_("Numéro de l'analyse, p. ex. A3."))
     moved.add_argument("rang", type=int, help=_("Son nouveau rang, 1 pour la première."))
     for name, alias, text in (
-        ("retenir", "retain", _("Retenir des analyses pour le document des résultats.")),
+        ("retenir", "retain", _("Retenir des analyses pour l'ébauche d'article.")),
         ("ecarter", "leave-out", _("Écarter des analyses du document, sans les retirer.")),
     ):
         kept = actions.add_parser(name, aliases=[alias], help=text)

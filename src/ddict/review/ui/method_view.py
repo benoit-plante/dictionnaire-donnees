@@ -277,6 +277,7 @@ def _form(project: Project, prepared: PreparedData | None) -> None:
                 _("Variables"),
                 [e.name for e in project.variables],
                 key="method-new-duplicates",
+                placeholder=_("Choisir les variables"),
                 format_func=shown,
                 help=_("Une réponse qui répète une réponse antérieure sur toutes ces variables."),
             )
@@ -458,6 +459,7 @@ def _sample(project: Project, notebook: nb.Notebook) -> None:
         _("Variables"),
         options,
         key="method-sample",
+        placeholder=_("Choisir les variables"),
         on_change=_describe_sample,
         args=(project,),
     )

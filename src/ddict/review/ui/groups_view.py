@@ -93,6 +93,7 @@ def _scoring(project: Project, group_id: str) -> None:
         st.multiselect(
             _("Items du score"),
             members,
+            placeholder=_("Choisir les items"),
             key=c.field(keys["items"], lambda: current("items", []) or list(members)),
         )
         st.radio(
