@@ -37,6 +37,8 @@ def number(value: float | None, digits: int = 2) -> str:
     """A statistic as the language writes it: 0,18 ; −0,27 ; 1 234,50 is not used."""
     if value is None or (isinstance(value, float) and math.isnan(value)):
         return ""
+    if math.isinf(value):  # v0.14: an odds ratio under separation
+        return (MINUS if value < 0 else "") + "∞"
     text = f"{abs(value):.{digits}f}"
     if float(text) == 0:
         value = 0.0

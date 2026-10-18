@@ -335,7 +335,8 @@ def _hypothesis_arguments(command: argparse.ArgumentParser, adding: bool) -> Non
             "analyse",
             choices=list(ANALYSES),
             help=_(
-                "test_t, apparie, anova, khi2, correlation, regression, partielle ou moderation."
+                "test_t, apparie, anova, khi2, correlation, regression, logistique, partielle "
+                "ou moderation."
             ),
         )
         command.add_argument(
@@ -388,6 +389,15 @@ def _hypothesis_arguments(command: argparse.ArgumentParser, adding: bool) -> Non
     )
     command.add_argument("--focal", nargs=1, help=_("Prédicteur (modération)."))
     command.add_argument("--moderateur", "--moderator", nargs=1, help=_("Modérateur (modération)."))
+    command.add_argument(
+        "--evenement",
+        "--event",
+        choices=["second", "first"],
+        help=_(
+            "Régression logistique : la modalité prédite, la seconde (par défaut) ou la "
+            "première dans l'ordre des codes."
+        ),
+    )
     command.add_argument(
         "--centrer",
         "--center",

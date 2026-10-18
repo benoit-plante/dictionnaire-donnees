@@ -568,6 +568,13 @@ def effect_only(book: Codebook, tested: Tested, method: str) -> str:
                 a=a, b=b, df=int(s["n" + end]) - 2, r=bounded(s["r" + end]),
                 ci=bounded_interval(s["low" + end], s["high" + end]), p=p_part(p),
             )  # fmt: skip
+    elif tested.hypothesis.analysis == "logistic":
+        i = int(key.split("_")[1])
+        sentence = _("{x} : RC = {ratio}, {ci}, z = {z}, {p}.").format(
+            x=book.label(tested.variable or ""), ratio=number(s[f"or_{i}"]),
+            ci=interval(s[f"or_low_{i}"], s[f"or_high_{i}"]), z=number(s[f"z_{i}"]),
+            p=p_part(p),
+        )  # fmt: skip
     else:
         i = int(key.split("_")[1])
         sentence = _("{x} : b = {b}, {ci}, β = {beta}, t({df}) = {t}, {p}.").format(
@@ -702,6 +709,18 @@ def observed(book: Codebook, prepared: PreparedData, tested: Tested) -> str:
             if r > 0
             else _("La corrélation observée était négative.")
         )
+    if kind == "predictor" and tested.key and tested.hypothesis.analysis == "logistic":
+        ratio = s["or_" + tested.key.split("_")[1]]
+        x = book.label(tested.variable or "")
+        if _shown_zero(ratio - 1):
+            return _("Le rapport de cotes observé de {x} était égal à 1 au centième près.").format(
+                x=x
+            )
+        return (
+            _("Le rapport de cotes observé de {x} était supérieur à 1.")
+            if ratio > 1
+            else _("Le rapport de cotes observé de {x} était inférieur à 1.")
+        ).format(x=x)
     if kind == "predictor" and tested.key:
         coefficient = s["coef_" + tested.key.split("_")[1]]
         x = book.label(tested.variable or "")

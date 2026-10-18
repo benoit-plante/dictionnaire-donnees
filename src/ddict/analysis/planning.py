@@ -35,6 +35,7 @@ EFFECTS = {
     "regression": ("model", "predictor"),
     "partial": ("partial",),
     "moderation": ("interaction",),
+    "logistic": ("model", "predictor"),
 }
 # The expected directions each effect may take; a t test's sets its one-sided option.
 DIRECTIONS = {
@@ -59,6 +60,7 @@ NAMES = Texts(
         "correlation": N_("Une corrélation"),
         "regression": N_("Une régression"),
         "partial": N_("Une corrélation partielle"),
+        "logistic": N_("Une régression logistique"),
         "moderation": N_("Une modération"),
     }
 )

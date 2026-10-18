@@ -776,3 +776,108 @@ def moderation(project, prepared, chosen, options) -> AnalysisResult:
     return AnalysisResult(
         "moderation", chosen, options, n, len(prepared.table) - n, tables, found, sentence, warnings
     )
+
+
+# --- Binary logistic regression (v0.14, D-111). ---
+
+SEPARATION_SE = 100.0  # a standard error this large: the estimate runs away
+
+
+def logistic(project, prepared, chosen, options) -> AnalysisResult:
+    """Maximum likelihood (statsmodels' Logit, Newton); odds ratios and their Wald interval;
+    the likelihood-ratio test against the model without predictor; McFadden's and
+    Nagelkerke's R²."""
+    import warnings as python_warnings
+
+    book = Codebook(project, prepared)
+    outcome, predictors = chosen["outcome"][0], chosen["predictors"]
+    data = prepared.table[[outcome, *predictors]].dropna()
+    codes = sorted(set(data[outcome]))  # in the order of their codes, as in the R script
+    event = codes[1] if options.get("event", "second") == "second" else codes[0]
+    y = (data[outcome] == event).astype(float)
+    X = design(book, data, predictors)
+    exog = sm.add_constant(X, has_constant="add")
+    if np.linalg.matrix_rank(exog.to_numpy()) < exog.shape[1]:
+        raise conditions.AnalysisRefused(
+            conditions.Check(
+                refusals=[
+                    _(
+                        "Des prédicteurs sont redondants (l'un se déduit exactement des autres) : "
+                        "retirez-en un."
+                    )
+                ]
+            )
+        )
+    with python_warnings.catch_warnings(record=True) as caught:
+        python_warnings.simplefilter("always")
+        fit = sm.Logit(y, exog).fit(method="newton", maxiter=100, disp=0)
+    n = int(fit.nobs)
+    ci = fit.conf_int().to_numpy()
+    ll, ll0 = float(fit.llf), float(fit.llnull)
+    nagelkerke = (1 - math.exp(2 * (ll0 - ll) / n)) / (1 - math.exp(2 * ll0 / n))
+    found: dict[str, float] = {
+        "n": n,
+        "events": float(y.sum()),
+        "chi2": float(fit.llr),
+        "df": float(fit.df_model),
+        "chi2_p": float(fit.llr_pvalue),
+        "mcfadden": float(1 - ll / ll0),
+        "nagelkerke": float(nagelkerke),
+    }
+    labels = [_("Constante"), *[book.label(c) if c in book.entries else c for c in X.columns]]
+    rows = []
+    vif = [float(variance_inflation_factor(exog.to_numpy(), i)) for i in range(1, exog.shape[1])]
+    for i, label in enumerate(labels):
+        b, se = float(fit.params.iloc[i]), float(fit.bse.iloc[i])
+        with np.errstate(over="ignore"):  # under separation, an infinite ratio
+            low, high = float(np.exp(ci[i, 0])), float(np.exp(ci[i, 1]))
+            ratio = float(np.exp(b))
+        found |= {f"coef_{i}": b, f"se_{i}": se, f"z_{i}": float(fit.tvalues.iloc[i]),
+                  f"p_{i}": float(fit.pvalues.iloc[i]), f"or_{i}": ratio,
+                  f"or_low_{i}": low, f"or_high_{i}": high}  # fmt: skip
+        if i:
+            found[f"vif_{i}"] = vif[i - 1]
+        rows.append([label, number(b), number(se), number(fit.tvalues.iloc[i]),
+                     p_part(fit.pvalues.iloc[i]), number(ratio) if i else "",
+                     interval(low, high) if i else ""])  # fmt: skip
+    tables = [
+        Table(
+            book.label(outcome),
+            [_("Prédicteur"), "b", _("ET"), "z", "p", _("RC"), _("IC 95 % du RC")],
+            rows,
+        )
+    ]
+    warnings = []
+    converged = bool(fit.mle_retvals.get("converged", True))
+    separated = any("separation" in str(w.message).lower() for w in caught)
+    if separated or not converged or float(fit.bse.max()) > SEPARATION_SE:
+        warnings.append(
+            _(
+                "Séparation complète ou quasi complète : un prédicteur distingue presque "
+                "parfaitement les deux modalités, et les estimations ne sont pas fiables."
+            )
+        )
+    high = [labels[i + 1] for i, v in enumerate(vif) if v > VIF_HIGH]
+    if high:
+        warnings.append(
+            _("Prédicteurs très liés entre eux (VIF > {v}) : {names}.").format(
+                v=VIF_HIGH, names=", ".join(high)
+            )
+        )
+    sentence = _(
+        "Régression logistique de « {outcome} » ({event}, {k} sur {n}) : χ²({df}) = {chi2}, {p} "
+        "face au modèle sans prédicteur, R² de Nagelkerke = {r2}. Les coefficients et les "
+        "rapports de cotes sont dans le tableau."
+    ).format(
+        outcome=book.label(outcome),
+        event=book.category(outcome, event),
+        k=int(y.sum()),
+        n=n,
+        df=int(fit.df_model),
+        chi2=number(fit.llr),
+        p=p_part(fit.llr_pvalue),
+        r2=bounded(nagelkerke),
+    )
+    return AnalysisResult(
+        "logistic", chosen, options, n, len(prepared.table) - n, tables, found, sentence, warnings
+    )

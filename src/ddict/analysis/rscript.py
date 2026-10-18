@@ -477,6 +477,41 @@ def _moderation(chosen, options, levels, texts) -> list[str]:
     ]
 
 
+def _logistic(chosen, options, levels, texts) -> list[str]:
+    """v0.14: glm(binomial), its convergence tightened to the tool's (the default leaves
+    standard errors 10⁻⁶ apart); the odds ratios and their Wald interval; the
+    likelihood-ratio test; McFadden's and Nagelkerke's R²."""
+    outcome = chosen["outcome"][0]
+    position = 2 if options.get("event", "second") == "second" else 1
+    columns = [f"y = {_column(outcome, texts)}", *_frame(chosen["predictors"], levels, texts, "x")]
+    return [
+        "d <- data.frame(" + ", ".join(columns) + ")",
+        "d <- droplevels(d[complete.cases(d), ])",
+        f"evenement <- ddict_tri(d$y)[{position}]",
+        "d$y <- as.numeric(d$y == evenement)",
+        "fit <- glm(y ~ ., data = d, family = binomial, control = glm.control(epsilon = 1e-12,",
+        "           maxit = 100))",
+        "print(summary(fit))",
+        "co <- summary(fit)$coefficients; ci <- confint.default(fit); n <- nrow(d)",
+        "ll <- as.numeric(logLik(fit))",
+        "ll0 <- as.numeric(logLik(glm(y ~ 1, data = d, family = binomial)))",
+        "resultats <- list(n = n, events = sum(d$y), chi2 = fit$null.deviance - fit$deviance,",
+        "                  df = fit$df.null - fit$df.residual, mcfadden = 1 - ll / ll0,",
+        "                  nagelkerke = (1 - exp(2 * (ll0 - ll) / n)) / (1 - exp(2 * ll0 / n)))",
+        "resultats$chi2_p <- pchisq(resultats$chi2, resultats$df, lower.tail = FALSE)",
+        "for (i in seq_len(nrow(co))) {",
+        '  resultats[[paste0("coef_", i - 1)]] <- co[i, 1]',
+        '  resultats[[paste0("se_", i - 1)]] <- co[i, 2]',
+        '  resultats[[paste0("z_", i - 1)]] <- co[i, 3]',
+        '  resultats[[paste0("p_", i - 1)]] <- co[i, 4]',
+        '  resultats[[paste0("or_", i - 1)]] <- exp(co[i, 1])',
+        '  resultats[[paste0("or_low_", i - 1)]] <- exp(ci[i, 1])',
+        '  resultats[[paste0("or_high_", i - 1)]] <- exp(ci[i, 2])',
+        "}",
+        "print(resultats)",
+    ]
+
+
 BODIES = {
     "table1": _table1,
     "t_test": _t_test,
@@ -485,6 +520,7 @@ BODIES = {
     "chi_square": lambda c, o, _l, t: _chi_square(c, o, t),
     "correlation": lambda c, o, _l, t: _correlation(c, o, t),
     "regression": _regression,
+    "logistic": _logistic,
     "partial": _partial,
     "moderation": _moderation,
 }

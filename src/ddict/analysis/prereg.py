@@ -123,6 +123,8 @@ def _effect(project: Project, hypothesis: Hypothesis) -> str:
     if effect.kind == "pair":
         a, b = (_name(project, r) for r in effect.variables)
         return _("la corrélation entre {a} et {b}").format(a=a, b=b)
+    if effect.kind == "predictor" and hypothesis.analysis == "logistic":
+        return _("le rapport de cotes de {x}").format(x=_name(project, effect.variable))
     if effect.kind == "predictor":
         return _("le coefficient de {x}").format(x=_name(project, effect.variable))
     if hypothesis.analysis == "paired":
@@ -223,6 +225,12 @@ def _direction(project: Project, hypothesis: Hypothesis) -> str:
             _("une interaction positive")
             if direction == "positive"
             else _("une interaction négative")
+        )
+    if hypothesis.analysis == "logistic":
+        return (
+            _("un rapport de cotes supérieur à 1")
+            if direction == "positive"
+            else _("un rapport de cotes inférieur à 1")
         )
     return _("un coefficient positif") if direction == "positive" else _("un coefficient négatif")
 

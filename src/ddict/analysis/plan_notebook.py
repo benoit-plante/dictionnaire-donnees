@@ -307,7 +307,7 @@ def effect_p_key(
     if effect.kind == "association":
         return "fisher_p" if entry.options.get("method") == "fisher" else "p"
     if effect.kind == "model":
-        return "Fp"
+        return "chi2_p" if entry.analysis == "logistic" else "Fp"
     if effect.kind == "pair":
         refs = [r.model_dump(mode="json") for r in entry.variables.get("variables", [])]
         try:

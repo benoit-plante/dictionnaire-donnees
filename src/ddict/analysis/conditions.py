@@ -218,6 +218,29 @@ def _with_data(project, analysis, chosen, options, table: pd.DataFrame, found: C
                     name=name, n=complete[name].nunique()
                 )
             )
+    if analysis.key == "logistic" and chosen.get("outcome"):
+        counts = complete[chosen["outcome"][0]].value_counts()
+        predictors = chosen.get("predictors", [])
+        terms = sum(
+            max(complete[n].nunique() - 1, 1) if _levels_of(project, n) == "nominal" else 1
+            for n in predictors
+        )
+        rare = int(counts.min()) if len(counts) == 2 else 0
+        per = rare / max(terms, 1)
+        if len(counts) == 2 and per < PER_PREDICTOR_LEAST:
+            found.refusals.append(
+                _(
+                    "{n} personnes dans la modalité la plus rare pour {k} prédicteurs : il en "
+                    "faut au moins {least} par prédicteur."
+                ).format(n=rare, k=terms, least=PER_PREDICTOR_LEAST)
+            )
+        elif len(counts) == 2 and per < PER_PREDICTOR_WARN:
+            found.warnings.append(
+                _(
+                    "{n} personnes dans la modalité la plus rare pour {k} prédicteurs : moins de "
+                    "{warn} par prédicteur."
+                ).format(n=rare, k=terms, warn=PER_PREDICTOR_WARN)
+            )
     if analysis.key == "partial":
         least = len(chosen.get("covariates", [])) + 4
         if len(complete) < least:

@@ -106,6 +106,8 @@ def _coefficients(ax, figure: ApaFigure) -> None:
     )
     if figure.reference is not None:
         ax.axvline(figure.reference, color="0.5", linestyle="--", linewidth=1)
+    if figure.log_scale:
+        ax.set_xscale("log")
     ax.set_yticks(y, figure.categories)
     ax.set_ylim(-0.6, len(figure.categories) - 0.4)
 

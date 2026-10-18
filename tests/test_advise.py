@@ -91,7 +91,7 @@ def test_the_message_holds_metadata_only(project):
     assert list(content)[-1] == "objective_again"  # repeated after the long lists
     assert [a["key"] for a in content["analyses"]] == [
         "table1", "t_test", "paired", "anova", "chi_square", "correlation", "regression",
-        "partial", "moderation",
+        "logistic", "partial", "moderation",
     ]  # fmt: skip
     # D-080: the variables by measure level, each [name, label]: no value, no statistic.
     assert set(content["variables"]) == {"scale", "ordinal", "nominal"}

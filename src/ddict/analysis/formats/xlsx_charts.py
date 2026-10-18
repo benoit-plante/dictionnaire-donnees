@@ -226,7 +226,8 @@ def _coefficients(sheet, figure: ApaFigure):
             figure.categories, series.values, series.low, series.high, strict=True
         )
     ][::-1]  # Excel draws the first category at the bottom: the first predictor ends on top
-    last = _write_rows(sheet, [_("Prédicteur"), "β", _("IC 95 % (+)"), _("IC 95 % (−)")], rows)
+    header = [_("Prédicteur"), series.name, _("IC 95 % (+)"), _("IC 95 % (−)")]
+    last = _write_rows(sheet, header, rows)
     chart = BarChart()
     chart.type, chart.grouping, chart.legend = "bar", "clustered", None
     chart.add_data(
@@ -237,6 +238,9 @@ def _coefficients(sheet, figure: ApaFigure):
     _grey(chart.series[0], "B3B3B3")
     chart.series[0].invertIfNegative = False  # a negative bar stays grey, not white
     chart.series[0].errBars = _errors(sheet, 3, 4, FIRST_ROW, last)
+    if figure.log_scale:  # v0.14: odds ratios, the bars growing from 1 either way
+        chart.y_axis.scaling.logBase = 10
+        chart.x_axis.crossesAt = 1.0
     return chart, last
 
 

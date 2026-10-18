@@ -255,6 +255,7 @@ COMPUTE = {
     "chi_square": chi_square,
     "correlation": correlation,
     "regression": models.regression,
+    "logistic": models.logistic,
     "partial": models.partial,
     "moderation": models.moderation,
 }

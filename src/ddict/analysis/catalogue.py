@@ -85,6 +85,14 @@ CATALOGUE = {
             (Role("outcome", (SCALE,)), Role("predictors", (SCALE, ORDINAL, NOMINAL), most=10)),
         ),
         Analysis(
+            "logistic",
+            (
+                Role("outcome", (NOMINAL,), modalities=(2, 2)),
+                Role("predictors", (SCALE, ORDINAL, NOMINAL), most=10),
+            ),
+            {"event": ("second", "first")},
+        ),
+        Analysis(
             "partial",
             (
                 Role("variables", (SCALE,), least=2, most=2),
@@ -113,6 +121,7 @@ TITLES = Texts(
         "chi_square": N_("Khi-carré : associer deux variables catégorielles"),
         "correlation": N_("Corrélation : relier des variables continues"),
         "regression": N_("Régression linéaire : prédire une variable continue"),
+        "logistic": N_("Régression logistique : prédire une issue oui/non"),
         "partial": N_("Corrélation partielle : relier deux variables à covariables constantes"),
         "moderation": N_("Modération : un lien qui dépend d'une troisième variable"),
     }
@@ -154,6 +163,10 @@ PURPOSES = Texts(
         "regression": N_(
             "Estime comment plusieurs prédicteurs, ensemble, expliquent une variable continue."
         ),
+        "logistic": N_(
+            "Estime comment des prédicteurs expliquent une issue à deux modalités, par exemple "
+            "avoir abandonné ou non, en rapports de cotes."
+        ),
         "partial": N_(
             "Mesure le lien entre deux variables continues quand des covariables sont tenues "
             "constantes."
@@ -171,6 +184,7 @@ OPTIONS = Texts(
         "post_hoc": N_("Comparaisons deux à deux"),
         "levels": N_("Modalités comparées"),
         "center": N_("Centrer le prédicteur et le modérateur"),
+        "event": N_("Modalité prédite"),
     }
 )
 CHOICES = Texts(
@@ -191,6 +205,8 @@ CHOICES = Texts(
         "fisher": N_("Test exact de Fisher"),
         "spearman": N_("Spearman"),
         "yes": N_("Oui"),
+        "second": N_("La seconde, dans l'ordre des codes"),
+        "first": N_("La première, dans l'ordre des codes"),
         "no": N_("Non"),
     }
 )

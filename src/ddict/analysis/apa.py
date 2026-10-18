@@ -195,6 +195,7 @@ class ApaFigure:
     y_min: float | None = None
     y_max: float | None = None
     reference: float | None = None  # coefficients: the dashed line, at 0
+    log_scale: bool = False  # v0.14: odds ratios, around their dashed line at 1
     note: Text = ()
     flow_start: int = 0  # flow (v0.12): the answers received, then each rule
     flow: tuple[FlowStep, ...] = ()
@@ -1209,10 +1210,109 @@ def _moderation(
     )
 
 
+# --- Binary logistic regression (v0.14). ---
+
+
+def _logistic(b: _Builder, book: Codebook, prepared: PreparedData, result: AnalysisResult) -> None:
+    s = result.statistics
+    outcome, predictors = result.chosen["outcome"][0], result.chosen["predictors"]
+    data = prepared.table[[outcome, *predictors]].dropna()
+    codes = sorted(set(data[outcome]))
+    event = codes[1] if result.options.get("event", "second") == "second" else codes[0]
+    labels = [_("Constante"), *[r[0] for r in result.tables[0].rows[1:]]]
+    rows = [
+        _row(
+            label,
+            apa(s[f"coef_{i}"]),
+            apa(s[f"se_{i}"]),
+            apa(s[f"z_{i}"]),
+            p_cell(s[f"p_{i}"]),
+            apa(s[f"or_{i}"]) if i else "",
+            brackets(s[f"or_low_{i}"], s[f"or_high_{i}"]) if i else "",
+        )
+        for i, label in enumerate(labels)
+    ]
+    note = marked(
+        _(
+            "{N} = {n}, dont {k} « {event} », la modalité prédite. χ²({df}) = {chi2}, {p}, face "
+            "au modèle sans prédicteur ; {R}² de McFadden = {mf}, de Nagelkerke = {ng}. {b} : "
+            "coefficient ; {se} : erreur type ; RC : rapport de cotes, avec son IC 95 % (Wald)."
+        ),
+        N=it("N"),
+        n=int(s["n"]),
+        k=int(s["events"]),
+        event=book.category(outcome, event),
+        df=int(s["df"]),
+        chi2=apa(s["chi2"]),
+        p=p_text(s["chi2_p"]),
+        R=it("R"),
+        mf=apa(s["mcfadden"], zero=False),
+        ng=apa(s["nagelkerke"], zero=False),
+        b=it("b"),
+        se=it(_("ET")),
+    )
+    references = []
+    for name in predictors:
+        if book.levels.get(name) == "nominal":
+            first = sorted(_codes(book, name, data[name]))[0]
+            references.append(
+                _("Référence pour {var} : {cat}.").format(
+                    var=book.label(name), cat=book.category(name, first)
+                )
+            )
+    if references:
+        note += rich(" " + " ".join(references))
+    b.table(
+        _("Régression logistique de {outcome}").format(outcome=_mid(book.label(outcome))),
+        [
+            _left(_("Prédicteur")),
+            _col(rich(it("b"))),
+            _col(rich(it(_("ET")))),
+            _col(rich(it("z"))),
+            _col(rich(it("p"))),
+            _col(_("RC")),
+            _col(_("IC 95 % du RC")),
+        ],
+        rows,
+        note=[note],
+    )
+    terms = range(1, len(labels))
+    b.figure(
+        _("Rapports de cotes de la régression logistique de {outcome}").format(
+            outcome=_mid(book.label(outcome))
+        ),
+        "coefficients",
+        _("Rapport de cotes (échelle logarithmique)"),
+        "",
+        categories=tuple(labels[i] for i in terms),
+        series=(
+            Series(
+                _("RC"),
+                tuple(s[f"or_{i}"] for i in terms),
+                tuple(s[f"or_low_{i}"] for i in terms),
+                tuple(s[f"or_high_{i}"] for i in terms),
+            ),
+        ),
+        reference=1.0,
+        log_scale=True,
+        note=[
+            marked(
+                _(
+                    "Les barres d'erreur représentent l'IC 95 % du rapport de cotes ; la ligne "
+                    "verticale marque 1, aucun lien. {N} = {n}."
+                ),
+                N=it("N"),
+                n=int(s["n"]),
+            )
+        ],
+    )
+
+
 BUILDERS = {
     "table1": _table1,
     "t_test": _t_test,
     "paired": _paired,
+    "logistic": _logistic,
     "partial": _partial,
     "moderation": _moderation,
     "anova": _anova,

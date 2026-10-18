@@ -180,6 +180,8 @@ ANALYSES = {
     "regression": "regression",
     "partial": "partial",
     "partielle": "partial",
+    "logistic": "logistic",
+    "logistique": "logistic",
     "moderation": "moderation",
 }
 ROLE_ARGUMENTS = {
@@ -222,6 +224,7 @@ OPTION_ARGUMENTS = {
     "post_hoc": "post_hoc",
     "levels": "modalites",
     "center": "centrer",
+    "event": "evenement",
 }
 
 
@@ -1625,8 +1628,8 @@ def _analysis_arguments(command: argparse.ArgumentParser) -> None:
         "analyse",
         choices=list(ANALYSES),
         help=_(
-            "tableau1, test_t, apparie, anova, khi2, correlation, regression, partielle ou "
-            "moderation."
+            "tableau1, test_t, apparie, anova, khi2, correlation, regression, logistique, "
+            "partielle ou moderation."
         ),
     )
     command.add_argument("--variables", nargs="+", help=_("Variables (Tableau 1, corrélation)."))
@@ -1664,6 +1667,15 @@ def _analysis_arguments(command: argparse.ArgumentParser) -> None:
     )
     command.add_argument("--focal", nargs=1, help=_("Prédicteur (modération)."))
     command.add_argument("--moderateur", "--moderator", nargs=1, help=_("Modérateur (modération)."))
+    command.add_argument(
+        "--evenement",
+        "--event",
+        choices=["second", "first"],
+        help=_(
+            "Régression logistique : la modalité prédite, la seconde (par défaut) ou la "
+            "première dans l'ordre des codes."
+        ),
+    )
     command.add_argument(
         "--centrer",
         "--center",

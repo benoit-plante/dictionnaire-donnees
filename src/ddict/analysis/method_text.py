@@ -340,6 +340,16 @@ def _method_sentences(analysis: str, method: str, post_hoc: str) -> list[Text]:
             )
         )
         return [marked(template, t=t, d=d)]
+    if analysis == "logistic":
+        return [
+            rich(
+                _(
+                    "Une issue à deux modalités a été prédite par une régression logistique ; "
+                    "les coefficients sont donnés en rapports de cotes, avec leur intervalle de "
+                    "confiance à 95 % (Wald)."
+                )
+            )
+        ]
     if analysis == "partial":
         return [
             rich(

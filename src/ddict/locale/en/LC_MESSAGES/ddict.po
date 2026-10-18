@@ -1651,6 +1651,13 @@ msgstr ""
 msgid "Erreur de fichier : {detail}"
 msgstr "File error: {detail}"
 
+msgid ""
+"Estime comment des prédicteurs expliquent une issue à deux modalités, par exemple avoir abandonné"
+" ou non, en rapports de cotes."
+msgstr ""
+"Estimates how predictors explain an outcome with two categories, for example having dropped out "
+"or not, as odds ratios."
+
 msgid "Estime comment plusieurs prédicteurs, ensemble, expliquent une variable continue."
 msgstr "Estimates how several predictors, together, explain a continuous variable."
 
@@ -1877,6 +1884,10 @@ msgstr "95% CI [{low}, {high}]"
 #, python-brace-format, python-format
 msgid "IC 95 % de {stat}"
 msgstr "95% CI of {stat}"
+
+#, python-format
+msgid "IC 95 % du RC"
+msgstr "95% CI of the OR"
 
 #, python-brace-format
 msgid "IC 95 % {ci}"
@@ -2290,8 +2301,14 @@ msgstr "The observed mean was higher for {a}."
 msgid "La pente de {x} à chaque valeur de {w}, avec son IC 95 %."
 msgstr "The slope of {x} at each value of {w}, with its 95% CI."
 
+msgid "La première, dans l'ordre des codes"
+msgstr "The first, in the order of the codes"
+
 msgid "La raison, en clair, telle que publiée."
 msgstr "The reason, in plain words, as published."
+
+msgid "La seconde, dans l'ordre des codes"
+msgstr "The second, in the order of the codes"
 
 msgid ""
 "La section Méthode de l'ébauche d'article : qui a été exclu et pourquoi, la qualité de la "
@@ -2624,6 +2641,18 @@ msgstr ""
 "gives the text of the questions, items and options. Only the questions linked to variables go "
 "into the codebook, never the consent page."
 
+#, python-brace-format
+msgid "Le rapport de cotes observé de {x} était inférieur à 1."
+msgstr "The observed odds ratio of {x} was below 1."
+
+#, python-brace-format
+msgid "Le rapport de cotes observé de {x} était supérieur à 1."
+msgstr "The observed odds ratio of {x} was above 1."
+
+#, python-brace-format
+msgid "Le rapport de cotes observé de {x} était égal à 1 au centième près."
+msgstr "The observed odds ratio of {x} was 1 to two decimals."
+
 msgid ""
 "Le rapport donne les variables, les options, les résultats, l'empreinte du codebook et les "
 "versions des bibliothèques. Le script R refait l'analyse hors de l'outil ; il s'exécute dans le "
@@ -2748,6 +2777,14 @@ msgstr "Other analyses are presented as exploratory."
 #, python-brace-format, python-format
 msgid "Les barres d'erreur représentent l'IC 95 % de β. {N} = {n}."
 msgstr "Error bars represent the 95% CI of β. {N} = {n}."
+
+#, python-brace-format, python-format
+msgid ""
+"Les barres d'erreur représentent l'IC 95 % du rapport de cotes ; la ligne verticale marque 1, "
+"aucun lien. {N} = {n}."
+msgstr ""
+"Error bars represent the 95% CI of the odds ratio; the vertical line marks 1, no relation. {N} = "
+"{n}."
 
 #, python-brace-format, python-format
 msgid ""
@@ -3136,6 +3173,9 @@ msgstr "Min"
 
 msgid "Minimum de l'échelle"
 msgstr "Scale minimum"
+
+msgid "Modalité prédite"
+msgstr "Predicted category"
 
 msgid "Modalités comparées"
 msgstr "Levels compared"
@@ -3869,6 +3909,9 @@ msgstr "Quit the tool"
 msgid "R de base et haven seulement ; à exécuter dans le dossier du projet."
 msgstr "Base R and haven only; to run in the project's folder."
 
+msgid "RC"
+msgstr "OR"
+
 msgid "Raison"
 msgstr "Reason"
 
@@ -3903,6 +3946,9 @@ msgstr "Markdown report: {path}"
 msgid "Rapport Markdown à écrire."
 msgstr "Markdown report to write."
 
+msgid "Rapport de cotes (échelle logarithmique)"
+msgstr "Odds ratio (logarithmic scale)"
+
 #, python-brace-format
 msgid "Rapport des écarts : {name}"
 msgstr "Report of the differences: {name}"
@@ -3917,6 +3963,10 @@ msgstr "Report and R script"
 #, python-brace-format
 msgid "Rapport écrit à côté du projet : {name}."
 msgstr "Report written next to the project: {name}."
+
+#, python-brace-format
+msgid "Rapports de cotes de la régression logistique de {outcome}"
+msgstr "Odds ratios of the logistic regression of {outcome}"
 
 msgid "Rattachement aux questions"
 msgstr "Links to questions"
@@ -4163,6 +4213,30 @@ msgstr "Regression of {outcome}"
 
 msgid "Régression linéaire : prédire une variable continue"
 msgstr "Linear regression: predict a continuous variable"
+
+msgid ""
+"Régression logistique : la modalité prédite, la seconde (par défaut) ou la première dans l'ordre "
+"des codes."
+msgstr ""
+"Logistic regression: the predicted category, the second (the default) or the first in the order "
+"of the codes."
+
+msgid "Régression logistique : prédire une issue oui/non"
+msgstr "Logistic regression: predict a yes/no outcome"
+
+#, python-brace-format
+msgid "Régression logistique de {outcome}"
+msgstr "Logistic regression of {outcome}"
+
+#, python-brace-format
+msgid ""
+"Régression logistique de « {outcome} » ({event}, {k} sur {n}) : χ²({df}) = {chi2}, {p} face au "
+"modèle sans prédicteur, R² de Nagelkerke = {r2}. Les coefficients et les rapports de cotes sont "
+"dans le tableau."
+msgstr ""
+"Logistic regression of “{outcome}” ({event}, {k} of {n}): χ²({df}) = {chi2}, {p} against the "
+"model without predictor, Nagelkerke R² = {r2}. The coefficients and the odds ratios are in the "
+"table."
 
 msgid "Répartition aléatoire"
 msgstr "Randomization"
@@ -4455,6 +4529,13 @@ msgstr "SPSS syntax"
 msgid "Séparateur"
 msgstr "Separator"
 
+msgid ""
+"Séparation complète ou quasi complète : un prédicteur distingue presque parfaitement les deux "
+"modalités, et les estimations ne sont pas fiables."
+msgstr ""
+"Complete or quasi-complete separation: a predictor tells the two categories apart almost "
+"perfectly, and the estimates are not reliable."
+
 #, python-brace-format
 msgid "Table de correspondance des noms : {path}"
 msgstr "Table of names: {path}"
@@ -4711,6 +4792,13 @@ msgstr "An exploratory hypothesis (confirmatory by default)."
 msgid "Une hypothèse exploratoire n'est pas corrigée ; retirez sa famille."
 msgstr "An exploratory hypothesis is not adjusted; remove its family."
 
+msgid ""
+"Une issue à deux modalités a été prédite par une régression logistique ; les coefficients sont "
+"donnés en rapports de cotes, avec leur intervalle de confiance à 95 % (Wald)."
+msgstr ""
+"An outcome with two categories was predicted by a logistic regression; the coefficients are given"
+" as odds ratios, with their 95% confidence interval (Wald)."
+
 msgid "Une ligne représente"
 msgstr "A row is"
 
@@ -4744,6 +4832,9 @@ msgstr ""
 
 msgid "Une régression"
 msgstr "A regression"
+
+msgid "Une régression logistique"
+msgstr "A logistic regression"
 
 msgid "Une réponse qui en répète une autre sur ces variables ; la première est gardée."
 msgstr "An answer that repeats another on these variables; the first is kept."
@@ -5374,6 +5465,10 @@ msgstr "the model"
 msgid "le premier groupe, dans l'ordre des codes, plus élevé"
 msgstr "the first group, in the order of the codes, higher"
 
+#, python-brace-format
+msgid "le rapport de cotes de {x}"
+msgstr "the odds ratio of {x}"
+
 msgid "le second groupe, dans l'ordre des codes, plus élevé"
 msgstr "the second group, in the order of the codes, higher"
 
@@ -5754,8 +5849,12 @@ msgstr "source"
 msgid "structure de la plateforme"
 msgstr "platform structure"
 
-msgid "tableau1, test_t, apparie, anova, khi2, correlation, regression, partielle ou moderation."
-msgstr "table1, t_test, paired, anova, chi_square, correlation, regression, partial or moderation."
+msgid ""
+"tableau1, test_t, apparie, anova, khi2, correlation, regression, logistique, partielle ou "
+"moderation."
+msgstr ""
+"table1, t_test, paired, anova, chi_square, correlation, regression, logistic, partial or "
+"moderation."
 
 msgid "taille d'effet prévue"
 msgstr "predicted effect size"
@@ -5775,8 +5874,8 @@ msgstr "one-sided test, the first group lower"
 msgid "test unilatéral, le premier groupe plus élevé"
 msgstr "one-sided test, the first group higher"
 
-msgid "test_t, apparie, anova, khi2, correlation, regression, partielle ou moderation."
-msgstr "t_test, paired, anova, chi_square, correlation, regression, partial or moderation."
+msgid "test_t, apparie, anova, khi2, correlation, regression, logistique, partielle ou moderation."
+msgstr "t_test, paired, anova, chi_square, correlation, regression, logistic, partial or moderation."
 
 msgid "texte"
 msgstr "text"
@@ -5835,6 +5934,12 @@ msgstr "a participant"
 
 msgid "un prédicteur"
 msgstr "a predictor"
+
+msgid "un rapport de cotes inférieur à 1"
+msgstr "an odds ratio below 1"
+
+msgid "un rapport de cotes supérieur à 1"
+msgstr "an odds ratio above 1"
 
 msgid "un score calculé"
 msgstr "a computed score"
@@ -5967,6 +6072,16 @@ msgstr ""
 
 msgid "zéro"
 msgstr "zero"
+
+#, python-brace-format
+msgid ""
+"{N} = {n}, dont {k} « {event} », la modalité prédite. χ²({df}) = {chi2}, {p}, face au modèle sans"
+" prédicteur ; {R}² de McFadden = {mf}, de Nagelkerke = {ng}. {b} : coefficient ; {se} : erreur "
+"type ; RC : rapport de cotes, avec son IC 95 % (Wald)."
+msgstr ""
+"{N} = {n}, of whom {k} “{event}”, the predicted category. χ²({df}) = {chi2}, {p}, against the "
+"model without predictor; McFadden {R}² = {mf}, Nagelkerke {R}² = {ng}. {b}: coefficient; {se}: "
+"standard error; OR: odds ratio, with its 95% CI (Wald)."
 
 #, python-brace-format
 msgid "{N} = {n}. Covariables : {held}. {r} partiel = {r_value}."
@@ -6461,6 +6576,16 @@ msgid "{n} options à cocher"
 msgstr "{n} checkbox options"
 
 #, python-brace-format
+msgid ""
+"{n} personnes dans la modalité la plus rare pour {k} prédicteurs : il en faut au moins {least} "
+"par prédicteur."
+msgstr "{n} people in the rarer category for {k} predictors: at least {least} per predictor are needed."
+
+#, python-brace-format
+msgid "{n} personnes dans la modalité la plus rare pour {k} prédicteurs : moins de {warn} par prédicteur."
+msgstr "{n} people in the rarer category for {k} predictors: fewer than {warn} per predictor."
+
+#, python-brace-format
 msgid "{n} personnes ont toutes les mesures : il en faut au moins {least}."
 msgstr "{n} people have all the measures: at least {least} are needed."
 
@@ -6665,6 +6790,10 @@ msgstr "{what} among {values}"
 #, python-brace-format
 msgid "{x} (centré)"
 msgstr "{x} (centred)"
+
+#, python-brace-format
+msgid "{x} : RC = {ratio}, {ci}, z = {z}, {p}."
+msgstr "{x}: OR = {ratio}, {ci}, z = {z}, {p}."
 
 #, python-brace-format
 msgid "{x} : b = {b}, {ci}, β = {beta}, t({df}) = {t}, {p}."
