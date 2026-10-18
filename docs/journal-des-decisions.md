@@ -1344,3 +1344,60 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
 - **Conséquences :** `ddict.analysis.conditions` exclut le texte selon son niveau ; `ddict.analysis.data` traite une case de texte vide comme manquante ; `code_key` et `chosen_levels` (dans `ddict.analysis.data`) servent aux tests t, au tableau 1, au khi-carré et au test de Tukey ; le script R gagne `ddict_txt`, `ddict_tri` et `ddict_fac`, et sa lecture du CSV suit la détection de l'outil (un CSV séparé par des points-virgules ne se lisait pas). Les autres usages des codes restent numériques.
 - **Références :** `docs/CONCEPTION.md`, § 15 ; D-066 ; D-071 ; `tests/test_text_categories.py`.
 
+### D-111 — Les analyses de la v0.14
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Décision :** Le catalogue gagne cinq analyses : le test *t* apparié et le test de Wilcoxon des rangs signés, la régression logistique binaire, la modération, la corrélation partielle et l'ANOVA à mesures répétées. Chacune a le niveau des six premières : fiche validée, base fictive aux effets plantés, script R en R de base vérifié à 10⁻⁶ près, tableau et figure APA, place dans le carnet, le plan et l'article.
+- **Options considérées :**
+  1. Ces cinq analyses (ce choix).
+  2. Ajouter aussi l'ANOVA à deux facteurs (voir D-114).
+  3. La médiation, les modèles multiniveaux, les équations structurelles ou l'analyse factorielle.
+- **Justification :** Les plus demandées en psychologie parmi celles qui se calculent sans nouvelle dépendance (SciPy, statsmodels). Les analyses de l'option 3 demandent un moteur plus riche : elles attendent le moteur R facultatif (D-071).
+- **Références :** `docs/plan-v0.14.md` ; `docs/feuille-de-route-article.md`, § 7.
+
+### D-112 — Les mesures d'une même personne
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Décision :** Le test apparié et l'ANOVA à mesures répétées prennent des colonnes d'une même ligne : deux mesures, ou trois et plus, de la même personne. Ils sont refusés, avec leur raison, quand la description de la base dit « format long », où une ligne n'est pas une personne.
+- **Options considérées :**
+  1. Refuser seulement en format long (ce choix).
+  2. Ne les offrir que si la base est décrite « longitudinale, format large ».
+- **Justification :** Dans une même ligne, deux colonnes sont toujours deux mesures de la même personne, même dans une étude transversale (deux échelles d'une même passation). Exiger la description « format large » refuserait des cas justes ; seul le format long rend le test faux.
+- **Références :** `docs/plan-v0.14.md`, § 3 ; D-064.
+
+### D-113 — Le sous-groupe d'une analyse
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Décision :** Une analyse, une entrée du carnet ou une hypothèse du plan peut porter sur un sous-groupe, décrit par une condition sur une variable, avec les opérateurs des règles d'exclusion (`eq`, `ne`, `lt`, `le`, `gt`, `ge`, `in`). La condition s'applique après les exclusions, pour cette analyse seulement. Jamais sur un identifiant ni un texte libre, jamais une liste de personnes. Elle se dit dans la phrase de résultat, dans la note du tableau, dans la Méthode et dans le script R ; changer la condition d'une hypothèse figée est un amendement.
+- **Options considérées :**
+  1. Une condition par analyse (ce choix).
+  2. Un filtre global de la base, comme une règle d'exclusion.
+  3. Laisser l'équipe préparer un fichier à part.
+- **Justification :** L'essai AMATUS : les auteurs n'analysaient que les femmes, mais comparaient aussi femmes et hommes ; un filtre global ne l'aurait pas permis, et un fichier à part sort de l'outil sans que l'article le sache.
+- **Références :** `docs/plan-v0.14.md`, § 4 ; D-093 ; `docs/essais/2026-10-18-essai-plan-article-amatus.md`.
+
+### D-114 — L'ANOVA à deux facteurs reportée
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Décision :** L'ANOVA à deux facteurs n'entre pas dans la v0.14.
+- **Options considérées :**
+  1. La reporter (ce choix).
+  2. L'ajouter, ou la prendre à la place d'une des cinq analyses de D-111.
+- **Justification :** Garder une version de taille raisonnable ; la modération couvre une partie de son usage (une interaction).
+- **Références :** `docs/plan-v0.14.md`, § 8.
+
+### D-115 — La conseillère et le catalogue élargi
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Décision :** L'IA conseillère reçoit le catalogue élargi. Son message change ; son banc d'essai est refait avant la publication de la version, et le message doit tenir dans le contexte du modèle local (D-080).
+- **Options considérées :**
+  1. Lui donner le catalogue élargi (ce choix).
+  2. Lui garder les six analyses de départ.
+- **Justification :** Une conseillère qui ignore la moitié du catalogue proposerait des analyses moins adaptées (un test *t* indépendant pour deux mesures d'une même personne).
+- **Références :** `docs/plan-v0.14.md`, § 3 ; D-073, D-079, D-080.
+

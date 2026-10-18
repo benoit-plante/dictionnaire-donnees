@@ -155,3 +155,17 @@ Une étude fictive sur la vie au travail, exportée comme le fait SurveyMonkey, 
 | Courriel répété par une réponse plus tardive | 5 | `courriel` |
 
 Pièges : le code 999 de l'âge, déclaré manquant (6 personnes gardées) ; l'item `anx3`, à inverser ; quatre personnes gardées avec un item d'anxiété manquant (la somme proportionnelle) ; les témoins `ZQXID` et `zqxmail` dans l'identifiant et le courriel.
+
+## Base de suivi (v0.14)
+
+`etude-suivi.sav` (et `.csv`) et son corrigé `corrige-suivi.json`, écrits par `scripts/generer_base_suivi.py` (graine fixe) : le suivi fictif de 240 participants à un programme de gestion du stress, avec des effets plantés pour vérifier les analyses du catalogue élargi (`docs/catalogue-elargi.md`). Le corrigé donne les valeurs exactes, calculées par les formules avec numpy seulement, sans le code de l'outil.
+
+| Effet planté | Variables |
+|---|---|
+| L'anxiété baisse de la première à la deuxième mesure (*d*<sub>z</sub> = 0,54) | `anxiete_t1`, `anxiete_t2` |
+| Trois mesures d'anxiété (moyennes 21,60, 18,69, 17,86), la troisième plus dispersée (ε = 0,86) | `anxiete_t1` à `anxiete_t3` |
+| L'abandon moins probable avec la motivation (RC = 0,60) ; l'âge sans lien | `abandon`, `motivation`, `age` |
+| L'épuisement monte avec la charge, moins quand le soutien est haut (interaction négative) | `epuisement`, `charge`, `soutien` |
+| Stress et sommeil liés (*r* = −,38), bien moins à charge constante (*r* partiel = −,12) | `stress`, `sommeil`, `charge` |
+
+Pièges : l'identifiant `id_participant` ; le code −9 déclaré manquant de `anxiete_t3` ; des personnes sans la deuxième ou la troisième mesure ; le sexe « Autre identité » à quelques personnes, pour les sous-groupes.

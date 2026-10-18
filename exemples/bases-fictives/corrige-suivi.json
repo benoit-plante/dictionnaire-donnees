@@ -1,0 +1,85 @@
+{
+  "sav": "etude-suivi.sav",
+  "csv": "etude-suivi.csv",
+  "rows": 240,
+  "missing_codes": {
+    "anxiete_t3": -9
+  },
+  "planted": {
+    "t_apparie_t1_t2": "baisse de la 1re à la 2e mesure, d_z d'environ 0,5",
+    "anova_rm_anxiete": "moyennes d'environ 22, 19, 18 ; 3e mesure dispersée",
+    "logistique_abandon": "RC d'environ 0,6 par point de motivation ; âge sans lien",
+    "moderation_epuisement": "pente de la charge plus faible à soutien haut",
+    "partielle_stress_sommeil": "r d'environ -0,35, bien plus faible à charge constante",
+    "small_group": "sexe : Autre identité, quelques personnes",
+    "identifier": "id_participant"
+  },
+  "exact": {
+    "t_apparie_t1_t2": {
+      "n": 228,
+      "mean_diff": 2.9978070175,
+      "t": 8.1807282884,
+      "df": 227,
+      "d_z": 0.5417819661
+    },
+    "t_apparie_t1_t2_femmes": {
+      "n": 126,
+      "mean_diff": 2.9317460317,
+      "t": 6.0772229075,
+      "df": 125,
+      "d_z": 0.5414020472
+    },
+    "anova_rm_anxiete": {
+      "n": 203,
+      "means": [
+        21.5955665025,
+        18.6852216749,
+        17.8566502463
+      ],
+      "F": 28.9285560885,
+      "df": [
+        2,
+        404
+      ],
+      "eta2_partial": 0.1252705884,
+      "gg_epsilon": 0.8582717217
+    },
+    "logistique_abandon": {
+      "n": 240,
+      "events": 76,
+      "coef": [
+        2.8234705341,
+        -0.5050628002,
+        -0.0181884581
+      ],
+      "odds_ratios": [
+        16.8351764561,
+        0.6034676764,
+        0.9819759536
+      ],
+      "chi2": 38.1051210891,
+      "mcfadden_r2": 0.1271531126
+    },
+    "moderation_epuisement": {
+      "n": 240,
+      "coef": [
+        12.3219888767,
+        1.2932703786,
+        -0.6346897752,
+        -0.3171009775
+      ],
+      "r2": 0.4909447738,
+      "delta_r2": 0.0748883504,
+      "simple_slopes": {
+        "low": 1.9266006883,
+        "mean": 1.2932703786,
+        "high": 0.659940069
+      }
+    },
+    "partielle_stress_sommeil": {
+      "n": 240,
+      "r": -0.3831509756,
+      "r_partial": -0.1152841012
+    }
+  }
+}
