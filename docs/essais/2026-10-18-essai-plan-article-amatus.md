@@ -13,7 +13,7 @@ Les auteurs n'analysent que les femmes. L'outil ne filtre pas les personnes : co
 
 ## 2. Le parcours
 
-Tout passe par la ligne de commande, sauf deux décisions qui n'ont pas de commande et ont été écrites par les fonctions des pages : les niveaux de mesure (page Base) et le code −1 déclaré manquant (page Variables).
+Tout passe par la ligne de commande. Au premier passage, deux décisions n'avaient pas de commande et ont été écrites par les fonctions des pages : les niveaux de mesure (page Base) et le code −1 déclaré manquant (page Variables) ; au second passage (§ 8), `ddict niveaux` et `ddict codes` les prennent.
 
 1. `ddict profiler` sur le CSV : 188 variables, 820 lignes, en 2,8 secondes ; le code −1 des six questions d'attitude est signalé comme code manquant probable ; 17 variables de texte, dont `enseignante`, reçoivent le niveau « nominal » proposé.
 2. Le plan, avec `ddict plan ajouter` : H1, les enseignantes plus anxieuses que les étudiantes (test t de Student, unilatéral, comme l'article sans le sens) ; H2, les enseignantes en poste moins anxieuses que celles en formation ; H3 et H4, famille F1, l'anxiété liée négativement au plaisir puis à la facilité d'enseigner les maths ; H5 et H6, exploratoires, deux régressions du plaisir d'enseigner.
@@ -74,13 +74,35 @@ Les écarts avec l'article tiennent aux choix d'analyse, pas au calcul : un test
 - **Les facteurs de Bayes**, la **corrélation polychorique** et les **centiles des normes** (Tableau 4).
 - **Les exclusions faites en amont** (Tableau 1 de l'article) : la base publiée est déjà nettoyée ; l'outil dit « 820 personnes ont répondu », sans le savoir.
 
-## 7. Ce qui reste à reprendre, noté sans correction
+## 7. Ce qui restait à reprendre
 
-- Les niveaux de mesure et les codes manquants ne se décident que sur les pages : aucune commande ne le fait.
-- Dans le tableau d'une corrélation, la ligne de chaque variable donne son *n* propre (820 pour l'anxiété), alors que la Méthode dit que chaque analyse ne garde que les personnes qui ont répondu à toutes ses variables (182).
-- La Méthode écrit « Les codes -1 (preference_teaching_mathematics) ; -1 (ease_teaching_mathematics) » : un même code sur plusieurs variables pourrait se dire une fois.
+Trois points notés au premier passage ont été corrigés, puis l'essai refait (§ 8) :
+
+- les niveaux de mesure et les codes manquants ne se décidaient que sur les pages : `ddict niveaux` (`lister`, `accepter`, `rejeter`, `fixer`) et `ddict codes` (`lister`, `manquant`, `valeur`, `annuler`) le font désormais, avec les fonctions des pages ;
+- dans le tableau d'une corrélation, la ligne de chaque variable donnait son *n* propre (820 pour l'anxiété) à côté de *N* = 182 : le *n*, la moyenne et l'écart-type de chaque variable portent maintenant sur les personnes qui entrent dans une corrélation du tableau ;
+- la Méthode écrivait « Les codes -1 (preference_teaching_mathematics) ; -1 (ease_teaching_mathematics) » : un même code se dit une fois, « Le code -1 (preference_teaching_mathematics, ease_teaching_mathematics) », dans la Méthode comme dans le préenregistrement.
+
+Un quatrième point, une analyse remplacée par un amendement qui serait restée « Retenue pour le document », venait d'une lecture trop rapide : l'interrupteur porte ce libellé qu'il soit ouvert ou fermé, et l'analyse était bien écartée.
+
+Restent, sans correction :
+
 - Sans étiquettes, les variables gardent leur nom de fichier dans le texte (« score_AMAS_total ») : c'est le travail du dictionnaire, que l'essai a sauté.
 - Un CSV de plateforme à deux lignes d'en-tête (SurveyMonkey) n'est pas encore lu par le script R comme par l'outil.
+
+## 8. Le second passage
+
+Le même parcours, refait sur une nouvelle copie de la base après les corrections, cette fois entièrement en ligne de commande :
+
+| Vérification | Résultat |
+|---|---|
+| `ddict niveaux accepter` (5 variables) et `ddict niveaux fixer` (2 variables, échelle) | acceptés, en 0,1 seconde chacun |
+| `ddict codes manquant -1` sur les deux questions d'attitude | accepté ; `ddict codes manquant 1` refusé (« 1 n'est pas un code suspect de cette variable ») |
+| La corrélation avant et après le code −1 | *r*(221) = −,30, puis *r*(180) = −,47, comme au premier passage |
+| Plan, gel, amendement, préenregistrement, article | les mêmes refus, les mêmes six hypothèses, les mêmes chiffres |
+| Tableau de H3 | *n* = 182 sur les deux lignes, comme *N* dans la note |
+| Méthode et préenregistrement | « Le code -1 (preference_teaching_mathematics, ease_teaching_mathematics) a été traité » (« sera traité ») |
+| Préenregistrement, nombres tirés des données ; mots qui jugent | aucun ; aucun |
+| Script R maître | sans erreur, en 0,3 seconde ; mêmes *t*, *r*, *U* et *p* ; *p* de Holm égaux à `p.adjust` |
 
 ## Ce que montre l'essai
 

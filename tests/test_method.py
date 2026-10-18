@@ -327,3 +327,11 @@ def test_no_individual_data_in_the_notebook():
     text = nb.dumps(notebook)
     assert "ZQX" not in text and "zqxmail" not in text and "2026-03" not in text
     assert json.loads(text)["method"]["variables"] == [{"variable": "age"}, {"variable": "genre"}]
+
+
+def test_a_code_shared_by_several_variables_is_said_once():
+    """ "-1 (a, b)", not "-1 (a) ; -1 (b)" (step 7, seen on the open database)."""
+    from ddict.analysis.method_text import missing_codes
+
+    found = missing_codes([("a", [-1]), ("b", [-1]), ("age", [999]), ("c", [-1, 99])])
+    assert found == ["-1 (a, b)", "999 (age)", "-1, 99 (c)"]

@@ -18,6 +18,7 @@ from datetime import datetime
 from pathlib import Path
 
 from ddict import __version__, settings
+from ddict.cli_decisions import add_decisions_parsers
 from ddict.cli_plan import add_plan_parser
 from ddict.export.documented import CopyError
 from ddict.i18n import LANGUAGES, _
@@ -1318,6 +1319,7 @@ def build_parser() -> argparse.ArgumentParser:
     notebook_command.set_defaults(handler=cmd_notebook)
 
     add_plan_parser(commands)
+    add_decisions_parsers(commands)
 
     for name, aliases, renamed in (("article", ["paper"], False), ("resultats", ["results"], True)):
         results = commands.add_parser(

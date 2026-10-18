@@ -724,7 +724,10 @@ def _correlation(
     columns += [_col(str(k + 1)) for k in range(len(names))]
     rows = []
     for i, name in enumerate(names):
-        x = table[name].dropna()
+        # Who enters at least one correlation of the table (step 7: a variable's own n
+        # beside N = 182 read as a contradiction).
+        others = table[[n for k, n in enumerate(names) if k != i]].notna().any(axis=1)
+        x = table.loc[table[name].notna() & others, name]
         cells = []
         for j in range(len(names)):
             if j < i:

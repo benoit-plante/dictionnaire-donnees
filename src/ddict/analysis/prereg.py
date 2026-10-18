@@ -21,7 +21,7 @@ from ddict.analysis.apa import ApaDocument, Section, Text, apa, hole, it, marked
 from ddict.analysis.catalogue import CHOICES, OPTIONS, ROLES, TITLES
 from ddict.analysis.data import level_codes
 from ddict.analysis.method import _missing
-from ddict.analysis.method_text import scale_description
+from ddict.analysis.method_text import missing_codes, scale_description
 from ddict.analysis.notebook import NotebookError, resolve
 from ddict.analysis.planning import EFFECT_NAMES, plan_fingerprint
 from ddict.analysis.report import versions
@@ -263,18 +263,15 @@ def _used(project: Project) -> list[str]:
 
 def _missing_data(project: Project) -> list[Text]:
     found = []
-    codes = [
-        f"{', '.join(c if isinstance(c, str) else w.code_text(c) for c in listed)} ({name})"
-        for name, listed in _missing(project, _used(project))
-    ]
+    missing = _missing(project, _used(project))
+    codes = missing_codes(missing)
     if codes:
-        found.append(
-            rich(
-                _("Les codes {codes} seront traités comme des valeurs manquantes.").format(
-                    codes=semicolon().join(codes)
-                )
-            )
+        template = (
+            _("Les codes {codes} seront traités comme des valeurs manquantes.")
+            if len(codes) > 1 or len(missing[0][1]) > 1
+            else _("Le code {codes} sera traité comme une valeur manquante.")
         )
+        found.append(rich(template.format(codes=semicolon().join(codes))))
     found.append(
         rich(
             _(

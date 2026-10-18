@@ -305,6 +305,9 @@ msgstr "Accept these {n} links"
 msgid "Accepter ces {n} étiquetages"
 msgstr "Accept these {n} sets of labels"
 
+msgid "Accepter des niveaux proposés."
+msgstr "Accept proposed levels."
+
 #, python-brace-format
 msgid "Accepter les rattachements où le modèle et le calcul s'accordent ({n})…"
 msgstr "Accept the links where the model and the computation agree ({n})…"
@@ -515,6 +518,9 @@ msgstr "No warning."
 
 msgid "Aucun changement à confirmer."
 msgstr "No change to confirm."
+
+msgid "Aucun code suspect."
+msgstr "No suspect code."
 
 msgid "Aucun fichier choisi. Vous pouvez aussi coller son chemin dans le champ."
 msgstr "No file chosen. You can also paste its path in the field."
@@ -745,6 +751,12 @@ msgstr "This notebook (version {name}) was made by a newer version of the tool."
 msgid "Ce carnet a été fait avec une autre base que celle du projet."
 msgstr "This notebook was made with another database than the project's."
 
+msgid "Ce code est un code manquant."
+msgstr "This code is a missing code."
+
+msgid "Ce code est une vraie valeur."
+msgstr "This code is a real value."
+
 msgid "Ce fichier projet est introuvable."
 msgstr "This project file cannot be found."
 
@@ -906,6 +918,10 @@ msgstr "Code {code} ({label}) probably missing, not declared"
 #, python-brace-format
 msgid "Code {code} confirmé comme manquant par l'équipe"
 msgstr "Code {code} confirmed as missing by the team"
+
+#, python-brace-format
+msgid "Code {code} décidé pour : {names}."
+msgstr "Code {code} decided for: {names}."
 
 #, python-brace-format
 msgid "Code {code} observé sans étiquette"
@@ -1376,6 +1392,9 @@ msgstr ""
 
 msgid "Début"
 msgstr "Start"
+
+msgid "Décider le niveau d'une variable."
+msgstr "Decide the level of a variable."
 
 msgid ""
 "Décidez dans le tableau : choisissez « Accepter » ou « Rejeter » dans la colonne « Décision », ou"
@@ -2187,6 +2206,9 @@ msgstr "The corrected value is empty."
 msgid "La valeur est obligatoire."
 msgstr "The value is required."
 
+msgid "La variable, par son nom."
+msgstr "The variable, by its name."
+
 msgid "Lancer l'analyse"
 msgstr "Run the analysis"
 
@@ -2259,6 +2281,13 @@ msgstr "The notebook cannot be read: {name}"
 #, python-brace-format
 msgid "Le code {codes} a été traité comme une valeur manquante."
 msgstr "Code {codes} was treated as a missing value."
+
+#, python-brace-format
+msgid "Le code {codes} sera traité comme une valeur manquante."
+msgstr "Code {codes} will be treated as a missing value."
+
+msgid "Le code, p. ex. -1 ou 999."
+msgstr "The code, e.g. -1 or 999."
 
 msgid ""
 "Le codebook en format compact, pour un programme ou pour une IA qui aide à écrire le code "
@@ -2627,6 +2656,14 @@ msgstr "The choices have changed since the last analysis: run it again."
 msgid "Les codes de la colonne « Manquants » sont des valeurs manquantes : les exclure de tout calcul."
 msgstr "The codes of the \"Missing\" column are missing values: leave them out of every computation."
 
+msgid ""
+"Les codes manquants suspects (999, -9…) : lister, dire si c'est un code manquant ou une vraie "
+"valeur, annuler."
+msgstr "The suspect missing codes (999, -9…): list, say whether a code is missing or a real value, undo."
+
+msgid "Les codes suspects et leur décision."
+msgstr "The suspect codes and their decision."
+
 #, python-brace-format
 msgid "Les codes {codes} ont été traités comme des valeurs manquantes."
 msgstr "Codes {codes} were treated as missing values."
@@ -2698,6 +2735,12 @@ msgstr "The relations between variables are described by Spearman's correlation.
 
 msgid "Les moyennes observées étaient égales au centième près."
 msgstr "The observed means were equal to two decimals."
+
+msgid "Les niveaux de mesure : lister, accepter ou rejeter les propositions, fixer."
+msgstr "The measure levels: list, accept or reject the proposals, set."
+
+msgid "Les niveaux proposés, ou tous avec --toutes."
+msgstr "The proposed levels, or all with --all."
 
 msgid "Les propositions sont à réviser dans « Variables »."
 msgstr "The proposals are to be reviewed in \"Variables\"."
@@ -2802,6 +2845,9 @@ msgid ""
 msgstr ""
 "The variables that describe the analysed sample in the Participants paragraph, in this order: "
 "mean and standard deviation, or percentages. They are kept in the notebook."
+
+msgid "Les variables, par leur nom."
+msgstr "The variables, by their names."
 
 msgid "Libellé"
 msgstr "Label"
@@ -3041,6 +3087,10 @@ msgid "Niveaux de mesure"
 msgstr "Measure levels"
 
 #, python-brace-format
+msgid "Niveaux de mesure décidés : {n}."
+msgstr "Measure levels decided: {n}."
+
+#, python-brace-format
 msgid "Niveaux de mesure proposés : {n}"
 msgstr "Proposed measure levels: {n}"
 
@@ -3076,6 +3126,9 @@ msgstr "Name refused: {why}."
 #, python-brace-format
 msgid "Nombre de variables par message (défaut : {n})."
 msgstr "Number of variables per message (default: {n})."
+
+msgid "Nommez les variables, ou ajoutez --tout."
+msgstr "Name the variables, or add --all."
 
 msgid "Noms"
 msgstr "Names"
@@ -3707,6 +3760,9 @@ msgstr ""
 msgid "Rejeter"
 msgstr "Reject"
 
+msgid "Rejeter des niveaux proposés."
+msgstr "Reject proposed levels."
+
 msgid "Rejeter les étiquettes"
 msgstr "Reject the labels"
 
@@ -3740,6 +3796,9 @@ msgstr "Also send again the questions whose base name the model already proposed
 
 msgid "Reprendre cette proposition"
 msgstr "Take up this proposal"
+
+msgid "Reprendre la décision."
+msgstr "Take the decision back."
 
 msgid "Reprendre les noms"
 msgstr "Take the names"
@@ -4275,6 +4334,12 @@ msgstr "Any other analysis will be presented as exploratory."
 
 msgid "Toutes"
 msgstr "All"
+
+msgid "Toutes les propositions."
+msgstr "All the proposals."
+
+msgid "Toutes les variables."
+msgstr "All the variables."
 
 msgid "Transformations"
 msgstr "Transformations"
@@ -5146,6 +5211,9 @@ msgstr "identifier name or label"
 
 msgid "nominal"
 msgstr "nominal"
+
+msgid "nominal, ordinal ou echelle."
+msgstr "nominal, ordinal or scale."
 
 msgid "non documenté"
 msgstr "not documented"
@@ -6469,6 +6537,9 @@ msgstr "to state"
 
 msgid "à documenter"
 msgstr "to document"
+
+msgid "à décider"
+msgstr "to decide"
 
 msgid "à jour"
 msgstr "up to date"

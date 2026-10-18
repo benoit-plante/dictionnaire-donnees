@@ -230,3 +230,14 @@ def test_no_workbook_without_a_figure(ready):
     assert FORMATS["xlsx"] not in available(document)
     with pytest.raises(ValueError):
         FORMATS["xlsx"].render(document)
+
+
+def test_the_descriptives_of_a_correlation_are_those_of_its_people(ready):
+    """Each variable's n, M and SD among the people who enter a correlation of the table:
+    beside N = 182, a variable's own n of 820 read as a contradiction (step 7)."""
+    project, prepared = ready
+    result = run(project, prepared, "correlation", {"variables": ["heures_travail", "stress"]})
+    table = describe(project, prepared, result).tables[0]
+    assert result.statistics["n"] < len(prepared.table)  # stress has missing values
+    assert [plain(row.cells[1]) for row in table.rows] == [str(result.statistics["n"])] * 2
+    assert f"N = {result.statistics['n']}." in plain(table.note)

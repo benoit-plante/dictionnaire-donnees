@@ -405,12 +405,22 @@ def _method_sentences(analysis: str, method: str, post_hoc: str) -> list[Text]:
     ]
 
 
+def missing_codes(missing: list[tuple[str, list]]) -> list[str]:
+    """ "-1 (a, b)", "999 (age)": the variables that share the same codes said once, in the
+    order of the codebook (step 7: "-1 (a) ; -1 (b)" before)."""
+    shared: dict[tuple, list[str]] = {}
+    for name, listed in missing:
+        shared.setdefault(tuple(listed), []).append(name)
+    return [
+        f"{', '.join(w.code_text(c) if not isinstance(c, str) else c for c in listed)} "
+        f"({', '.join(names)})"
+        for listed, names in shared.items()
+    ]
+
+
 def analyses(found: Facts, script: str) -> Text:
     parts: list[Text] = []
-    codes = [
-        f"{', '.join(w.code_text(c) if not isinstance(c, str) else c for c in listed)} ({name})"
-        for name, listed in found.missing
-    ]
+    codes = missing_codes(found.missing)
     if codes:
         many = len(codes) > 1 or len(found.missing[0][1]) > 1
         template = (
