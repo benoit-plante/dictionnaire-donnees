@@ -1,6 +1,6 @@
 # Plan de la v0.16
 
-> Statut : **validé par l'auteur le 2026-10-18**, avec les décisions D-121 à D-127 (§ 9). Suit la revue de l'interface faite sur la v0.14.0 (fenêtre de 1400 × 900, `etude-sommeil.sav` avec `questionnaire-sommeil.pdf`, puis `etude-analyses.sav` avec trois analyses au carnet), dont les 24 constats sont repris au § 3. Même cap que les v0.11 à v0.15 : **aucune IA ajoutée** ; la règle « Rien ne quitte le poste » reste entière.
+> Statut : **validé par l'auteur le 2026-10-18**, avec les décisions D-121 à D-127 (§ 9) ; D-128 (2026-10-18) précise le thème (§ 5.4). Suit la revue de l'interface faite sur la v0.14.0 (fenêtre de 1400 × 900, `etude-sommeil.sav` avec `questionnaire-sommeil.pdf`, puis `etude-analyses.sav` avec trois analyses au carnet), dont les 24 constats sont repris au § 3. Même cap que les v0.11 à v0.15 : **aucune IA ajoutée** ; la règle « Rien ne quitte le poste » reste entière.
 
 ## 1. Pourquoi cette version
 
@@ -91,10 +91,12 @@ Passé par `review_command()` en options `--theme.*`, comme les options de sécu
 | Aujourd'hui : `st.caption` | #808495 | 3,72:1 | 3,31:1 |
 | **Principale proposée** (bleu ardoise sombre) | **#1F4E79** | **8,66:1** | **7,73:1** |
 | **Rouge des erreurs** | **#B42318** | **6,57:1** | **5,87:1** |
-| Texte (inchangé) | #31333F | 12,53:1 | 11,18:1 |
-| **Gris du texte secondaire** | **#555867** | **7,05:1** | **6,29:1** |
+| Texte d'origine de Streamlit | #31333F | 12,53:1 | 11,18:1 |
+| **Texte** (D-128) | **#14161C** | **18,08:1** | **16,13:1** |
+| **Légendes** (`st.caption` : le texte à 60 %, D-128) | **#14161C à 60 %** | **4,73:1** | **4,55:1** |
+| **Texte des messages de succès** (D-128) | **#146C2E** | sur leur fond vert pâle : ≥ 4,5:1 | — |
 
-Thème clair imposé (`--theme.base light`) : les contrastes ci-dessus valent pour lui, et la fenêtre de l'icône ne change pas d'allure selon le réglage de Windows. Les explications qui portent une décision (« Réservée aux personnes, avec une source… », « Le carnet garde… », et la liste établie à l'étape A4 parmi les 101 `st.caption`) passent en texte normal. Pour les autres, je vérifierai à l'étape A4 si `theme.grayTextColor` assombrit `st.caption` ; sinon, une petite fonction commune `c.note()` les écrit en texte normal plus petit, sans CSS.
+Thème clair imposé (`--theme.base light`) : les contrastes ci-dessus valent pour lui, et la fenêtre de l'icône ne change pas d'allure selon le réglage de Windows. Les explications qui portent une décision (« Réservée aux personnes, avec une source… », « Le carnet garde… », et la liste établie à l'étape A4 parmi les 101 `st.caption`) passent en texte normal. Pour les autres, l'étape A4 a montré que `theme.grayTextColor` n'agit pas sur `st.caption`, qui est la couleur du texte à 60 % d'opacité : c'est la couleur du texte, plus foncée, qui porte les légendes au-dessus de 4,5:1 (D-128).
 
 ### 5.5 Boutons dans les messages (11)
 

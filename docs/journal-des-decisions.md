@@ -1545,3 +1545,17 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   2. Le scénario manuel seul.
 - **Justification :** Les vérifications visuelles sont aujourd'hui toutes manuelles. Playwright télécharge un navigateur à son installation ; les tests restent sans réseau.
 - **Références :** `docs/plan-v0.16.md`, § 9.
+
+### D-128 — La couleur du texte fixe aussi celle des légendes
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Remplace :** D-123, en partie (la couleur du texte et le gris du texte secondaire)
+- **Décision :** Le texte de l'interface passe de #31333F à #14161C, et l'option `theme.grayTextColor` (#555867) est abandonnée. Le texte des messages de succès prend #146C2E. Le reste de D-123 ne change pas : couleur principale #1F4E79, rouge des erreurs #B42318, thème clair, le tout passé par `review_command()`.
+- **Options considérées :**
+  1. Foncer la couleur du texte (ce choix).
+  2. Remplacer chaque `st.caption` par une fonction commune `c.note()` en texte normal plus petit (environ 100 endroits, deux tests existants modifiés).
+  3. Garder D-123 tel quel : les légendes restent à 3,7:1.
+- **Justification :** Mesuré dans le navigateur, Streamlit affiche une légende (`st.caption`) dans la couleur du texte à 60 % d'opacité ; `theme.grayTextColor` n'y change rien. Seule une couleur de texte plus foncée fait passer toutes les légendes au-dessus de 4,5:1 : 4,73:1 sur fond blanc, 4,55:1 dans la barre latérale. Le texte normal passe de 12,53:1 à 18,08:1, une différence à peine visible. Le vert par défaut des messages de succès était juste au seuil.
+- **Conséquences :** aucun code changé hors du module des couleurs (`src/ddict/review/theme.py`) ; les explications qui portent une décision restent en texte normal (D-123).
+- **Références :** D-123 ; `docs/plan-v0.16.md`, § 5.4.
