@@ -4824,6 +4824,10 @@ msgstr "Table"
 msgid "Tableau 1 : décrire l'échantillon"
 msgstr "Table 1: describe the sample"
 
+#, python-brace-format
+msgid "Tableau {n}, ligne {row}"
+msgstr "Table {n}, row {row}"
+
 msgid "Tableaux (Excel)"
 msgstr "Tables (Excel)"
 
@@ -7282,6 +7286,10 @@ msgstr "{x}: b = {b}, {ci}, β = {beta}, t({df}) = {t}, {p}."
 #, python-brace-format
 msgid "{y} selon {x}"
 msgstr "{y} by {x}"
+
+#, python-brace-format
+msgid "§ {n}, phrase {k}"
+msgstr "§ {n}, sentence {k}"
 
 msgid ""
 "« Non documenté » veut dire inconnu : ne pas le deviner. Ne citer aucun seuil, étendue ou "
