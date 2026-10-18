@@ -148,13 +148,13 @@ def _caption(label: str, title: str) -> None:
     st.markdown(f"**{html.escape(label)}**  \n*{html.escape(title)}*", unsafe_allow_html=False)
 
 
-def panel(project, prepared, result, asked: tuple, files, shown_above: tuple = ()) -> None:
-    """The APA section, under the result; the formats of `shown_above` are already in the
-    bar of actions."""
+def panel(project, prepared, result, asked: tuple, files, shown_above: tuple = ()) -> bool:
+    """The APA section of the result; the formats of `shown_above` are already in the bar of
+    actions. False when the analysis has no APA table nor figure."""
     signature = _signature(asked)
     computed = describe(project, prepared, result, language=i18n.language())
     if not computed.tables and not computed.figures:
-        return
+        return False
     st.subheader(_("Tableaux et figures APA"))
     st.caption(
         _(
@@ -200,3 +200,4 @@ def panel(project, prepared, result, asked: tuple, files, shown_above: tuple = (
             mime=found.mime,
             key=f"apa-download-{found.key}",
         )
+    return True

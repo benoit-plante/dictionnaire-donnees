@@ -30,7 +30,7 @@ from ddict.project import exclusions as ex
 from ddict.project import save_project
 from ddict.project.model import Project
 from ddict.questionnaire.labels import accepted_labels
-from ddict.review.ui import analyses_view, notebook_view
+from ddict.review.ui import analyses_view, groups_view, notebook_view
 from ddict.review.ui import common as c
 
 KINDS = Texts(
@@ -523,7 +523,8 @@ def _preview(project: Project, prepared: PreparedData, notebook: nb.Notebook) ->
             "à compléter sur la page Groupes, ou dans Word."
         )
     )
-    c.go_button(_("Compléter les groupes"), "go-groups", "groups")
+    c.go_button(_("Compléter les groupes"), "go-groups", "groups",
+                **{groups_view.TAB: groups_view.tab_instrument()})  # fmt: skip
     found = method_facts.facts(project, prepared, notebook)
     flow = prepared.flow
     figure = notebook.first_figure if flow is not None and flow.excluded else None

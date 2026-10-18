@@ -265,18 +265,38 @@ def _levels(project: Project) -> None:
     c.show_message("levels-save")
 
 
+TAB = "base-tab"  # the open tab of the page (v0.16)
+
+
+def tab_levels() -> str:
+    return _("Niveaux de mesure")
+
+
 def page(project: Project) -> None:
     source = project.source
     st.header(source.name + (f" — {source.label}" if source.label else ""))
+    sensitive = [e for e in project.variables if logic.is_sensitive(e)]
+    labels = [_("Résumé"), _("Description"), tab_levels(), _("Sensibles ({n})").format(
+        n=len(sensitive))]  # fmt: skip
+    summary, description, measure, private = c.tabs(TAB, labels)
+    with summary:  # first: what was read (v0.16, finding 14)
+        _summary(project, sensitive)
+    with description:
+        _study_language(project)
+        _dataset(project)
+    with measure:
+        _levels(project)
+    with private:
+        _sensitive(sensitive)
+
+
+def _summary(project: Project, sensitive: list) -> None:
+    source = project.source
     st.write(profile_summary(project))
     for note in platform_notes(project):
         st.info(note)
     if note := format_note(project):
         st.warning(note)
-    _study_language(project)
-    _dataset(project)
-
-    sensitive = [e for e in project.variables if logic.is_sensitive(e)]
     flagged = [e for e in project.variables if w.entry_anomalies(e)]
     columns = st.columns(4)
     columns[0].metric(_("Variables"), len(project.variables))
@@ -300,15 +320,6 @@ def page(project: Project) -> None:
             "Fichier projet : {path}"
         ).format(path=c.project_path())
     )
-
-    types = Counter(
-        w.TYPES.get(e.profile.inferred_type, e.profile.inferred_type) for e in project.variables
-    )
-    st.subheader(_("Types de variables"))
-    st.dataframe(
-        pd.DataFrame(sorted(types.items()), columns=[_("Type"), _("Variables")]),
-        hide_index=True,
-    )
     st.subheader(_("Complétude"))
     st.caption(_("Éléments décidés par l'équipe, sur ceux qui s'appliquent."))
     missing = _("À documenter")
@@ -318,19 +329,30 @@ def page(project: Project) -> None:
         width="stretch",
         column_config={missing: st.column_config.TextColumn(missing, width="large")},
     )
-    _levels(project)
-    if sensitive:
-        st.subheader(_("Variables sensibles"))
-        st.caption(
-            _(
-                "Seules leurs métadonnées sont utilisées : aucune statistique sur leurs "
-                "valeurs, et rien d'elles n'est envoyé au modèle."
-            )
+    types = Counter(
+        w.TYPES.get(e.profile.inferred_type, e.profile.inferred_type) for e in project.variables
+    )
+    st.subheader(_("Types de variables"))
+    st.dataframe(
+        pd.DataFrame(sorted(types.items()), columns=[_("Type"), _("Variables")]),
+        hide_index=True,
+    )
+
+
+def _sensitive(sensitive: list) -> None:
+    if not sensitive:
+        st.info(_("Aucune variable sensible."))
+        return
+    st.write(
+        _(
+            "Seules leurs métadonnées sont utilisées : aucune statistique sur leurs "
+            "valeurs, et rien d'elles n'est envoyé au modèle."
         )
-        st.dataframe(
-            pd.DataFrame(
-                [(e.name, w.privacy_text(e)) for e in sensitive],
-                columns=[_("Variable"), _("Confidentialité")],
-            ),
-            hide_index=True,
-        )
+    )
+    st.dataframe(
+        pd.DataFrame(
+            [(e.name, w.privacy_text(e)) for e in sensitive],
+            columns=[_("Variable"), _("Confidentialité")],
+        ),
+        hide_index=True,
+    )

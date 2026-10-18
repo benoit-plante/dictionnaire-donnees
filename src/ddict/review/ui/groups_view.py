@@ -9,7 +9,7 @@ from ddict.i18n import _, field_label
 from ddict.project import scoring
 from ddict.project.model import Project
 from ddict.review import logic, names, study
-from ddict.review.ui import bulk_view
+from ddict.review.ui import bulk_view, recode_view
 from ddict.review.ui import common as c
 
 
@@ -18,9 +18,37 @@ def option_text(project: Project, group_id: str) -> str:
     return f"{group_id} — {w.group_description(logic.group(project, group_id), 'work')}"
 
 
-def page(project: Project, group_id: str) -> None:
+TAB = "groups-tab"  # the open tab of the page (v0.16)
+
+
+def tab_instrument() -> str:
+    return _("Instrument")
+
+
+def page(project: Project, group_id: str | None) -> None:
+    """A group in tabs (v0.16, finding 14): its items, its scoring, its instrument; and the
+    recodings of the project, shown even without any group."""
+    if group_id is None:
+        recode_view.listing(project)
+        return
     group = logic.group(project, group_id)
     st.header(f"{group.group_id} — {w.group_description(group, 'work')}")
+    scale = group.kind != "multiple_response"
+    labels = [_("Items"), *([_("Cotation")] if scale else []), tab_instrument(), _("Recodages")]
+    found = dict(zip(labels, c.tabs(TAB, labels), strict=True))
+    with found[_("Items")]:
+        _items(project, group_id)
+    if scale:
+        with found[_("Cotation")]:
+            _scoring(project, group_id)
+    with found[tab_instrument()]:
+        _instrument_and_text(project, group_id)
+    with found[_("Recodages")]:
+        recode_view.listing(project)  # v0.15 (D-120)
+
+
+def _items(project: Project, group_id: str) -> None:
+    group = logic.group(project, group_id)
     bulk_view.labels_panel(project, group_id)
     members = group.members.value or []
     st.write(f"{field_label('Variables')}" + ", ".join(members))
@@ -32,7 +60,6 @@ def page(project: Project, group_id: str) -> None:
         st.write(_("Question à réponses multiples : une variable par option cochée."))
         if group.attached:
             st.write(f"{field_label('Texte « autre »')}" + ", ".join(group.attached))
-        _instrument_and_text(project, group_id)
         return
     if group.cronbach_alpha is not None:
         st.write(_("Alpha de Cronbach observé : {a}").format(a=w.number(group.cronbach_alpha)))
@@ -72,14 +99,10 @@ def page(project: Project, group_id: str) -> None:
             reset=(key,),
             submit=True,
         )
-    _scoring(project, group_id)
-    _instrument_and_text(project, group_id)
 
 
 def _scoring(project: Project, group_id: str) -> None:
     """How the score is computed (v0.8, D-060): written by the team, with its source."""
-    st.divider()
-    st.subheader(_("Cotation"))
     group = logic.group(project, group_id)
     if group.scoring:
         st.success(w.scoring_text(project, group))
@@ -250,7 +273,6 @@ def _prefix(project: Project, group_id: str) -> None:
 
 def _instrument_and_text(project: Project, group_id: str) -> None:
     """The instrument's name, with its source, and the choice not to reproduce its text."""
-    st.divider()
     st.write(_("Nom de l'instrument : réservé aux personnes, avec une source documentée."))
 
     def instrument(part: str) -> str:

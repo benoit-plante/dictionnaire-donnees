@@ -679,6 +679,9 @@ msgstr "No variable in this filter."
 msgid "Aucune variable dans le filtre « {f} »."
 msgstr "No variable in the filter “{f}”."
 
+msgid "Aucune variable sensible."
+msgstr "No sensitive variable."
+
 msgid "Aucune variable à envoyer."
 msgstr "No variable to send."
 
@@ -2003,6 +2006,9 @@ msgstr "Project file to create (default: next to the database, as .dd.json)."
 msgid "Fichier écrit : {path}"
 msgstr "File written: {path}"
 
+msgid "Fichiers"
+msgstr "Files"
+
 msgid "Fichiers de commandes"
 msgstr "Command files"
 
@@ -2278,6 +2284,9 @@ msgstr "Reverse the items marked \"inv\" before any score, as their group's scor
 #, python-brace-format
 msgid "Item probablement inversé (corrélation avec le reste de l'échelle : {r})"
 msgstr "Item probably reversed (correlation with the rest of the scale: {r})"
+
+msgid "Items"
+msgstr "Items"
 
 msgid "Items du score"
 msgstr "Items of the score"
@@ -3965,6 +3974,9 @@ msgstr "Participants"
 msgid "Pas dans le groupe : {names}"
 msgstr "Not in the group: {names}"
 
+msgid "Pas de tableau ni de figure APA pour cette analyse."
+msgstr "No APA table nor figure for this analysis."
+
 msgid "Pearson"
 msgstr "Pearson"
 
@@ -4920,6 +4932,10 @@ msgstr "Expected direction: {direction}."
 msgid "Sensibles"
 msgstr "Sensitive"
 
+#, python-brace-format
+msgid "Sensibles ({n})"
+msgstr "Sensitive ({n})"
+
 msgid "Serveur local"
 msgstr "Local server"
 
@@ -5214,6 +5230,9 @@ msgstr "Table 1: describe the sample"
 #, python-brace-format
 msgid "Tableau {n}, ligne {row}"
 msgstr "Table {n}, row {row}"
+
+msgid "Tableaux et figures"
+msgstr "Tables and figures"
 
 msgid "Tableaux et figures APA"
 msgstr "APA tables and figures"

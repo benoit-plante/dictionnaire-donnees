@@ -41,7 +41,7 @@ from ddict.i18n import _
 from ddict.io import read_database
 from ddict.project import fingerprint
 from ddict.project.model import Project
-from ddict.review.ui import advice_view, apa_view, dialog
+from ddict.review.ui import advice_view, apa_view, base_view, dialog
 from ddict.review.ui import common as c
 from ddict.review.ui.advice_view import option_key, role_key
 from ddict.workflow import analysis_files, copy_error_text, project_stem
@@ -110,7 +110,8 @@ def _choose_variables(project: Project, key: str, book: Codebook) -> dict[str, l
                 ).format(role=ROLES[role.key])
             )
             c.go_button(_("Décider les niveaux de mesure (page Base)"),
-                        f"go-base-{widget}", "base")  # fmt: skip
+                        f"go-base-{widget}", "base",
+                        **{base_view.TAB: base_view.tab_levels()})  # fmt: skip
             continue
         if role.most == 1:
             picked = st.selectbox(
@@ -284,20 +285,37 @@ def _write(project: Project) -> None:
     )
 
 
+RESULT_TAB = "analysis-tab"  # the open tab of the result (v0.16)
+
+
 def _show(project: Project, prepared: PreparedData, asked: tuple, result) -> None:
-    st.subheader(_("Résultat"))
-    if result.sentence:
-        st.markdown(f"> {result.sentence}")
-    st.caption(
-        _("{used} observations retenues, {excluded} écartées ({why}).").format(
-            used=result.n_used, excluded=result.n_excluded, why=excluded_reason(result)
+    """The result in tabs (v0.16, finding 14): the result, the APA tables and figures, the
+    files."""
+    labels = [_("Résultat"), _("Tableaux et figures"), _("Fichiers")]
+    found, apa, files_tab = c.tabs(RESULT_TAB, labels)
+    files = analysis_files(c.project_path())
+    with found:
+        st.subheader(_("Résultat"))
+        if result.sentence:
+            st.markdown(f"> {result.sentence}")
+        st.caption(
+            _("{used} observations retenues, {excluded} écartées ({why}).").format(
+                used=result.n_used, excluded=result.n_excluded, why=excluded_reason(result)
+            )
         )
-    )
-    for warning in result.warnings:
-        st.warning(warning)
-    for table in result.tables:
-        st.markdown(f"**{table.title}**")
-        st.markdown("\n".join(_markdown_table(table.columns, table.rows)))
+        for warning in result.warnings:
+            st.warning(warning)
+        for table in result.tables:
+            st.markdown(f"**{table.title}**")
+            st.markdown("\n".join(_markdown_table(table.columns, table.rows)))
+    with apa:
+        if not apa_view.panel(project, prepared, result, asked, files, shown_above=("docx",)):
+            st.info(_("Pas de tableau ni de figure APA pour cette analyse."))
+    with files_tab:
+        _files(project, prepared, result, files)
+
+
+def _files(project: Project, prepared: PreparedData, result, files) -> None:
     st.subheader(_("Rapport et script R"))
     st.caption(
         _(
@@ -308,7 +326,6 @@ def _show(project: Project, prepared: PreparedData, asked: tuple, result) -> Non
             "avec soin."
         )
     )
-    files = analysis_files(c.project_path())
     today = date.today().isoformat()
     with st.container(horizontal=True):
         st.button(
@@ -322,7 +339,6 @@ def _show(project: Project, prepared: PreparedData, asked: tuple, result) -> Non
             key="analysis-download-md",
         )
     c.show_message("analysis-write")
-    apa_view.panel(project, prepared, result, asked, files, shown_above=("docx",))
 
 
 def _add(project: Project, prepared: PreparedData, asked: tuple, result) -> None:
@@ -462,7 +478,8 @@ def page(project: Project) -> None:
             st.error(reason)
         undecided = [n for names in chosen.values() for n in names if book.levels.get(n) is None]
         if undecided:
-            c.go_button(_("Décider les niveaux de mesure (page Base)"), "go-base-levels", "base")
+            c.go_button(_("Décider les niveaux de mesure (page Base)"), "go-base-levels", "base",
+                        **{base_view.TAB: base_view.tab_levels()})  # fmt: skip
         for warning in found.warnings:
             st.warning(warning)
     st.button(

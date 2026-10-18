@@ -25,7 +25,7 @@ from ddict.analysis.data import PreparedData, chosen_levels
 from ddict.i18n import N_, Texts, _, field_label
 from ddict.project import save_project
 from ddict.project.model import Hypothesis, Project
-from ddict.review.ui import analyses_view
+from ddict.review.ui import analyses_view, base_view
 from ddict.review.ui import common as c
 
 REASON = "plan-reason"
@@ -339,7 +339,8 @@ def _choose(project: Project, key: str, book: Codebook) -> dict[str, list[str]]:
                 ).format(role=ROLES[role.key])
             )
             c.go_button(_("Décider les niveaux de mesure (page Base)"),
-                        f"go-base-{widget}", "base")  # fmt: skip
+                        f"go-base-{widget}", "base",
+                        **{base_view.TAB: base_view.tab_levels()})  # fmt: skip
             continue
         if role.most == 1:
             picked = st.selectbox(

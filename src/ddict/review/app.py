@@ -27,7 +27,6 @@ from ddict.review.ui import (
     notebook_view,
     plan_view,
     questionnaire_view,
-    recode_view,
     variables_view,
     verify_view,
 )
@@ -226,10 +225,7 @@ def main() -> None:
         variables_view.page(project, project.variable(chosen))
         questionnaire_view.ai_link("variables")
     elif mode == "groups":
-        if chosen is not None:
-            groups_view.page(project, chosen)
-            st.divider()
-        recode_view.listing(project)  # v0.15 (D-120): even without any group
+        groups_view.page(project, chosen)
     _messages_end(top)
 
 

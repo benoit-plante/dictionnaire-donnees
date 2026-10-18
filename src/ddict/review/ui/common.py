@@ -118,6 +118,14 @@ def variable_fields(name: str) -> dict:
     return {"filter": "all", "current": name, "variable": name}
 
 
+def tabs(key: str, labels: list[str]):
+    """Tabs whose open one is kept in the session under `key` (v0.16, finding 14): a button
+    of another page can open one (`go_to(mode, **{key: label})`), and a rerun keeps it."""
+    if st.session_state.get(key) not in labels:
+        st.session_state.pop(key, None)
+    return st.tabs(labels, key=key, on_change="rerun")
+
+
 def offer(label: str, key: str, target: str, value) -> None:
     """A button that puts what the tool computes into the field `target`, without saving it
     (v0.16, D-126): a decision field never starts from a computed value."""
