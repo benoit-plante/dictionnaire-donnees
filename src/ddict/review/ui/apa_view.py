@@ -61,6 +61,17 @@ def edits(project, prepared, result, asked: tuple) -> dict[str, Edit]:
     return _edits(_signature(asked), document)
 
 
+def rendered(project, prepared, result, asked: tuple, found) -> bytes:
+    """A file of the APA tables and figures, with the fields' values, as the panel gives it
+    (v0.16: the Word file is in the bar of actions, above the result)."""
+    signature = _signature(asked)
+    computed = describe(project, prepared, result, language=i18n.language())
+    edits = _edits(signature, computed)
+    state = repr(sorted((k, e) for k, e in edits.items()))
+    document = edited(computed, edits)
+    return _cached(signature, ("file", found.key, state), lambda: found.render(document))
+
+
 def _cached(signature: str, what: tuple, make) -> bytes:
     stored = st.session_state.get(CACHE)
     if stored is None or stored[0] != signature:
@@ -137,8 +148,9 @@ def _caption(label: str, title: str) -> None:
     st.markdown(f"**{html.escape(label)}**  \n*{html.escape(title)}*", unsafe_allow_html=False)
 
 
-def panel(project, prepared, result, asked: tuple, files) -> None:
-    """The APA section, under the result."""
+def panel(project, prepared, result, asked: tuple, files, shown_above: tuple = ()) -> None:
+    """The APA section, under the result; the formats of `shown_above` are already in the
+    bar of actions."""
     signature = _signature(asked)
     computed = describe(project, prepared, result, language=i18n.language())
     if not computed.tables and not computed.figures:
@@ -176,7 +188,7 @@ def panel(project, prepared, result, asked: tuple, files) -> None:
         )
         if figure.note:
             st.markdown(f"<i>{_('Note.')}</i> {_html(figure.note)}", unsafe_allow_html=True)
-    formats = available(document)
+    formats = [f for f in available(document) if f.key not in shown_above]
     columns = st.columns(max(len(formats), 1))
     stem = files.markdown.stem
     for column, found in zip(columns, formats, strict=False):

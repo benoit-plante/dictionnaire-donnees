@@ -812,9 +812,6 @@ msgstr "Characteristics of the participants by {group}"
 msgid "Carnet"
 msgstr "Notebook"
 
-msgid "Carnet d'analyses"
-msgstr "Analysis notebook"
-
 msgid ""
 "Case à cocher probable : une seule valeur observée, les cases vides veulent sans doute dire « non"
 " coché »"
@@ -1698,8 +1695,8 @@ msgid "Définition"
 msgstr "Definition"
 
 #, python-brace-format
-msgid "Déjà dans le carnet ({id})"
-msgstr "Already in the notebook ({id})"
+msgid "Déjà au carnet : {id}"
+msgstr "Already in the notebook: {id}"
 
 #, python-brace-format
 msgid "Déjà dans le carnet au gel : {ids}."
@@ -1876,6 +1873,9 @@ msgstr ""
 
 msgid "Estime comment plusieurs prédicteurs, ensemble, expliquent une variable continue."
 msgstr "Estimates how several predictors, together, explain a continuous variable."
+
+msgid "Excel"
+msgstr "Excel"
 
 msgid "Excel (graphiques modifiables)"
 msgstr "Excel (editable charts)"
@@ -2688,10 +2688,10 @@ msgstr "The notebook is empty. Run an analysis on the Analyses page, then click 
 
 msgid ""
 "Le carnet garde les analyses de l'étude pour l'ébauche d'article, avec les titres et les notes "
-"changés ci-dessus. Il ne garde que des agrégats."
+"changés plus bas. Il ne garde que des agrégats."
 msgstr ""
-"The notebook keeps the study's analyses for the article draft, with the titles and notes changed "
-"above. It keeps aggregates only."
+"The notebook keeps the study's analyses for the draft article, with the titles and notes changed "
+"below. It keeps only aggregates."
 
 #, python-brace-format
 msgid "Le carnet ne peut pas être lu : {name}"
@@ -3281,6 +3281,12 @@ msgid ""
 msgstr ""
 "The quality signals of the administration, among the people the rules keep: durations, straight "
 "lines, duplicates. None is applied."
+
+msgid "Les tableaux du résultat."
+msgstr "The tables of the result."
+
+msgid "Les tableaux et figures APA, avec les titres et notes de la page."
+msgstr "The APA tables and figures, with the titles and notes of the page."
 
 msgid "Les tailles d'effet seront données avec leur intervalle de confiance à 95 %."
 msgstr "Effect sizes will be given with their 95% confidence interval."
@@ -4483,6 +4489,13 @@ msgid "Refaire les analyses"
 msgstr "Running the analyses again"
 
 msgid ""
+"Refait l'analyse hors de l'outil, dans le dossier de la base, avec le fichier de commandes et le "
+"script de préparation joints (.zip)."
+msgstr ""
+"Runs the analysis again outside the tool, in the folder of the database, with the syntax file and"
+" the preparation script enclosed (.zip)."
+
+msgid ""
 "Regarde si deux variables catégorielles sont associées, par exemple le secteur d'emploi et le "
 "télétravail."
 msgstr ""
@@ -4817,9 +4830,6 @@ msgstr "Score of the group"
 msgid "Script R"
 msgstr "R script"
 
-msgid "Script R (.zip)"
-msgstr "R script (.zip)"
-
 msgid "Script R équivalent"
 msgstr "Equivalent R script"
 
@@ -5128,9 +5138,6 @@ msgstr "Table 1: describe the sample"
 #, python-brace-format
 msgid "Tableau {n}, ligne {row}"
 msgstr "Table {n}, row {row}"
-
-msgid "Tableaux (Excel)"
-msgstr "Tables (Excel)"
 
 msgid "Tableaux et figures APA"
 msgstr "APA tables and figures"
@@ -5762,6 +5769,9 @@ msgstr "Welch (unequal variances allowed)"
 
 msgid "Wilcoxon des rangs signés (sans supposer la normalité)"
 msgstr "Wilcoxon signed-rank (without assuming normality)"
+
+msgid "Word"
+msgstr "Word"
 
 msgid "Word (tableaux et figures APA)"
 msgstr "Word (APA tables and figures)"

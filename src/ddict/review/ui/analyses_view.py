@@ -27,6 +27,7 @@ from ddict.analysis.data import (
     apply_subset,
     find_database,
 )
+from ddict.analysis.formats import FORMATS, available
 from ddict.analysis.report import (
     _markdown_table,
     excluded_reason,
@@ -50,7 +51,6 @@ DATABASE = "analysis-database"  # the database chosen by hand, when not next to 
 TABLE = "analysis-table"  # (path, table read from the database)
 PREPARED = "analysis-prepared"  # (fingerprint, PreparedData)
 RESULT = "analysis-result"  # the last analysis run: (what was asked, AnalysisResult)
-ADDED = "analysis-added"  # (what was asked, identifier): the last run added to the notebook
 XLSX_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 
@@ -302,38 +302,21 @@ def _show(project: Project, prepared: PreparedData, asked: tuple, result) -> Non
             "avec soin."
         )
     )
-    path = c.project_path()
-    files = analysis_files(path)
+    files = analysis_files(c.project_path())
     today = date.today().isoformat()
-    stem = project_stem(path)
-    first, second, third, fourth = st.columns(4)
-    first.button(
-        _("Écrire à côté du projet"), key="analysis-write", on_click=_write, args=(project,)
-    )
-    second.download_button(
-        _("Rapport (Markdown)"),
-        data=render_report(project, prepared, result, files, today).encode("utf-8"),
-        file_name=files.markdown.name,
-        mime="text/markdown",
-        key="analysis-download-md",
-    )
-    third.download_button(
-        _("Tableaux (Excel)"),
-        data=report_xlsx(project, prepared, result, files, today),
-        file_name=files.xlsx.name,
-        mime=XLSX_TYPE,
-        key="analysis-download-xlsx",
-    )
-    fourth.download_button(
-        _("Script R (.zip)"),
-        data=r_bundle(project, files, stem, result, today),
-        file_name=files.r.with_suffix(".zip").name,
-        mime="application/zip",
-        key="analysis-download-r",
-    )
+    with st.container(horizontal=True):
+        st.button(
+            _("Écrire à côté du projet"), key="analysis-write", on_click=_write, args=(project,)
+        )
+        st.download_button(
+            _("Rapport (Markdown)"),
+            data=render_report(project, prepared, result, files, today).encode("utf-8"),
+            file_name=files.markdown.name,
+            mime="text/markdown",
+            key="analysis-download-md",
+        )
     c.show_message("analysis-write")
-    apa_view.panel(project, prepared, result, asked, files)
-    _notebook_button(project, prepared, asked, result)
+    apa_view.panel(project, prepared, result, asked, files, shown_above=("docx",))
 
 
 def _add(project: Project, prepared: PreparedData, asked: tuple, result) -> None:
@@ -349,7 +332,6 @@ def _add(project: Project, prepared: PreparedData, asked: tuple, result) -> None
         text = nb.reason_text(error) if isinstance(error, nb.NotebookError) else str(error)
         st.session_state.message = ("error", text, "analysis-add")
         return
-    st.session_state[ADDED] = (asked, entry.id)
     st.session_state.message = (
         "success",
         _("Ajoutée au carnet : {id}. Le carnet se trouve sur la page Carnet.").format(id=entry.id),
@@ -357,26 +339,78 @@ def _add(project: Project, prepared: PreparedData, asked: tuple, result) -> None
     )
 
 
-def _notebook_button(project: Project, prepared: PreparedData, asked: tuple, result) -> None:
-    st.subheader(_("Carnet d'analyses"))
-    st.write(
-        _(
-            "Le carnet garde les analyses de l'étude pour l'ébauche d'article, avec les "
-            "titres et les notes changés ci-dessus. Il ne garde que des agrégats."
+def in_notebook(notebook: nb.Notebook, project: Project, result) -> str | None:
+    """The identifier of the same analysis already in the notebook (v0.16): the same
+    analysis, variables, options and subgroup, whatever the session that added it."""
+    variables = {
+        role.key: [nb.reference(project, n) for n in result.chosen[role.key]]
+        for role in CATALOGUE[result.analysis].roles
+        if result.chosen.get(role.key)
+    }
+    options = {k: str(v) for k, v in sorted(result.options.items())}
+    subgroup = nb.kept_subgroup(project, result.subgroup)
+    for entry in notebook.entries:
+        same = (entry.analysis, entry.variables, entry.options, entry.subgroup)
+        if same == (result.analysis, variables, options, subgroup):
+            return entry.id
+    return None
+
+
+def _actions(project: Project, prepared: PreparedData, asked: tuple, result) -> None:
+    """Under "Lancer l'analyse" (v0.16, finding 15): what comes next, before the result."""
+    path = c.project_path()
+    files = analysis_files(path)
+    today = date.today().isoformat()
+    try:
+        found = in_notebook(nb.open_notebook(project, path), project, result)
+    except nb.NotebookError:
+        found = None  # the notebook cannot be read: adding says why
+    document = apa_view.current(project, prepared, result, asked)
+    word = FORMATS["docx"] if FORMATS["docx"] in available(document) else None
+    with st.container(horizontal=True):
+        st.button(
+            _("Déjà au carnet : {id}").format(id=found) if found else _("Ajouter au carnet"),
+            key="analysis-add",
+            icon=":material/bookmark_add:",
+            type="primary",
+            disabled=found is not None,
+            on_click=_add,
+            args=(project, prepared, asked, result),
+            help=_(
+                "Le carnet garde les analyses de l'étude pour l'ébauche d'article, avec les "
+                "titres et les notes changés plus bas. Il ne garde que des agrégats."
+            ),
         )
-    )
-    added = st.session_state.get(ADDED)
-    done = added is not None and added[0] == asked
-    st.button(
-        _("Déjà dans le carnet ({id})").format(id=added[1]) if done else _("Ajouter au carnet"),
-        key="analysis-add",
-        icon=":material/bookmark_add:",
-        disabled=done,
-        on_click=_add,
-        args=(project, prepared, asked, result),
-    )
+        if word is not None:
+            st.download_button(
+                _("Word"),
+                data=apa_view.rendered(project, prepared, result, asked, word),
+                file_name=files.markdown.stem + word.suffix,
+                mime=word.mime,
+                key="analysis-download-docx",
+                help=_("Les tableaux et figures APA, avec les titres et notes de la page."),
+            )
+        st.download_button(
+            _("Excel"),
+            data=report_xlsx(project, prepared, result, files, today),
+            file_name=files.xlsx.name,
+            mime=XLSX_TYPE,
+            key="analysis-download-xlsx",
+            help=_("Les tableaux du résultat."),
+        )
+        st.download_button(
+            _("Script R"),
+            data=r_bundle(project, files, project_stem(path), result, today),
+            file_name=files.r.with_suffix(".zip").name,
+            mime="application/zip",
+            key="analysis-download-r",
+            help=_(
+                "Refait l'analyse hors de l'outil, dans le dossier de la base, avec le fichier "
+                "de commandes et le script de préparation joints (.zip)."
+            ),
+        )
     c.show_message("analysis-add")
-    if done:
+    if found:
         c.go_button(_("Ouvrir le carnet"), "go-notebook", "notebook")
 
 
@@ -428,6 +462,7 @@ def page(project: Project) -> None:
         args=(project, key, chosen, options, subset),
     )
     if current:
+        _actions(project, prepared, last[0], last[1])
         _show(project, prepared, last[0], last[1])
     elif last is not None and last[0][0] == key:
         st.write(_("Les choix ont changé depuis la dernière analyse : relancez-la."))
