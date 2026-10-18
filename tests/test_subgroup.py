@@ -295,3 +295,38 @@ def test_the_plan_page_names_the_groups(tmp_path):
     assert not app.exception, app.exception
     hypothesis = load_project(path).plan.hypotheses[0]
     assert hypothesis.subgroup is not None and hypothesis.options["alternative"] == "greater"
+
+
+@pytest.mark.parametrize(
+    ("key", "chosen"),
+    [
+        ("table1", {"variables": ["stress", "sommeil"], "group": ["abandon"]}),
+        ("anova", {"outcome": ["stress"], "group": ["sexe"]}),
+        ("chi_square", {"rows": ["sexe"], "columns": ["abandon"]}),
+        ("t_test", {"outcome": ["stress"], "group": ["abandon"]}),
+        ("paired", PAIR),
+        ("rm_anova", {"measures": ["anxiete_t1", "anxiete_t2", "anxiete_t3"]}),
+        ("correlation", {"variables": ["stress", "sommeil"]}),
+        ("regression", {"outcome": ["stress"], "predictors": ["charge", "soutien"]}),
+        ("logistic", {"outcome": ["abandon"], "predictors": ["motivation"]}),
+        ("partial", {"variables": ["stress", "sommeil"], "covariates": ["charge"]}),
+        ("moderation", {"outcome": ["epuisement"], "focal": ["charge"], "moderator": ["soutien"]}),
+    ],
+)
+def test_the_tables_and_figures_are_of_the_subgroup(ready, key, chosen):  # noqa: F811
+    """The counts, means and points of the tables and figures are those of the subgroup's
+    people, as if the analysis had been run on them alone (the AMATUS trial of v0.14)."""
+    from ddict.analysis.data import apply_subset
+
+    project, prepared = ready
+    subset = Subset("age", "ge", 40.0)
+    alone = describe(project, apply_subset(prepared, subset),
+                     run(project, apply_subset(prepared, subset), key, chosen))  # fmt: skip
+    found = describe(project, prepared, run(project, prepared, key, chosen, None, subset))
+    said = "Sous-groupe : age ≥ 40. "
+    assert len(found.tables) == len(alone.tables) and len(found.figures) == len(alone.figures)
+    for made, expected in zip(found.tables, alone.tables, strict=True):
+        assert (made.rows, plain(made.note)) == (expected.rows, said + plain(expected.note))
+    for made, expected in zip(found.figures, alone.figures, strict=True):
+        assert made.series == expected.series
+        assert plain(made.note) == said + plain(expected.note)

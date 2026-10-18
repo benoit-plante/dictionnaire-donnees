@@ -15,6 +15,7 @@ import ddict.llm.client as client_module
 from ddict.analysis.catalogue import CATALOGUE
 from ddict.cli import main
 from ddict.llm.advice_bench import (
+    FOLLOW_UP_FILE,
     bench_project,
     load_objectives,
     run_advice_bench,
@@ -40,6 +41,7 @@ from test_analysis_data import EXAMPLES, KEY, analyses_project
 APP = str(Path(__file__).resolve().parent.parent / "src" / "ddict" / "review" / "app.py")
 NOW = "2026-10-16T12:00:00"
 OBJECTIVES = load_objectives(EXAMPLES)["objectives"]
+FOLLOW_UP = load_objectives(EXAMPLES, FOLLOW_UP_FILE)  # v0.14: the widened catalogue
 GOAL = "Comparer le bien-être entre les groupes intervention et contrôle."
 T_TEST = {
     "analysis": "t_test",
@@ -302,7 +304,8 @@ def test_the_page_takes_a_proposal_up(tmp_path, fake_ollama):
 def _expected_answer(body):
     """The answer key's proposal for the objective of the request."""
     objective = json.loads(body["messages"][1]["content"])["objective"]
-    item = next(o for o in OBJECTIVES if o["objective"] == objective)
+    item = next(o for o in [*OBJECTIVES, *FOLLOW_UP["objectives"]]
+                if o["objective"] == objective)  # fmt: skip
     expected = item["expected"]
     if expected is None:
         return answer()
@@ -319,15 +322,20 @@ def _expected_answer(body):
     return answer(proposal)
 
 
-def test_the_bench_scores_the_key_as_right(tmp_path):
+@pytest.mark.parametrize("follow_up", [False, True])
+def test_the_bench_scores_the_key_as_right(follow_up):
+    """Every role and method of the catalogue gets through the answer's model: the
+    follow-up objectives use those of v0.14 (paired, repeated measures, moderation...)."""
+
     def server(request):
         text = json.dumps(_expected_answer(json.loads(request.content)))
         return httpx.Response(200, json={"choices": [{"message": {"content": text}}]})
 
-    project = bench_project(EXAMPLES)
+    objectives = FOLLOW_UP["objectives"] if follow_up else OBJECTIVES
+    project = bench_project(EXAMPLES, FOLLOW_UP["sav"] if follow_up else None)
     with LocalModelClient("modele-test", transport=httpx.MockTransport(server)) as client:
-        scores = run_advice_bench(project, client, OBJECTIVES, now=lambda: NOW, clock=lambda: 0.0)
-    total = len(OBJECTIVES)
+        scores = run_advice_bench(project, client, objectives, now=lambda: NOW, clock=lambda: 0.0)
+    total = len(objectives)
     assert summary(scores) == {
         "objectives": total,
         "valid_answers": total,
@@ -336,7 +344,8 @@ def test_the_bench_scores_the_key_as_right(tmp_path):
         "any_right": total,
         "refused_conditions": 0,
     }
-    assert next(s for s in scores if s.objective == "o09").method_right is True
+    if not follow_up:
+        assert next(s for s in scores if s.objective == "o09").method_right is True
 
 
 def test_the_bench_counts_misses():

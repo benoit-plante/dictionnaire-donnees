@@ -1,0 +1,36 @@
+{
+  "about": "Objectifs écrits pour la base fictive de suivi (etude-suivi.sav), avec l'analyse et les variables attendues : le banc de l'IA conseillère sur les analyses du catalogue élargi (v0.14, étape 7, D-115). Rôles sans ordre pour les mesures répétées et les covariables ; le sous-groupe ne fait pas partie de la proposition.",
+  "sav": "etude-suivi.sav",
+  "objectives": [
+    {
+      "id": "s01",
+      "objective": "L'anxiété a-t-elle baissé entre le début et la fin du programme ?",
+      "expected": {"analysis": "paired", "roles": {"first": ["anxiete_t1"], "second": ["anxiete_t2"]}}
+    },
+    {
+      "id": "s02",
+      "objective": "L'anxiété change-t-elle entre le début du programme, sa fin et trois mois après ?",
+      "expected": {"analysis": "rm_anova", "roles": {"measures": ["anxiete_t1", "anxiete_t2", "anxiete_t3"]}}
+    },
+    {
+      "id": "s03",
+      "objective": "La motivation au début du programme prédit-elle l'abandon du programme ?",
+      "expected": {"analysis": "logistic", "roles": {"outcome": ["abandon"], "predictors": ["motivation"]}}
+    },
+    {
+      "id": "s04",
+      "objective": "Le lien entre la charge de travail et l'épuisement dépend-il du soutien des collègues ?",
+      "expected": {"analysis": "moderation", "roles": {"outcome": ["epuisement"], "focal": ["charge"], "moderator": ["soutien"]}}
+    },
+    {
+      "id": "s05",
+      "objective": "Le stress est-il lié aux heures de sommeil quand on tient compte de la charge de travail ?",
+      "expected": {"analysis": "partial", "roles": {"variables": ["stress", "sommeil"], "covariates": ["charge"]}}
+    },
+    {
+      "id": "s06",
+      "objective": "Chez les femmes seulement, l'anxiété a-t-elle baissé entre le début et la fin du programme ?",
+      "expected": {"analysis": "paired", "roles": {"first": ["anxiete_t1"], "second": ["anxiete_t2"]}}
+    }
+  ]
+}

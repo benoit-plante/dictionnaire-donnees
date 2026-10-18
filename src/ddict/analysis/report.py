@@ -21,7 +21,7 @@ from openpyxl import Workbook
 from ddict import __version__
 from ddict.analysis.apa import ApaDocument
 from ddict.analysis.book import Codebook
-from ddict.analysis.catalogue import CATALOGUE, CHOICES, OPTIONS, ROLES, TITLES
+from ddict.analysis.catalogue import CATALOGUE, OPTIONS, ROLES, TITLES, choice
 from ddict.analysis.data import PreparedData, level_codes
 from ddict.analysis.results import AnalysisResult
 from ddict.analysis.rscript import r_script
@@ -92,7 +92,7 @@ def _options(result: AnalysisResult, book: Codebook) -> list[tuple[str, str]]:
             group = result.chosen["group"][0]
             shown = ", ".join(book.category(group, c) for c in level_codes(value))
         else:
-            shown = CHOICES.get(value, str(value))
+            shown = choice(result.analysis, value)
         found.append((OPTIONS.get(key, key), shown))
     return found
 

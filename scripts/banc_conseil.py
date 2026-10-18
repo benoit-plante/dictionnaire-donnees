@@ -3,6 +3,9 @@
 proposals compared with the expected analysis and variables.
 
     uv run python scripts/banc_conseil.py qwen2.5:7b-instruct-q4_K_M [autre-modele ...]
+    uv run python scripts/banc_conseil.py --suivi qwen2.5:7b-instruct-q4_K_M
+
+`--suivi` takes the objectives of the follow-up base, for the analyses of v0.14 (D-115).
 
 Prints one line per objective and a summary per model; the exchanges are kept in a
 temporary folder, given at the end. Nothing leaves this computer (local server only).
@@ -16,15 +19,25 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from ddict.llm.advice_bench import bench_project, load_objectives, run_advice_bench, summary
+from ddict.llm.advice_bench import (
+    FOLLOW_UP_FILE,
+    OBJECTIVES_FILE,
+    bench_project,
+    load_objectives,
+    run_advice_bench,
+    summary,
+)
 from ddict.llm.client import LocalModelClient
 
 FOLDER = Path(__file__).resolve().parent.parent / "exemples" / "bases-fictives"
 
 
 def main(models: list[str]) -> int:
-    objectives = load_objectives(FOLDER)["objectives"]
-    project = bench_project(FOLDER)
+    name = FOLLOW_UP_FILE if "--suivi" in models else OBJECTIVES_FILE
+    models = [m for m in models if m != "--suivi"]
+    found = load_objectives(FOLDER, name)
+    objectives = found["objectives"]
+    project = bench_project(FOLDER, found["sav"])
     log_dir = Path(tempfile.mkdtemp(prefix="banc-conseil-"))
     for model in models:
         with LocalModelClient(model, timeout=600) as client:

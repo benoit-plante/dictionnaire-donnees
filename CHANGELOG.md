@@ -1,5 +1,24 @@
 # Changements
 
+## 0.14.0 — 2026-10-18
+
+Le catalogue élargi : cinq analyses de plus, écrites et vérifiées d'avance comme les six premières, le sous-groupe d'une analyse et le sens attendu nommé par les groupes (plan : `docs/plan-v0.14.md`, D-111 à D-116 ; fiche validée : `docs/catalogue-elargi.md`). Aucune nouvelle IA ; le conseiller facultatif connaît les nouvelles analyses.
+
+- **Le test *t* apparié** et son pendant sans normalité, **Wilcoxon des rangs signés** : deux mesures d'une même personne ; *d*<sub>z</sub> et son intervalle ; *p* de Wilcoxon calculé comme R.
+- **L'ANOVA à mesures répétées** : de 3 à 10 mesures, η² partiel, test de sphéricité de Mauchly et correction de Greenhouse-Geisser ; comparaisons deux à deux corrigées par Holm ; une figure des moyennes reliées.
+- **La régression logistique binaire** : la modalité prédite au choix, les coefficients, les rapports de cotes et leur intervalle (Wald), le χ² face au modèle sans prédicteur, les *R*² de McFadden et de Nagelkerke ; une séparation complète est dite ; la figure montre les rapports de cotes sur une échelle logarithmique autour de 1.
+- **La corrélation partielle** : deux variables, de 1 à 5 covariables, le *r* partiel, son intervalle (Fisher) et la corrélation simple.
+- **La modération** : l'interaction de deux prédicteurs, centrés par défaut, Δ*R*², les pentes simples à −1 ÉT, à la moyenne et à +1 ÉT, avec leur figure.
+- Chacune a sa phrase, son tableau et sa figure APA, son script R (R de base, vérifié à 10⁻⁶ près), sa phrase de Méthode, sa place dans le plan (effets `partial` et `interaction`), le préenregistrement et l'article.
+- **Le sous-groupe** (D-113, D-116) : une analyse, une analyse du carnet ou une hypothèse peut ne porter que sur une partie des personnes (`sexe = Femme`, `age ≥ 40`, `sexe parmi …`), après les règles d'exclusion ; la phrase, chaque note de tableau et de figure, la Méthode, le préenregistrement et le script R le disent. Jamais par un identifiant, un texte libre ou une date. Le projet passe au format 0.6.0 et le carnet en version 1.3.0 (les plus anciens s'ouvrent tels quels). Un *p* corrigé est toujours confirmé quand il change (D-116).
+- **Le sens attendu nommé** : sur la page « Plan », « Femme plus élevé que Homme », ou les noms des deux mesures d'un test apparié, au lieu de « le premier groupe ».
+- **En ligne de commande** : `apparie`, `anova_rm`, `logistique`, `partielle`, `moderation` (en anglais `paired`, `rm_anova`, `logistic`, `partial`, `moderation`), avec `--premiere`, `--seconde`, `--mesures`, `--covariables`, `--focal`, `--moderateur`, `--evenement`, `--centrer`, et `--sous-groupe sexe eq 1` pour `ddict analyser`, `ddict carnet ajouter` et `ddict plan ajouter`.
+- **L'IA conseillère** connaît les analyses nouvelles ; `scripts/banc_conseil.py --suivi` l'évalue sur six objectifs écrits pour la base de suivi.
+- Une base fictive de suivi (`etude-suivi.sav`, 240 participants, trois temps de mesure) et son corrigé, pour les tests et pour essayer.
+- **Corrections après l'essai et le scénario** : les tableaux et les figures d'une analyse sur sous-groupe décrivent bien les personnes du sous-groupe (la note d'un test t donnait les effectifs de toute la base) ; le conseiller refusait toute proposition qui nommait un rôle ou une méthode des nouvelles analyses ; le sens d'un test apparié parle de « la première mesure », plus de « groupe » ; l'axe logarithmique des figures est gradué en valeurs simples (0,5 ; 0,7 ; 1).
+- Second essai sur la base ouverte AMATUS : les sous-groupes de l'article, choisis dans l'outil, redonnent ses chiffres, et R ceux de l'outil (`docs/essais/2026-10-18-essai-v014-amatus.md`).
+- Guides : « Les analyses du catalogue élargi et le sous-groupe », en français et en anglais ; le scénario manuel gagne les étapes 54 à 58.
+
 ## 0.13.0 — 2026-10-18
 
 Le plan d'analyse, le préenregistrement et l'ébauche d'article : les hypothèses écrites avant l'analyse, le gel et les amendements, puis un article IMRaD de la page de titre aux Références (plan : `docs/plan-v0.13.md`, D-101 à D-110 ; fiche validée : `docs/plan-analyse-article.md`). Aucune IA dans cette version.

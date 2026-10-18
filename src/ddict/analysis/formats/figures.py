@@ -15,7 +15,7 @@ matplotlib.use("Agg")  # no window: the image is written in memory
 
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.ticker import FuncFormatter
+from matplotlib.ticker import FixedLocator, FuncFormatter, NullFormatter, NullLocator
 
 from ddict.analysis.apa import ApaFigure
 from ddict.analysis.results import MINUS
@@ -34,9 +34,25 @@ STYLE = {
 }
 
 
-def _tick(language: str):
+def log_ticks(low: float, high: float) -> list[float]:
+    """v0.14: a few plain values on a logarithmic axis (0,5, 0,7, 1, 1,5...), not the
+    powers of ten that matplotlib writes when the range is under a decade."""
+    tenths = tuple(m / 10 for m in range(10, 100))
+    halves = tuple(m / 2 for m in range(2, 20))
+    # The finest steps that give at most seven values.
+    for steps in (tenths, halves, (1, 1.5, 2, 3, 5, 7), (1, 2, 5), (1,)):
+        ticks = [m * 10.0**k for k in range(-4, 5) for m in steps]
+        ticks = [round(v, 6) for v in ticks if low <= v * 1.000001 and v <= high * 1.000001]
+        if len(ticks) <= 7:
+            break
+    return ticks or [low, high]
+
+
+def _tick(language: str, plain: bool = False):
+    """The numbers of an axis; plain (a logarithmic axis): as many decimals as they have."""
+
     def show(value, _position):
-        text = f"{value:g}" if float(value).is_integer() else f"{value:.1f}"
+        text = f"{value:g}" if plain or float(value).is_integer() else f"{value:.1f}"
         text = text.replace("-", MINUS)
         return text.replace(".", ",") if language == "fr" else text
 
@@ -108,6 +124,12 @@ def _coefficients(ax, figure: ApaFigure) -> None:
         ax.axvline(figure.reference, color="0.5", linestyle="--", linewidth=1)
     if figure.log_scale:
         ax.set_xscale("log")
+        ends = [*series.values, *(series.low or ()), *(series.high or ())]
+        if figure.reference is not None:
+            ends.append(figure.reference)
+        ax.xaxis.set_major_locator(FixedLocator(log_ticks(min(ends), max(ends))))
+        ax.xaxis.set_minor_locator(NullLocator())
+        ax.xaxis.set_minor_formatter(NullFormatter())
     ax.set_yticks(y, figure.categories)
     ax.set_ylim(-0.6, len(figure.categories) - 0.4)
 
@@ -238,7 +260,7 @@ def image(figure: ApaFigure, language: str, kind: str = "png") -> bytes:
         if figure.kind != "coefficients":
             ax.yaxis.set_major_formatter(_tick(language))
         if figure.kind in ("scatter", "coefficients"):
-            ax.xaxis.set_major_formatter(_tick(language))
+            ax.xaxis.set_major_formatter(_tick(language, plain=figure.log_scale))
         fig.tight_layout()
         out = io.BytesIO()
         metadata = {"Software": None} if kind == "png" else None  # the same bytes every time

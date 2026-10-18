@@ -22,7 +22,7 @@ from scipy import stats
 
 from ddict import i18n
 from ddict.analysis.book import Codebook
-from ddict.analysis.data import PreparedData, chosen_levels
+from ddict.analysis.data import PreparedData, apply_subset, chosen_levels
 from ddict.analysis.models import _codes, _mid
 from ddict.analysis.results import MINUS, AnalysisResult, number, p_value
 from ddict.i18n import _
@@ -1436,6 +1436,9 @@ def describe(
     with i18n.using(language):
         book = Codebook(project, prepared)
         builder = _Builder(first_table, first_figure)
+        # The tables and figures read the data again: those of the subgroup's people only.
+        if result.subgroup is not None:
+            prepared = apply_subset(prepared, result.subgroup)
         BUILDERS[result.analysis](builder, book, prepared, result)
         tables, figures = builder.tables, builder.figures
         if result.subgroup_text:  # v0.14 (D-113): every note says who was analysed

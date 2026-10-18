@@ -250,6 +250,8 @@ def test_the_page_gives_the_command_result(tmp_path):
     app.selectbox(key="analysis-key").set_value("paired").run()
     app.selectbox(key="analysis-paired-first").set_value("anxiete_t1").run()
     app.selectbox(key="analysis-paired-second").set_value("anxiete_t2").run()
+    alternative = next(r for r in app.radio if r.label == "Hypothèse")
+    assert alternative.options[1] == "Unilatérale : la première mesure plus élevée"
     app.button(key="analysis-run").click().run()
     assert not app.exception, app.exception
     sentence = next(m.value for m in app.markdown if m.value.startswith("> "))

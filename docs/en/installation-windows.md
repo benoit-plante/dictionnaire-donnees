@@ -273,6 +273,32 @@ On the command line: `ddict plan list`, `add` (the variables as for `ddict noteb
 
 A trial on an open database and its published article is described (in French) in [`../essais/2026-10-18-essai-plan-article-amatus.md`](../essais/2026-10-18-essai-plan-article-amatus.md): the tool's figures there are those of the article and of R.
 
+## 17. The widened catalogue and the subgroup
+
+Since 0.14, the **Analyses** page, the **Plan** page and the notebook offer five more analyses, written and checked in advance like the first six (details: [`catalogue-elargi.md`](../catalogue-elargi.md), in French):
+
+- **Paired t test**: compare two measures of the same person (before and after a programme). Method: paired t test or Wilcoxon signed-rank test. The expected direction names the two measures.
+- **Repeated-measures ANOVA**: three or more measures of the same person, with the Greenhouse-Geisser correction when sphericity is doubtful; pairwise comparisons corrected by Holm, if wanted.
+- **Logistic regression**: predict an outcome with two categories (dropped out: yes or no); the table gives the odds ratios, the figure shows them on a logarithmic scale around 1. **Predicted category** says which of the two is the outcome studied.
+- **Partial correlation**: the link between two variables when one or more covariates are held constant; the table also gives the simple correlation.
+- **Moderation**: a link that depends on a third variable; the interaction, with its simple slopes at −1 SD, the mean and +1 SD. Continuous variables are centred by default.
+
+**The subgroup.** Each analysis, notebook entry and hypothesis can be about part of the people only: open **Subgroup (optional)**, choose the variable, the condition (=, ≠, among; for a numeric variable also <, ≤, >, ≥) and the value, by its label (“Female”). The subgroup applies after the exclusion rules; the result sentence starts with “Subgroup (sex = Female).”, the note of each table and figure says it, so do the Method and the preregistration, and the R script makes the same selection. People outside the subgroup count among those left out. A subgroup is described by a coded variable, never by an identifier, free text or a date.
+
+On the command line, the same analyses are called `paired`, `rm_anova`, `logistic`, `partial` and `moderation`, and the subgroup is written `--subgroup sex eq 1` (or `sex in 1 2`, `age ge 40`) with `ddict analyse`, `ddict notebook add` and `ddict plan add`; `ddict plan modify H1 --subgroup aucun` removes it. For example:
+
+```
+ddict analyse etude-suivi.dd.json paired --first anxiete_t1 --second anxiete_t2 --subgroup sexe eq 1
+ddict analyse etude-suivi.dd.json rm_anova --measures anxiete_t1 anxiete_t2 anxiete_t3
+ddict analyse etude-suivi.dd.json logistic --outcome abandon --predictors motivation
+ddict analyse etude-suivi.dd.json partial --variables stress sommeil --covariates charge
+ddict analyse etude-suivi.dd.json moderation --outcome epuisement --focal charge --moderator soutien
+```
+
+The fictional database `etude-suivi.sav` (folder `exemples\bases-fictives`) is there to try them. The advising AI knows these analyses too: on six objectives written for this database, the model `qwen2.5:7b-instruct-q4_K_M` proposed the right analysis first four times, and among its proposals five times; it sometimes adds covariates the objective does not ask for. The subgroup is not part of its proposals: it is yours to choose.
+
+A second trial on the open AMATUS database is described in [`essais/2026-10-18-essai-v014-amatus.md`](../essais/2026-10-18-essai-v014-amatus.md) (in French): the subgroups of the published article, chosen in the tool on the whole database, give its figures again, and R gives the tool's.
+
 ## Update or uninstall
 
 - **Update**: download and extract the new archive, then double-click its `installer.bat`. If the tool is open, the installer offers to close it (answer `y`): it cannot replace it while it runs. Your project files are kept. A project opened with version 0.8 no longer opens with an older version (its format changed); the reverse works.
@@ -309,7 +335,7 @@ ddict advise sleep-study.dd.json "Compare the sleep of women and men." --model q
 ddict evaluate --model qwen2.5:7b-instruct-q4_K_M       # model bench
 ```
 
-`--preview` (with `link` or `enrich`, without `--model`) writes the messages that would be sent into the `sleep-study.dd-envois\apercu` folder, without sending anything. `ddict export --no-text G2` leaves out the question text of a group for one export. `ddict analyse` writes the report, the tables and the R script next to the project (analyses: `table1`, `t_test`, `anova`, `chi_square`, `correlation`, `regression`); `ddict advise` shows the model's proposals without computing anything (`--preview` to see the message only).
+`--preview` (with `link` or `enrich`, without `--model`) writes the messages that would be sent into the `sleep-study.dd-envois\apercu` folder, without sending anything. `ddict export --no-text G2` leaves out the question text of a group for one export. `ddict analyse` writes the report, the tables and the R script next to the project (analyses: `table1`, `t_test`, `paired`, `rm_anova`, `anova`, `chi_square`, `correlation`, `partial`, `regression`, `logistic`, `moderation`; `--subgroup` for part of the people); `ddict advise` shows the model's proposals without computing anything (`--preview` to see the message only).
 
 ## If something goes wrong
 

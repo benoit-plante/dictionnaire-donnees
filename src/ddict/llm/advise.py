@@ -51,11 +51,15 @@ MIN_COMMON_CHARS = 15  # a shorter common start of the items' labels says nothin
 MAX_MESSAGE_TOKENS = 3300
 CHARS_PER_TOKEN = 3.5
 
-# The catalogue's keys: the message offers every analysis, a proposal names one of them.
+# The catalogue's keys: the message offers every analysis, a proposal names one of them;
+# its roles and methods too, so that a new analysis needs no change here (v0.14).
 AnalysisKey = Literal[tuple(CATALOGUE)]  # type: ignore[valid-type]
-RoleKey = Literal["variables", "group", "outcome", "rows", "columns", "predictors"]
-Method = Literal["", "welch", "student", "mann_whitney", "anova", "kruskal_wallis", "pearson",
-                 "fisher", "spearman"]  # fmt: skip
+ROLE_KEYS = tuple(dict.fromkeys(r.key for a in CATALOGUE.values() for r in a.roles))
+METHOD_KEYS = tuple(
+    dict.fromkeys(m for a in CATALOGUE.values() for m in a.options.get("method", ()))
+)
+RoleKey = Literal[ROLE_KEYS]  # type: ignore[valid-type]
+Method = Literal[("", *METHOD_KEYS)]  # type: ignore[valid-type]
 Reason = Annotated[str, StringConstraints(strip_whitespace=True, max_length=MAX_REASON_CHARS)]
 
 

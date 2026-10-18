@@ -224,3 +224,17 @@ CHOICES = Texts(
         "no": N_("Non"),
     }
 )
+# The paired test compares two measures, not two groups (v0.14).
+PAIRED_CHOICES = Texts(
+    {
+        "greater": N_("Unilatérale : la première mesure plus élevée"),
+        "less": N_("Unilatérale : la première mesure moins élevée"),
+    }
+)
+
+
+def choice(analysis: str, value: str) -> str:
+    """A choice as the interface and the report show it, for this analysis."""
+    if analysis == "paired" and value in PAIRED_CHOICES:
+        return PAIRED_CHOICES[value]
+    return CHOICES.get(value, str(value))

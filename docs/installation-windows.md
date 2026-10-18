@@ -271,6 +271,32 @@ En ligne de commande : `ddict plan lister`, `ajouter` (les variables comme pour 
 
 Un essai sur une base ouverte et son article publié est décrit dans [`essais/2026-10-18-essai-plan-article-amatus.md`](essais/2026-10-18-essai-plan-article-amatus.md) : les chiffres de l'outil y sont ceux de l'article et de R.
 
+## 17. Les analyses du catalogue élargi et le sous-groupe
+
+Depuis la 0.14, la page **Analyses**, la page **Plan** et le carnet proposent cinq analyses de plus, écrites et vérifiées d'avance comme les six premières (détail : [`catalogue-elargi.md`](catalogue-elargi.md)) :
+
+- **Test t apparié** : comparer deux mesures d'une même personne (avant et après un programme). Méthode : test t apparié ou Wilcoxon des rangs signés. Le sens attendu nomme les deux mesures (« Anxiété au début plus élevé que Anxiété à la fin »).
+- **ANOVA à mesures répétées** : trois mesures ou plus d'une même personne, avec la correction de Greenhouse-Geisser quand la sphéricité est douteuse ; comparaisons deux à deux corrigées par Holm, au choix.
+- **Régression logistique** : prédire une issue à deux modalités (abandon : oui ou non) ; le tableau donne les rapports de cotes, la figure les montre sur une échelle logarithmique autour de 1. **Modalité prédite** dit laquelle des deux est l'issue étudiée.
+- **Corrélation partielle** : le lien entre deux variables quand une ou plusieurs covariables sont tenues constantes ; le tableau donne aussi la corrélation simple.
+- **Modération** : un lien qui dépend d'une troisième variable ; l'interaction, avec ses pentes simples à −1 ÉT, à la moyenne et à +1 ÉT. Les variables continues sont centrées par défaut.
+
+**Le sous-groupe.** Chaque analyse, chaque analyse du carnet et chaque hypothèse peut porter sur une partie des personnes seulement : ouvrez **Sous-groupe (facultatif)**, choisissez la variable, la condition (=, ≠, parmi ; pour une variable numérique aussi <, ≤, >, ≥) et la valeur, par son étiquette (« Femme »). Le sous-groupe s'applique après les règles d'exclusion ; la phrase de résultat commence par « Sous-groupe (sexe = Femme). », la note de chaque tableau et de chaque figure le dit, la Méthode et le préenregistrement aussi, et le script R refait la même sélection. Les personnes hors du sous-groupe comptent parmi les écartées. Un sous-groupe se décrit par une variable codée, jamais par un identifiant, un texte libre ou une date.
+
+En ligne de commande, les mêmes analyses s'appellent `apparie`, `anova_rm`, `logistique`, `partielle` et `moderation`, et le sous-groupe s'écrit `--sous-groupe sexe eq 1` (ou `sexe in 1 2`, `age ge 40`) avec `ddict analyser`, `ddict carnet ajouter` et `ddict plan ajouter` ; `ddict plan modifier H1 --sous-groupe aucun` le retire. Par exemple :
+
+```
+ddict analyser etude-suivi.dd.json apparie --premiere anxiete_t1 --seconde anxiete_t2 --sous-groupe sexe eq 1
+ddict analyser etude-suivi.dd.json anova_rm --mesures anxiete_t1 anxiete_t2 anxiete_t3
+ddict analyser etude-suivi.dd.json logistique --dependante abandon --predicteurs motivation
+ddict analyser etude-suivi.dd.json partielle --variables stress sommeil --covariables charge
+ddict analyser etude-suivi.dd.json moderation --dependante epuisement --focal charge --moderateur soutien
+```
+
+La base fictive `etude-suivi.sav` (dossier `exemples\bases-fictives`) sert à les essayer. L'IA conseillère connaît aussi ces analyses : sur six objectifs écrits pour cette base, le modèle `qwen2.5:7b-instruct-q4_K_M` a proposé la bonne analyse en premier quatre fois, et parmi ses propositions cinq fois ; il ajoute parfois des covariables que l'objectif ne demande pas. Le sous-groupe n'entre pas dans ses propositions : c'est à vous de le choisir.
+
+Un second essai sur la base ouverte AMATUS est décrit dans [`essais/2026-10-18-essai-v014-amatus.md`](essais/2026-10-18-essai-v014-amatus.md) : les sous-groupes de l'article publié, choisis dans l'outil sur la base entière, redonnent ses chiffres, et R ceux de l'outil.
+
 ## Mettre à jour ou désinstaller
 
 - **Mettre à jour** : téléchargez et décompressez la nouvelle archive, puis double-cliquez sur son `installer.bat`. Si l'outil est ouvert, l'installateur propose de le fermer (répondez `o`) : il ne peut pas le remplacer pendant qu'il tourne. Vos fichiers projet sont conservés. Un projet ouvert avec la version 0.8 ne s'ouvre plus avec une version plus ancienne (son format a changé) ; l'inverse fonctionne.
@@ -294,6 +320,7 @@ ddict documenter etude-sommeil.dd.json        # copie documentée de la base (.s
 ddict renommer etude-t2.dd.json --suffixe _t2 --reference etude-t1.dd.json   # noms
 ddict analyser etude-sommeil.dd.json test_t --dependante sommeil_total --groupe genre --modalites 1,2
 ddict carnet ajouter etude-sommeil.dd.json correlation --variables heures_sommeil nb_reveils
+ddict analyser etude-suivi.dd.json apparie --premiere anxiete_t1 --seconde anxiete_t2 --sous-groupe sexe eq 1
 ddict carnet lister etude-sommeil.dd.json      # le carnet, recalculé
 ddict exclusions ajouter etude-sommeil.dd.json --condition age lt 18 --raison "Moins de 18 ans"
 ddict exclusions lister etude-sommeil.dd.json   # les règles et le diagramme de flux
@@ -307,7 +334,7 @@ ddict conseiller etude-sommeil.dd.json "Comparer le sommeil des femmes et des ho
 ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M   # banc d'essai d'un modèle
 ```
 
-Les commandes et leurs options ont aussi des noms anglais (`ddict export --work`, `--replace`…). `--apercu` (à `rattacher` ou `enrichir`, sans `--modele`) écrit les messages qui seraient envoyés dans le dossier `etude-sommeil.dd-envois\apercu`, sans rien envoyer. `ddict exporter --sans-texte G2` omet le texte des questions d'un groupe pour un seul export. `ddict analyser` écrit le rapport, les tableaux et le script R à côté du projet (analyses : `tableau1`, `test_t`, `anova`, `khi2`, `correlation`, `regression`) ; `ddict conseiller` affiche les propositions du modèle sans rien calculer (`--apercu` pour voir le message seulement).
+Les commandes et leurs options ont aussi des noms anglais (`ddict export --work`, `--replace`…). `--apercu` (à `rattacher` ou `enrichir`, sans `--modele`) écrit les messages qui seraient envoyés dans le dossier `etude-sommeil.dd-envois\apercu`, sans rien envoyer. `ddict exporter --sans-texte G2` omet le texte des questions d'un groupe pour un seul export. `ddict analyser` écrit le rapport, les tableaux et le script R à côté du projet (analyses : `tableau1`, `test_t`, `apparie`, `anova_rm`, `anova`, `khi2`, `correlation`, `partielle`, `regression`, `logistique`, `moderation` ; `--sous-groupe` pour une partie des personnes) ; `ddict conseiller` affiche les propositions du modèle sans rien calculer (`--apercu` pour voir le message seulement).
 
 ## En cas de problème
 

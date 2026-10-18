@@ -4985,6 +4985,12 @@ msgstr "An answer that repeats an earlier answer on all these variables."
 msgid "Une source documentée est obligatoire."
 msgstr "A documented source is required."
 
+msgid "Unilatérale : la première mesure moins élevée"
+msgstr "One-sided: the first measure lower"
+
+msgid "Unilatérale : la première mesure plus élevée"
+msgstr "One-sided: the first measure higher"
+
 msgid "Unilatérale : le premier groupe moins élevé"
 msgstr "One-sided: the first group lower"
 

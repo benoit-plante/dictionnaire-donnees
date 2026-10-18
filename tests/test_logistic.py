@@ -15,6 +15,7 @@ from ddict.analysis.apa import describe, plain
 from ddict.analysis.book import Codebook
 from ddict.analysis.compute import run
 from ddict.analysis.formats import FORMATS, available
+from ddict.analysis.formats.figures import log_ticks
 from ddict.analysis.method_text import _method_sentences
 from ddict.cli import main
 from ddict.io import read_database
@@ -126,6 +127,20 @@ def test_the_figure_of_odds_ratios(ready):  # noqa: F811
     figure = describe(project, prepared, _run(ready)).figures[0]
     assert (figure.kind, figure.reference, figure.log_scale) == ("coefficients", 1.0, True)
     assert figure.series[0].values[0] == pytest.approx(0.6034676764)
+
+
+@pytest.mark.parametrize(
+    ("low", "high", "ticks"),
+    [
+        (0.47, 1.0, [0.5, 0.7, 1.0]),
+        (0.88, 1.0, [0.9, 0.95, 1.0]),  # the AMATUS trial: under a decade, still several
+        (0.3, 4.0, [0.3, 0.5, 0.7, 1.0, 1.5, 2.0, 3.0]),
+        (0.05, 20.0, [0.1, 1.0, 10.0]),
+    ],
+)
+def test_plain_values_on_the_logarithmic_axis(low, high, ticks):
+    """Not the powers of ten (5e-1, 6e-1...) that overlap, as matplotlib writes them."""
+    assert log_ticks(low, high) == ticks
 
 
 # --- In the Method, the plan and the article. ---

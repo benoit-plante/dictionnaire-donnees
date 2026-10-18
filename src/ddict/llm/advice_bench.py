@@ -29,13 +29,19 @@ KEY_FILE = "corrige-analyses.json"
 SOURCE = "Corrigé de la base fictive des analyses (exemple inventé)"
 
 
-def load_objectives(folder: Path) -> dict:
-    return json.loads((folder / OBJECTIVES_FILE).read_text(encoding="utf-8"))
+FOLLOW_UP_FILE = "objectifs-suivi.json"  # v0.14 (D-115): the widened catalogue
 
 
-def bench_project(folder: Path) -> Project:
-    """The fictional database of the analyses, its scale scored as the answer key says."""
+def load_objectives(folder: Path, name: str = OBJECTIVES_FILE) -> dict:
+    return json.loads((folder / name).read_text(encoding="utf-8"))
+
+
+def bench_project(folder: Path, sav: str | None = None) -> Project:
+    """The fictional database of the analyses, its scale scored as the answer key says; or,
+    for another base of the objectives (the follow-up base, v0.14), that base as read."""
     key = json.loads((folder / KEY_FILE).read_text(encoding="utf-8"))
+    if sav is not None and sav != key["sav"]:
+        return build_project(read_database(folder / sav))
     project = build_project(read_database(folder / key["sav"]))
     scoring = key["scoring"]
     group = next(g for g in project.groups if "bienetre_1" in (g.members.value or []))

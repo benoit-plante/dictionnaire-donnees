@@ -18,7 +18,7 @@ from ddict import i18n
 from ddict.analysis import conditions
 from ddict.analysis import notebook as nb
 from ddict.analysis.book import Codebook
-from ddict.analysis.catalogue import CATALOGUE, CHOICES, OPTIONS, PURPOSES, ROLES, TITLES
+from ddict.analysis.catalogue import CATALOGUE, OPTIONS, PURPOSES, ROLES, TITLES, choice
 from ddict.analysis.compute import AnalysisRefused, run
 from ddict.analysis.data import (
     DataError,
@@ -137,7 +137,7 @@ def _choose_options(
             OPTIONS[option],
             list(values),
             key=option_key(key, option),
-            format_func=CHOICES.__getitem__,
+            format_func=lambda value: choice(key, value),
             horizontal=True,
         )
     group = (chosen.get("group") or [None])[0]
