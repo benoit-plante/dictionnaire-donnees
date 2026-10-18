@@ -16,66 +16,45 @@ NEW_TERM = "glossary-new-term"  # the acronym to add, which other pages may fill
 
 
 def _glossary_entry(project: Project, item) -> None:
+    """An acronym on the common decision card (v0.16, D-121)."""
     term = item.term
     key = f"glossary-{term}"
-    st.markdown(f"**{term}** — {item.meaning}")
-    caption = w.GLOSSARY_ORIGINS[item.origin]
+    input_key = f"input-{key}"
+    origin = w.GLOSSARY_ORIGINS[item.origin]
     if item.status != "none":
-        caption += f" — {w.GLOSSARY_STATUSES[item.status]}"
+        origin += f" — {w.GLOSSARY_STATUSES[item.status]}"
     if item.source:
-        caption += f" ({item.source})"
-    st.caption(caption)
+        origin += f" ({item.source})"
+    notes = []
     if item.proposed_meaning:
-        st.caption(_("Dans le questionnaire : {v}").format(v=item.proposed_meaning))
+        notes.append(_("Dans le questionnaire : {v}").format(v=item.proposed_meaning))
     names = glossary.variables_using(project, term)
     if names:
-        st.caption(_("Variables : {names}").format(names=", ".join(names)))
-    reset = (f"input-{key}",)
+        notes.append(_("Variables : {names}").format(names=", ".join(names)))
 
     def start() -> str:
         current = glossary.entry(c.project(), term)
         return "" if current is None or current.status == "rejected" else current.meaning
 
-    st.text_input(_("Définition"), key=c.field(f"input-{key}", start))
-    if item.status == "proposed":
-        # One gesture (v0.16, D-121): "Accepter" takes the meaning shown, corrected or not.
-        if st.session_state[f"input-{key}"].strip() != item.meaning:
-            st.write(_("« Accepter » enregistrera votre correction ; la définition du "
-                       "questionnaire sera gardée comme origine."))  # fmt: skip
-        with st.container(horizontal=True):  # side by side (v0.16)
-            c.button(
-                _("Accepter"),
-                f"accept-{key}",
-                logic.glossary_accept,
-                term,
-                c.state(f"input-{key}"),
-                timed=True,
-                primary=True,
-                reset=reset,
-                message=False,
-            )
-            c.button(
-                _("Rejeter"),
-                f"reject-{key}",
-                logic.glossary_decide,
-                term,
-                "reject",
-                timed=True,
-                reset=reset,
-                message=False,
-            )
-    c.show_message(f"accept-{key}")
-    c.show_message(f"reject-{key}")
-    if item.status != "proposed":
-        c.button(
-            _("Enregistrer"),
-            f"save-{key}",
-            logic.glossary_write,
-            term,
-            c.state(f"input-{key}"),
-            timed=True,
-            reset=reset,
-        )
+    def draw() -> None:
+        st.text_input(_("Définition"), key=c.field(input_key, start))
+
+    shown = str(st.session_state.get(input_key, item.meaning)).strip()
+    c.decision_card(
+        project,
+        item,
+        key=key,
+        title=term,
+        show=lambda: st.write(item.meaning),
+        field=draw,
+        input_key=input_key,
+        changed=item.status == "proposed" and shown != item.meaning,
+        accept=(logic.glossary_accept, term, c.state(input_key)),
+        reject=(logic.glossary_decide, term, "reject"),
+        save=(logic.glossary_write, term, c.state(input_key)),
+        note=" ; ".join(notes) or None,
+        origin_text=origin,
+    )
     st.divider()
 
 

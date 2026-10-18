@@ -104,5 +104,14 @@ def apply_table(
     return len(chosen) + len(actions)
 
 
+def accept_shown(project: Project, name: str, shown: str, *, now: str) -> None:
+    """Accept the level shown on the variable's page (v0.16, D-121), by its original name:
+    the proposed one, validated; another, chosen as a correction."""
+    entry = project.variable(name)
+    if entry.measure_level.status != "proposed":
+        raise ReviewError(_("Ce niveau n'attend plus de décision."))
+    apply_table(project, {w.final_name(entry): shown}, {w.final_name(entry): "accept"}, now=now)
+
+
 def waiting(project: Project) -> int:
     return sum(1 for e in project.variables if e.measure_level.status == "proposed")

@@ -15,7 +15,7 @@ from ddict.i18n import N_, Texts, _, field_label
 from ddict.project.model import Project, TrackedValue, VariableEntry
 from ddict.questionnaire import link
 from ddict.questionnaire.labels import ASSUMED_ORDER
-from ddict.review import logic
+from ddict.review import levels, logic, names
 from ddict.review.ui import common as c
 from ddict.workflow import tasks
 
@@ -45,62 +45,37 @@ def _start_text(name: str, field: str) -> str:
 def _tracked_field(project: Project, entry: VariableEntry, field: str, title: str) -> None:
     tracked: TrackedValue = getattr(entry, field)
     key = f"{entry.name}-{field}"
-    st.markdown(f"**{title}**")
-    if tracked.value is not None:
-        st.write(tracked.value)
-        st.caption(c.origin(project, tracked))
-        if tracked.proposed_value is not None:
-            st.caption(_("Valeur d'origine : {v}").format(v=tracked.proposed_value))
-    elif field == "label" and entry.file.label:
-        st.write(entry.file.label)
-        st.caption(w.ORIGINS["file"])
-    else:
-        st.caption(_("(vide)"))
+    input_key = f"input-{key}"
 
-    reset = (f"input-{key}",)
-    if tracked.status == "proposed":
-        left, right = st.columns(2)
-        with left:
-            c.button(
-                _("Accepter"),
-                f"accept-{key}",
-                logic.decide,
-                entry.name,
-                field,
-                "accept",
-                timed=True,
-                primary=True,
-                reset=reset,
-            )
-        with right:
-            c.button(
-                _("Rejeter"),
-                f"reject-{key}",
-                logic.decide,
-                entry.name,
-                field,
-                "reject",
-                timed=True,
-                reset=reset,
-            )
-    else:
-        # The buttons are gone once decided: their message goes under the field.
-        c.show_message(f"accept-{key}")
-        c.show_message(f"reject-{key}")
-    st.text_input(
-        _("Corriger ou saisir"),
-        key=c.field(f"input-{key}", lambda: _start_text(entry.name, field)),
-        label_visibility="collapsed",
-    )
-    c.button(
-        _("Enregistrer"),
-        f"save-{key}",
-        logic.write,
-        entry.name,
-        field,
-        c.state(f"input-{key}"),
-        timed=True,
-        reset=reset,
+    def show() -> None:
+        if tracked.value is not None:
+            st.write(tracked.value)
+        elif field == "label" and entry.file.label:
+            st.write(entry.file.label)
+            st.caption(w.ORIGINS["file"])
+        else:
+            st.caption(_("(vide)"))
+
+    def draw() -> None:
+        st.text_input(
+            _("Corriger ou saisir"),
+            key=c.field(input_key, lambda: _start_text(entry.name, field)),
+            label_visibility="collapsed",
+        )
+
+    shown = str(st.session_state.get(input_key, tracked.value or "")).strip()
+    c.decision_card(
+        project,
+        tracked,
+        key=key,
+        title=title,
+        show=show,
+        field=draw,
+        input_key=input_key,
+        changed=tracked.status == "proposed" and shown != (tracked.value or ""),
+        accept=(logic.accept_shown, entry.name, field, c.state(input_key)),
+        reject=(logic.decide, entry.name, field, "reject"),
+        save=(logic.write, entry.name, field, c.state(input_key)),
     )
 
 
@@ -119,51 +94,7 @@ def _question(project: Project, entry: VariableEntry) -> None:
             text = text[: MAX_OPTION_TEXT - 1] + "…"
         return f"{target_id} — {text}"
 
-    st.markdown(f"**{_('Question du questionnaire')}**")
-    if tracked.value is not None:
-        text = link.describe(project.questionnaire, tracked.value)
-        if text is None:
-            st.warning(
-                _("Rattachement introuvable dans le questionnaire : {id}").format(id=tracked.value)
-            )
-        else:
-            st.write(text)
-        st.caption(c.origin(project, tracked))
-        if tracked.proposed_value is not None:
-            st.caption(_("Proposé : {v}").format(v=tracked.proposed_value))
-    else:
-        st.caption(_("(pas encore rattachée)"))
-
     key = f"question-{name}"
-    if tracked.status == "proposed":
-        left, right = st.columns(2)
-        with left:
-            c.button(
-                _("Accepter"),
-                f"accept-{key}",
-                logic.decide,
-                name,
-                "question",
-                "accept",
-                timed=True,
-                primary=True,
-                reset=(key,),
-            )
-        with right:
-            c.button(
-                _("Rejeter"),
-                f"reject-{key}",
-                logic.decide,
-                name,
-                "question",
-                "reject",
-                timed=True,
-                reset=(key,),
-            )
-    else:
-        c.show_message(f"accept-{key}")
-        c.show_message(f"reject-{key}")
-
     found = link.candidates(project).get(name, [])
     near = not found
     if near:  # questions around its place in the questionnaire (D-040)
@@ -178,50 +109,69 @@ def _question(project: Project, entry: VariableEntry) -> None:
             return current.value
         return None
 
-    if found and start() is None:
-        first = _("aucune question") if found[0] == link.NO_QUESTION else found[0]
-        c.offer(
-            _("Reprendre la proposition du calcul : {choice}").format(choice=first),
-            f"offer-{key}",
-            key,
-            found[0],
-        )
-    st.selectbox(
-        _("Rattacher à"),
-        choices,
-        format_func=option_text,
-        placeholder=_("Choisir une question"),
-        key=c.field(key, start),
-    )
-    if found and found[0] == link.NO_QUESTION:
-        why = {
-            "identifier": N_("un identifiant"),
-            "completion_date": N_("une date de passation"),
-            "computed_score": N_("un score calculé"),
-        }.get(link.no_question_reason(entry) or "identifier")
-        st.caption(
-            _(
-                "En tête de liste : « aucune », car la variable semble être {why} ; "
-                "puis les questions candidates calculées."
-            ).format(why=_(why))
-        )
-    elif near and found:
-        st.caption(
-            _(
-                "En tête de liste : les questions voisines, autour de sa place dans le "
-                "questionnaire (aucun mot ne les relie au nom de la variable), puis « aucune »."
+    def draw() -> None:
+        if found and start() is None:
+            first = _("aucune question") if found[0] == link.NO_QUESTION else found[0]
+            c.offer(
+                _("Reprendre la proposition du calcul : {choice}").format(choice=first),
+                f"offer-{key}",
+                key,
+                found[0],
             )
+        st.selectbox(
+            _("Rattacher à"),
+            choices,
+            format_func=option_text,
+            placeholder=_("Choisir une question"),
+            key=c.field(key, start),
         )
-    else:
-        st.caption(_("En tête de liste : les questions candidates calculées, puis « aucune »."))
-    c.button(
-        _("Rattacher"),
-        f"save-{key}",
-        logic.link_question,
-        name,
-        c.state(key),
-        timed=True,
-        reset=(key,),
+        if found and found[0] == link.NO_QUESTION:
+            why = {
+                "identifier": N_("un identifiant"),
+                "completion_date": N_("une date de passation"),
+                "computed_score": N_("un score calculé"),
+            }.get(link.no_question_reason(entry) or "identifier")
+            st.caption(
+                _(
+                    "En tête de liste : « aucune », car la variable semble être {why} ; "
+                    "puis les questions candidates calculées."
+                ).format(why=_(why))
+            )
+        elif near and found:
+            st.caption(
+                _(
+                    "En tête de liste : les questions voisines, autour de sa place dans le "
+                    "questionnaire (aucun mot ne les relie au nom de la variable), puis « aucune »."
+                )
+            )
+        else:
+            st.caption(_("En tête de liste : les questions candidates calculées, puis « aucune »."))
+
+    def show() -> None:
+        if tracked.value is None:
+            st.caption(_("(pas encore rattachée)"))
+            return
+        text = link.describe(project.questionnaire, tracked.value)
+        if text is None:
+            st.warning(
+                _("Rattachement introuvable dans le questionnaire : {id}").format(id=tracked.value)
+            )
+        else:
+            st.write(text)
+
+    c.decision_card(
+        project,
+        tracked,
+        key=key,
+        title=_("Question du questionnaire"),
+        show=show,
+        field=draw,
+        input_key=key,
+        changed=tracked.status == "proposed" and st.session_state.get(key) != tracked.value,
+        accept=(logic.link_question, name, c.state(key)),
+        reject=(logic.decide, name, "question", "reject"),
+        save=(logic.link_question, name, c.state(key)),
+        save_label=_("Rattacher"),
     )
     _value_labels(project, entry)
 
@@ -232,39 +182,25 @@ def _value_labels(project: Project, entry: VariableEntry) -> None:
     if tracked.origin != "questionnaire":
         return
     name = entry.name
-    st.markdown(f"**{_('Étiquettes de valeurs tirées des options de réponse')}**")
-    table = pd.DataFrame(
-        [(w.code_text(v.code), v.label) for v in tracked.value or []],
-        columns=[_("Code"), _("Étiquette")],
+
+    def show() -> None:
+        table = pd.DataFrame(
+            [(w.code_text(v.code), v.label) for v in tracked.value or []],
+            columns=[_("Code"), _("Étiquette")],
+        )
+        st.dataframe(table, hide_index=True)
+
+    c.decision_card(
+        project,
+        tracked,
+        key=f"labels-{name}",
+        title=_("Étiquettes de valeurs tirées des options de réponse"),
+        show=show,
+        note=_(ASSUMED_ORDER),
+        accept=(logic.decide, name, "value_labels", "accept"),
+        reject=(logic.decide, name, "value_labels", "reject"),
+        labels=(_("Accepter les étiquettes"), _("Rejeter les étiquettes")),
     )
-    st.dataframe(table, hide_index=True)
-    st.caption(f"{c.origin(project, tracked)} — {_(ASSUMED_ORDER)}")
-    if tracked.status == "proposed":
-        left, right = st.columns(2)
-        with left:
-            c.button(
-                _("Accepter les étiquettes"),
-                f"accept-labels-{name}",
-                logic.decide,
-                name,
-                "value_labels",
-                "accept",
-                timed=True,
-                primary=True,
-            )
-        with right:
-            c.button(
-                _("Rejeter les étiquettes"),
-                f"reject-labels-{name}",
-                logic.decide,
-                name,
-                "value_labels",
-                "reject",
-                timed=True,
-            )
-    else:
-        c.show_message(f"accept-labels-{name}")
-        c.show_message(f"reject-labels-{name}")
 
 
 def _file_and_computed(entry: VariableEntry) -> None:
@@ -374,30 +310,92 @@ def _sentinel(entry: VariableEntry, code) -> None:
 
 def _privacy(entry: VariableEntry) -> None:
     tracked = entry.privacy.privacy_class
-    st.markdown(f"**{_('Confidentialité')}** : {w.privacy_text(entry)}")
-    caption = w.ORIGINS[tracked.origin]
-    if tracked.status != "none":
-        caption += f" — {w.STATUSES[tracked.status]}"
-    st.caption(caption)
     name = entry.name
     key = f"privacy-{name}"
-    st.selectbox(
-        _("Classe"),
-        logic.PRIVACY_CLASSES,
-        placeholder=_("Choisir…"),
-        format_func=lambda c: w.PRIVACY[c],
-        key=c.field(
-            key, lambda: c.project().variable(name).privacy.privacy_class.value or "ordinary"
-        ),
+
+    def draw() -> None:
+        st.selectbox(
+            _("Classe"),
+            logic.PRIVACY_CLASSES,
+            placeholder=_("Choisir…"),
+            format_func=lambda c: w.PRIVACY[c],
+            key=c.field(
+                key, lambda: c.project().variable(name).privacy.privacy_class.value or "ordinary"
+            ),
+        )
+
+    c.decision_card(
+        c.project(),
+        tracked,
+        key=key,
+        title=_("Confidentialité"),
+        show=lambda: st.write(w.privacy_text(entry)),
+        field=draw,
+        input_key=key,
+        changed=tracked.status == "proposed" and st.session_state.get(key) != tracked.value,
+        accept=(logic.set_privacy, name, c.state(key)),
+        save=(logic.set_privacy, name, c.state(key)),
+        save_label=_("Confirmer la classe"),
     )
-    c.button(
-        _("Confirmer la classe"),
-        f"save-{key}",
-        logic.set_privacy,
-        entry.name,
-        c.state(key),
-        timed=True,
-        reset=(key,),
+
+
+def _level(project: Project, entry: VariableEntry) -> None:
+    """A proposed measure level, decided here too (v0.16); the table of the page Base stays."""
+    tracked = entry.measure_level
+    if tracked.status != "proposed":
+        return
+    name = entry.name
+    key = f"level-{name}"
+
+    def draw() -> None:
+        st.selectbox(
+            _("Niveau"),
+            list(w.MEASURES),
+            placeholder=_("Choisir…"),
+            format_func=w.MEASURES.__getitem__,
+            key=c.field(key, lambda: c.project().variable(name).measure_level.value),
+        )
+
+    c.decision_card(
+        project,
+        tracked,
+        key=key,
+        title=_("Niveau de mesure"),
+        show=lambda: st.write(w.MEASURES[tracked.value]),
+        field=draw,
+        input_key=key,
+        changed=st.session_state.get(key) != tracked.value,
+        accept=(levels.accept_shown, name, c.state(key)),
+        reject=(levels.apply_table, {}, {w.final_name(entry): "reject"}),
+    )
+
+
+def _new_name(project: Project, entry: VariableEntry) -> None:
+    """A proposed new name, decided here too (v0.16); the table of the page Noms stays."""
+    tracked = entry.new_name
+    if tracked.status != "proposed":
+        return
+    name = entry.name
+    key = f"name-{name}"
+
+    def draw() -> None:
+        st.text_input(
+            _("Nouveau nom"),
+            key=c.field(key, lambda: c.project().variable(name).new_name.value or ""),
+            label_visibility="collapsed",
+        )
+
+    c.decision_card(
+        project,
+        tracked,
+        key=key,
+        title=_("Nouveau nom"),
+        show=lambda: st.write(tracked.value),
+        field=draw,
+        input_key=key,
+        changed=str(st.session_state.get(key, tracked.value)).strip() != tracked.value,
+        accept=(names.accept_shown, name, c.state(key)),
+        reject=(names.reject, name),
     )
 
 
@@ -503,6 +501,8 @@ def page(project: Project, entry: VariableEntry) -> None:
         _tracked_field(project, entry, "unit", _("Unité"))
     with right:
         _tracked_field(project, entry, "description", _("Description"))
+    _level(project, entry)
+    _new_name(project, entry)
     for index, issue in enumerate(entry.issues):
         st.info(f"{issue.value} — {c.origin(project, issue)}")
         if issue.status == "proposed":

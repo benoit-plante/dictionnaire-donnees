@@ -859,8 +859,14 @@ msgstr ""
 msgid "Ce fichier projet est introuvable."
 msgstr "This project file cannot be found."
 
+msgid "Ce niveau n'attend plus de décision."
+msgstr "This level no longer waits for a decision."
+
 msgid "Ce nom de score est déjà celui d'un autre groupe."
 msgstr "This score name is already another group's."
+
+msgid "Ce nom n'attend plus de décision."
+msgstr "This name no longer waits for a decision."
 
 #, python-brace-format
 msgid "Ce sigle n'attend plus de décision : {term}."
@@ -904,6 +910,9 @@ msgstr "These labels no longer wait for a decision in this group: {names}."
 
 msgid "Cette condition demande une valeur."
 msgstr "This condition needs a value."
+
+msgid "Cette valeur n'attend plus de décision."
+msgstr "This value no longer waits for a decision."
 
 msgid "Champ"
 msgstr "Field"
@@ -2656,6 +2665,9 @@ msgstr ""
 "The earlier wave: its project file (.dd.json), its documented copy (.sav) or its table of names "
 "(.csv: nom_origine,nouveau_nom)."
 
+msgid "La valeur affichée est vide ; utilisez « Rejeter »."
+msgstr "The value shown is empty; use “Reject”."
+
 msgid "La valeur corrigée est vide."
 msgstr "The corrected value is empty."
 
@@ -4233,10 +4245,6 @@ msgstr "Proposals saved in {path}, to review."
 #, python-brace-format
 msgid "Propositions pour l'objectif précédent : {goal}"
 msgstr "Proposals for the previous objective: {goal}"
-
-#, python-brace-format
-msgid "Proposé : {v}"
-msgstr "Proposed: {v}"
 
 msgid "Proposés"
 msgstr "Proposed"
@@ -7821,10 +7829,8 @@ msgstr "{y} by {x}"
 msgid "§ {n}, phrase {k}"
 msgstr "§ {n}, sentence {k}"
 
-msgid ""
-"« Accepter » enregistrera votre correction ; la définition du questionnaire sera gardée comme "
-"origine."
-msgstr "“Accept” will save your correction; the questionnaire's meaning will be kept as its origin."
+msgid "« Accepter » enregistrera votre correction ; la proposition sera gardée comme origine."
+msgstr "“Accept” will save your correction; the proposal will be kept as its origin."
 
 msgid ""
 "« Non documenté » veut dire inconnu : ne pas le deviner. Ne citer aucun seuil, étendue ou "

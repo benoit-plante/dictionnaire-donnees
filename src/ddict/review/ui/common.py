@@ -177,6 +177,65 @@ def button(
         show_message(key)
 
 
+def decision_card(
+    project: Project,
+    tracked: TrackedValue,
+    *,
+    key: str,
+    title: str,
+    show,
+    field=None,
+    input_key: str | None = None,
+    changed: bool = False,
+    accept: tuple | None = None,
+    reject: tuple | None = None,
+    save: tuple | None = None,
+    labels: tuple[str, str] | None = None,
+    save_label: str | None = None,
+    note: str | None = None,
+    origin_text: str | None = None,
+) -> None:
+    """One way to decide a value, on every page (v0.16, D-121): the value, its origin and its
+    status, the field to change it, then "Accepter", which takes the value shown in the
+    field, and "Rejeter", side by side. Once decided, "Enregistrer" changes it.
+
+    `show()` draws the value; `field()` draws its input under `input_key` (none for a value
+    that is accepted or rejected as a whole); `changed` says the field differs from the
+    proposal. `accept`, `reject` and `save` are (action, *arguments), the arguments read
+    when the button is clicked. `origin_text` replaces the origin of a value that is not a
+    tracked one (an acronym of the glossary)."""
+    st.markdown(f"**{title}**")
+    show()
+    if origin_text is not None:
+        st.caption(origin_text)
+    elif tracked.value is not None or tracked.status != "none":
+        st.caption(origin(project, tracked))
+    proposed = getattr(tracked, "proposed_value", None)
+    if proposed is not None:
+        st.caption(_("Valeur d'origine : {v}").format(v=proposed))
+    if note:
+        st.caption(note)
+    if field is not None:
+        field()
+    reset = (input_key,) if input_key else ()
+    if tracked.status == "proposed" and accept is not None:
+        if changed:
+            st.write(_("« Accepter » enregistrera votre correction ; la proposition sera gardée "
+                       "comme origine."))  # fmt: skip
+        accept_label, reject_label = labels or (_("Accepter"), _("Rejeter"))
+        with st.container(horizontal=True):
+            button(accept_label, f"accept-{key}", *accept, timed=True, primary=True,
+                   reset=reset, message=False)  # fmt: skip
+            if reject is not None:
+                button(reject_label, f"reject-{key}", *reject, timed=True, reset=reset,
+                       message=False)  # fmt: skip
+    elif save is not None:
+        button(save_label or _("Enregistrer"), f"save-{key}", *save, timed=True, reset=reset,
+               message=False)  # fmt: skip
+    for kind in ("accept", "reject", "save"):
+        show_message(f"{kind}-{key}")
+
+
 def origin(project: Project, tracked: TrackedValue) -> str:
     text = w.ORIGINS[tracked.origin]
     if tracked.status != "none":

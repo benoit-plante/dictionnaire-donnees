@@ -191,6 +191,21 @@ def apply_table(
     return changed + len(chosen)
 
 
+def accept_shown(project: Project, name: str, shown: str, *, now: str) -> None:
+    """Accept the new name shown on the variable's page (v0.16, D-121): the proposed one,
+    validated; another, written as the team's, checked like any name."""
+    if project.variable(name).new_name.status != "proposed":
+        raise ReviewError(_("Ce nom n'attend plus de décision."))
+    if not (shown or "").strip():
+        raise ReviewError(_("La valeur affichée est vide ; utilisez « Rejeter »."))
+    apply_table(project, {name: shown.strip()}, {name: "accept"}, now=now)
+
+
+def reject(project: Project, name: str, *, now: str) -> None:
+    """Reject the proposed new name, from the variable's page (v0.16)."""
+    apply_table(project, {}, {name: "reject"}, now=now)
+
+
 # --- Rules: prefixes, base names (stems), the wave mark. ---
 
 

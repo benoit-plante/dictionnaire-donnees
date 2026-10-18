@@ -197,7 +197,8 @@ def test_accept_in_the_interface_saves_the_project(app):
 def test_value_typed_before_the_click_is_kept(app):
     test, path = app
     test.text_input(key="input-sommeil_q1-description").input("Texte tapé juste avant.")
-    test.button(key="save-sommeil_q1-description").click().run()
+    # v0.16 (D-121): "Accepter" takes the value shown, corrected or not.
+    test.button(key="accept-sommeil_q1-description").click().run()
     description = load_project(path).variable("sommeil_q1").description
     assert (description.value, description.status) == ("Texte tapé juste avant.", "corrected")
 

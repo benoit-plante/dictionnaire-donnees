@@ -164,6 +164,19 @@ def decide(
         entry.ai_signals = [s for s in entry.ai_signals if not s.startswith(f"{field}:")]
 
 
+def accept_shown(project: Project, name: str, field: Field, shown: str, *, now: str) -> None:
+    """Accept the value shown in the field (v0.16, D-121): the proposal as it is, validated;
+    or the person's correction, kept with the proposal as its origin."""
+    tracked: TrackedValue[str] = getattr(project.variable(name), field)
+    if tracked.status != "proposed":
+        raise ReviewError(_("Cette valeur n'attend plus de décision."))
+    text = (shown or "").strip()
+    if not text:
+        raise ReviewError(_("La valeur affichée est vide ; utilisez « Rejeter »."))
+    action = "accept" if text == tracked.value else "correct"
+    decide(project, name, field, action, now=now, value=text)
+
+
 def write(project: Project, name: str, field: Field, value: str, *, now: str) -> None:
     """Enter or change a value by hand, whatever its origin."""
     entry = project.variable(name)
