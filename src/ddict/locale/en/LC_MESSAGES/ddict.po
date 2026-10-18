@@ -197,6 +197,9 @@ msgstr "* Accepted new names, first: what follows uses these names."
 msgid "* Score de {group}."
 msgstr "* Score of {group}."
 
+msgid "* analyse à confirmer dans le carnet : comparée à son nouveau calcul."
+msgstr "* analysis to confirm in the notebook: compared with its new computation."
+
 #, python-brace-format
 msgid "* {name} : SPSS accepte au plus {n} codes manquants ; à déclarer à la main : {codes}."
 msgstr "* {name}: SPSS accepts at most {n} missing codes; declare these by hand: {codes}."
@@ -233,6 +236,9 @@ msgstr "**Grids in a straight line** (every item at the same value)"
 
 msgid "+1 ÉT"
 msgstr "+1 SD"
+
+msgid ", analyse à confirmer"
+msgstr ", analysis to confirm"
 
 #, python-brace-format
 msgid ", après inversion de {items} ({total} - x)"
@@ -505,6 +511,9 @@ msgstr "Finalise the plan: its date and fingerprint; each hypothesis becomes an 
 msgid "Association entre {a} et {b} : χ²({df}) = {chi2}, {p}, V = {v} (n = {n})."
 msgstr "Association between {a} and {b}: χ²({df}) = {chi2}, {p}, V = {v} (n = {n})."
 
+msgid "Attendu"
+msgstr "Expected"
+
 msgid "Au début (t2_k6_1)"
 msgstr "At the start (t2_k6_1)"
 
@@ -626,6 +635,9 @@ msgstr "No exclusion rule is planned."
 msgid "Aucune structure proposée."
 msgstr "No structure proposed."
 
+msgid "Aucune valeur dans ces classes."
+msgstr "No value in these classes."
+
 msgid "Aucune valeur n'est modifiée. Appliquez ce fichier à une copie de vos données."
 msgstr "No value is changed. Apply this file to a copy of your data."
 
@@ -699,6 +711,9 @@ msgid ""
 "Base de données : SPSS (.sav, .zsav), CSV, Stata (.dta), SAS (.sas7bdat) ou Excel (.xlsx, "
 "première feuille)."
 msgstr "Database: SPSS (.sav, .zsav), CSV, Stata (.dta), SAS (.sas7bdat) or Excel (.xlsx, first sheet)."
+
+msgid "Base introuvable : comparaison aux valeurs gardées dans le carnet, sans recalcul."
+msgstr "Database not found: compared with the values kept in the notebook, without recomputing."
 
 #, python-brace-format
 msgid "Base introuvable ou différente du projet : {detail}"
@@ -860,6 +875,12 @@ msgstr "Choose the database…"
 msgid "Choisir la vague précédente"
 msgstr "Choose…"
 
+msgid "Choisir le manuscrit"
+msgstr "Choose the manuscript"
+
+msgid "Choisir le manuscrit…"
+msgstr "Choose the manuscript…"
+
 msgid "Choisir le questionnaire"
 msgstr "Choose the questionnaire"
 
@@ -955,6 +976,9 @@ msgstr "Unknown privacy class: {c}"
 #, python-brace-format
 msgid "Classe vide : {label}."
 msgstr "Empty class: {label}."
+
+msgid "Classes montrées"
+msgstr "Classes shown"
 
 msgid "Code"
 msgstr "Code"
@@ -1080,6 +1104,9 @@ msgstr ""
 "Compares three measures or more of the same person, for example at the start, at the end and "
 "three months after a programme."
 
+msgid "Comparé à l'ébauche que l'outil écrit, recalculée sur la base."
+msgstr "Compared with the draft the tool writes, recomputed on the database."
+
 msgid "Complétude"
 msgstr "Completeness"
 
@@ -1167,6 +1194,9 @@ msgstr "Analysis context: {path}"
 #, python-brace-format
 msgid "Copie : {path}"
 msgstr "Copy: {path}"
+
+msgid "Copie commentée (Word)"
+msgstr "Commented copy (Word)"
 
 #, python-brace-format
 msgid ""
@@ -1427,6 +1457,10 @@ msgstr "Flow diagram"
 msgid "Dictionnaire de données"
 msgstr "Data dictionary"
 
+#, python-brace-format
+msgid "Diffère : l'outil écrit {expected} ({where})."
+msgstr "Differs: the tool writes {expected} ({where})."
+
 msgid "Différence"
 msgstr "Difference"
 
@@ -1447,6 +1481,9 @@ msgstr "Distribution far from normal for {group} (Shapiro-Wilk {p}) with fewer t
 
 msgid "Dites l'origine des données et leur état quand le plan a été écrit."
 msgstr "Give the origin of the data and their state when the plan was written."
+
+msgid "Documents Word"
+msgstr "Word documents"
 
 msgid "Donnez la raison de la règle, en clair."
 msgstr "Give the reason of the rule, in plain words."
@@ -1616,6 +1653,9 @@ msgstr "Incomplete tested effect: {detail}."
 #, python-brace-format
 msgid "Elles sont décrites par les variables suivantes : {items}."
 msgstr "They are described by the following variables: {items}."
+
+msgid "Emplacement"
+msgstr "Location"
 
 msgid "Empreinte SHA-256"
 msgstr "SHA-256 fingerprint"
@@ -1839,6 +1879,10 @@ msgstr "Command files"
 
 msgid "Fichiers projet"
 msgstr "Project files"
+
+#, python-brace-format
+msgid "Fichiers écrits à côté du manuscrit : {names}"
+msgstr "Files written next to the manuscript: {names}"
 
 #, python-brace-format
 msgid "Fichiers écrits à côté du projet : {md} et {json}."
@@ -2240,6 +2284,15 @@ msgstr "The tool is already open: shown in the browser."
 msgid "L'outil est déjà ouvert : une fenêtre de plus s'ouvre sur lui."
 msgstr "The tool is already open: one more window opens on it."
 
+msgid ""
+"L'outil lit un manuscrit Word, même retouché à la main, y repère les statistiques écrites au "
+"style APA et compare chacune à ce que l'outil écrit lui-même, recalculé sur la base. Le manuscrit"
+" n'est jamais modifié ; rien n'est envoyé hors de votre ordinateur."
+msgstr ""
+"The tool reads a Word manuscript, even edited by hand, finds the statistics written in the APA "
+"style and compares each with what the tool itself writes, recomputed on the database. The "
+"manuscript is never changed; nothing is sent outside your computer."
+
 msgid "L'outil ne propose aucun seuil : c'est un choix de l'équipe."
 msgstr "The tool proposes no threshold: it is the team's choice."
 
@@ -2593,6 +2646,9 @@ msgstr ""
 "On the day the plan was finalised, the analysis notebook already contained the planned analyses "
 "for {ids}."
 
+msgid "Le manuscrit, un fichier Word (.docx)."
+msgstr "The manuscript, a Word file (.docx)."
+
 msgid "Le minimum de l'échelle doit être inférieur à son maximum."
 msgstr "The scale's minimum must be below its maximum."
 
@@ -2856,6 +2912,9 @@ msgstr ""
 
 msgid "Lecture de la base…"
 msgstr "Reading the database…"
+
+msgid "Lecture et comparaison…"
+msgstr "Reading and comparing…"
 
 msgid ""
 "Les analyses ajoutées depuis la page Analyses ou par le gel du plan, dans l'ordre de l'ébauche "
@@ -3254,6 +3313,13 @@ msgstr "Missing"
 msgid "Manquants déclarés"
 msgstr "Declared missing"
 
+msgid "Manuscrit (.docx)"
+msgstr "Manuscript (.docx)"
+
+#, python-brace-format
+msgid "Manuscrit : {name}."
+msgstr "Manuscript: {name}."
+
 msgid "Marque de vague (vide s'il n'y en a pas)"
 msgstr "Wave mark (empty if none)"
 
@@ -3554,6 +3620,14 @@ msgstr "No"
 #, python-brace-format
 msgid "Non documenté : {gaps}."
 msgstr "Not documented: {gaps}."
+
+msgid ""
+"Non lus : les figures et les images, les zones de texte, les en-têtes et pieds de page, les notes"
+" de bas de page, les commentaires ; les pourcentages."
+msgstr "Not read: figures and images, text boxes, headers and footers, footnotes, comments; percentages."
+
+msgid "Non reconnue : une écriture que l'outil ne sait pas lire sans deviner."
+msgstr "Not recognised: a writing the tool cannot read without guessing."
 
 msgid "Note"
 msgstr "Note"
@@ -4117,6 +4191,9 @@ msgstr "Reason for the recoding"
 msgid "Raison, telle que publiée"
 msgstr "Reason, as published"
 
+msgid "Rapport (Excel)"
+msgstr "Report (Excel)"
+
 msgid "Rapport (Markdown)"
 msgstr "Report (Markdown)"
 
@@ -4518,6 +4595,12 @@ msgstr "Data dictionary review"
 msgid "Sans elles, le contexte ne contient que des métadonnées, aucune donnée."
 msgstr "Without them, the context holds metadata only, no data."
 
+msgid "Sans la base, la comparaison se fait aux valeurs gardées dans le carnet."
+msgstr "Without the database, the comparison is with the values kept in the notebook."
+
+msgid "Sans origine : aucune analyse du carnet ni la Méthode ne donne cette valeur."
+msgstr "No origin: no analysis of the notebook nor the Method gives this value."
+
 msgid "Sans proposition"
 msgstr "No proposal"
 
@@ -4580,6 +4663,10 @@ msgstr "Threshold, in seconds"
 
 msgid "Seuils (source)"
 msgstr "Thresholds (source)"
+
+#, python-brace-format
+msgid "Seuils de règle, non comparés (« p < ,05 ») : {n}."
+msgstr "Rule thresholds, not compared (“p < .05”): {n}."
 
 msgid "Seuils, croissants (une classe va de son seuil inclus au suivant exclu)"
 msgstr "Cuts, increasing (a class goes from its cut included to the next one excluded)"
@@ -4653,6 +4740,10 @@ msgstr "Quality signals of the administration"
 #, python-brace-format
 msgid "Signaux de qualité, parmi les {n} personnes que les règles gardent :"
 msgstr "Quality signals, among the {n} people the rules keep:"
+
+#, python-brace-format
+msgid "Signe inversé : l'outil écrit {expected} ({where}) ; l'ordre des groupes est peut-être inversé."
+msgstr "Sign reversed: the tool writes {expected} ({where}); the order of the groups may be reversed."
 
 msgid "Signification"
 msgstr "Meaning"
@@ -4749,6 +4840,9 @@ msgid ""
 msgstr ""
 "Sphericity rejected (Mauchly {p}): the degrees of freedom are corrected by Greenhouse-Geisser (ε "
 "= {eps})."
+
+msgid "Statistique"
+msgstr "Statistic"
 
 msgid "Statistiques descriptives et corrélations"
 msgstr "Descriptive statistics and correlations"
@@ -5414,8 +5508,27 @@ msgstr "See exactly what would be sent (nothing is sent)"
 msgid "Vous pouvez fermer cette fenêtre. Vos décisions sont enregistrées."
 msgstr "You can close this window. Your decisions are saved."
 
+msgid "Vérification"
+msgstr "Verification"
+
+msgid "Vérification des chiffres"
+msgstr "Verification of the figures"
+
+msgid "Vérifier"
+msgstr "Verify"
+
 msgid "Vérifier de nouveau"
 msgstr "Check again"
+
+msgid "Vérifier les chiffres"
+msgstr "Verify the figures"
+
+msgid ""
+"Vérifier les chiffres d'un manuscrit Word face à ce que l'outil écrit : un rapport et une copie "
+"commentée, à côté du manuscrit."
+msgstr ""
+"Verify the figures of a Word manuscript against what the tool writes: a report and a commented "
+"copy, next to the manuscript."
 
 msgid "Welch (variances inégales permises)"
 msgstr "Welch (unequal variances allowed)"
@@ -5508,6 +5621,12 @@ msgstr "April"
 msgid "binaire"
 msgstr "binary"
 
+msgid "borne basse de l'IC"
+msgstr "lower bound of the CI"
+
+msgid "borne haute de l'IC"
+msgstr "upper bound of the CI"
+
 msgid "calcul"
 msgstr "computed"
 
@@ -5561,6 +5680,9 @@ msgstr "how the data can be accessed"
 
 msgid "conclusion"
 msgstr "conclusion"
+
+msgid "concorde"
+msgstr "agrees"
 
 msgid "confirmatoire"
 msgstr "confirmatory"
@@ -5620,6 +5742,9 @@ msgstr "two"
 
 msgid "deviné : la variable n'a pas d'étiquette dans le fichier"
 msgstr "guessed: the variable has no label in the file"
+
+msgid "diffère"
+msgstr "differs"
 
 msgid "discussion des résultats"
 msgstr "discussion of the results"
@@ -5972,6 +6097,9 @@ msgstr "not documented"
 msgid "non recalculée"
 msgstr "not recomputed"
 
+msgid "non reconnue"
+msgstr "not recognised"
+
 msgid "novembre"
 msgstr "November"
 
@@ -6163,6 +6291,9 @@ msgstr "succeeded"
 msgid "s'écarte du choix sûr du calcul : comparez avec la première question de la liste"
 msgstr "departs from the computation's sure choice: compare with the first question of the list"
 
+msgid "sans origine"
+msgstr "no origin"
+
 #, python-brace-format
 msgid "score de {group}"
 msgstr "score of {group}"
@@ -6202,6 +6333,9 @@ msgstr "α level"
 #, python-brace-format
 msgid "seuil α : {new} au lieu de {old}"
 msgstr "α level: {new} instead of {old}"
+
+msgid "signe inversé"
+msgstr "sign reversed"
 
 msgid "six"
 msgstr "six"
@@ -6862,6 +6996,10 @@ msgid ""
 msgstr "{name}: only categories (nominal or ordinal) are regrouped; a number is cut into classes."
 
 #, python-brace-format
+msgid "{name} : un fichier Word (.docx) introuvable."
+msgstr "{name}: a Word file (.docx) not found."
+
+#, python-brace-format
 msgid "{name} : un groupe de moins de {n} personnes ({codes})."
 msgstr "{name}: a group of fewer than {n} people ({codes})."
 
@@ -7433,8 +7571,14 @@ msgstr ""
 "Write a copy of the database in SPSS format (.sav), with the accepted decisions. The original is "
 "never changed."
 
+msgid "Écrire à côté du manuscrit"
+msgstr "Write next to the manuscript"
+
 msgid "Écrire à côté du projet"
 msgstr "Write next to the project"
+
+msgid "Écrit"
+msgstr "Written"
 
 #, python-brace-format
 msgid ""

@@ -29,6 +29,7 @@ from ddict.review.ui import (
     questionnaire_view,
     recode_view,
     variables_view,
+    verify_view,
 )
 from ddict.review.ui import common as c
 from ddict.workflow import tasks
@@ -46,6 +47,7 @@ MODES = Texts(
         "plan": N_("Plan"),
         "analyses": N_("Analyses"),
         "notebook": N_("Carnet"),
+        "verify": N_("Vérifier"),
         "method": N_("Méthode"),
         "export": N_("Export"),
     }
@@ -186,6 +188,8 @@ def main() -> None:
         analyses_view.page(project)
     elif mode == "notebook":
         notebook_view.page(project)
+    elif mode == "verify":
+        verify_view.page(project)
     elif mode == "method":
         method_view.page(project)
     elif mode == "variables" and chosen is None:

@@ -53,6 +53,7 @@ class Value:
     of: str = ""
     qualifier: str = ""
     threshold: bool = False
+    cell: int = -1  # in a table row: the column it was read in (0 is the row's label)
 
 
 @dataclass(frozen=True)
@@ -66,6 +67,11 @@ class Block:
     label: str = ""  # the first cell of a table row
     values: tuple[Value, ...] = ()
     unread: tuple[str, ...] = ()
+    # Where to find it again in the document (step 5, the comments): the paragraph's rank
+    # among the paragraphs with text, or the table's rank and the row's index in it.
+    paragraph: int = 0
+    table: int = 0
+    row: int = 0
 
 
 # --- The symbols. ---
@@ -313,32 +319,39 @@ def _table_blocks(table, number_: int, section: str) -> list[Block]:
         return []
     header = rows[first - 1]
     blocks = []
-    for i, row in enumerate(rows[first:], start=first + 1):
-        values: list[Value] = []
-        owner = ""
-        for j, text in enumerate(row[1:], start=1):
-            stat, df = column_stat(header[j] if j < len(header) else "")
-            if not stat or not text or text == "—":
-                continue
-            found = _cell(text, stat, df, owner)
-            if stat == "r" and header[j].strip().isdigit():  # the pair of a matrix cell
-                found = [replace(v, qualifier=header[j].strip()) for v in found]
-            if found and found[0].stat not in ("ci_low", "ci_high"):
-                owner = found[0].stat
-            values += found
-        # A row label may hold a count: "n = 228".
-        label_values, _unread = statistics(row[0])
+    for i, row in enumerate(rows[first:], start=first):
         blocks.append(
             Block(
-                _("Tableau {n}, ligne {row}").format(n=number_, row=i - first),
+                _("Tableau {n}, ligne {row}").format(n=number_, row=i - first + 1),
                 "row",
                 " | ".join(row),
                 section,
                 row[0],
-                tuple(label_values + values),
+                tuple(row_values(header, row)),
+                table=number_,
+                row=i,
             )
         )
     return blocks
+
+
+def row_values(header: list[str], row: list[str]) -> list[Value]:
+    """The values of a table row read under the header of its columns; its label (the first
+    cell) may hold a count ("n = 228")."""
+    values: list[Value] = []
+    owner = ""
+    for j, text in enumerate(row[1:], start=1):
+        stat, df = column_stat(header[j] if j < len(header) else "")
+        if not stat or not text or text == "—":
+            continue
+        found = _cell(text, stat, df, owner)
+        if stat == "r" and header[j].strip().isdigit():  # the pair of a matrix cell
+            found = [replace(v, qualifier=header[j].strip()) for v in found]
+        if found and found[0].stat not in ("ci_low", "ci_high"):
+            owner = found[0].stat
+        values += [replace(v, cell=j) for v in found]
+    label_values, _unread = statistics(row[0])
+    return [replace(v, cell=0) for v in label_values] + values
 
 
 def read(path: Path | str) -> list[Block]:
@@ -374,6 +387,7 @@ def read(path: Path | str) -> list[Block]:
                         section,
                         values=tuple(values),
                         unread=tuple(unread),
+                        paragraph=paragraph_number,
                     )
                 )
         elif tag == "tbl":

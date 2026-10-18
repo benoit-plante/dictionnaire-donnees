@@ -325,17 +325,21 @@ def _ordered(project, prepared, notebook, by_id, builder, tested):
     return deviations, bool(others)
 
 
-def _results(project, prepared, notebook, *, language=None, today=None):
+def _results(project, prepared, notebook, *, language=None, today=None, pending=None):
     """The document, and the analyses it holds as the R master script takes them
-    (identifier, analysis, final names by role, options): from one computation."""
+    (identifier, analysis, final names by role, options): from one computation. With a
+    `pending` list (the checker of figures, v0.15), the analyses waiting for a confirmation
+    are put in it instead of blocking the document."""
     today = today or date.today().isoformat()
     with i18n.using(language):
         language = i18n.language()
         statuses = check.check_all(notebook, project, prepared, today=today, always=True)
         statuses.append(check.check_method(notebook, project, prepared, today=today))
         blocked = check.blocking(notebook, statuses)
-        if blocked:
+        if blocked and pending is None:
             raise ExportBlocked(blocked)
+        if pending is not None:
+            pending += [s.entry_id for s in statuses if s.state == "changed"]
         by_id = {s.entry_id: s for s in statuses}
         frozen = plan_notebook.frozen(project)
         tested = _tested(project, prepared, notebook, by_id) if frozen else {}

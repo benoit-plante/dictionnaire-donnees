@@ -31,6 +31,10 @@ KINDS = {
         N_("Choisir le questionnaire"),
         [(N_("Questionnaires"), "*.pdf *.txt *.xlsx"), (N_("Tous les fichiers"), "*.*")],
     ),
+    "manuscript": (
+        N_("Choisir le manuscrit"),
+        [(N_("Documents Word"), "*.docx"), (N_("Tous les fichiers"), "*.*")],
+    ),
     "reference": (
         N_("Choisir la vague précédente"),
         [
