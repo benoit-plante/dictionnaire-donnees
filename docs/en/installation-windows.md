@@ -299,6 +299,33 @@ The fictional database `etude-suivi.sav` (folder `exemples\bases-fictives`) is t
 
 A second trial on the open AMATUS database is described in [`essais/2026-10-18-essai-v014-amatus.md`](../essais/2026-10-18-essai-v014-amatus.md) (in French): the subgroups of the published article, chosen in the tool on the whole database, give its figures again, and R gives the tool's.
 
+## 18. Recode, verify the figures, prepare the deposit
+
+Since 0.15, three tools for the end of the work, without AI; nothing is sent outside your computer. The details are in [`../verification-depot.md`](../verification-depot.md) (in French).
+
+**Recode a variable.** A new variable, derived from a single other one, to regroup categories (“Female”; “Male or other identity”) or cut a number into classes (“under 30”, “30 to under 45”, “45 and over”). The project keeps the rule and its reason, never the column: it is computed in memory after the scores and before the exclusion rules, so an exclusion, a subgroup, an analysis or a hypothesis can use it.
+
+1. Page **Variables**, the source variable, box **Recode this variable** (regroup for a nominal or ordinal variable, cut for a scale or a score). An identifier, a free text or a date is not recoded.
+2. To regroup: beside each value, the name of its new group, or **missing**. To cut: the cuts, increasing; a class goes from its cut included to the next one excluded; labels are proposed.
+3. The name, the label and the **reason**; the **Preview** shows the count of each new category before saving. A value without a group refuses the recoding; an empty class or a category under 5 people gives a warning.
+4. **Save the recoding.** The page **Groups** lists the recodings, with their rule and reason. A recoding used by an exclusion rule or a hypothesis cannot be removed; used by a hypothesis of a frozen plan, it no longer changes.
+
+The recoding goes into the SPSS (`RECODE … INTO`) and R preparation scripts, the R master script, the codebook (sheet “Recodages”) and the Method (“The variable age_classe was derived from age: …”). On the command line: `ddict recode list`, `group` (`--group "2,3" "Male or other"`, `--missing`), `cut` (`--cuts 30 45`) and `remove`.
+
+**Verify the figures of a manuscript.** Once the draft is edited in Word, or for an article written without the tool: page **Verify** (after **Notebook**), choose the `.docx` manuscript, **Verify**. The tool finds the statistics written in the APA style, in French or in English, and compares each with what it writes itself, recomputed on the database, section by section. Each value is classed:
+
+- **agrees**: within half a unit of its last decimal; “*p* < .001” agrees with a *p* under .001;
+- **differs**, with the value the tool writes;
+- **sign reversed** (for *t*, *z* and *d*, whose sign depends on the order of the groups);
+- **no origin**: no analysis of the notebook nor the Method gives this figure;
+- **not recognised**: a writing the tool cannot read without guessing.
+
+It gives a report (Markdown and Excel) and a copy `-verifie.docx` with a Word comment on each value that does not agree; your manuscript is never changed. It reads neither figures, footnotes nor percentages: the report says so at the top. Without the database, it compares with the values kept in the notebook. On the command line: `ddict verify study.dd.json manuscript.docx`.
+
+**Prepare the reproduction package.** Page **Notebook**, **Prepare the reproduction package**: `<project>-depot.zip`, ready for OSF or Borealis, with the codebook, the preregistration, the notebook, the command files, the preparation script, the R master script, a `README.md` to complete (title, reference, data access, licence, authors) and the fingerprints of the files. **The database is never in it**: you deposit it, or not, according to your ethics approval. Put in the package's `scripts/` folder, it lets the R master script run all the analyses again. On the command line: `ddict deposit study.dd.json`.
+
+A trial on the open AMATUS database and its published article is described (in French) in [`../essais/2026-10-18-essai-v015-amatus.md`](../essais/2026-10-18-essai-v015-amatus.md).
+
 ## Update or uninstall
 
 - **Update**: download and extract the new archive, then double-click its `installer.bat`. If the tool is open, the installer offers to close it (answer `y`): it cannot replace it while it runs. Your project files are kept. A project opened with version 0.8 no longer opens with an older version (its format changed); the reverse works.
@@ -331,6 +358,9 @@ ddict plan rules sleep-study.dd.json --alpha 0.05 --origin primary --status befo
 ddict plan freeze sleep-study.dd.json        # the plan finalised; afterwards, --reason for each change
 ddict plan preregistration sleep-study.dd.json   # the preregistration (Word and Markdown)
 ddict paper sleep-study.dd.json              # the article draft and the R master script
+ddict recode cut sleep-study.dd.json age --name age_class --cuts 30 45 --reason "…"
+ddict verify sleep-study.dd.json manuscript.docx   # the figures of a Word manuscript
+ddict deposit sleep-study.dd.json            # the reproduction package, without the database
 ddict advise sleep-study.dd.json "Compare the sleep of women and men." --model qwen2.5:7b-instruct-q4_K_M
 ddict evaluate --model qwen2.5:7b-instruct-q4_K_M       # model bench
 ```

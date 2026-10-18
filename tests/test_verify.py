@@ -202,3 +202,27 @@ def test_the_page(study, tmp_path):
     app.button(key="verify-write").click().run()
     assert (tmp_path / "manuscrit-verifie.docx").is_file()
     assert load_project(path).recodes.rules == []  # nothing changed in the project
+
+
+def test_without_sections_the_degrees_of_freedom_designate(study, tmp_path):
+    """v0.15, step 7, the published article: no heading "A1 — ", a t written without its
+    sign, two analyses in one sentence, a test the tool does not make."""
+    project, prepared, notebook, _path, _drafts = study
+    document = Document()
+    document.add_paragraph(
+        "Les mesures différaient, t(227) = −8.18, d = −0.54. "
+        "Le stress était lié au sommeil, r(238) = −.38, et l'abandon au stress, t(140) = −1.16. "
+        "Une ANOVA à deux facteurs donnait F(1, 219) = 16.40, p < .001."
+    )
+    manuscript = tmp_path / "publie.docx"
+    document.save(str(manuscript))
+    result = verify.verify(project, prepared, notebook, manuscript)
+    found = [(c.value.text, c.kind, c.reference) for c in result.checked]
+    assert found == [
+        ("t(227) = −8.18", "sign", "A1"),
+        ("d = −0.54", "sign", "A1"),
+        ("r(238) = −.38", "agrees", "A3"),
+        ("t(140) = −1.16", "agrees", "A4"),
+        ("F(1, 219) = 16.40", "no_origin", ""),
+        ("p < .001", "no_origin", ""),  # beside a test of no known origin
+    ]

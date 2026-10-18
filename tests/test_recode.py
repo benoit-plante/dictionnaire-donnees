@@ -581,3 +581,22 @@ def test_the_page_keeps_the_rule_of_the_command(tmp_path):
     app.run()
     assert not app.exception, app.exception
     assert any("R1 — `sexe_2`" in m.value for m in app.markdown)
+
+
+def test_a_subgroup_by_the_labels_of_a_recoding(tmp_path, capsys):
+    """v0.15, step 7, the AMATUS trial: "--sous-groupe enseignante eq oui" was refused, and
+    the Method wrote the code ("enseignante = 2") instead of the label."""
+    from ddict.analysis import prereg
+    from ddict.cli import main
+
+    path = _project_file(tmp_path)
+    assert main(["recoder", "regrouper", str(path), "sexe", "--nom", "sexe_2", "--groupe", "1",
+                 "Femme", "--groupe", "2,3", "Homme ou autre",
+                 "--raison", "Deux groupes."]) == 0  # fmt: skip
+    assert main(["plan", "ajouter", str(path), "apparie", "--enonce", "L'anxiété baisse.",
+                 "--premiere", "anxiete_t1", "--seconde", "anxiete_t2",
+                 "--sous-groupe", "sexe_2", "eq", "Femme"]) == 0  # fmt: skip
+    project = load_project(path)
+    subgroup = project.plan.hypotheses[0].subgroup
+    assert subgroup.variable == VariableRef(recode="R1") and subgroup.value == 1.0
+    assert prereg.subgroup_plain(project, subgroup) == "sexe_2 = Femme"

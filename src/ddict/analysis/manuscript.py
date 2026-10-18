@@ -86,7 +86,7 @@ SYMBOLS: tuple[tuple[str, str], ...] = (
         r"R² de (?:McFadden|Nagelkerke|Cox et Snell)|(?:McFadden|Nagelkerke|Cox and Snell|"
         r"Cox & Snell) R²|R² ajusté|adjusted R²|R²|R2|de (?:McFadden|Nagelkerke)",
     ),
-    ("eta2p", r"η²p|η²ₚ|η² partiel|partial η²|ηp²|η2p"),
+    ("eta2p", r"η²p|η²ₚ|η² partiel|partial η²|ηp²|η2p|ηp2"),
     ("eta2", r"η²|η2"),
     ("epsilon2", r"ε²|ε2"),
     ("omega2", r"ω²|ω2"),
@@ -101,8 +101,10 @@ SYMBOLS: tuple[tuple[str, str], ...] = (
     ("V", r"V"),
     ("W", r"W(?: de Mauchly)?|Mauchly's W"),
     ("z", r"z"),
+    ("rp", r"r partiel|[Pp]artial r"),
     ("r", r"r"),
     ("rho", r"ρ"),
+    ("p_adj", r"p corrigé \((?:Holm|Bonferroni)\)|(?:Holm|Bonferroni)-adjusted p"),
     ("p", r"p"),
     ("M", r"M|Mdn"),
     ("SD", r"ÉT|SD"),
@@ -113,6 +115,7 @@ SYMBOLS: tuple[tuple[str, str], ...] = (
     ("N", r"N"),
     ("n", r"n"),
     ("eps", r"ε"),
+    ("alpha", r"α"),
 )
 _SYMBOL_GROUPS = "|".join(f"(?P<s{i}>{pattern})" for i, (_k, pattern) in enumerate(SYMBOLS))
 _STAT = re.compile(
@@ -242,6 +245,7 @@ COLUMNS: tuple[tuple[str, str], ...] = (
     ("t", r"^t(?:\s*\(.*\))?$"),
     ("F", r"^F(?:\s*\(.*\))?$"),
     ("chi2", r"^(?:χ²|χ2|X²)(?:\s*\(.*\))?$"),
+    ("p_adj", r"^(?:p corrigé \(.*\)|.*-adjusted p)$"),
     ("p", r"^p$"),
     ("M", r"^(?:M|Mdn)$"),
     ("SD", r"^(?:ÉT|SD)$"),

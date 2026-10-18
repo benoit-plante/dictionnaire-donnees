@@ -297,6 +297,33 @@ La base fictive `etude-suivi.sav` (dossier `exemples\bases-fictives`) sert à le
 
 Un second essai sur la base ouverte AMATUS est décrit dans [`essais/2026-10-18-essai-v014-amatus.md`](essais/2026-10-18-essai-v014-amatus.md) : les sous-groupes de l'article publié, choisis dans l'outil sur la base entière, redonnent ses chiffres, et R ceux de l'outil.
 
+## 18. Recoder, vérifier les chiffres, préparer le dépôt
+
+Depuis la 0.15, trois outils de fin de parcours, sans IA ; rien n'est envoyé hors de votre ordinateur. Le détail est dans [`verification-depot.md`](verification-depot.md).
+
+**Recoder une variable.** Une nouvelle variable, tirée d'une seule autre, pour regrouper des modalités (« Femme » ; « Homme ou autre identité ») ou découper un nombre en classes (« moins de 30 », « 30 à moins de 45 », « 45 et plus »). Le projet garde la règle et sa raison, jamais la colonne : elle est calculée en mémoire après les scores et avant les règles d'exclusion, si bien qu'une exclusion, un sous-groupe, une analyse ou une hypothèse peuvent porter sur elle.
+
+1. Page **Variables**, la variable source, encadré **Recoder cette variable** (regrouper pour une variable nominale ou ordinale, découper pour une échelle ou un score). Un identifiant, un texte libre ou une date ne se recode pas.
+2. Pour regrouper : à côté de chaque valeur, le nom de son nouveau groupe, ou **manquante**. Pour découper : les seuils, croissants ; une classe va de son seuil inclus au suivant exclu ; les étiquettes sont proposées.
+3. Le nom, le libellé et la **raison** ; l'**Aperçu** montre l'effectif de chaque nouvelle modalité avant d'enregistrer. Une valeur sans groupe refuse le recodage ; une classe vide ou une modalité de moins de 5 personnes donne un avertissement.
+4. **Enregistrer le recodage.** La page **Groupes** liste les recodages, avec leur règle et leur raison. Un recodage utilisé par une règle d'exclusion ou une hypothèse ne se retire pas ; utilisé par une hypothèse d'un plan figé, il ne change plus.
+
+Le recodage entre dans le script de préparation SPSS (`RECODE … INTO`) et R, dans le script R maître, dans le codebook (feuille « Recodages ») et dans la Méthode (« La variable age_classe a été tirée de age : … »). En ligne de commande : `ddict recoder lister`, `regrouper` (`--groupe "2,3" "Homme ou autre identité"`, `--manquant`), `decouper` (`--seuils 30 45`) et `retirer`.
+
+**Vérifier les chiffres d'un manuscrit.** Une fois l'ébauche retouchée dans Word, ou pour un article écrit sans l'outil : page **Vérifier** (après **Carnet**), choisir le manuscrit `.docx`, **Vérifier**. L'outil y repère les statistiques écrites au style APA, en français ou en anglais, et compare chacune à ce qu'il écrit lui-même, recalculé sur la base, section par section. Chaque valeur est classée :
+
+- **concorde** : à moins d'une demi-unité de sa dernière décimale ; « *p* < ,001 » concorde avec un *p* sous ,001 ;
+- **diffère**, avec la valeur que l'outil écrit ;
+- **signe inversé** (pour *t*, *z* et *d*, dont le signe dépend de l'ordre des groupes) ;
+- **sans origine** : aucune analyse du carnet ni la Méthode ne donne ce chiffre ;
+- **non reconnue** : une écriture que l'outil ne sait pas lire sans deviner.
+
+Il donne un rapport (Markdown et Excel) et une copie `-verifie.docx` avec un commentaire Word sur chaque valeur qui ne concorde pas ; votre manuscrit n'est jamais modifié. Il ne lit ni les figures, ni les notes de bas de page, ni les pourcentages : le rapport le dit en tête. Sans la base, il compare aux valeurs gardées dans le carnet. En ligne de commande : `ddict verifier etude.dd.json manuscrit.docx`.
+
+**Préparer le paquet de reproduction.** Page **Carnet**, **Préparer le paquet de reproduction** : `<projet>-depot.zip`, prêt pour l'OSF ou Borealis, avec le codebook, le préenregistrement, le carnet, les fichiers de commandes, le script de préparation, le script R maître, un `README.md` à compléter (titre, référence, accès aux données, licence, auteurs) et les empreintes des fichiers. **La base n'y est jamais** : vous la déposez, ou non, selon votre certificat d'éthique. Placée dans le dossier `scripts/` du paquet, elle permet au script R maître de refaire toutes les analyses. En ligne de commande : `ddict deposer etude.dd.json`.
+
+Un essai sur la base ouverte AMATUS et son article publié est décrit dans [`essais/2026-10-18-essai-v015-amatus.md`](essais/2026-10-18-essai-v015-amatus.md).
+
 ## Mettre à jour ou désinstaller
 
 - **Mettre à jour** : téléchargez et décompressez la nouvelle archive, puis double-cliquez sur son `installer.bat`. Si l'outil est ouvert, l'installateur propose de le fermer (répondez `o`) : il ne peut pas le remplacer pendant qu'il tourne. Vos fichiers projet sont conservés. Un projet ouvert avec la version 0.8 ne s'ouvre plus avec une version plus ancienne (son format a changé) ; l'inverse fonctionne.
@@ -330,6 +357,9 @@ ddict plan regles etude-sommeil.dd.json --alpha 0.05 --origine primaires --etat 
 ddict plan figer etude-sommeil.dd.json         # le plan arrêté ; ensuite, --raison à chaque changement
 ddict plan preenregistrement etude-sommeil.dd.json   # le préenregistrement (Word et Markdown)
 ddict article etude-sommeil.dd.json           # l'ébauche d'article et le script R maître
+ddict recoder decouper etude-sommeil.dd.json age --nom age_classe --seuils 30 45 --raison "…"
+ddict verifier etude-sommeil.dd.json manuscrit.docx   # les chiffres d'un manuscrit Word
+ddict deposer etude-sommeil.dd.json          # le paquet de reproduction, sans la base
 ddict conseiller etude-sommeil.dd.json "Comparer le sommeil des femmes et des hommes." --modele qwen2.5:7b-instruct-q4_K_M
 ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M   # banc d'essai d'un modèle
 ```

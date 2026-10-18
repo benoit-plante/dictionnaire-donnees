@@ -265,6 +265,11 @@ def subset_from_args(project, values: list[str] | None):
 
         entry = next((e for e in project.variables if w.final_name(e) == name), None)
         labels = {lab.label.casefold(): lab.code for lab in accepted_labels(entry)} if entry else {}
+        rule = next((r for r in project.recodes.rules if r.name == name), None)
+        if rule is not None:  # v0.15: a recoded variable, by the labels of its rule
+            from ddict.analysis.recode import labels as recode_labels
+
+            labels = {label.casefold(): code for code, label in recode_labels(rule).items()}
         found = []
         for text in typed:
             try:

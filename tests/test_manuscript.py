@@ -198,3 +198,20 @@ def test_the_drafts_of_the_tool(tmp_path):
             "ci_high", "n",
         ]  # fmt: skip
         assert sum(1 for b in blocks if b.kind == "row" and b.section.startswith("A3")) == 3
+
+
+@pytest.mark.parametrize(
+    ("sentence", "stat", "value"),
+    [
+        ("p corrigé (Holm) < ,001", "p_adj", 0.001),
+        ("Holm-adjusted p = .040", "p_adj", 0.04),
+        ("r partiel = −,41", "rp", -0.41),
+        ("Partial r = -.41", "rp", -0.41),
+        ("ηp2 = .07", "eta2p", 0.07),  # a superscript flattened by a PDF
+        ("α = .90", "alpha", 0.9),
+    ],
+)
+def test_the_writings_the_amatus_trial_found(sentence, stat, value):
+    """v0.15, step 7: what the tool's own draft and the published article wrote."""
+    values, unread = m.statistics(sentence)
+    assert [(v.stat, v.value) for v in values] == [(stat, value)] and unread == []

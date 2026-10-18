@@ -211,40 +211,73 @@ class _Sections:
         return self.by_key.get(found.group(1)) if found else None
 
 
+def _is_analysis(ref: Reference) -> bool:
+    return bool(SECTION_ID.match(ref.key))
+
+
+def _analyses_first(refs: list[Reference]) -> list[Reference]:
+    """The sections of an analysis or a hypothesis before the others (the Discussion, the
+    abstract repeat their figures)."""
+    return sorted(refs, key=lambda r: not _is_analysis(r))
+
+
+def _same_df(anchor: m.Value, other: m.Value) -> bool:
+    return (
+        _same_kind(anchor, other)
+        and bool(anchor.df)
+        and len(anchor.df) == len(other.df)
+        and all(_close(d.value, e.value, min(d.decimals, e.decimals))
+                for d, e in zip(anchor.df, other.df, strict=True))
+    )  # fmt: skip
+
+
+def _of_anchor(anchor: m.Value, refs: list[Reference], own) -> Reference | None:
+    """The section a test statistic designates: where it agrees (its own section, else an
+    analysis, else the only one); else the only analysis with the same statistic and the
+    same degrees of freedom ("t(818) = 2,28" for −2,28: a sign reversed)."""
+    agreeing = _analyses_first([r for r in refs if any(agrees(anchor, x) for x in r.values)])
+    if agreeing:
+        return own if own in agreeing else agreeing[0]
+    same = _analyses_first([r for r in refs if any(_same_df(anchor, x) for x in r.values)])
+    analyses = [r for r in same if _is_analysis(r)]
+    if own is not None and own in same:
+        return own
+    if len(analyses) == 1 or (len(same) == 1):
+        return (analyses or same)[0]
+    return None
+
+
 def _check_block(block: m.Block, sections: _Sections, pending: set[str]) -> list[Checked]:
+    """Each value compared with the section of the test statistic before it in the block
+    (a sentence may report two analyses); without one, with the block's own section; a
+    value beside a test statistic of no known origin has no origin either."""
     refs = sections.refs
     own = sections.of(block.section)
-    anchors = [v for v in block.values if v.stat in ANCHORS or (v.stat == "r" and v.df)]
-    candidates = [r for r in refs if any(agrees(a, x) for a in anchors for x in r.values)]
-    chosen = None
-    if len(candidates) == 1:
-        chosen = candidates[0]
-    elif candidates:
-        chosen = (
-            own
-            if own in candidates
-            else max(
-                candidates,
-                key=lambda r: sum(any(agrees(v, x) for x in r.values) for v in block.values),
-            )
-        )
-    elif own is not None:
-        chosen = own
     found = []
+    current = own
+    anchored = False
     for value in block.values:
-        if value.threshold and chosen is None:
+        if value.stat in ANCHORS or (value.stat == "r" and value.df):
+            anchored = True
+            current = _of_anchor(value, refs, own)
+        if value.threshold and current is None:
             found.append(Checked(block, "threshold", value))
             continue
-        result = _compare(value, chosen, pending) if chosen is not None else None
+        result = _compare(value, current, pending) if current is not None else None
         if result is not None:
             kind, expected = result
-            found.append(Checked(block, kind, value, expected=expected, reference=chosen.key,
-                                 pending=chosen.key in pending))  # fmt: skip
+            found.append(Checked(block, kind, value, expected=expected, reference=current.key,
+                                 pending=current.key in pending))  # fmt: skip
             continue
-        matching = [r for r in refs if any(agrees(value, x) for x in r.values)]
+        if anchored and current is None:
+            found.append(Checked(block, "no_origin", value))
+            continue
+        matching = _analyses_first(
+            [r for r in refs if any(agrees(value, x) and not x.threshold for x in r.values)]
+        )
         if matching:
             first = matching[0]
-            expected = next(x for x in first.values if agrees(value, x))
+            expected = next(x for x in first.values if agrees(value, x) and not x.threshold)
             found.append(Checked(block, "agrees", value, expected=expected, reference=first.key,
                                  others=tuple(r.key for r in matching[1:]),
                                  pending=first.key in pending))  # fmt: skip

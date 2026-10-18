@@ -183,6 +183,11 @@ def subgroup_plain(project: Project, subgroup) -> str:
     name = _name(project, ref)
     entry = _entry(project, name)
     labels = {lab.code: lab.label for lab in accepted_labels(entry)} if entry else {}
+    if ref.recode is not None:  # v0.15: a recoded variable, by the labels of its rule
+        from ddict.analysis.recode import labels as recode_labels
+
+        rule = next((r for r in project.recodes.rules if r.id == ref.recode), None)
+        labels = recode_labels(rule) if rule is not None else {}
 
     def shown(value) -> str:
         return _label(labels, value) or w.code_text(value)
