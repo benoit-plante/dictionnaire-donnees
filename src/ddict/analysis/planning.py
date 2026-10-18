@@ -21,7 +21,7 @@ from pydantic import ValidationError
 from ddict.analysis import conditions
 from ddict.analysis.catalogue import CATALOGUE, NOMINAL
 from ddict.analysis.data import PreparedData
-from ddict.analysis.notebook import NotebookError, reason_text, resolve
+from ddict.analysis.notebook import NotebookError, reason_text, reference, resolve
 from ddict.i18n import N_, Texts, _
 from ddict.project.model import Amendment, Frozen, Hypothesis, Plan, Project
 
@@ -503,3 +503,49 @@ def clear(project: Project) -> None:
     """Remove the whole plan, its freezing and its amendments: the only way back from a
     frozen plan, which a person confirms first."""
     project.plan = Plan()
+
+
+# --- What the page and the command line give (v0.13, step 6). ---
+
+
+def data_from_names(
+    project: Project,
+    statement: str,
+    analysis: str,
+    chosen: dict[str, list[str]],
+    options: dict[str, str] | None = None,
+    *,
+    pair: list[str] | None = None,
+    predictor: str | None = None,
+    model: bool = False,
+    direction: str | None = None,
+    kind: str = "confirmatory",
+    family: str | None = None,
+) -> dict:
+    """The fields of an hypothesis from final names, as `add` and `modify` take them; the
+    effect from the pair, the predictor or the model chosen (none: the default one).
+    Raises PlanRefused for a name the project does not know."""
+
+    def ref(name: str) -> dict:
+        try:
+            return reference(project, name).model_dump(mode="json")
+        except NotebookError as error:
+            raise PlanRefused([reason_text(error)]) from None
+
+    order = [r.key for r in CATALOGUE[analysis].roles] if analysis in CATALOGUE else list(chosen)
+    data: dict = {
+        "statement": statement,
+        "analysis": analysis,
+        "roles": {role: [ref(n) for n in chosen[role]] for role in order if chosen.get(role)},
+        "options": dict(options or {}),
+        "direction": direction or None,
+        "kind": kind,
+        "family": family or None,
+    }
+    if pair:
+        data["effect"] = {"kind": "pair", "variables": [ref(n) for n in pair]}
+    elif predictor:
+        data["effect"] = {"kind": "predictor", "variable": ref(predictor)}
+    elif model:
+        data["effect"] = {"kind": "model"}
+    return data

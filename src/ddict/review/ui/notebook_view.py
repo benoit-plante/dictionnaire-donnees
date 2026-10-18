@@ -19,6 +19,7 @@ import streamlit as st
 from ddict import i18n
 from ddict.analysis import notebook as nb
 from ddict.analysis import notebook_check as check
+from ddict.analysis import plan_notebook as pn
 from ddict.analysis.catalogue import ROLES
 from ddict.analysis.notebook_export import ExportBlocked, heading, write_results
 from ddict.i18n import _
@@ -147,6 +148,8 @@ def _entry(project: Project, notebook: nb.Notebook, rank: int, entry, status) ->
         state.markdown(f"{ICONS[status.state]} {check.state_text(status.state)}")
         if variables := _variables(project, entry):
             st.caption(variables)
+        if planned := pn.state_text(pn.state(notebook, project, entry), entry):
+            st.caption(_("Face au plan : {state}").format(state=planned))
         if status.state == "impossible":
             st.warning(status.reason)
         elif status.reason:
@@ -322,7 +325,7 @@ def page(project: Project) -> None:
         )
     retained = any(e.retained for e in notebook.entries)
     st.button(
-        _("Produire le document"),
+        _("Produire l'ébauche d'article"),
         key="notebook-write",
         type="primary",
         disabled=prepared is None or bool(blocked) or not retained,

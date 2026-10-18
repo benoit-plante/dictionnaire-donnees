@@ -160,7 +160,7 @@ def test_an_amendment_replaces_the_planned_analysis(ready):
     }
     assert _entry(notebook, "H2").id == "A3"  # the Spearman variant computes it already
     states = _states(ready)
-    assert states["A6"] == f"remplacée par l'amendement du {LATER} (H2)"
+    assert states["A6"] == "remplacée par l'amendement du 2 novembre 2026 (H2)"
     assert states["A3"] == "prévue (H2)"
     assert len(notebook.entries) == 8  # nothing created
 
@@ -178,7 +178,7 @@ def test_an_hypothesis_removed_unties_its_entry(ready):
     project, prepared, notebook = _frozen(ready)
     pl.remove(project, "H5", "Hors du sujet", LATER)
     pn.sync(notebook, project, prepared, LATER)
-    assert _states(ready)["A8"] == f"H5 retirée du plan le {LATER}"
+    assert _states(ready)["A8"] == "H5 retirée du plan le 2 novembre 2026"
 
 
 def test_without_the_database_a_new_hypothesis_waits(ready):

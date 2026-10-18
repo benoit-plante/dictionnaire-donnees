@@ -355,6 +355,9 @@ msgstr ""
 "Add the statistics to the analysis context, filtered by the privacy gate. Without this option, it"
 " holds metadata only."
 
+msgid "Ajouter l'hypothèse"
+msgstr "Add the hypothesis"
+
 msgid "Ajouter la règle"
 msgstr "Add the rule"
 
@@ -370,6 +373,12 @@ msgstr "Add the statistics (counts below {n} masked)"
 
 msgid "Ajouter un sigle"
 msgstr "Add an acronym"
+
+msgid "Ajouter une hypothèse"
+msgstr "Add a hypothesis"
+
+msgid "Ajouter une hypothèse à la fin du plan."
+msgstr "Add a hypothesis at the end of the plan."
 
 msgid "Ajouter une règle"
 msgstr "Add a rule"
@@ -405,6 +414,9 @@ msgstr "Observed Cronbach's alpha: {a}"
 msgid "Alpha, items probables inversés"
 msgstr "Alpha, likely reversed items reversed"
 
+msgid "Amendements"
+msgstr "Amendments"
+
 msgid "Amendements du plan :"
 msgstr "Amendments to the plan:"
 
@@ -430,6 +442,9 @@ msgstr "Exploratory analysis"
 msgid "Analyses retenues mais écartées, impossibles à calculer :"
 msgstr "Retained analyses left out, impossible to compute:"
 
+msgid "Ancien nom de « ddict article », gardé pour cette version."
+msgstr "Former name of “ddict article”, kept for this version."
+
 msgid "Annuler"
 msgstr "Cancel"
 
@@ -443,6 +458,9 @@ msgstr "Preview of the paragraphs"
 msgid "Appel IA"
 msgstr "AI call"
 
+msgid "Après le gel : la raison de ce changement (amendement)."
+msgstr "After freezing: the reason for this change (amendment)."
+
 msgid ""
 "Après une analyse : l'équipe avait déjà analysé une partie des données (statistiques "
 "descriptives, analyses préliminaires…)."
@@ -455,6 +473,9 @@ msgstr "Stops the tool. Your decisions are already saved in the project file."
 
 msgid "Arrêter"
 msgstr "Stop"
+
+msgid "Arrêter le plan : sa date et son empreinte ; chaque hypothèse devient une analyse du carnet."
+msgstr "Finalise the plan: its date and fingerprint; each hypothesis becomes an analysis of the notebook."
 
 #, python-brace-format
 msgid "Association entre {a} et {b} : χ²({df}) = {chi2}, {p}, V = {v} (n = {n})."
@@ -480,8 +501,14 @@ msgstr "At least one cell has fewer than {n} people."
 msgid "Au total, {n} personnes ont répondu au questionnaire."
 msgstr "In total, {n} people answered the questionnaire."
 
+msgid "Aucun"
+msgstr "None"
+
 msgid "Aucun : tout le texte est reproduit"
 msgstr "None: all the text is reproduced"
+
+msgid "Aucun amendement."
+msgstr "No amendment."
 
 msgid "Aucun avertissement."
 msgstr "No warning."
@@ -524,6 +551,12 @@ msgstr "None"
 
 msgid "Aucune analyse retenue dans le carnet."
 msgstr "No retained analysis in the notebook."
+
+msgid "Aucune hypothèse : ajoutez-en une avec « ddict plan ajouter »."
+msgstr "No hypothesis: add one with “ddict plan add”."
+
+msgid "Aucune hypothèse pour l'instant."
+msgstr "No hypothesis yet."
 
 #, python-brace-format
 msgid "Aucune n'a été exclue par les règles d'exclusion (Figure {figure})."
@@ -677,6 +710,9 @@ msgstr "Computation alone"
 
 msgid "Calculé"
 msgstr "Computed"
+
+msgid "Caractère"
+msgstr "Kind"
 
 msgid "Caractéristique"
 msgstr "Characteristic"
@@ -988,6 +1024,12 @@ msgstr "Confirm the new computation"
 msgid "Confirmer le nouveau calcul d'analyses qui ont changé."
 msgstr "Confirm the new computation of analyses that changed."
 
+msgid "Confirmer le retrait"
+msgstr "Confirm the removal"
+
+msgid "Confirmer le retrait du plan entier."
+msgstr "Confirm the removal of the whole plan."
+
 msgid "Confirmer les nouveaux chiffres"
 msgstr "Confirm the new figures"
 
@@ -1051,6 +1093,9 @@ msgstr ""
 "Copy written next to the database: {name}. Read back and compared with the original: {rows} rows "
 "and {columns} variables, identical cell by cell."
 
+msgid "Correction pour comparaisons multiples"
+msgstr "Correction for multiple comparisons"
+
 msgid "Correspondance"
 msgstr "Correspondence"
 
@@ -1059,6 +1104,9 @@ msgstr "Correct or enter"
 
 msgid "Corrigé"
 msgstr "Answer key"
+
+msgid "Corrélation : la paire testée."
+msgstr "Correlation: the tested pair."
 
 msgid "Corrélation : relier des variables continues"
 msgstr "Correlation: relate continuous variables"
@@ -1259,6 +1307,10 @@ msgstr "Give the duration threshold, in seconds."
 msgid "Donnez un nom au score."
 msgstr "Give the score a name."
 
+#, python-brace-format
+msgid "Données : {origin}."
+msgstr "Data: {origin}."
+
 msgid "Données existantes"
 msgstr "Existing data"
 
@@ -1352,6 +1404,10 @@ msgstr "Definition"
 msgid "Déjà dans le carnet ({id})"
 msgstr "Already in the notebook ({id})"
 
+#, python-brace-format
+msgid "Déjà dans le carnet au gel : {ids}."
+msgstr "Already in the notebook when frozen: {ids}."
+
 msgid "ET"
 msgstr "SE"
 
@@ -1386,6 +1442,9 @@ msgstr ""
 
 msgid "Effectifs observés"
 msgstr "Observed counts"
+
+msgid "Effet testé"
+msgstr "Tested effect"
 
 #, python-brace-format
 msgid "Effet testé : {effect}."
@@ -1480,6 +1539,10 @@ msgid "Enregistrer références et notes"
 msgstr "Save references and notes"
 
 #, python-brace-format
+msgid "Enregistrer {id}"
+msgstr "Save {id}"
+
+#, python-brace-format
 msgid "Enregistré dans {path}."
 msgstr "Saved in {path}."
 
@@ -1536,6 +1599,10 @@ msgstr "Export"
 msgid "Export {platform} reconnu."
 msgstr "{platform} export recognized."
 
+#, python-brace-format
+msgid "Face au plan : {state}"
+msgstr "Against the plan: {state}"
+
 msgid ""
 "Facultative. Chaque proposition attend votre décision, et l'IA ne définit jamais un sigle. Ordre "
 "recommandé : glossaire, rattachement, révision des rattachements, puis libellés et descriptions."
@@ -1549,6 +1616,12 @@ msgstr "Get proposals: {title}"
 
 msgid "Faire proposer libellés et descriptions par un modèle local (facultatif)."
 msgstr "Have a local model propose labels and descriptions (optional)."
+
+msgid "Famille (correction)"
+msgstr "Family (correction)"
+
+msgid "Famille de la correction, p. ex. F1 ; aucune pour la retirer."
+msgstr "Family of the correction, e.g. F1; none to remove it."
 
 msgid "Fenêtre fermée : arrêt de l'outil."
 msgstr "Window closed: stopping the tool."
@@ -1601,6 +1674,9 @@ msgstr "Files written next to the project: {names}."
 #, python-brace-format
 msgid "Fichiers écrits à côté du projet : {xlsx} et {md}."
 msgstr "Files written next to the project: {xlsx} and {md}."
+
+msgid "Figer le plan"
+msgstr "Freeze the plan"
 
 msgid "Figure"
 msgstr "Figure"
@@ -1670,12 +1746,24 @@ msgstr "Holm"
 msgid "Hypothèse"
 msgstr "Hypothesis"
 
+#, python-brace-format
+msgid "Hypothèse ajoutée : {id}"
+msgstr "Hypothesis added: {id}"
+
 msgid "Hypothèse de l'IA"
 msgstr "AI hypothesis"
 
 #, python-brace-format
 msgid "Hypothèse incomplète : {field} ({detail})."
 msgstr "Incomplete hypothesis: {field} ({detail})."
+
+#, python-brace-format
+msgid "Hypothèse modifiée : {id}"
+msgstr "Hypothesis changed: {id}"
+
+#, python-brace-format
+msgid "Hypothèse retirée : {id}"
+msgstr "Hypothesis removed: {id}"
 
 msgid "Hypothèses"
 msgstr "Hypotheses"
@@ -1874,6 +1962,9 @@ msgstr ""
 msgid "L'association entre deux variables catégorielles a été testée par le test exact de Fisher."
 msgstr "The association between two categorical variables was tested with Fisher's exact test."
 
+msgid "L'hypothèse, telle que l'équipe l'écrit."
+msgstr "The hypothesis, as the team writes it."
+
 #, python-brace-format
 msgid ""
 "L'instrument {instrument} mesure {what} au moyen de {k} items, notés de {low} ({low_label}) à "
@@ -2032,6 +2123,9 @@ msgstr "Family {family} included {k} hypotheses; one could be tested."
 #, python-brace-format
 msgid "La famille {family} comptait {k} hypothèses ; {n} ont pu être testées."
 msgstr "Family {family} included {k} hypotheses; {n} could be tested."
+
+msgid "La justification de la taille d'échantillon, en texte."
+msgstr "The sample size rationale, as text."
 
 msgid ""
 "La langue du questionnaire et des libellés : le modèle écrit ses propositions dans cette langue. "
@@ -2228,6 +2322,9 @@ msgstr ""
 "For each variable, the model chooses its question among the computed candidates ({n} variables "
 "have some), and answers with an identifier."
 
+msgid "Le modèle entier"
+msgstr "The whole model"
+
 #, python-brace-format, python-format
 msgid ""
 "Le modèle expliquait {pct} % de la variance de {outcome}, F({df1}, {df2}) = {f}, {p}, R² ajusté ="
@@ -2303,15 +2400,28 @@ msgstr "The name of a family has 1 to 30 characters."
 msgid "Le nombre minimal d'items répondus dépasse le nombre d'items ({n})."
 msgstr "The minimum of items answered is above the number of items ({n})."
 
+msgid "Le nouvel énoncé."
+msgstr "The new statement."
+
 #, python-brace-format
 msgid "Le plan a été modifié {times} après avoir été arrêté : {changes}."
 msgstr "The plan was modified {times} after being finalised: {changes}."
+
+msgid "Le plan d'analyse du projet : hypothèses, règles générales, gel, amendements et préenregistrement."
+msgstr "The project's analysis plan: hypotheses, general rules, freezing, amendments and preregistration."
 
 msgid "Le plan est arrêté : donnez la raison de cette modification."
 msgstr "The plan is finalised: give the reason for this change."
 
 msgid "Le plan est déjà arrêté."
 msgstr "The plan is already finalised."
+
+msgid ""
+"Le plan figé reçoit sa date et son empreinte ; chaque hypothèse devient une analyse du carnet. "
+"Ensuite, toute modification exige une raison et devient un amendement, gardé pour toujours."
+msgstr ""
+"The frozen plan receives its date and fingerprint; each hypothesis becomes an analysis of the "
+"notebook. Afterwards, every change needs a reason and becomes an amendment, kept forever."
 
 msgid "Le plan n'a aucune hypothèse."
 msgstr "The plan has no hypothesis."
@@ -2324,6 +2434,9 @@ msgid ""
 "Le port {port} est déjà utilisé, peut-être par une autre révision ouverte. Fermez-la, ou ajoutez "
 "--port 8502."
 msgstr "Port {port} is already in use, perhaps by another open review. Close it, or add --port 8502."
+
+msgid "Le premier groupe plus élevé"
+msgstr "The first group higher"
 
 #, python-brace-format
 msgid "Le projet a déjà un questionnaire ({name}). Utilisez --remplacer pour le remplacer."
@@ -2386,6 +2499,9 @@ msgstr ""
 "The script {script} redoes this analysis in base R, with haven to read the database. Put it in "
 "the folder of the database {base}, with {needed}, then run it in that folder."
 
+msgid "Le second groupe plus élevé"
+msgstr "The second group higher"
+
 msgid "Le sens attendu contredit le test unilatéral choisi."
 msgstr "The expected direction contradicts the one-sided test chosen."
 
@@ -2413,6 +2529,9 @@ msgstr "The α level is a number strictly between 0 and 1."
 #, python-brace-format
 msgid "Le seuil α était fixé à {alpha}."
 msgstr "The α level was set at {alpha}."
+
+msgid "Le seuil α, p. ex. 0.05."
+msgstr "The α level, e.g. 0.05."
 
 msgid ""
 "Le sigle de l'échelle, en minuscules (k6, stai…) : ses items s'appelleront k6_1, k6_2… Donné par "
@@ -2532,6 +2651,15 @@ msgstr ""
 
 msgid "Les groupes ont été comparés deux à deux par la méthode de Tukey."
 msgstr "The groups were compared pairwise with Tukey's method."
+
+msgid ""
+"Les hypothèses de l'étude, écrites par l'équipe avant l'analyse, chacune liée à une analyse du "
+"catalogue et à l'effet qui y répond ; les règles générales ; le gel du plan et ses amendements ; "
+"le préenregistrement. Rien n'est envoyé hors de votre ordinateur."
+msgstr ""
+"The study's hypotheses, written by the team before the analysis, each tied to an analysis of the "
+"catalogue and to the effect that answers it; the general rules; the freezing of the plan and its "
+"amendments; the preregistration. Nothing is sent outside your computer."
 
 msgid "Les hypothèses suivantes ont été formulées :"
 msgstr "The following hypotheses were formulated:"
@@ -2716,6 +2844,9 @@ msgstr "List cleared."
 msgid "Lister les règles dans leur ordre, avec combien chacune exclut."
 msgstr "List the rules in their order, with how many each excludes."
 
+msgid "Lister les règles et les hypothèses, avec leurs conditions et leurs écarts."
+msgstr "List the rules and the hypotheses, with their conditions and deviations."
+
 msgid "Longueur maximale des noms"
 msgstr "Maximum length of the names"
 
@@ -2786,6 +2917,9 @@ msgstr ""
 msgid "Mettre une analyse à un autre rang."
 msgstr "Put an analysis at another rank."
 
+msgid "Mettre une hypothèse à un autre rang (l'ordre de l'article)."
+msgstr "Put a hypothesis at another rank (the order of the article)."
+
 msgid "Mettre une règle à un autre rang."
 msgstr "Put a rule at another rank."
 
@@ -2797,6 +2931,16 @@ msgstr "Scale minimum"
 
 msgid "Modalités comparées"
 msgstr "Levels compared"
+
+msgid "Modifier"
+msgstr "Change"
+
+msgid "Modifier une hypothèse ; après le gel, c'est un amendement, avec sa raison."
+msgstr "Change a hypothesis; after freezing, it is an amendment, with its reason."
+
+#, python-brace-format
+msgid "Modifier {id}"
+msgstr "Change {id}"
 
 msgid "Modèle"
 msgstr "Model"
@@ -2984,11 +3128,17 @@ msgstr "New name"
 msgid "Nouveau projet"
 msgstr "New project"
 
+msgid "Nouveau rang (1 est le premier)."
+msgstr "New rank (1 is the first)."
+
 msgid "Numéro"
 msgstr "Number"
 
 msgid "Numéro de l'analyse, p. ex. A3."
 msgstr "Number of the analysis, e.g. A3."
+
+msgid "Numéro de l'hypothèse, p. ex. H2."
+msgstr "Number of the hypothesis, e.g. H2."
 
 msgid "Numéro de la règle, p. ex. E2."
 msgstr "Number of the rule, e.g. E2."
@@ -3002,6 +3152,12 @@ msgstr "Numbers of the analyses, e.g. A1 A3."
 #, python-brace-format
 msgid "Numérotation : premier tableau {table}, première figure {figure}."
 msgstr "Numbering: first table {table}, first figure {figure}."
+
+msgid "Négatif"
+msgstr "Negative"
+
+msgid "OSF Prereg, pour des données primaires"
+msgstr "OSF Prereg, for primary data"
 
 msgid "Objectif de l'analyse"
 msgstr "Objective of the analysis"
@@ -3029,6 +3185,9 @@ msgstr "Unknown operator: {operator}."
 msgid "Origine"
 msgstr "Origin"
 
+msgid "Origine des données"
+msgstr "Origin of the data"
+
 msgid "Outil"
 msgstr "Tool"
 
@@ -3053,6 +3212,9 @@ msgstr "Open a project"
 msgid "Page"
 msgstr "Page"
 
+msgid "Paire testée"
+msgstr "Tested pair"
+
 msgid "Par exemple : comparer le bien-être entre les deux groupes de l'étude."
 msgstr "For example: compare well-being between the two groups of the study."
 
@@ -3069,9 +3231,16 @@ msgstr "Pearson"
 msgid "Place de la marque"
 msgstr "Place of the mark"
 
+msgid "Plan"
+msgstr "Plan"
+
 #, python-brace-format
 msgid "Plan arrêté dans l'outil le {date} ; empreinte du plan : {fingerprint}."
 msgstr "Plan finalised in the tool on {date}; fingerprint of the plan: {fingerprint}."
+
+#, python-brace-format
+msgid "Plan arrêté le {date} ; empreinte : {fingerprint}."
+msgstr "Plan finalised on {date}; fingerprint: {fingerprint}."
 
 msgid "Plan d'analyse"
 msgstr "Analysis plan"
@@ -3079,9 +3248,21 @@ msgstr "Analysis plan"
 msgid "Plan de l'étude"
 msgstr "Design plan"
 
+msgid "Plan figé."
+msgstr "Plan frozen."
+
 #, python-brace-format
 msgid "Plan non arrêté ; empreinte du plan : {fingerprint}."
 msgstr "Plan not finalised; fingerprint of the plan: {fingerprint}."
+
+msgid "Plan non arrêté."
+msgstr "Plan not finalised."
+
+msgid "Plan refusé :"
+msgstr "Plan refused:"
+
+msgid "Plan retiré."
+msgstr "Plan removed."
 
 msgid ""
 "Plusieurs distributions ont été comparées par le test de Kruskal-Wallis ; la taille d'effet est "
@@ -3101,6 +3282,9 @@ msgstr "Local port of the interface (default: 8501)."
 
 msgid "Port local de l'interface, quand ddict est lancé seul (défaut : 8501)."
 msgstr "Local port of the interface, when ddict is run alone (default: 8501)."
+
+msgid "Positif"
+msgstr "Positive"
 
 msgid "Position"
 msgstr "Position"
@@ -3146,6 +3330,9 @@ msgstr ""
 msgid "Pour un test t, le sens attendu est le premier ou le second groupe plus élevé."
 msgstr "For a t test, the expected direction is the first or the second group higher."
 
+msgid "Pour un test t, un sens rend le test unilatéral ; les groupes suivent l'ordre de leurs codes."
+msgstr "For a t test, a direction makes the test one-sided; the groups follow the order of their codes."
+
 msgid ""
 "Pour une nouvelle version du fichier. Les rattachements qui renvoyaient à l'ancienne version sont"
 " retirés ; les sigles déjà décidés sont gardés."
@@ -3182,11 +3369,17 @@ msgstr "First figure"
 msgid "Première figure (défaut : 1)."
 msgstr "First figure (default: 1)."
 
+msgid "Primaires"
+msgstr "Primary"
+
 msgid "Problème"
 msgstr "Problem"
 
 msgid "Procédure de collecte"
 msgstr "Data collection procedures"
+
+msgid "Produire l'ébauche d'article"
+msgstr "Produce the article draft"
 
 msgid ""
 "Produire l'ébauche d'article : l'Introduction, la Méthode, les analyses retenues du carnet, "
@@ -3199,9 +3392,6 @@ msgstr ""
 
 msgid "Produire le codebook Excel et le rapport Markdown d'un projet."
 msgstr "Produce the Excel codebook and the Markdown report of a project."
-
-msgid "Produire le document"
-msgstr "Produce the document"
 
 #, python-brace-format
 msgid "Produit le {date} par dictionnaire-donnees {version} ({others})."
@@ -3272,6 +3462,9 @@ msgstr "Provenance"
 msgid "Prédicteur"
 msgstr "Predictor"
 
+msgid "Prédicteur testé"
+msgstr "Tested predictor"
+
 msgid "Prédicteurs"
 msgstr "Predictors"
 
@@ -3281,6 +3474,9 @@ msgstr "Predictors (regression)."
 #, python-brace-format
 msgid "Prédicteurs très liés entre eux (VIF > {v}) : {names}."
 msgstr "Predictors closely related to each other (VIF > {v}): {names}."
+
+msgid "Préenregistrement"
+msgstr "Preregistration"
 
 msgid "Préenregistrement d'une analyse de données secondaires"
 msgstr "Preregistration of a secondary data analysis"
@@ -3319,6 +3515,13 @@ msgstr "Prepared by dictionnaire-donnees {version} on {date}."
 
 msgid "Puissance statistique"
 msgstr "Statistical power"
+
+msgid ""
+"Quand le plan a été écrit : avant-creation, avant-observation, avant-acces, avant-analyse ou "
+"apres-analyse."
+msgstr ""
+"When the plan was written: before-creation, before-observation, before-access, before-analysis or"
+" after-analysis."
 
 msgid "Question"
 msgstr "Question"
@@ -3404,6 +3607,9 @@ msgstr "Reason"
 #, python-brace-format
 msgid "Raison : {reason}"
 msgstr "Reason: {reason}"
+
+msgid "Raison des modifications (le plan est figé : chaque modification est un amendement)"
+msgstr "Reason for the changes (the plan is frozen: each change is an amendment)"
 
 #, python-brace-format
 msgid "Raison donnée par le modèle : {reason}"
@@ -3559,8 +3765,27 @@ msgstr "Remove the range"
 msgid "Retirer la cotation"
 msgstr "Remove the scoring"
 
+msgid "Retirer le plan entier"
+msgstr "Remove the whole plan"
+
+msgid "Retirer le plan entier efface ses hypothèses, son gel et ses amendements : ajoutez --confirmer."
+msgstr "Removing the whole plan erases its hypotheses, its freezing and its amendments: add --confirm."
+
+msgid ""
+"Retirer le plan entier efface ses hypothèses, son gel et ses amendements ; les analyses du carnet"
+" restent."
+msgstr ""
+"Removing the whole plan erases its hypotheses, its freezing and its amendments; the notebook's "
+"analyses stay."
+
+msgid "Retirer le plan entier, son gel et ses amendements."
+msgstr "Remove the whole plan, its freezing and its amendments."
+
 msgid "Retirer une analyse."
 msgstr "Remove an analysis."
+
+msgid "Retirer une hypothèse."
+msgstr "Remove a hypothesis."
 
 msgid "Retirer une règle."
 msgstr "Remove a rule."
@@ -3617,6 +3842,12 @@ msgstr "Exclusion rules"
 msgid "Règles d'exclusion :"
 msgstr "Exclusion rules:"
 
+msgid "Règles du plan enregistrées."
+msgstr "Rules of the plan saved."
+
+msgid "Règles générales"
+msgstr "General rules"
+
 msgid "Règles seules"
 msgstr "Rules alone"
 
@@ -3635,6 +3866,15 @@ msgstr "References (one per line)"
 
 msgid "Réglages de nommage"
 msgstr "Naming settings"
+
+msgid "Régler α, la correction, la taille d'échantillon, l'origine et l'état des données."
+msgstr "Set α, the correction, the sample size, the origin and the state of the data."
+
+msgid "Régression : le modèle entier est l'effet testé."
+msgstr "Regression: the whole model is the tested effect."
+
+msgid "Régression : le prédicteur testé."
+msgstr "Regression: the tested predictor."
 
 #, python-brace-format
 msgid "Régression de {outcome}"
@@ -3705,6 +3945,15 @@ msgstr "R script (.zip)"
 msgid "Script R équivalent"
 msgstr "Equivalent R script"
 
+msgid "Secondaires"
+msgstr "Secondary"
+
+msgid "Sens attendu"
+msgstr "Expected direction"
+
+msgid "Sens attendu : premier ou second (groupe plus élevé), positif ou negatif ; aucun pour le retirer."
+msgstr "Expected direction: first or second (group higher), positive or negative; none to remove it."
+
 #, python-brace-format
 msgid "Sens attendu : {direction}."
 msgstr "Expected direction: {direction}."
@@ -3717,6 +3966,13 @@ msgstr "Local server"
 
 msgid "Seuil"
 msgstr "Threshold"
+
+msgid "Seuil α"
+msgstr "α level"
+
+#, python-brace-format
+msgid "Seuil α : {alpha} ; correction : {correction}."
+msgstr "α level: {alpha}; correction: {correction}."
 
 msgid "Seuil, en secondes"
 msgstr "Threshold, in seconds"
@@ -3929,8 +4185,15 @@ msgstr "Predicted effect size"
 msgid "Taille d'échantillon"
 msgstr "Sample size"
 
+#, python-brace-format
+msgid "Taille d'échantillon : {text}"
+msgstr "Sample size: {text}"
+
 msgid "Tapez le seuil α du plan."
 msgstr "Type the plan's α level."
+
+msgid "Tapé par l'équipe : la page n'en enregistre aucun d'office."
+msgstr "Typed by the team: the page never saves one by default."
 
 msgid "Test exact de Fisher"
 msgstr "Fisher's exact test"
@@ -4059,6 +4322,9 @@ msgstr ""
 "A project already exists for this database: {name}. Open it to resume your work, or replace it "
 "(its decisions will be lost)."
 
+msgid "Un prédicteur"
+msgstr "A predictor"
+
 #, python-brace-format
 msgid ""
 "Un prédicteur nominal de {k} modalités a {c} coefficients ; une hypothèse ne porte que sur un "
@@ -4075,6 +4341,9 @@ msgstr "A t test"
 
 msgid "Une ANOVA"
 msgstr "An ANOVA"
+
+msgid "Une autre analyse du catalogue."
+msgstr "Another analysis of the catalogue."
 
 msgid "Une condition sur le score d'un groupe : GROUPE OPÉRATEUR VALEUR."
 msgstr "A condition on a group's score: GROUP OPERATOR VALUE."
@@ -4095,6 +4364,12 @@ msgid ""
 "Une décision a changé des chiffres : {ids}. Voyez ce qui a changé ci-dessous, puis confirmez un à"
 " un ou tout à la fois."
 msgstr "A decision changed figures: {ids}. See what changed below, then confirm one by one or all at once."
+
+msgid "Une hypothèse confirmatoire."
+msgstr "A confirmatory hypothesis."
+
+msgid "Une hypothèse exploratoire (confirmatoire par défaut)."
+msgstr "An exploratory hypothesis (confirmatory by default)."
 
 msgid "Une hypothèse exploratoire n'est pas corrigée ; retirez sa famille."
 msgstr "An exploratory hypothesis is not adjusted; remove its family."
@@ -4276,6 +4551,9 @@ msgstr "Variables"
 msgid "Variables (Tableau 1, corrélation)."
 msgstr "Variables (Table 1, correlation)."
 
+msgid "Variables (corrélation)."
+msgstr "Variables (correlation)."
+
 #, python-brace-format
 msgid "Variables : {names}"
 msgstr "Variables: {names}"
@@ -4403,6 +4681,9 @@ msgstr "no matching question in the database"
 
 msgid "aucune question du questionnaire"
 msgstr "no question in the questionnaire"
+
+msgid "aucune, holm ou bonferroni."
+msgstr "none, holm or bonferroni."
 
 msgid "auteurs"
 msgstr "authors"
@@ -4905,6 +5186,12 @@ msgstr "open"
 msgid "p corrigé ({method}) {value}"
 msgstr "{method}-adjusted p {value}"
 
+msgid "p. ex. 0,05"
+msgstr "e.g. 0.05"
+
+msgid "p. ex. F1"
+msgstr "e.g. F1"
+
 msgid "p. ex. Moins de 18 ans"
 msgstr "e.g. Under 18"
 
@@ -4923,6 +5210,9 @@ msgstr "administration shorter than {seconds} s, from {start} to {end}"
 
 msgid "pondération"
 msgstr "weight"
+
+msgid "primaires ou secondaires."
+msgstr "primary or secondary."
 
 msgid "primaires, recueillies par l'équipe pour cette étude"
 msgstr "primary, collected by the team for this study"
@@ -5107,6 +5397,9 @@ msgstr "one-sided test, the first group lower"
 msgid "test unilatéral, le premier groupe plus élevé"
 msgstr "one-sided test, the first group higher"
 
+msgid "test_t, anova, khi2, correlation ou regression."
+msgstr "t_test, anova, chi_square, correlation or regression."
+
 msgid "texte"
 msgstr "text"
 
@@ -5219,6 +5512,9 @@ msgstr "missing values, or outside the two groups compared"
 msgid "validé"
 msgstr "accepted"
 
+msgid "van den Akker et al. (2021), pour des données secondaires"
+msgstr "van den Akker et al. (2021), for secondary data"
+
 msgid "variable de groupe"
 msgstr "grouping variable"
 
@@ -5271,6 +5567,9 @@ msgid ""
 msgstr ""
 "welch, student, mann_whitney; anova, kruskal_wallis; pearson, fisher, spearman (default: the "
 "first of each analysis)."
+
+msgid "welch, student, mann_whitney ; anova, kruskal_wallis ; pearson, fisher, spearman."
+msgstr "welch, student, mann_whitney; anova, kruskal_wallis; pearson, fisher, spearman."
 
 msgid "zéro"
 msgstr "zero"
@@ -5418,6 +5717,10 @@ msgstr "{id} is now at rank {rank}."
 #, python-brace-format
 msgid "{id} quitte le carnet ; son numéro ne reviendra pas."
 msgstr "{id} leaves the notebook; its number will not come back."
+
+#, python-brace-format
+msgid "{id} quitte le plan ; son numéro ne reviendra pas."
+msgstr "{id} leaves the plan; its number will not come back."
 
 #, python-brace-format
 msgid "{id} quitte les règles ; son numéro ne reviendra pas."
@@ -5912,6 +6215,9 @@ msgstr ""
 "\"Not documented\" means unknown: do not guess it. Quote no threshold, range or instrument absent"
 " from this document."
 
+msgid "« ddict resultats » s'appelle maintenant « ddict article »."
+msgstr "“ddict results” is now called “ddict article”."
+
 #, python-brace-format
 msgid "« {note} »"
 msgstr "“{note}”"
@@ -6025,6 +6331,12 @@ msgstr "Write the context next to the project"
 msgid "Écrire le message qui serait envoyé, sans rien envoyer."
 msgstr "Write the message that would be sent, without sending anything."
 
+msgid "Écrire le préenregistrement (Word et Markdown) à côté du projet."
+msgstr "Write the preregistration (Word and Markdown) next to the project."
+
+msgid "Écrire le préenregistrement à côté du projet"
+msgstr "Write the preregistration next to the project"
+
 msgid "Écrire les fichiers de commandes à côté du projet"
 msgstr "Write the command files next to the project"
 
@@ -6040,6 +6352,15 @@ msgstr ""
 
 msgid "Écrire à côté du projet"
 msgstr "Write next to the project"
+
+#, python-brace-format
+msgid ""
+"Écrit à partir du plan et du codebook seulement, jamais de la base : aucun effectif ni résultat. "
+"Gabarit : {template}. Ce que l'outil ne peut pas savoir reste un trou, surligné, à compléter dans"
+" Word."
+msgstr ""
+"Written from the plan and the codebook only, never from the database: no count nor result. "
+"Template: {template}. What the tool cannot know stays a hole, highlighted, to complete in Word."
 
 msgid ""
 "Écrits par des gabarits à partir du codebook et du carnet, comme dans l'ébauche d'article. Ce que"
@@ -6072,6 +6393,13 @@ msgstr "Team"
 
 msgid "Étape"
 msgstr "Step"
+
+msgid "État des données quand le plan a été écrit (déclaré par l'équipe)"
+msgstr "State of the data when the plan was written (declared by the team)"
+
+#, python-brace-format
+msgid "État des données quand le plan a été écrit : {status}"
+msgstr "State of the data when the plan was written: {status}"
 
 msgid "Étendue"
 msgstr "Range"
@@ -6125,6 +6453,9 @@ msgstr "single choice"
 msgid "à cocher"
 msgstr "checkbox"
 
+msgid "à dire"
+msgstr "to state"
+
 msgid "à documenter"
 msgstr "to document"
 
@@ -6134,8 +6465,14 @@ msgstr "up to date"
 msgid "à nommer"
 msgstr "to name"
 
+msgid "à taper"
+msgstr "to type"
+
 msgid "à valider"
 msgstr "to accept"
+
+msgid "à écrire"
+msgstr "to write"
 
 #, python-brace-format
 msgid "é.-t. {sd}"

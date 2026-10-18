@@ -25,6 +25,7 @@ from ddict.review.ui import (
     method_view,
     names_view,
     notebook_view,
+    plan_view,
     questionnaire_view,
     variables_view,
 )
@@ -41,6 +42,7 @@ MODES = Texts(
         "variables": N_("Variables"),
         "groups": N_("Groupes"),
         "names": N_("Noms"),
+        "plan": N_("Plan"),
         "analyses": N_("Analyses"),
         "notebook": N_("Carnet"),
         "method": N_("Méthode"),
@@ -177,6 +179,8 @@ def main() -> None:
         export_view.page(project)
     elif mode == "names":
         names_view.page(project)
+    elif mode == "plan":
+        plan_view.page(project)
     elif mode == "analyses":
         analyses_view.page(project)
     elif mode == "notebook":

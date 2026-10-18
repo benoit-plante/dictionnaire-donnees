@@ -162,6 +162,15 @@ def sync(
     return waiting
 
 
+def clear(notebook: nb.Notebook, project: Project) -> None:
+    """Remove the whole plan (a person confirmed it), and every tie of the notebook to it:
+    the entries stay, as they are, retained or not."""
+    planning.clear(project)
+    for entry in notebook.entries:
+        entry.hypothesis = None
+        entry.superseded = None
+
+
 # --- The state of each entry against the plan. ---
 
 
@@ -211,6 +220,8 @@ def state_text(found: PlanState | None, entry: nb.Entry | None = None) -> str:
     """An entry's state against the plan, in plain words; empty without a frozen plan."""
     if found is None:
         return ""
+    from ddict.analysis.prereg import long_date
+
     if found.kind == "planned":
         return _("prévue ({id})").format(id=found.hypothesis)
     if found.kind == "planned_exploratory":
@@ -219,9 +230,9 @@ def state_text(found: PlanState | None, entry: nb.Entry | None = None) -> str:
         superseded = entry.superseded if entry is not None else None
         if superseded is not None and superseded.change == "removed":
             return _("{id} retirée du plan le {date}").format(
-                id=superseded.hypothesis, date=superseded.date
+                id=superseded.hypothesis, date=long_date(superseded.date)
             )
-        when = superseded.date if superseded is not None else ""
+        when = long_date(superseded.date) if superseded is not None else ""
         return _("remplacée par l'amendement du {date} ({id})").format(
             date=when, id=found.hypothesis
         )

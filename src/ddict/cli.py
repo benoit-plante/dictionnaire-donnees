@@ -1,5 +1,6 @@
 """Command line: `ddict profiler`, `exporter`, `documenter`, `questionnaire`, `enrichir`,
-`rattacher`, `evaluer`, `analyser`, `carnet`, `resultats`, `exclusions`, `conseiller`,
+`rattacher`, `evaluer`, `analyser`, `carnet`, `plan`, `article` (or `resultats`),
+`exclusions`, `conseiller`,
 `reviser`."""
 
 from __future__ import annotations
@@ -17,6 +18,7 @@ from datetime import datetime
 from pathlib import Path
 
 from ddict import __version__, settings
+from ddict.cli_plan import add_plan_parser
 from ddict.export.documented import CopyError
 from ddict.i18n import LANGUAGES, _
 from ddict.io import ReadError
@@ -294,6 +296,7 @@ def notebook_lines(project, notebook, statuses) -> list[str]:
     """The notebook as `ddict carnet lister` prints it: each analysis in its order, retained
     or not, its state, its variables, what changed, and its sentence."""
     from ddict.analysis import notebook as nb
+    from ddict.analysis import plan_notebook as pn
     from ddict.analysis.catalogue import ROLES
     from ddict.analysis.notebook_check import difference_text, state_text
     from ddict.analysis.notebook_export import heading
@@ -306,6 +309,8 @@ def notebook_lines(project, notebook, statuses) -> list[str]:
         status = by_id[entry.id]
         kept = _("retenue") if entry.retained else _("écartée")
         lines.append(f"{rank}. {heading(entry)} — {kept}, {state_text(status.state)}")
+        if planned := pn.state_text(pn.state(notebook, project, entry), entry):
+            lines.append("   " + _("Face au plan : {state}").format(state=planned))
         try:
             names = nb.resolved(project, entry)
             lines.append(
@@ -432,6 +437,11 @@ def _notebook_action(action, args, project, project_path, notebook) -> int:
 
 
 def cmd_results(args: argparse.Namespace) -> int:
+    if getattr(args, "renamed", False):
+        print(
+            _("« ddict resultats » s'appelle maintenant « ddict article »."),
+            file=sys.stderr,
+        )
     from ddict.analysis import notebook as nb
     from ddict.analysis.notebook_check import waiting_text
     from ddict.analysis.notebook_export import ExportBlocked, write_results
@@ -1307,26 +1317,33 @@ def build_parser() -> argparse.ArgumentParser:
         )
     notebook_command.set_defaults(handler=cmd_notebook)
 
-    results = commands.add_parser(
-        "resultats",
-        aliases=["results"],
-        help=_(
-            "Produire l'ébauche d'article : l'Introduction, la Méthode, les analyses "
-            "retenues du carnet, recalculées, la Discussion et les Références ; Word, "
-            "graphiques Excel et script R maître, à côté du projet."
-        ),
-    )
-    results.add_argument("projet", help=_("Fichier projet (.dd.json)."))
-    results.add_argument(
-        "--base", "--database", help=_("La base d'origine, si elle n'est pas à côté du projet.")
-    )
-    results.add_argument(
-        "--langue",
-        "--language",
-        choices=list(LANGUAGES),
-        help=_("Langue du document (défaut : celle de l'interface)."),
-    )
-    results.set_defaults(handler=cmd_results)
+    add_plan_parser(commands)
+
+    for name, aliases, renamed in (("article", ["paper"], False), ("resultats", ["results"], True)):
+        results = commands.add_parser(
+            name,
+            aliases=aliases,
+            help=_(
+                "Produire l'ébauche d'article : l'Introduction, la Méthode, les analyses "
+                "retenues du carnet, recalculées, la Discussion et les Références ; Word, "
+                "graphiques Excel et script R maître, à côté du projet."
+            )
+            if not renamed
+            else _("Ancien nom de « ddict article », gardé pour cette version."),
+        )
+        results.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+        results.add_argument(
+            "--base",
+            "--database",
+            help=_("La base d'origine, si elle n'est pas à côté du projet."),
+        )
+        results.add_argument(
+            "--langue",
+            "--language",
+            choices=list(LANGUAGES),
+            help=_("Langue du document (défaut : celle de l'interface)."),
+        )
+        results.set_defaults(handler=cmd_results, renamed=renamed)
 
     exclusions_command = commands.add_parser(
         "exclusions",
