@@ -22,7 +22,7 @@ from ddict.analysis.apa import plain
 from ddict.analysis.book import Codebook
 from ddict.analysis.catalogue import CATALOGUE, CHOICES, OPTIONS, ROLES, TITLES
 from ddict.analysis.data import PreparedData, chosen_levels
-from ddict.i18n import N_, Texts, _
+from ddict.i18n import N_, Texts, _, field_label
 from ddict.project import save_project
 from ddict.project.model import Hypothesis, Project
 from ddict.review.ui import analyses_view
@@ -583,6 +583,36 @@ def _clear(project: Project) -> None:
         st.session_state.pop(key, None)
 
 
+def _ready(project: Project, prepared: PreparedData | None) -> None:
+    """What freezing the plan needs, as a list to tick (v0.16): a plan just begun is not a
+    fault, so nothing here is shown in red."""
+    plan = project.plan
+    computable = [
+        f"{h.id} : {reason}"
+        for h in plan.hypotheses
+        for reason in planning.review(project, h, prepared).refusals
+    ]
+    lines = [
+        (_("Au moins une hypothèse"), bool(plan.hypotheses)),
+        (_("Le seuil α du plan"), plan.alpha is not None),
+        (
+            _("L'origine des données et leur état quand le plan a été écrit"),
+            plan.data_origin is not None and plan.data_status is not None,
+        ),
+        (
+            _("La base ouverte : chaque hypothèse devient une analyse du carnet"),
+            prepared is not None,
+        ),
+        (_("Chaque hypothèse calculable sur la base"), bool(plan.hypotheses) and not computable),
+    ]
+    st.write(field_label("Pour figer le plan"))
+    for text, done in lines:  # read-only boxes, in normal text: a disabled box is faded
+        box = ":material/check_box:" if done else ":material/check_box_outline_blank:"
+        st.markdown(f"{box} {text}")
+    for reason in computable:
+        st.write(f"- {reason}")
+
+
 def _frozen(project: Project, prepared: PreparedData | None) -> None:
     st.subheader(_("Figer le plan"))
     plan = project.plan
@@ -595,20 +625,13 @@ def _frozen(project: Project, prepared: PreparedData | None) -> None:
             )
         )
         refusals = planning.freeze_refusals(project, prepared)
-        if prepared is None:
-            refusals.insert(
-                0,
-                _("Ouvrez la base pour figer le plan : chaque hypothèse devient une analyse du "
-                  "carnet."),
-            )  # fmt: skip
-        for reason in refusals:
-            st.error(reason)
+        _ready(project, prepared)
         st.button(
             _("Figer le plan"),
             key="plan-freeze",
             type="primary",
             icon=":material/lock:",
-            disabled=bool(refusals),
+            disabled=bool(refusals) or prepared is None,
             on_click=_act,
             args=(lambda p: _freeze(p),),
             kwargs={"key": "plan-freeze", "done": _("Plan figé.")},

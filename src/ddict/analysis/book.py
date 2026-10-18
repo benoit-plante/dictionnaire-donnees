@@ -11,7 +11,7 @@ from ddict.questionnaire.labels import accepted_labels
 
 
 class Codebook:
-    def __init__(self, project: Project, prepared: PreparedData) -> None:
+    def __init__(self, project: Project, prepared: PreparedData | None) -> None:
         self.entries = {w.final_name(e): e for e in project.variables}
         self.levels = conditions.levels(project)
         self.recodes = {rule.name: rule for rule in project.recodes.rules}
@@ -22,7 +22,8 @@ class Codebook:
         if entry is None and name in self.recodes:  # v0.15
             return self.recodes[name].label
         if entry is None:
-            group = self.prepared.scores.get(name)
+            # Without the database (the page Plan), a score is named without its group.
+            group = self.prepared.scores.get(name) if self.prepared is not None else None
             return _("{name} (score de {group})").format(name=name, group=group) if group else name
         return w.label_text(entry, "final") or name
 

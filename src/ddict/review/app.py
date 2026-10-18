@@ -141,6 +141,8 @@ def main() -> None:
             filters = [
                 f for f in variables_view.FILTERS if f != "unlinked" or project.questionnaire
             ]
+            if st.session_state.get("filter") not in filters:  # v0.16: never an empty page
+                st.session_state.filter = variables_view.default_filter(project)
             which = st.radio(
                 _("Filtre"), filters, key="filter", format_func=variables_view.FILTERS.__getitem__
             )
@@ -194,6 +196,7 @@ def main() -> None:
         method_view.page(project)
     elif mode == "variables" and chosen is None:
         bulk_view.links_panel(project)
+        variables_view.empty_filter(project, which, filters)
     elif mode == "variables":
         bulk_view.links_panel(project)
         variables_view.page(project, project.variable(chosen))

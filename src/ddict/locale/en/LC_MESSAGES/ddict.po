@@ -545,6 +545,9 @@ msgstr ""
 msgid "Au moins une case compte moins de {n} personnes."
 msgstr "At least one cell has fewer than {n} people."
 
+msgid "Au moins une hypothèse"
+msgstr "At least one hypothesis"
+
 #, python-brace-format
 msgid "Au total, {n} personnes ont répondu au questionnaire."
 msgstr "In total, {n} people answered the questionnaire."
@@ -664,6 +667,10 @@ msgstr "No variable checked."
 
 msgid "Aucune variable dans ce filtre."
 msgstr "No variable in this filter."
+
+#, python-brace-format
+msgid "Aucune variable dans le filtre « {f} »."
+msgstr "No variable in the filter “{f}”."
 
 msgid "Aucune variable à envoyer."
 msgstr "No variable to send."
@@ -903,6 +910,9 @@ msgstr "Change this recoding instead of creating one."
 #, python-brace-format
 msgid "Chaque corrélation est calculée sur les personnes qui ont les deux valeurs ({n} de {a} à {b})."
 msgstr "Each correlation is computed on the people who have both values ({n} from {a} to {b})."
+
+msgid "Chaque hypothèse calculable sur la base"
+msgstr "Each hypothesis computable on the database"
 
 msgid ""
 "Chaque sigle sera accepté avec la définition affichée ici, celle de son champ, corrigée ou non. "
@@ -1980,6 +1990,9 @@ msgstr "Figure"
 msgid "Filtre"
 msgstr "Filter"
 
+msgid "Filtres qui contiennent des variables :"
+msgstr "Filters that hold variables:"
+
 msgid "Fin"
 msgstr "End"
 
@@ -2350,6 +2363,9 @@ msgstr ""
 "The AI option is not installed. Reinstall the tool with its options: uv tool install --reinstall "
 "\".[ia,revision]\" (see docs/installation-windows.md)."
 
+msgid "L'origine des données et leur état quand le plan a été écrit"
+msgstr "The origin of the data and their state when the plan was written"
+
 msgid "L'outil est arrêté."
 msgstr "The tool is stopped."
 
@@ -2414,6 +2430,9 @@ msgstr "The database was not found."
 
 msgid "La base n'y est pas : déposez-la, ou non, selon votre certificat d'éthique."
 msgstr "The database is not in it: deposit it, or not, according to your ethics approval."
+
+msgid "La base ouverte : chaque hypothèse devient une analyse du carnet"
+msgstr "The database open: each hypothesis becomes an analysis of the notebook"
 
 #, python-brace-format
 msgid ""
@@ -2955,6 +2974,9 @@ msgstr "The local server does not answer as expected."
 #, python-brace-format
 msgid "Le serveur {endpoint} ne répond pas. Ollama est-il lancé ?"
 msgstr "The server {endpoint} does not answer. Is Ollama running?"
+
+msgid "Le seuil α du plan"
+msgstr "The plan's α level"
 
 #, python-brace-format
 msgid "Le seuil α est fixé à {alpha}."
@@ -3971,6 +3993,9 @@ msgstr ""
 "the bench measures the correct links, the labels that may invent something (citation, threshold, "
 "instrument name, meaning of an acronym, range, meaning of codes) and the duration. Your data is "
 "not used, and no model is downloaded."
+
+msgid "Pour figer le plan"
+msgstr "To freeze the plan"
 
 #, python-brace-format
 msgid "Pour lancer une analyse : ddict analyser {path} <analyse> …"

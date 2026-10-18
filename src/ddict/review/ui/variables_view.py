@@ -17,6 +17,7 @@ from ddict.questionnaire import link
 from ddict.questionnaire.labels import ASSUMED_ORDER
 from ddict.review import logic
 from ddict.review.ui import common as c
+from ddict.workflow import tasks
 
 FILTERS = Texts(
     {
@@ -531,6 +532,40 @@ def page(project: Project, entry: VariableEntry) -> None:
     from ddict.review.ui import recode_view
 
     recode_view.panel(project, entry)  # v0.15 (D-120)
+
+
+def default_filter(project: Project) -> str:
+    """The filter the page opens on (v0.16), never an empty list: "to review" as before when
+    something waits there; else that of the first task of the dashboard that leads here; else
+    "all"."""
+    if logic.select(project, "to_review"):
+        return "to_review"
+    for task in tasks(project):
+        if task.mode == "variables" and task.filter in FILTERS:
+            return task.filter
+    return "all"
+
+
+def _show_filter(which: str) -> None:
+    st.session_state.filter = which
+
+
+def empty_filter(project: Project, which: str, filters: list[str]) -> None:
+    """In the main area, never a blank page (v0.16): the filter is empty, the others not."""
+    st.info(_("Aucune variable dans le filtre « {f} ».").format(f=FILTERS[which]))
+    others = [(f, len(logic.select(project, f))) for f in filters if f != which]
+    others = [(f, n) for f, n in others if n]
+    if not others:
+        return
+    st.write(_("Filtres qui contiennent des variables :"))
+    with st.container(horizontal=True):
+        for f, n in others:
+            st.button(
+                f"{FILTERS[f]} ({n})",
+                key=f"show-filter-{f}",
+                on_click=_show_filter,
+                args=(f,),
+            )
 
 
 def choose_variable(project: Project, names: list[str], which: str) -> None:
