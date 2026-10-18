@@ -502,6 +502,7 @@ def analyses(found: Facts, script: str) -> Text:
             else _("Le code {codes} a été traité comme une valeur manquante.")
         )
         parts.append(rich(template.format(codes=semicolon().join(codes))))
+    parts += [rich(sentence) for sentence in found.recodes]  # v0.15 (D-120)
     parts.append(
         rich(
             _(

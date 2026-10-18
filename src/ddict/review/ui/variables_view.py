@@ -513,6 +513,9 @@ def page(project: Project, entry: VariableEntry) -> None:
     st.divider()
     _privacy(entry)
     _sourced(entry)
+    from ddict.review.ui import recode_view
+
+    recode_view.panel(project, entry)  # v0.15 (D-120)
 
 
 def choose_variable(project: Project, names: list[str], which: str) -> None:

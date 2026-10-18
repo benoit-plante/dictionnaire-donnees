@@ -1,9 +1,10 @@
 """The preparation scripts (v0.8, step 7, D-062, D-068): SPSS syntax and an R script that
 create new variables from the team's decisions, without any model: the reversed items
 (`<item>_inv`) and the scores of the structured scorings. No original variable is changed.
-Since v0.12 (D-094), the exclusion rules follow: `ddict_exclusion` (0 for a person kept,
-otherwise the rank of the first rule that excludes them), its counts, then only the people
-kept remain, as in the tool (`ddict.analysis.exclusions`).
+Since v0.15 (D-120), the recodings come after the scores, each a new variable with its
+value labels. Since v0.12 (D-094), the exclusion rules follow: `ddict_exclusion` (0 for a
+person kept, otherwise the rank of the first rule that excludes them), its counts, then only
+the people kept remain, as in the tool (`ddict.analysis.exclusions`).
 
 They run after the command file of `ddict.export.syntax` (or on the documented copy): on the
 final names, with the missing codes already declared, which every computation leaves out.
@@ -24,12 +25,14 @@ from ddict.i18n import _, in_language
 from ddict.project import fingerprint, scoring
 from ddict.project.exclusions import members
 from ddict.project.model import (
+    ClassesRecode,
     CompletenessRule,
     ConditionRule,
     DuplicateRule,
     DurationRule,
     Group,
     Project,
+    Recode,
     StraightliningRule,
     VariableEntry,
 )
@@ -140,9 +143,9 @@ def plan(project: Project) -> tuple[list[Reversal], list[Score], list[str]]:
 
 
 def needed(project: Project) -> bool:
-    """Whether the project has anything to prepare: a reversed item, a scoring or an
-    exclusion rule."""
-    return bool(project.exclusions.rules) or any(
+    """Whether the project has anything to prepare: a reversed item, a scoring, a recoding
+    or an exclusion rule."""
+    return bool(project.exclusions.rules or project.recodes.rules) or any(
         g.reverse_items or g.scoring is not None for g in project.groups
     )
 
@@ -160,8 +163,8 @@ def _header(project: Project, comment: str, today: str) -> list[str]:
             "sur les noms finaux, et les codes manquants déclarés sont exclus des calculs."
         ),
         _(
-            "Crée de nouvelles variables (items inversés, scores) selon les décisions de "
-            "l'équipe ; aucune variable d'origine n'est modifiée."
+            "Crée de nouvelles variables (items inversés, scores, recodages) selon les "
+            "décisions de l'équipe ; aucune variable d'origine n'est modifiée."
         ),
     ]
     return [f"{comment} {line}" for line in lines]
@@ -213,6 +216,7 @@ def spss(project: Project, today: str) -> str:
                 "DELETE VARIABLES ddict_ecart.",
                 "",
             ]
+    lines += _spss_recodes(project)
     lines += _spss_exclusions(project, scores)
     lines.append("EXECUTE.")
     return "\n".join(lines) + "\n"
@@ -226,7 +230,99 @@ def _final(project: Project, scores: list[Score]) -> dict[str, tuple[str, bool]]
     names = w.names_of(project)
     found = {e.name: (names[e.name], e.file.storage_type != "numeric") for e in project.variables}
     found |= {f"score:{s.group}": (s.name, False) for s in scores}
+    found |= {f"recode:{r.id}": (r.name, False) for r in project.recodes.rules}
     return found
+
+
+def _key(rule: ConditionRule) -> str:
+    """The key of `_final` a condition is about."""
+    if rule.recode is not None:
+        return f"recode:{rule.recode}"
+    return f"score:{rule.score}" if rule.score else rule.variable or ""
+
+
+# --- Recodings (v0.15, D-120) -----------------------------------------------------------
+
+
+def _recode_source(project: Project, rule: Recode) -> tuple[str, bool]:
+    """The final name of a recoding's source, and whether it holds text."""
+    from ddict.project.recodes import source_name
+
+    name = source_name(project, rule.source) or ""
+    if rule.source.variable is None:
+        return name, False
+    return name, project.variable(rule.source.variable).file.storage_type != "numeric"
+
+
+def recode_labels(rule: Recode) -> list[tuple[int, str]]:
+    """The codes and labels of a recoded variable, in order."""
+    if isinstance(rule, ClassesRecode):
+        return [(i + 1, label) for i, label in enumerate(rule.labels)]
+    return [(g.code, g.label) for g in sorted(rule.groups, key=lambda g: g.code)]
+
+
+def _spss_recodes(project: Project) -> list[str]:
+    lines: list[str] = []
+    for rule in project.recodes.rules:
+        source, text = _recode_source(project, rule)
+        lines.append(f"* {rule.id} : {rule.reason}")
+        if isinstance(rule, ClassesRecode):
+            lines.append(f"COMPUTE {rule.name} = $SYSMIS.")
+            bounds = [None, *rule.cuts, None]
+            for code in range(1, len(bounds)):
+                low, high = bounds[code - 1], bounds[code]
+                parts = [f"NOT MISSING({source})"]
+                if low is not None:
+                    parts.append(f"{source} >= {_number(low)}")
+                if high is not None:
+                    parts.append(f"{source} < {_number(high)}")
+                lines.append(f"IF ({' AND '.join(parts)}) {rule.name} = {code}.")
+        else:
+            pairs = " ".join(
+                "(" + ", ".join(_spss_value(v, text) for v in g.values) + f"={g.code})"
+                for g in rule.groups
+            )
+            lines.append(f"RECODE {source} {pairs} (ELSE=SYSMIS) INTO {rule.name}.")
+        labels = " ".join(f"{code} {_spss_text(label)}" for code, label in recode_labels(rule))
+        level = "ORDINAL" if rule.level == "ordinal" else "NOMINAL"
+        lines += [
+            f"VARIABLE LABELS {rule.name} {_spss_text(rule.label)}.",
+            f"VALUE LABELS {rule.name} {labels}.",
+            f"VARIABLE LEVEL {rule.name} ({level}).",
+            "",
+        ]
+    return lines
+
+
+def _r_recodes(project: Project) -> list[str]:
+    if not project.recodes.rules:
+        return []
+    lines = [
+        "ddict_texte <- function(x) {",
+        '  x <- as.character(if (inherits(x, "vctrs_vctr")) vctrs::vec_data(x) else x)',
+        '  x[!is.na(x) & trimws(x) == ""] <- NA',
+        "  x",
+        "}",
+    ]
+    for rule in project.recodes.rules:
+        source, text = _recode_source(project, rule)
+        x = f"ddict_texte({_r_column(source)})" if text else f"ddict_valeurs({_r_column(source)})"
+        if isinstance(rule, ClassesRecode):
+            cuts = ", ".join(_number(c) for c in rule.cuts)
+            value = f"findInterval({x}, c({cuts})) + 1"
+        else:
+            sources = [v for g in rule.groups for v in g.values]
+            codes = [g.code for g in rule.groups for _v in g.values]
+            listed = ", ".join(_r_value(v, text) for v in sources)
+            value = f"c({', '.join(str(c) for c in codes)})[match({x}, c({listed}))]"
+        labels = ", ".join(f"{_r_text(label)} = {code}" for code, label in recode_labels(rule))
+        lines += [
+            f"# {rule.id} : {rule.reason}",
+            f"{_r_column(rule.name)} <- haven::labelled({value}, labels = c({labels}), "
+            f"label = {_r_text(rule.label)})",
+        ]
+    lines.append("")
+    return lines
 
 
 def _group_items(project: Project, group_id: str) -> list[str]:
@@ -304,7 +400,7 @@ def _spss_exclusions(project: Project, scores: list[Score]) -> list[str]:
     conditions, temporary = [], []
     for number, rule in enumerate(rules, start=1):
         if isinstance(rule, ConditionRule):
-            name, text = final[f"score:{rule.score}" if rule.score else rule.variable]
+            name, text = final[_key(rule)]
             conditions.append(_spss_condition(rule, name, text))
         elif isinstance(rule, CompletenessRule):
             items = ", ".join(_group_items(project, rule.group))
@@ -377,7 +473,9 @@ def r_script(project: Project, today: str) -> str:
     reversals, scores, notes = plan(project)
     used = sorted({i.name for i in reversals} | {n for s in scores for n in s.items
                                                  if not n.endswith(SUFFIX)}
-                  | {s.existing for s in scores if s.existing})  # fmt: skip
+                  | {s.existing for s in scores if s.existing}
+                  | {_recode_source(project, r)[0] for r in project.recodes.rules
+                     if r.source.variable is not None})  # fmt: skip
     lines = [
         *_header(project, "#", today),
         _("# Avant : « donnees » chargées, puis le fichier de commandes appliqué."),
@@ -436,6 +534,7 @@ def r_script(project: Project, today: str) -> str:
                 + ")",
                 "",
             ]
+    lines += _r_recodes(project)
     lines += _r_exclusions(project, scores)
     lines.append('rm(list = ls(pattern = "^ddict_"))')
     return "\n".join(lines) + "\n"
@@ -509,7 +608,7 @@ def _r_exclusions(project: Project, scores: list[Score]) -> list[str]:
         lines += R_MOMENT
     for number, rule in enumerate(rules, start=1):
         if isinstance(rule, ConditionRule):
-            name, text = final[f"score:{rule.score}" if rule.score else rule.variable]
+            name, text = final[_key(rule)]
             condition = _r_condition(rule, name, text)
         elif isinstance(rule, CompletenessRule):
             items = ", ".join(_r_values(n, False) for n in _group_items(project, rule.group))

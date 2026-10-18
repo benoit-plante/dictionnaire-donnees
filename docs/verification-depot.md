@@ -116,9 +116,9 @@ VALUE LABELS age_classe 1 'moins de 30' 2 '30 à moins de 45' 3 '45 et plus'.
 
 ```r
 # R1 : Trop peu de personnes d'une autre identité pour un groupe à part.
-d$sexe_2 <- c(`1` = 1, `2` = 2, `3` = 2)[as.character(d$sexe)]
+donnees[["sexe_2"]] <- haven::labelled(c(1, 2, 2)[match(ddict_valeurs(donnees[["sexe"]]), c(1, 2, 3))], labels = c("Femme" = 1, "Homme ou autre identité" = 2), label = "Sexe, en deux groupes")
 # R2 : Classes d'âge du rapport de l'organisme.
-d$age_classe <- findInterval(d$age, c(30, 45)) + 1
+donnees[["age_classe"]] <- haven::labelled(findInterval(ddict_valeurs(donnees[["age"]]), c(30, 45)) + 1, labels = c("moins de 30" = 1, "30 à moins de 45" = 2, "45 et plus" = 3), label = "Âge, en trois classes")
 ```
 
 `findInterval` garde les valeurs manquantes et met un seuil dans la classe qui commence par lui, comme l'outil.

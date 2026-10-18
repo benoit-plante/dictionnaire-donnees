@@ -452,6 +452,30 @@ def _question_texts(project: Project, omitted: set[str]) -> list[str]:
     return [*lines, ""]
 
 
+def _recodes(project: Project) -> list[str]:
+    """v0.15 (D-120): the recoded variables, not in the file: the preparation script makes
+    them."""
+    if not project.recodes.rules:
+        return []
+    lines = [
+        _("## Variables recodées"),
+        "",
+        _(
+            "Absentes du fichier : le script de préparation les crée, après les scores et avant "
+            "les exclusions."
+        ),
+        "",
+    ]
+    for _id, name, label, level, source, parts, reason in w.recode_rows(project):
+        lines.append(
+            f"- `{name}` ({level}) — {label}{colon()}"
+            + _("tirée de {source} : {parts}. Raison : {reason}").format(
+                source=f"`{source}`", parts=parts, reason=reason
+            )
+        )
+    return [*lines, ""]
+
+
 @in_language
 def render_context(
     project: Project, *, statistics: bool = False, omit_groups: tuple[str, ...] = ()
@@ -459,7 +483,8 @@ def render_context(
     """The analysis context in Markdown, to be read by a person or pasted into a model."""
     omitted = w.omitted_variables(project, omit_groups)
     lines = _header(project) + _rules(project) + _completeness(project)
-    lines += _groups(project, omitted) + _variables(project) + _attention_lines(project)
+    lines += _groups(project, omitted) + _recodes(project) + _variables(project)
+    lines += _attention_lines(project)
     if statistics:
         lines += _statistics(project)
     lines += _question_texts(project, omitted)
@@ -646,8 +671,24 @@ def context_package(project: Project, *, statistics: bool = False) -> dict:
             ],
             "dataset_missing": completeness.dataset_missing(project),
             "groups": [_group(project, g) for g in project.groups],
+            **_package_recodes(project),
         },
     }
+
+
+def _package_recodes(project: Project) -> dict:
+    """v0.15 (D-120): the recoded variables, absent from the file, only when there are some
+    (the examples without recodings keep their bytes)."""
+    from ddict.project.recodes import source_name
+
+    if not project.recodes.rules:
+        return {}
+    found = []
+    for rule in project.recodes.rules:
+        data = rule.model_dump(mode="json")
+        data["source"] = source_name(project, rule.source)  # by its final name, in place
+        found.append(data)
+    return {"recodes": found}
 
 
 def _resource_name(stem: str) -> str:

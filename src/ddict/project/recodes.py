@@ -7,6 +7,8 @@ value without a group, the counts) is in `ddict.analysis.recode`.
 
 from __future__ import annotations
 
+import itertools
+
 from pydantic import TypeAdapter, ValidationError
 
 from ddict.export import wording as w
@@ -212,3 +214,69 @@ def remove(project: Project, rule_id: str) -> None:
             ]
         )
     project.recodes.rules.remove(rule)
+
+
+# --- How a recoding is said: the codebook, the analysis context, the Method (step 3). ---
+
+
+def parts_text(rule: Recode) -> str:
+    """ "Femme (1) ; Homme ou autre identité (2, 3)", "moins de 30 (< 30) ; 30 à moins de 45
+    (≥ 30 et < 45) ; 45 et plus (≥ 45)": each new category and what it gathers. Source
+    codes are written as in the data file, since they identify values."""
+    from ddict.i18n import semicolon
+
+    if isinstance(rule, ClassesRecode):
+        bounds = [None, *rule.cuts, None]
+        parts = []
+        for i, label in enumerate(rule.labels):
+            low, high = bounds[i], bounds[i + 1]
+            if low is None:
+                span = f"< {w.code_text(high)}"
+            elif high is None:
+                span = f"≥ {w.code_text(low)}"
+            else:
+                span = _("≥ {low} et < {high}").format(low=w.code_text(low), high=w.code_text(high))
+            parts.append(f"{label} ({span})")
+    else:
+        parts = [
+            f"{g.label} ({w.codes(g.values)})" for g in sorted(rule.groups, key=lambda g: g.code)
+        ]
+        if rule.missing_values:
+            parts.append(_("manquant : {values}").format(values=w.codes(rule.missing_values)))
+    return semicolon().join(parts)
+
+
+def method_sentence(project: Project, rule: Recode) -> str:
+    """The Method's sentence of a recoding (D-120)."""
+    return _("La variable {name} a été tirée de {source} : {parts}.").format(
+        name=rule.name, source=source_name(project, rule.source) or "?", parts=parts_text(rule)
+    )
+
+
+def default_labels(cuts: list[float]) -> list[str]:
+    """ "moins de 30", "30 à moins de 45", "45 et plus": the labels the tool proposes."""
+    shown = [w.code_text(c) for c in cuts]
+    labels = [_("moins de {high}").format(high=shown[0])]
+    labels += [
+        _("{low} à moins de {high}").format(low=low, high=high)
+        for low, high in itertools.pairwise(shown)
+    ]
+    return [*labels, _("{low} et plus").format(low=shown[-1])]
+
+
+def reference(project: Project, name: str) -> VariableRef:
+    """A recoding's source by its final name, its name in the file, or a score's name."""
+    for entry in project.variables:
+        if name in (w.final_name(entry), entry.name):
+            return VariableRef(variable=entry.name)
+    for score in plan(project)[1]:
+        if score.name == name:
+            return VariableRef(score=score.group)
+    raise RecodeRefused([_("{name} : variable inconnue du projet.").format(name=name)])
+
+
+def frozen_users(project: Project, rule_id: str) -> list[str]:
+    """The hypotheses of a frozen plan that use a recoding: it cannot change under them."""
+    if project.plan.frozen is None:
+        return []
+    return [u for u in used_by(project, rule_id) if u.startswith("H")]

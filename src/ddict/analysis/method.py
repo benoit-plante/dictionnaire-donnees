@@ -48,6 +48,7 @@ class Facts:
     reliabilities: tuple[Reliability, ...]
     missing: tuple[tuple[str, tuple[object, ...]], ...]  # final name, its missing codes
     methods: tuple[tuple[str, str, str], ...]  # analysis, method, post hoc, as used
+    recodes: tuple[str, ...] = ()  # v0.15: the sentences of the recodings it speaks of
 
 
 def _flow(prepared: PreparedData) -> Flow:
@@ -113,6 +114,27 @@ def _missing(project: Project, used: list[str]) -> tuple[tuple[str, tuple[object
     return tuple(found)
 
 
+def _recodes(project: Project, notebook: nb.Notebook, used: list[str]) -> tuple[str, ...]:
+    """The recodings the Method speaks of (v0.15, D-120): those of the variables it uses,
+    of the subgroups of the retained analyses, of the exclusion rules; in the project's
+    order."""
+    from ddict.project.recodes import method_sentence
+
+    named = set(used)
+    for entry in notebook.entries:
+        if entry.retained and entry.subgroup is not None:
+            try:
+                named.add(nb.resolve(project, entry.subgroup.variable))
+            except nb.NotebookError:
+                continue
+    ids = {getattr(r, "recode", None) for r in project.exclusions.rules}
+    return tuple(
+        method_sentence(project, rule)
+        for rule in project.recodes.rules
+        if rule.name in named or rule.id in ids
+    )
+
+
 def _methods(notebook: nb.Notebook) -> tuple[tuple[str, str, str], ...]:
     """The methods of the retained analyses, in the catalogue's order, each once."""
     found = set()
@@ -135,12 +157,14 @@ def facts(project: Project, prepared: PreparedData, notebook: nb.Notebook) -> Fa
             described.append(_describe(project, prepared, nb.resolve(project, ref), book))
         except nb.NotebookError:
             continue
+    used = _used(project, notebook)
     return Facts(
         _flow(prepared),
         tuple(described),
         tuple(reliabilities(project, prepared)),
-        _missing(project, _used(project, notebook)),
+        _missing(project, used),
         _methods(notebook),
+        _recodes(project, notebook, used),
     )
 
 

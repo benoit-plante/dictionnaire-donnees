@@ -116,3 +116,31 @@ def check(project: Project, rule: Recode, data: pd.DataFrame, book_labels: dict)
                 )
             )
     return found
+
+
+def prepared_rule(project: Project, table: pd.DataFrame, fields: dict, rule_id: str | None = None):
+    """A recoding from its fields, checked without and with the data (the table read from
+    the database): the rule and what the data says of it. Raises RecodeRefused. What the
+    page and `ddict recoder` share."""
+    from ddict.analysis.book import Codebook
+    from ddict.analysis.data import PreparedData, decided
+    from ddict.project.recodes import RecodeRefused, frozen_users, validated
+
+    if rule_id is not None:
+        held = frozen_users(project, rule_id)
+        if held:
+            raise RecodeRefused(
+                [
+                    _(
+                        "{id} : le plan est figé et {users} en dépend ; ce recodage ne change plus."
+                    ).format(id=rule_id, users=", ".join(held))
+                ]
+            )
+    rule = validated(project, fields, rule_id)
+    before, reversals, scores = decided(project, table)
+    prepared = PreparedData(before, scores, {r.new: r.name for r in reversals})
+    name = source_name(project, rule.source)
+    found = check(project, rule, before, Codebook(project, prepared).value_labels(name or ""))
+    if not found.ok:
+        raise RecodeRefused(found.refusals)
+    return rule, found

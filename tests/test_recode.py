@@ -278,3 +278,306 @@ def test_in_a_hypothesis_and_its_frozen_notebook(base, tmp_path):
     pn.freeze(notebook, project, prepared, "2026-10-18")
     statistics = notebook.entries[0].computed.statistics
     assert statistics["n1"] + statistics["n2"] == 240 - 49
+
+
+# --- In the preparation scripts, R and PSPP (step 3). ---
+
+
+def _r_master(project, path, tmp_path, cases):
+    """The tool's statistics and R's, by notebook entry, from the R master script."""
+    import io
+    import subprocess
+    import zipfile
+
+    from ddict.analysis import notebook_export as export
+    from ddict.analysis.data import prepare
+    from test_syntax import _rscript
+
+    prepared = prepare(project, path)
+    notebook = nb.new_notebook(project, path)
+    tool = {}
+    for key, chosen, subset in cases:
+        result = run(project, prepared, key, chosen, None, subset)
+        tool[nb.add(notebook, project, result, today="2026-10-18").id] = result.statistics
+    analyses = [(e.id, e.analysis, nb.resolved(project, e), dict(e.options), e.subgroup)
+                for e in notebook.entries]  # fmt: skip
+    analyses = [
+        (i, k, c, o, nb.resolved_subgroup(project, s)) if s else (i, k, c, o)
+        for i, k, c, o, s in analyses
+    ]
+    bundle = export.r_bundle(project, path, analyses, today="2026-10-18")
+    with zipfile.ZipFile(io.BytesIO(bundle)) as z:
+        z.extractall(path.parent)
+        assert f"{path.name.removesuffix('.dd.json')}-preparation.R" in z.namelist()
+    (path.parent / "run.R").write_text(
+        f'source("{path.name.removesuffix(".dd.json")}-article.R", encoding = "UTF-8")\n'
+        "valeurs <- unlist(resultats)\n"
+        'write.csv(data.frame(nom = names(valeurs), valeur = valeurs), "sortie.csv", '
+        "row.names = FALSE)\n",
+        encoding="utf-8",
+    )
+    done = subprocess.run([_rscript(), "run.R"], cwd=path.parent, capture_output=True,
+                          text=True, encoding="utf-8", errors="replace")  # fmt: skip
+    if "there is no package called" in done.stderr:
+        pytest.skip("haven is not installed in R")
+    assert done.returncode == 0, done.stderr[-2000:]
+    out = pd.read_csv(path.parent / "sortie.csv")
+    from_r: dict[str, dict[str, float]] = {}
+    for name, value in zip(out["nom"], out["valeur"], strict=True):
+        entry_id, key = name.split(".", 1)
+        from_r.setdefault(entry_id, {})[key] = value
+    return tool, from_r
+
+
+def _same(tool, from_r, keys):
+    for entry_id, wanted in keys.items():
+        for key in wanted:
+            assert tool[entry_id][key] == pytest.approx(from_r[entry_id][key], rel=1e-6), (
+                entry_id, key)  # fmt: skip
+
+
+def test_r_gives_the_tool_values(tmp_path):
+    from test_syntax import _rscript
+
+    if _rscript() is None:
+        pytest.skip("R is not installed")
+    import shutil
+
+    shutil.copy(EXAMPLES / KEY["sav"], tmp_path / KEY["sav"])
+    project = build_project(read_database(tmp_path / KEY["sav"]))
+    _added(project, SEXE_2, AGE_CLASSE)
+    rules.add(project, {"kind": "condition", "recode": "R2", "operator": "eq", "value": 1,
+                        "reason": "Moins de 30 ans"})  # fmt: skip
+    path = tmp_path / "etude-suivi.dd.json"
+    save_project(project, path)
+    cases = [
+        ("t_test", {"outcome": ["stress"], "group": ["sexe_2"]}, None),
+        ("chi_square", {"rows": ["sexe_2"], "columns": ["age_classe"]}, None),
+        ("paired", {"first": ["anxiete_t1"], "second": ["anxiete_t2"]},
+         Subset("age_classe", "eq", 3.0)),
+    ]  # fmt: skip
+    tool, from_r = _r_master(project, path, tmp_path, cases)
+    assert tool["A1"]["n1"] + tool["A1"]["n2"] == 240 - 49
+    _same(tool, from_r, {"A1": ["t", "df", "p", "n1", "n2"], "A2": ["chi2", "p"],
+                         "A3": ["t", "n", "p"]})  # fmt: skip
+
+
+def test_r_regroups_text_categories(tmp_path):
+    from test_syntax import _rscript
+
+    if _rscript() is None:
+        pytest.skip("R is not installed")
+    project, path = _base(tmp_path)
+    recodes.add(project, recodes.validated(project, {
+        "kind": "groups", "source": {"variable": "region"}, "name": "region_2",
+        "label": "Région, en deux", "reason": "Comparer le centre et le reste.",
+        "groups": [{"code": 1, "label": "Centre-ville", "values": ["centre-ville"]},
+                   {"code": 2, "label": "Ailleurs", "values": ["nord-est", "sud", "ouest"]}],
+    }))  # fmt: skip
+    save_project(project, path)
+    cases = [("t_test", {"outcome": ["satisfaction"], "group": ["region_2"]}, None)]
+    tool, from_r = _r_master(project, path, tmp_path, cases)
+    _same(tool, from_r, {"A1": ["t", "df", "p", "n1", "n2"]})
+
+
+def test_pspp_gives_the_same_columns(tmp_path):
+    import subprocess
+
+    import pyreadstat
+
+    from ddict.export.preparation import render_preparation
+    from ddict.export.syntax import write_syntax
+    from test_syntax import _pspp
+
+    if _pspp() is None:
+        pytest.skip("PSPP is not installed (D-027)")
+    sav = EXAMPLES / KEY["sav"]
+    data = read_database(sav)
+    project = build_project(data)
+    _added(project, SEXE_2, AGE_CLASSE)
+    rules.add(project, {"kind": "condition", "recode": "R2", "operator": "eq", "value": 1,
+                        "reason": "Moins de 30 ans"})  # fmt: skip
+    raw, _meta = pyreadstat.read_sav(str(sav), user_missing=True)
+    bare = tmp_path / "bare.sav"
+    pyreadstat.write_sav(raw, str(bare))
+    write_syntax(project, {"spss": tmp_path / "m.sps"}, "2026-10-18")
+    (tmp_path / "p.sps").write_text(render_preparation(project, "spss", "2026-10-18"),
+                                    encoding="utf-8")  # fmt: skip
+    job = tmp_path / "job.sps"
+    job.write_text(
+        f"GET FILE='{bare}'.\nINSERT FILE='{tmp_path / 'm.sps'}' ENCODING='UTF-8'.\n"
+        f"INSERT FILE='{tmp_path / 'p.sps'}' ENCODING='UTF-8'.\n"
+        f"SAVE OUTFILE='{tmp_path / 'out.sav'}'.\n",
+        encoding="utf-8",
+    )
+    done = subprocess.run([_pspp(), str(job)], capture_output=True, text=True,
+                          errors="replace")  # fmt: skip
+    said = (done.stdout + done.stderr).lower()
+    assert done.returncode == 0 and "error" not in said and "warning" not in said, said
+    out, meta = pyreadstat.read_sav(str(tmp_path / "out.sav"))
+    tool = apply_decisions(project, data.table).table
+    assert len(out) == len(tool) == 240 - 49
+    for name in ("sexe_2", "age_classe"):
+        assert out[name].value_counts().to_dict() == tool[name].value_counts().to_dict()
+    assert meta.variable_value_labels["sexe_2"] == {1.0: "Femme", 2.0: "Homme ou autre identité"}
+    assert meta.variable_measure["age_classe"] == "ordinal"
+
+
+# --- Scripts, codebook, Method, command and page (step 3). ---
+
+
+def test_the_preparation_scripts(base):
+    from ddict.export.preparation import needed, render_preparation
+
+    project, _table = base
+    assert not needed(project)
+    _added(project, SEXE_2, AGE_CLASSE)
+    assert needed(project)
+    spss = render_preparation(project, "spss", "2026-10-18")
+    assert (
+        "* R1 : Trop peu de personnes d'une autre identité pour un groupe à part.\n"
+        "RECODE sexe (1=1) (2, 3=2) (ELSE=SYSMIS) INTO sexe_2.\n"
+        "VARIABLE LABELS sexe_2 'Sexe, en deux groupes'.\n"
+        "VALUE LABELS sexe_2 1 'Femme' 2 'Homme ou autre identité'.\n"
+        "VARIABLE LEVEL sexe_2 (NOMINAL).\n"
+    ) in spss
+    assert "IF (NOT MISSING(age) AND age >= 30 AND age < 45) age_classe = 2.\n" in spss
+    r = render_preparation(project, "r", "2026-10-18")
+    assert (
+        'donnees[["age_classe"]] <- haven::labelled(findInterval(ddict_valeurs(donnees[["age"]]), '
+        'c(30, 45)) + 1, labels = c("moins de 30" = 1, "30 à moins de 45" = 2, "45 et plus" = 3), '
+        'label = "Âge, en trois classes")'
+    ) in r
+    assert r.index("sexe_2") < r.index("rm(list")
+
+
+def test_the_codebook_and_the_context(base, tmp_path):
+    from openpyxl import load_workbook
+
+    from ddict.export.context import context_package, render_context
+    from ddict.export.markdown import render_markdown
+    from ddict.export.xlsx import write_xlsx
+
+    project, _table = base
+    write_xlsx(project, tmp_path / "sans.xlsx")
+    assert "Recodages" not in load_workbook(tmp_path / "sans.xlsx").sheetnames
+    assert "recodes" not in context_package(project)["_ddict"]
+    _added(project, SEXE_2, AGE_CLASSE)
+    write_xlsx(project, tmp_path / "avec.xlsx")
+    rows = list(load_workbook(tmp_path / "avec.xlsx")["Recodages"].values)
+    assert rows[0] == ("Recodage", "Variable", "Libellé", "Niveau", "Source", "Règle", "Raison")
+    assert rows[2] == (
+        "R2", "age_classe", "Âge, en trois classes", "ordinal", "age",
+        "moins de 30 (< 30) ; 30 à moins de 45 (≥ 30 et < 45) ; 45 et plus (≥ 45)",
+        "Classes d'âge du rapport de l'organisme.",
+    )  # fmt: skip
+    markdown = render_markdown(project)
+    assert "## Variables recodées" in markdown
+    assert "- Règle : Femme (1) ; Homme ou autre identité (2, 3)" in markdown
+    context = render_context(project)
+    assert "- `sexe_2` (nominal) — Sexe, en deux groupes : tirée de `sexe`" in context
+    package = context_package(project)["_ddict"]["recodes"]
+    assert package[0]["source"] == "sexe" and list(package[0])[:3] == ["id", "kind", "source"]
+
+
+def test_the_method_sentence(base, tmp_path):
+    from ddict.analysis import method, method_text
+    from ddict.analysis.apa import plain
+
+    project, table = base
+    _added(project, SEXE_2, AGE_CLASSE)
+    prepared = apply_decisions(project, table)
+    notebook = nb.new_notebook(project, tmp_path / "etude-suivi.dd.json")
+    result = run(project, prepared, "t_test", {"outcome": ["stress"], "group": ["sexe_2"]})
+    nb.add(notebook, project, result, today="2026-10-18")
+    found = method.facts(project, prepared, notebook)
+    assert found.recodes == (
+        "La variable sexe_2 a été tirée de sexe : Femme (1) ; Homme ou autre identité (2, 3).",
+    )  # only the recodings the Method speaks of
+    assert found.recodes[0] in plain(method_text.analyses(found, "x.R"))
+
+
+def _project_file(tmp_path):
+    import shutil
+
+    shutil.copy(EXAMPLES / KEY["sav"], tmp_path / KEY["sav"])
+    path = tmp_path / "etude-suivi.dd.json"
+    save_project(build_project(read_database(tmp_path / KEY["sav"])), path)
+    return path
+
+
+def test_the_command(tmp_path, capsys):
+    from ddict.cli import main
+
+    path = _project_file(tmp_path)
+    assert main(["recoder", "regrouper", str(path), "sexe", "--nom", "sexe_2", "--libelle",
+                 "Sexe, en deux groupes", "--groupe", "1", "Femme", "--groupe", "2,3",
+                 "Homme ou autre identité", "--raison", SEXE_2["reason"]]) == 0  # fmt: skip
+    out = capsys.readouterr().out
+    assert "Recodage enregistré : R1 (sexe_2)." in out and "Femme : n = 133" in out
+    assert main(["recode", "cut", str(path), "age", "--name", "age_classe", "--label",
+                 "Âge, en trois classes", "--cuts", "30", "45", "--reason",
+                 AGE_CLASSE["reason"]]) == 0  # fmt: skip
+    project = load_project(path)
+    expected = _added(build_project(read_database(EXAMPLES / KEY["sav"])), SEXE_2, AGE_CLASSE)
+    assert project.recodes == expected.recodes  # the default labels are the sheet's
+    capsys.readouterr()
+    assert main(["recoder", "regrouper", str(path), "sexe", "--nom", "sexe_x", "--groupe", "1",
+                 "F", "--groupe", "2", "H", "--raison", "x"]) == 2  # fmt: skip
+    assert "Valeurs sans groupe : 3 (Autre identité, 14 personnes)." in capsys.readouterr().err
+    assert main(["recoder", "lister", str(path)]) == 0
+    assert "R2 — age_classe (ordinal) : Âge, en trois classes." in capsys.readouterr().out
+    assert main(["recoder", "retirer", str(path), "R2"]) == 0
+    assert [r.id for r in load_project(path).recodes.rules] == ["R1"]
+
+
+def test_a_frozen_hypothesis_holds_its_recoding(base, tmp_path):
+    from ddict.analysis import plan_notebook as pn
+    from ddict.analysis import planning as pl
+
+    project, table = base
+    _added(project, SEXE_2)
+    prepared = apply_decisions(project, table)
+    data = pl.data_from_names(project, "Le stress diffère selon le sexe.", "t_test",
+                              {"outcome": ["stress"], "group": ["sexe_2"]}, {})  # fmt: skip
+    pl.add(project, data, prepared, None, "2026-10-18")
+    project.plan.alpha, project.plan.data_origin = 0.05, "primary"
+    project.plan.data_status = "before_analysis"
+    pn.freeze(nb.new_notebook(project, tmp_path / "x.dd.json"), project, prepared, "2026-10-18")
+    with pytest.raises(recodes.RecodeRefused) as refused:
+        recode.prepared_rule(project, table, {**SEXE_2, "label": "Autre"}, "R1")
+    assert refused.value.reasons == [
+        "R1 : le plan est figé et H1 en dépend ; ce recodage ne change plus."
+    ]
+
+
+@pytest.mark.allow_hosts(["127.0.0.1"])
+def test_the_page_keeps_the_rule_of_the_command(tmp_path):
+    from streamlit.testing.v1 import AppTest
+
+    from test_analysis_page import APP
+
+    path = _project_file(tmp_path)
+    app = AppTest.from_file(APP, default_timeout=60)
+    app.session_state["project_path"] = str(path)
+    app.session_state["mode"] = "variables"
+    app.session_state["filter"] = "all"
+    app.session_state["current"] = "sexe"
+    app.run()
+    assert not app.exception, app.exception
+    for i, label in enumerate(["Femme", "Homme ou autre identité", "Homme ou autre identité"]):
+        app.text_input(key=f"recode-sexe-group-{i}").set_value(label)
+    app.text_input(key="recode-sexe-name").set_value("sexe_2")
+    app.text_input(key="recode-sexe-label").set_value("Sexe, en deux groupes")
+    app.text_input(key="recode-sexe-reason").set_value(SEXE_2["reason"]).run()
+    assert not app.exception, app.exception
+    assert not app.warning, [w.value for w in app.warning]
+    app.button(key="recode-sexe-save").click().run()
+    assert not app.exception, app.exception
+    expected = _added(build_project(read_database(EXAMPLES / KEY["sav"])), SEXE_2)
+    assert load_project(path).recodes == expected.recodes
+    assert app.selectbox(key="recode-sexe-which").value == "R1"
+    app.session_state["mode"] = "groups"
+    app.run()
+    assert not app.exception, app.exception
+    assert any("R1 — `sexe_2`" in m.value for m in app.markdown)

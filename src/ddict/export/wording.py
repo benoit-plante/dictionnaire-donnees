@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 from ddict import glossary
-from ddict.i18n import N_, Texts, _, colon, decimal, quoted, semicolon
+from ddict.i18n import N_, TextList, Texts, _, colon, decimal, quoted, semicolon
 from ddict.profile.compute import is_missing_label
 from ddict.profile.variants import spelling_variants
 from ddict.project import completeness, measure, scoring
@@ -186,6 +186,37 @@ def number(value: float | None) -> str:
     if value is None:
         return ""
     return str(int(value)) if float(value).is_integer() else decimal(f"{value:g}")
+
+
+RECODE_HEADER = TextList(
+    [
+        N_("Recodage"),
+        N_("Variable"),
+        N_("Libellé"),
+        N_("Niveau"),
+        N_("Source"),
+        N_("Règle"),
+        N_("Raison"),
+    ]
+)
+
+
+def recode_rows(project) -> list[tuple[str, ...]]:
+    """v0.15 (D-120): one row per recoded variable, a derived variable, for the codebook."""
+    from ddict.project.recodes import parts_text, source_name
+
+    return [
+        (
+            rule.id,
+            rule.name,
+            rule.label,
+            MEASURES[rule.level],
+            source_name(project, rule.source) or "?",
+            parts_text(rule),
+            rule.reason,
+        )
+        for rule in project.recodes.rules
+    ]
 
 
 def code_text(code: Code) -> str:

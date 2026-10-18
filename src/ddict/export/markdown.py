@@ -246,6 +246,25 @@ def _groups(project: Project, kind: w.ExportKind) -> list[str]:
     return lines
 
 
+def _recodes(project: Project) -> list[str]:
+    """v0.15 (D-120): the derived variables, each with its rule and its reason."""
+    if not project.recodes.rules:
+        return []
+    lines = [_("## Variables recodées"), ""]
+    for rule_id, name, label, level, source, parts, reason in w.recode_rows(project):
+        lines += [
+            f"### `{name}` — {_inline(label)}",
+            "",
+            f"- {field_label(_('Recodage'))}{rule_id}{semicolon()}"
+            + _("variable dérivée, {level}").format(level=level),
+            f"- {field_label(_('Source'))}`{source}`",
+            f"- {field_label(_('Règle'))}{_inline(parts)}",
+            f"- {field_label(_('Raison'))}{_inline(reason)}",
+            "",
+        ]
+    return lines
+
+
 def _correspondence(project: Project, kind: w.ExportKind) -> list[str]:
     """Original name -> new name (v0.7), when this export renames variables."""
     rows = w.correspondence_rows(project, kind)
@@ -284,6 +303,7 @@ def render_markdown(
     lines = _overview(project, kind)
     lines += _glossary(project, kind)
     lines += _groups(project, kind)
+    lines += _recodes(project)
     lines += [_("## Variables"), ""]
     for entry in project.variables:
         lines += _variable(project, entry, kind, omitted)

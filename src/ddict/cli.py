@@ -20,6 +20,7 @@ from pathlib import Path
 from ddict import __version__, settings
 from ddict.cli_decisions import add_decisions_parsers
 from ddict.cli_plan import add_plan_parser
+from ddict.cli_recode import add_recode_parser
 from ddict.export.documented import CopyError
 from ddict.i18n import LANGUAGES, _
 from ddict.io import ReadError
@@ -1397,6 +1398,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     add_plan_parser(commands)
     add_decisions_parsers(commands)
+    add_recode_parser(commands)
 
     for name, aliases, renamed in (("article", ["paper"], False), ("resultats", ["results"], True)):
         results = commands.add_parser(

@@ -362,6 +362,13 @@ def write_xlsx(
         _values(project, kind),
     )
     _sheet(book, _("Groupes"), GROUP_HEADER, _groups(project, kind))
+    if project.recodes.rules:  # v0.15 (D-120): the derived variables
+        _sheet(
+            book,
+            _("Recodages"),
+            list(w.RECODE_HEADER),
+            [list(row) for row in w.recode_rows(project)],
+        )
     if project.glossary:
         _sheet(
             book,

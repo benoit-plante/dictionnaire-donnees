@@ -27,6 +27,7 @@ from ddict.review.ui import (
     notebook_view,
     plan_view,
     questionnaire_view,
+    recode_view,
     variables_view,
 )
 from ddict.review.ui import common as c
@@ -189,12 +190,14 @@ def main() -> None:
         method_view.page(project)
     elif mode == "variables" and chosen is None:
         bulk_view.links_panel(project)
-    elif chosen is not None:
-        if mode == "variables":
-            bulk_view.links_panel(project)
-            variables_view.page(project, project.variable(chosen))
-        else:
+    elif mode == "variables":
+        bulk_view.links_panel(project)
+        variables_view.page(project, project.variable(chosen))
+    elif mode == "groups":
+        if chosen is not None:
             groups_view.page(project, chosen)
+            st.divider()
+        recode_view.listing(project)  # v0.15 (D-120): even without any group
     _messages_end(top)
 
 
