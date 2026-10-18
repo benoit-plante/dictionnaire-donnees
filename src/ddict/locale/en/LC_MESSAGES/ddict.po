@@ -61,6 +61,17 @@ msgstr "# Analysis context: {name}"
 msgid "# Dictionnaire de données : {name}"
 msgstr "# Data dictionary: {name}"
 
+#, python-brace-format
+msgid "# Empreinte de la base d'origine, non incluse (elle ne permet pas de la retrouver) : {sha256}"
+msgstr "# Fingerprint of the original database, not included (it cannot be found again from it): {sha256}"
+
+#, python-brace-format
+msgid "# Empreinte du codebook : {fingerprint}"
+msgstr "# Codebook fingerprint: {fingerprint}"
+
+msgid "# Empreintes SHA-256 des fichiers du paquet."
+msgstr "# SHA-256 fingerprints of the package's files."
+
 msgid "# Items inversés selon l'équipe : non recodés. Suggestion, à faire vous-même :"
 msgstr "# Items reversed according to the team: not recoded. Suggestion, to do yourself:"
 
@@ -808,6 +819,22 @@ msgstr "This code is a missing code."
 msgid "Ce code est une vraie valeur."
 msgstr "This code is a real value."
 
+#, python-brace-format
+msgid ""
+"Ce dépôt contient le dictionnaire de données et les scripts qui refont les analyses de l'article "
+"{article}. Il ne contient pas les données : {where}."
+msgstr ""
+"This deposit holds the data dictionary and the scripts that run again the analyses of the article"
+" {article}. It does not hold the data: {where}."
+
+#, python-brace-format
+msgid ""
+"Ce dépôt contient le dictionnaire de données, le plan d'analyse et les scripts qui refont les "
+"analyses de l'article {article}. Il ne contient pas les données : {where}."
+msgstr ""
+"This deposit holds the data dictionary, the analysis plan and the scripts that run again the "
+"analyses of the article {article}. It does not hold the data: {where}."
+
 msgid "Ce fichier projet est introuvable."
 msgstr "This project file cannot be found."
 
@@ -1181,6 +1208,9 @@ msgstr "Instructions given to the model"
 msgid "Constante"
 msgstr "Intercept"
 
+msgid "Contenu"
+msgstr "Contents"
+
 msgid "Contexte (Markdown)"
 msgstr "Context (Markdown)"
 
@@ -1307,6 +1337,14 @@ msgstr "Create the project"
 
 msgid "D'où vient la règle ou son seuil (p. ex. un procès-verbal)."
 msgstr "Where the rule or its threshold comes from (e.g. minutes of a meeting)."
+
+#, python-brace-format
+msgid ""
+"Dans SPSS ou PSPP : ouvrez la base, puis exécutez `{stem}.sps` et, s'il est présent, "
+"`{stem}-preparation.sps`."
+msgstr ""
+"In SPSS or PSPP: open the database, then run `{stem}.sps` and, if present, "
+"`{stem}-preparation.sps`."
 
 msgid "Dans le fichier"
 msgstr "In the file"
@@ -2331,8 +2369,14 @@ msgstr ""
 "The database is in long format (several rows per person): the measures of the same person must be"
 " columns of the same row."
 
+msgid "La base est nécessaire pour préparer le paquet (elle n'y entre pas)."
+msgstr "The database is needed to prepare the package (it does not go into it)."
+
 msgid "La base n'a pas été trouvée."
 msgstr "The database was not found."
+
+msgid "La base n'y est pas : déposez-la, ou non, selon votre certificat d'éthique."
+msgstr "The database is not in it: deposit it, or not, according to your ethics approval."
 
 #, python-brace-format
 msgid ""
@@ -2421,6 +2465,9 @@ msgstr "Family {family} included {k} hypotheses; {n} could be tested."
 
 msgid "La justification de la taille d'échantillon, en texte."
 msgstr "The sample size rationale, as text."
+
+msgid "La langue du paquet."
+msgstr "The language of the package."
 
 msgid ""
 "La langue du questionnaire et des libellés : le modèle écrit ses propositions dans cette langue. "
@@ -3248,6 +3295,13 @@ msgid "Libellés ou descriptions proposés : {n}"
 msgstr "Labels or descriptions proposed: {n}"
 
 #, python-brace-format
+msgid "Licence : {licence}. Auteurs : {authors}. Contact : {contact}."
+msgstr "Licence: {licence}. Authors: {authors}. Contact: {contact}."
+
+msgid "Licence, auteurs, contact"
+msgstr "Licence, authors, contact"
+
+#, python-brace-format
 msgid "Ligne droite, {group} ({k} items) : {count} personnes."
 msgstr "Straight line, {group} ({k} items): {count} people."
 
@@ -3756,6 +3810,14 @@ msgstr "Pair"
 msgid "Paire testée"
 msgstr "Tested pair"
 
+#, python-brace-format
+msgid "Paquet de reproduction écrit : {path}"
+msgstr "Reproduction package written: {path}"
+
+#, python-brace-format
+msgid "Paquet écrit à côté du projet : {name} ({files}). La base n'y est pas."
+msgstr "Package written next to the project: {name} ({files}). The database is not in it."
+
 msgid "Par exemple : comparer le bien-être entre les deux groupes de l'étude."
 msgstr "For example: compare well-being between the two groups of the study."
 
@@ -3782,6 +3844,18 @@ msgstr "Nobody is in the subgroup."
 
 msgid "Place de la marque"
 msgstr "Place of the mark"
+
+#, python-brace-format
+msgid ""
+"Placez la base `{base}` dans le dossier `scripts/`. Dans R, avec le paquet haven, le dossier "
+"`scripts/` comme dossier de travail : `source(\"{script}\", encoding = \"UTF-8\")`. Le script "
+"exécute le fichier de commandes, le script de préparation, puis les {n} analyses ; chaque "
+"résultat est rangé sous son identifiant (`resultats$A1`)."
+msgstr ""
+"Put the database `{base}` in the `scripts/` folder. In R, with the haven package, the `scripts/` "
+"folder as the working directory: `source(\"{script}\", encoding = \"UTF-8\")`. The script runs "
+"the command file, the preparation script, then the {n} analyses; each result is kept under its "
+"identifier (`resultats$A1`)."
 
 msgid "Plan"
 msgstr "Plan"
@@ -3962,6 +4036,14 @@ msgid "Produit le {date} par dictionnaire-donnees {version} ({others})."
 msgstr "Made on {date} by dictionnaire-donnees {version} ({others})."
 
 #, python-brace-format
+msgid ""
+"Produit par dictionnaire-donnees {version} le {date} ; empreinte du codebook `{fingerprint}` ; "
+"empreintes des fichiers dans `EMPREINTES.txt`."
+msgstr ""
+"Made by dictionnaire-donnees {version} on {date}; codebook fingerprint `{fingerprint}`; "
+"fingerprints of the files in `EMPREINTES.txt`."
+
+#, python-brace-format
 msgid "Projet créé : {path}"
 msgstr "Project created: {path}"
 
@@ -4075,6 +4157,16 @@ msgstr "Preparation of {name}, made by dictionnaire-donnees {version} on {date}.
 
 msgid "Préparation des bases fictives…"
 msgstr "Preparing the fictional databases…"
+
+msgid "Préparer le paquet de reproduction"
+msgstr "Prepare the reproduction package"
+
+msgid ""
+"Préparer le paquet de reproduction (codebook, plan, carnet, scripts, README), sans la base, à "
+"côté du projet."
+msgstr ""
+"Prepare the reproduction package (codebook, plan, notebook, scripts, README), without the "
+"database, next to the project."
 
 #, python-brace-format
 msgid "Préparé par dictionnaire-donnees {version} le {date}."
@@ -4292,6 +4384,9 @@ msgstr "Recode this variable: regroup its categories"
 
 msgid "Refaire l'analyse dans R"
 msgstr "Redo the analysis in R"
+
+msgid "Refaire les analyses"
+msgstr "Running the analyses again"
 
 msgid ""
 "Regarde si deux variables catégorielles sont associées, par exemple le secteur d'emploi et le "
@@ -5091,6 +5186,13 @@ msgstr "Download"
 msgid "Télécharger le rapport"
 msgstr "Download the report"
 
+msgid ""
+"Un .zip pour un dépôt (OSF, Borealis) : codebook, plan, carnet, scripts et un README à compléter "
+"; jamais la base."
+msgstr ""
+"A .zip for a deposit (OSF, Borealis): codebook, plan, notebook, scripts and a README to complete;"
+" never the database."
+
 #, python-brace-format
 msgid ""
 "Un fichier {format} ne contient {lacks} : l'outil les devine, vérifiez-les. Un export .sav, quand"
@@ -5556,6 +5658,34 @@ msgstr ""
 "bibliographic references (a page of the questionnaire, for example). Put them in APA format and "
 "add the other references.]"
 
+#, python-brace-format
+msgid ""
+"`analyses/` : le carnet des {n} analyses retenues : leurs choix, leurs empreintes, leurs "
+"résultats agrégés ; aucune donnée individuelle."
+msgstr ""
+"`analyses/`: the notebook of the {n} retained analyses: their choices, their fingerprints, their "
+"aggregate results; no individual data."
+
+#, python-brace-format
+msgid "`codebook/` : le dictionnaire des {n} variables (Excel, Markdown, `datapackage.json`)."
+msgstr "`codebook/`: the dictionary of the {n} variables (Excel, Markdown, `datapackage.json`)."
+
+#, python-brace-format
+msgid ""
+"`plan/` : le préenregistrement du plan d'analyse, arrêté dans l'outil le {date}, avec ses "
+"amendements ({n})."
+msgstr ""
+"`plan/`: the preregistration of the analysis plan, frozen in the tool on {date}, with its "
+"amendments ({n})."
+
+msgid "`plan/` : le préenregistrement du plan d'analyse, non arrêté."
+msgstr "`plan/`: the preregistration of the analysis plan, not frozen."
+
+msgid ""
+"`scripts/` : les fichiers de commandes (SPSS et R), le script de préparation et le script R "
+"maître."
+msgstr "`scripts/`: the command files (SPSS and R), the preparation script and the R master script."
+
 msgid "accès public aux données"
 msgstr "open or public availability of the data"
 
@@ -5689,6 +5819,9 @@ msgstr "confirmatory"
 
 msgid "connaissance préalable des données"
 msgstr "prior knowledge of the data"
+
+msgid "contact"
+msgstr "contact"
 
 msgid "contexte, revue des travaux et justification de l'étude"
 msgstr "background, literature review and rationale"
@@ -5950,6 +6083,9 @@ msgstr "on {date}, for {target} ({summary}): {reason}"
 msgid "les règles générales"
 msgstr "the general rules"
 
+msgid "licence"
+msgstr "licence"
+
 msgid "lieu et identifiant du préenregistrement, s'il y en a un"
 msgstr "registry and identifier of the preregistration, if any"
 
@@ -5986,6 +6122,9 @@ msgstr "March"
 
 msgid "masqué"
 msgstr "masked"
+
+msgid "matériel de reproduction"
+msgstr "reproduction material"
 
 msgid "max"
 msgstr "max"
@@ -6140,6 +6279,9 @@ msgstr "open"
 msgid "ouvertes"
 msgstr "open"
 
+msgid "où et à quelles conditions les obtenir"
+msgstr "where and on what terms to obtain them"
+
 msgid "p corrigé (Holm)"
 msgstr "Holm-adjusted p"
 
@@ -6272,6 +6414,9 @@ msgstr "rule"
 
 msgid "règle d'arrêt"
 msgstr "stopping rule"
+
+msgid "référence de l'article"
+msgstr "reference of the article"
 
 msgid "répartition aléatoire"
 msgstr "randomization"
@@ -6416,6 +6561,9 @@ msgstr "derived from {source}: {parts}. Reason: {reason}"
 
 msgid "titre"
 msgstr "title"
+
+msgid "titre de l'étude"
+msgstr "title of the study"
 
 msgid "titres de colonnes collés"
 msgstr "column headings run together"
@@ -7470,6 +7618,14 @@ msgid ""
 msgstr ""
 "To confirm before producing the document: {ids}. See the differences with “ddict notebook list”, "
 "then confirm them with “ddict notebook confirm”."
+
+#, python-brace-format
+msgid "À confirmer avant de préparer le paquet : {ids} (« ddict carnet confirmer »)."
+msgstr "To confirm before preparing the package: {ids} (“ddict notebook confirm”)."
+
+#, python-brace-format
+msgid "À confirmer avant de préparer le paquet : {ids}."
+msgstr "To confirm before preparing the package: {ids}."
 
 msgid "À documenter"
 msgstr "To document"

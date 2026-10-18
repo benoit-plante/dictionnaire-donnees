@@ -132,6 +132,37 @@ def _write(project: Project) -> None:
     )
 
 
+def _deposit(project: Project) -> None:
+    """The reproduction package next to the project (v0.15, D-119)."""
+    from ddict.analysis import deposit
+
+    prepared = st.session_state[analyses_view.PREPARED][1]
+    try:
+        notebook = nb.open_notebook(project, c.project_path())
+        target, files = deposit.write_deposit(project, prepared, notebook, c.project_path(),
+                                              language=i18n.language())  # fmt: skip
+    except ExportBlocked as error:
+        text = _("À confirmer avant de préparer le paquet : {ids}.").format(
+            ids=check.waiting_text(error.ids)
+        )
+        st.session_state.message = ("error", text, "notebook-deposit")
+        return
+    except (OSError, nb.NotebookError, deposit.DepositError) as error:
+        st.session_state.message = (
+            "error",
+            _("Impossible d'écrire les fichiers : {detail}.").format(detail=error),
+            "notebook-deposit",
+        )
+        return
+    st.session_state.message = (
+        "success",
+        _("Paquet écrit à côté du projet : {name} ({files}). La base n'y est pas.").format(
+            name=target.name, files=", ".join(files)
+        ),
+        "notebook-deposit",
+    )
+
+
 def _variables(project: Project, entry: nb.Entry) -> str:
     try:
         names = nb.resolved(project, entry)
@@ -339,3 +370,15 @@ def page(project: Project) -> None:
         args=(project,),
     )
     c.show_message("notebook-write")
+    st.button(
+        _("Préparer le paquet de reproduction"),
+        key="notebook-deposit",
+        help=_(
+            "Un .zip pour un dépôt (OSF, Borealis) : codebook, plan, carnet, scripts et un "
+            "README à compléter ; jamais la base."
+        ),
+        disabled=prepared is None or bool(blocked) or not retained,
+        on_click=_deposit,
+        args=(project,),
+    )
+    c.show_message("notebook-deposit")

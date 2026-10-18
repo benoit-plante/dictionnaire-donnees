@@ -240,9 +240,9 @@ Une valeur rattachée à une analyse « changée, à confirmer » garde sa class
 | `codebook/<projet>-datapackage.json` | la description Frictionless (v0.8) |
 | `plan/<projet>-preenregistrement.docx`, `.md` | si le plan existe ; le plan et ses amendements y sont |
 | `analyses/<projet>-carnet.json` | le carnet : choix, empreintes, agrégats (D-088) |
-| `scripts/<projet>.sps`, `.R` | le fichier de commandes (étiquettes, codes manquants, noms) |
+| `scripts/<projet>.sps`, `scripts/<projet>-metadonnees.R` | le fichier de commandes (étiquettes, codes manquants, noms), en SPSS et en R |
 | `scripts/<projet>-preparation.sps`, `.R` | items inversés, scores, recodages, exclusions |
-| `scripts/<projet>-article.R`, `-metadonnees.R` | le script R maître et ce qu'il exécute |
+| `scripts/<projet>-article.R` | le script R maître, qui exécute le fichier de commandes et le script de préparation |
 | `EMPREINTES.txt` | chaque fichier du paquet avec son empreinte SHA-256, l'empreinte du codebook et celle de la base d'origine (une empreinte ne permet pas de retrouver la base) |
 
 **Jamais** (D-119) : la base, le fichier projet (son profil contient des valeurs observées, des minimums et des maximums), le dossier des envois à l'IA, l'ébauche d'article, une base synthétique.
