@@ -206,12 +206,12 @@ Dans l'article, un écart devient un trou : « [à compléter : raison de l'éca
 ## 7. La correction pour comparaisons multiples (D-104)
 
 - **Une famille** est l'ensemble des hypothèses **confirmatoires** qui portent le même nom de famille. Une hypothèse exploratoire ne peut pas avoir de famille (refus : « Une hypothèse exploratoire n'est pas corrigée ; retirez sa famille. »).
-- **On corrige** les *p* des hypothèses de la famille dont l'entrée liée est retenue et calculable. Une hypothèse écartée (non retenue, impossible) sort de la famille, et la Méthode le dit : « La famille F1 comptait 3 hypothèses ; 2 ont pu être testées. »
+- **On corrige** les *p* des hypothèses de la famille dont l'entrée liée est retenue et calculable. Une hypothèse écartée (non retenue, impossible) sort de la famille, et la Méthode le dit, après PL4 : « La famille F1 comptait trois hypothèses ; deux ont pu être testées. » (« une a pu être testée », « aucune n'a pu être testée »).
 - **Holm** : les *m* *p* triés en ordre croissant, *p*₍ᵢ₎ corrigé = max sur *j* ≤ *i* de min(1, (*m* − *j* + 1) · *p*₍ⱼ₎). **Bonferroni** : min(1, *m* · *p*). Ce sont les définitions de `p.adjust` de R ; les tests comparent à R à 10⁻¹² près, dont les égalités de *p* et les *p* qui atteignent 1.
 - **Exemple illustratif** (trois *p* choisis) : 0,010, 0,020, 0,030 donnent, avec Holm, 0,030, 0,040, 0,040 ; avec Bonferroni, 0,030, 0,060, 0,090.
 - **Gardé et confirmé** : le *p* corrigé de chaque entrée liée s'ajoute à ses statistiques (`p_adj`, et `adj_m`, le nombre de *p* corrigés ensemble), comparé comme les autres (D-089). Un *p* corrigé qui apparaît est gardé aussitôt, comme un agrégat seulement nouveau ; un *p* corrigé qui change ou disparaît attend une confirmation, même quand le codebook n'a pas changé (un amendement a changé la correction ou une famille). Ajouter, retirer ou écarter une hypothèse d'une famille change ainsi les *p* corrigés des autres, qui attendent leur confirmation.
 - **Dans la phrase** de l'effet testé, juste après le *p* brut : « …, *p* = ,020, *p* corrigé (Holm) = ,040, … » ; en anglais, « …, *p* = .020, Holm-adjusted *p* = .040, … ». Même convention que *p* : trois décimales, sans zéro initial, « < ,001 » en deçà.
-- **Dans le tableau** de l'analyse, une colonne « *p* corrigé (Holm) » à droite de *p*, sur la ligne de l'effet testé seulement ; tirets ailleurs. Une note du tableau : « *p* corrigé par la méthode de Holm dans la famille F1 (3 hypothèses). »
+- **Dans le tableau** de l'analyse, une colonne « *p* corrigé (Holm) » à droite de *p*, sur la ligne de l'effet testé seulement ; tirets ailleurs. Une note du tableau : « *p* corrigé par la méthode de Holm dans la famille F1 (3 hypothèses). » C'est le cas du test *t*, de Mann-Whitney et d'un prédicteur. Là où le *p* de l'effet est dans la note du tableau (ANOVA, Kruskal-Wallis, khi-carré, corrélation, modèle d'une régression), le *p* corrigé y va aussi : « *p* corrigé par la méthode de Holm dans la famille F1 (3 hypothèses) : < ,001. », avec « , ligne 3, colonne 1 » pour une paire d'une matrice de plusieurs variables. Le nombre d'hypothèses est celui des *p* corrigés ensemble.
 
 ## 8. Le préenregistrement (D-109, qui remplace D-105)
 
@@ -373,8 +373,8 @@ Le **résumé du changement** d'un amendement est écrit par l'outil à partir d
 
 Avec un plan figé, dans cet ordre :
 
-1. **Les entrées descriptives** (Tableau 1), dans l'ordre du carnet, sans intertitre propre (comme en v0.12).
-2. **Une section par hypothèse confirmatoire**, dans l'ordre du plan, au niveau 2 : « H1 — {énoncé} ». Elle contient l'entrée liée (sa phrase, ses tableaux, ses figures). Quand la phrase de l'analyse ne dit pas l'effet testé (paire d'une corrélation de plusieurs variables, prédicteur), la phrase d'effet (§ 3) la suit. Une hypothèse sans entrée calculable garde son intertitre et reçoit le texte de son écart (§ 6) et son trou.
+1. **Les entrées descriptives** (Tableau 1), dans l'ordre du carnet, avec leur intertitre de la v0.12 (« A1 — Tableau 1 : décrire l'échantillon »).
+2. **Une section par hypothèse confirmatoire**, dans l'ordre du plan, au niveau 2 : « H1 — {énoncé} ». Elle contient l'entrée liée (sa phrase, ses tableaux, ses figures). Quand la phrase de l'analyse ne dit pas l'effet testé (paire d'une corrélation de plusieurs variables, prédicteur), la phrase d'effet (§ 3) la suit. Une hypothèse sans entrée calculable garde son intertitre et reçoit le texte de son écart (§ 6) et son trou : « H2 : l'analyse prévue n'est pas retenue dans le carnet. [à compléter : raison de l'écart au plan pour H2] ».
 3. **« Analyses exploratoires »**, au niveau 2, si elle n'est pas vide : les hypothèses exploratoires du plan (au niveau 3, « H5 — {énoncé} »), puis les variantes et les autres entrées exploratoires, dans l'ordre du carnet, au niveau 3 avec leur intertitre de la v0.11. Une variante commence par « Variante de H2 : {différence}. »
 
 Sans plan figé : l'ordre du carnet, comme en v0.12.
@@ -387,7 +387,7 @@ L'intertitre d'une entrée (« A2 — Test t : … ») disparaît sous une hypot
 |---|---|---|---|
 | D1 | [à compléter : rappel du but de l'étude] | [to be completed: reminder of the study's aim] | toujours |
 | D2 | **H1.** {énoncé} | **H1.** {statement} | plan, une par hypothèse (confirmatoires, puis exploratoires) |
-| D3 | Le sens attendu était : {groupe Intervention plus élevé / une corrélation positive / un coefficient positif}. {Sens observé, § 4}. | The expected direction was: {higher in the Intervention group / a positive correlation / a positive coefficient}. {Observed direction}. | plan, carnet ; omise sans sens attendu |
+| D3 | Le sens attendu était : {Intervention plus élevé que Contrôle / une corrélation positive / un coefficient positif} (écrit comme dans le préenregistrement, § 8). {Sens observé, § 4}. | The expected direction was: {Intervention higher than Contrôle / a positive correlation / a positive coefficient}. {Observed direction}. | plan, carnet ; omise sans sens attendu |
 | D4 | {phrase de l'effet testé, avec *p* corrigé} | {effect sentence, with adjusted *p*} | carnet |
 | D5 | [à compléter : interprétation de H1] | [to be completed: interpretation of H1] | toujours, après chaque hypothèse |
 | D6 | [à compléter : interprétation des analyses exploratoires] | … | s'il y a des entrées exploratoires hors plan |
@@ -402,7 +402,7 @@ L'intertitre d'une entrée (« A2 — Test t : … ») disparaît sous une hypot
 
 > [à compléter : rappel du but de l'étude]
 >
-> **H1.** Le bien-être au travail est plus élevé dans le groupe d'intervention que dans le groupe contrôle. Le sens attendu était : groupe Intervention plus élevé. La moyenne observée était plus élevée dans le groupe Intervention. Score de bien-être (score de G1) : *M* = 17,01 (*ÉT* = …) pour Intervention et *M* = 14,54 (*ÉT* = …) pour Contrôle, *t*(297,29) = 5,00, *p* < ,001, *p* corrigé (Holm) < ,001, *d* = 0,58, IC 95 % […]. [à compléter : interprétation de H1]
+> **H1.** Le bien-être au travail est plus élevé dans le groupe d'intervention que dans le groupe contrôle. Le sens attendu était : Intervention plus élevé que Contrôle. La moyenne observée était plus élevée dans le groupe Intervention. Score de bien-être (score de G1) : *M* = 17,01 (*ÉT* = …) pour Intervention et *M* = 14,54 (*ÉT* = …) pour Contrôle, *t*(297,29) = 5,00, *p* < ,001, *p* corrigé (Holm) < ,001, *d* = 0,58, IC 95 % […]. [à compléter : interprétation de H1]
 >
 > **H2.** Plus les heures de travail sont nombreuses, plus le stress est élevé. Le sens attendu était : une corrélation positive. La corrélation observée était positive. La corrélation entre heures de travail par semaine et score de stress (0 à 40) était *r*(294) = ,42, IC 95 % [,32 ; ,51], *p* < ,001, *p* corrigé (Holm) < ,001. [à compléter : interprétation de H2]
 >

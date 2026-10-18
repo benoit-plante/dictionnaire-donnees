@@ -272,3 +272,188 @@ def test_the_word_file(amended, tmp_path):
 
     with zipfile.ZipFile(written[2]) as archive:
         assert "etude-analyses-article.R" in archive.namelist()
+    discussion = paragraphs[[p.text for p in paragraphs].index("Discussion") + 2]
+    assert discussion.runs[0].text == "H1." and discussion.runs[0].bold
+
+
+# --- The Results ordered by the plan (§ 11), the adjusted p (§ 7). ---
+
+
+def _results(document):
+    keys = [s.key for s in document.sections]
+    return document.sections[keys.index("resultats") + 1 : keys.index("discussion")]
+
+
+def test_the_results_by_hypothesis(amended):
+    document = _document(amended)
+    found = [(s.key, s.level) for s in _results(document)]
+    assert found == [("A1", 2), ("H1", 2), ("H2", 2), ("H3", 2), ("H4", 2),
+                     ("exploratoires", 2), ("H5", 3), ("A4", 3)]  # fmt: skip
+    h1 = _section(document, "H1")
+    assert h1.heading == f"H1 — {EXAMPLE[0]['statement']}"
+    assert "t(297,29) = 5,00, p < ,001, p corrigé (Holm) < ,001, d = 0,58" in h1.sentence
+    h2 = _section(document, "H2").sentence
+    assert "ρ = ,42, p < ,001, p corrigé (Holm) < ,001 (n = 296)." in h2
+    # A predictor: the model's sentence, then the effect's; H4 is in no family.
+    h4 = _section(document, "H4").sentence
+    assert h4.endswith(
+        "Soutien des collègues (0 à 10) : b = 0,51, IC 95 % [0,44 ; 0,58], β = ,60, "
+        "t(297) = 14,24, p < ,001."
+    )
+    assert "corrigé" not in h4
+    assert _section(document, "exploratoires").heading == "Analyses exploratoires"
+    # The identifiers stay at the end, to find each analysis in the R script.
+    assert any(line.startswith("A5 — Test t") for line in document.closing)
+
+
+def test_the_adjusted_p_in_the_tables(amended):
+    document = _document(amended)
+    [table] = _section(document, "H1").tables
+    headers = [plain(c.header) for c in table.columns]
+    at = headers.index("p")
+    assert headers[at + 1] == "p corrigé (Holm)"
+    assert [plain(c) for c in table.rows[0].cells][at : at + 2] == ["< ,001", "< ,001"]
+    assert [s.first for s in table.spanners] == [1, 3]  # the spanners left of p stay
+    assert plain(table.note).endswith(
+        "p corrigé par la méthode de Holm dans la famille F1 (3 hypothèses)."
+    )
+    anova = _section(document, "H3").tables[0]
+    assert plain(anova.note).endswith(
+        "p corrigé par la méthode de Holm dans la famille F1 (3 hypothèses) : < ,001."
+    )
+    assert not any("corrigé" in plain(t.note) for t in _section(document, "H4").tables)
+
+
+def test_the_adjusted_p_on_the_line_of_a_predictor(amended):
+    project, prepared, _notebook = amended
+    from ddict.analysis.apa import describe
+    from ddict.analysis.compute import run
+
+    chosen = {"outcome": ["satisfaction"], "predictors": ["soutien", "charge"]}
+    result = run(project, prepared, "regression", chosen)
+    h4 = project.plan.hypotheses[3].model_copy(update={"family": "F2"})
+    tested = article.Tested(h4, result, "p_2", 0.0412, 2, "charge")
+    document = article.adjusted_tables(describe(project, prepared, result), tested, "holm")
+    table = document.tables[0]
+    at = [plain(c.header) for c in table.columns].index("p corrigé (Holm)")
+    assert [plain(r.cells[at]) for r in table.rows] == ["—", "—", ",041"]
+    sentence = article.with_adjusted("t = 2,10, p = ,020, d = 0,40.", 0.02, 0.04, "bonferroni")
+    assert sentence == "t = 2,10, p = ,020, p corrigé (Bonferroni) = ,040, d = 0,40."
+
+
+def test_a_variant_and_a_deviation(amended):
+    project, prepared, notebook = amended
+    from ddict.analysis.compute import run
+
+    chosen = {"outcome": ["bienetre_total"], "group": ["groupe"]}
+    options = {"method": "student", "alternative": "greater"}
+    nb.add(notebook, project, run(project, prepared, "t_test", chosen, options), today=LATER)
+    nb.retain(notebook, next(e.id for e in notebook.entries if e.hypothesis == "H2"), False)
+    _confirmed(project, prepared, notebook)
+    document = _document(amended)
+    assert [s.key for s in _results(document)][-1] == "A9"
+    assert _section(document, "A9").sentence.startswith(
+        "Variante de H1 : méthode : Student (variances égales) au lieu de Welch (variances "
+        "inégales permises). bienetre_total (score de G1)"
+    )
+    [text] = _texts(document, "H2")
+    assert text == (
+        "H2 : l'analyse prévue n'est pas retenue dans le carnet. [à compléter : raison de "
+        "l'écart au plan pour H2]"
+    )
+    [plan] = _texts(document, "plan")
+    assert "La famille F1 comptait trois hypothèses ; deux ont pu être testées." in plan
+    discussion = _texts(document, "discussion")
+    assert discussion[2] == (
+        f"H2. {EXAMPLE[1]['statement']} H2 : l'analyse prévue n'est pas retenue dans le "
+        "carnet. [à compléter : raison de l'écart au plan pour H2] [à compléter : "
+        "interprétation de H2]"
+    )
+
+
+# --- The Discussion (§ 12), and no word that judges (D-107). ---
+
+
+def test_the_discussion_as_the_sheet(amended):
+    document = _document(amended)
+    found = _texts(document, "discussion")
+    assert found[0] == "[à compléter : rappel du but de l'étude]"
+    assert found[1] == (
+        f"H1. {EXAMPLE[0]['statement']} Le sens attendu était : Intervention plus élevé que "
+        "Contrôle. La moyenne observée était plus élevée dans le groupe Intervention. "
+        "bienetre_total (score de G1) : M = 17,01 (ÉT = 4,18) pour Intervention et M = 14,54 "
+        "(ÉT = 4,39) pour Contrôle, t(297,29) = 5,00, p < ,001, p corrigé (Holm) < ,001, d = "
+        "0,58, IC 95 % [0,35 ; 0,81]. [à compléter : interprétation de H1]"
+    )
+    assert found[2].startswith(
+        f"H2. {EXAMPLE[1]['statement']} Le sens attendu était : une corrélation positive. La "
+        "corrélation observée était positive. La corrélation de Spearman"
+    )
+    assert found[3].startswith(f"H3. {EXAMPLE[2]['statement']} Score de stress")  # no direction
+    assert "Le coefficient observé de Soutien des collègues (0 à 10) était positif." in found[4]
+    assert found[5].startswith("H5. ")  # the exploratory hypotheses after
+    assert found[-3:] == [
+        "[à compléter : interprétation des analyses exploratoires]",
+        "[à compléter : limites]",
+        "[à compléter : conclusion]",
+    ]
+    bold = [r.text for r in _section(document, "discussion").paragraphs[1] if r.bold]
+    assert bold == ["H1."]
+
+
+FORBIDDEN = [
+    "soutenu", "appuyé", "confirmé", "infirmé", "rejeté", "réfuté", "significati",
+    "non significatif", "tendance", "marginal", "prouve", "démontre",
+    "supported", "confirmed", "rejected", "refuted", "significant", "trend", "proves",
+    "demonstrates",
+]  # fmt: skip
+
+
+def _written(document) -> str:
+    """Everything the tool wrote, holes excluded."""
+    parts = []
+    for section in document.sections:
+        parts += [section.heading, section.sentence]
+        parts += ["".join(r.text for r in p if not r.hole) for p in section.paragraphs]
+        for table in section.tables:
+            parts += [table.title, plain(table.note), *[plain(c.header) for c in table.columns]]
+            parts += [plain(cell) for row in table.rows for cell in row.cells]
+        for figure in section.figures:
+            parts += [figure.title, plain(figure.note)]
+    parts += list(document.closing)
+    return " ".join(parts).lower()
+
+
+@pytest.mark.parametrize("language", ["fr", "en"])
+def test_no_word_that_judges(amended, language):
+    text = _written(_document(amended, language))
+    found = [w for w in FORBIDDEN if w in text]
+    assert not found, found
+
+
+# --- The common test of the formats (D-083), on the article. ---
+
+
+@pytest.mark.parametrize("language", ["fr", "en"])
+def test_every_format_renders_the_article(amended, language):
+    from ddict.analysis.formats import available
+
+    document = _document(amended, language)
+    for found in available(document):
+        text = " ".join(found.read_text(found.render(document)).replace(chr(0xA0), " ").split())
+        expected = []
+        if found.tables:
+            for table in document.tables:
+                expected += [table.title, plain(table.note)]
+                expected += [plain(c.header) for c in table.columns]
+                expected += [plain(cell) for row in table.rows for cell in row.cells]
+            expected += [s.heading for s in document.sections]
+            expected += [s.sentence for s in document.sections]
+            expected += [plain(p) for s in document.sections for p in s.paragraphs]
+            expected += list(document.closing)
+        if found.figures:
+            for figure in document.figures:
+                expected += [figure.title, plain(figure.note)]
+        flat = [" ".join(t.replace(chr(0xA0), " ").split()) for t in expected if t.strip()]
+        missing = [t for t in flat if t not in text]
+        assert not missing, (found.key, missing)

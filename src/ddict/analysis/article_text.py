@@ -11,16 +11,40 @@ observed direction is a fact, saying whether it supports the hypothesis is the t
 from __future__ import annotations
 
 import unicodedata
+from dataclasses import dataclass, replace
 
 from ddict.analysis import plan_notebook as pn
-from ddict.analysis.apa import Run, Text, hole, it, marked, rich
+from ddict.analysis.apa import (
+    ApaDocument,
+    Column,
+    Run,
+    Text,
+    _two_groups,
+    hole,
+    it,
+    marked,
+    p_cell,
+    plain,
+    rich,
+)
+from ddict.analysis.book import Codebook
 from ddict.analysis.catalogue import CHOICES, OPTIONS, ROLES, TITLES
+from ddict.analysis.data import PreparedData
 from ddict.analysis.method import _used
 from ddict.analysis.method_text import _lower
 from ddict.analysis.notebook import Notebook
-from ddict.analysis.prereg import KINDS, _alpha, _families, _name, long_date
+from ddict.analysis.prereg import KINDS, _alpha, _direction, _families, _name, long_date
+from ddict.analysis.results import (
+    AnalysisResult,
+    bounded,
+    bounded_interval,
+    interval,
+    number,
+    p_part,
+    p_value,
+)
 from ddict.i18n import N_, Texts, _, semicolon
-from ddict.project.model import Amendment, Project, VariableRef
+from ddict.project.model import Amendment, Hypothesis, Project, VariableRef
 
 ORIGINS = Texts(
     {
@@ -224,8 +248,11 @@ def _uses_holm(project: Project) -> bool:
     return project.plan.correction == "holm" and bool(_families(project))
 
 
-def plan_paragraph(project: Project, notebook: Notebook) -> Text:
-    """PL1 to PL8; only with a frozen plan."""
+def plan_paragraph(
+    project: Project, notebook: Notebook, tested: dict[str, int] | None = None
+) -> Text:
+    """PL1 to PL8; only with a frozen plan. `tested`: how many hypotheses of each family
+    could be tested, when fewer than planned (§ 7)."""
     plan = project.plan
     frozen = plan.frozen
     parts: list[Text] = []
@@ -281,6 +308,19 @@ def plan_paragraph(project: Project, notebook: Notebook) -> Text:
             )
         )
         parts.append(marked(template, p=it("p"), families=listed))
+        for key, ids in families.items():
+            done = tested.get(key, 0) if tested is not None else len(ids)
+            if done < len(ids):
+                template = (
+                    _("La famille {family} comptait {k} hypothèses ; aucune n'a pu être testée.")
+                    if done == 0
+                    else _("La famille {family} comptait {k} hypothèses ; une a pu être testée.")
+                    if done == 1
+                    else _("La famille {family} comptait {k} hypothèses ; {n} ont pu être testées.")
+                )
+                parts.append(
+                    rich(template.format(family=key, k=in_words(len(ids)), n=in_words(done)))
+                )
     one_sided = [
         h.id for h in plan.hypotheses if h.options.get("alternative", "two_sided") != "two_sided"
     ]
@@ -427,3 +467,232 @@ def discussion_frame(project: Project) -> tuple[list[Text], list[Text]]:
 
 def discussion_without_plan() -> list[Text]:
     return [(hole(_("discussion des résultats")),)]
+
+
+# --- The tested effect in the Results and the Discussion (§ 3, 4, 7, 11, 12). ---
+
+
+@dataclass(frozen=True)
+class Tested:
+    """A planned entry, recomputed: its hypothesis, its result, the key of the tested
+    effect's p among the statistics, the adjusted p kept in the notebook with the size of
+    its family, and the final name of a predictor's variable."""
+
+    hypothesis: Hypothesis
+    result: AnalysisResult
+    key: str | None
+    p_adj: float | None = None
+    m: int | None = None
+    variable: str | None = None
+
+
+def adjusted_part(p_adj: float, method: str) -> str:
+    """ "p corrigé (Holm) = ,040" or "p corrigé (Holm) < ,001"."""
+    shown = p_value(p_adj)
+    value = shown if shown.startswith("<") else f"= {shown}"
+    return _("p corrigé ({method}) {value}").format(method=CORRECTIONS[method], value=value)
+
+
+def with_adjusted(sentence: str, p: float, p_adj: float, method: str, last: bool = False) -> str:
+    """The sentence with the adjusted p right after the raw p of the tested effect."""
+    raw = p_part(p)
+    at = sentence.rfind(raw) if last else sentence.find(raw)
+    if at < 0:
+        return sentence
+    end = at + len(raw)
+    return f"{sentence[:end]}, {adjusted_part(p_adj, method)}{sentence[end:]}"
+
+
+def _pair_index(key: str) -> tuple[int, int]:
+    """ "p_3_1" -> (2, 0): the row and the column of the pair, from 0."""
+    _p, row, column = key.split("_")
+    return int(row) - 1, int(column) - 1
+
+
+def states_effect(tested: Tested) -> bool:
+    """Whether the analysis's own sentence states the tested effect (§ 3)."""
+    kind = tested.hypothesis.effect.kind
+    if kind == "predictor":
+        return False
+    if kind == "pair":
+        return len(tested.result.chosen.get("variables", [])) == 2
+    return True
+
+
+def _raw(tested: Tested) -> float | None:
+    if tested.key is None:
+        return None
+    return tested.result.statistics.get(tested.key)
+
+
+def analysis_sentence(tested: Tested, method: str) -> str:
+    """The analysis's own sentence, with the adjusted p when it states the tested effect."""
+    sentence = tested.result.sentence
+    p = _raw(tested)
+    if states_effect(tested) and tested.p_adj is not None and p is not None:
+        sentence = with_adjusted(sentence, p, tested.p_adj, method, tested.key == "fisher_p")
+    return sentence
+
+
+def effect_only(book: Codebook, tested: Tested, method: str) -> str:
+    """The effect's sentence of a pair of several variables or of a predictor (§ 3), with
+    its adjusted p; empty where the analysis's own sentence states the effect."""
+    p = _raw(tested)
+    if states_effect(tested) or p is None:
+        return ""
+    s, key = tested.result.statistics, tested.key
+    if tested.hypothesis.effect.kind == "pair":
+        row, column = _pair_index(key)
+        names = tested.result.chosen["variables"]
+        end = f"_{row + 1}_{column + 1}"
+        a, b = book.label(names[column]), book.label(names[row])
+        if tested.result.options.get("method") == "spearman":
+            sentence = _(
+                "La corrélation de Spearman entre {a} et {b} était ρ = {r}, {p} (n = {n})."
+            ).format(a=a, b=b, r=bounded(s["r" + end]), p=p_part(p), n=int(s["n" + end]))
+        else:
+            sentence = _("La corrélation entre {a} et {b} était r({df}) = {r}, {ci}, {p}.").format(
+                a=a, b=b, df=int(s["n" + end]) - 2, r=bounded(s["r" + end]),
+                ci=bounded_interval(s["low" + end], s["high" + end]), p=p_part(p),
+            )  # fmt: skip
+    else:
+        i = int(key.split("_")[1])
+        sentence = _("{x} : b = {b}, {ci}, β = {beta}, t({df}) = {t}, {p}.").format(
+            x=book.label(tested.variable or ""), b=number(s[f"coef_{i}"]),
+            ci=interval(s[f"low_{i}"], s[f"high_{i}"]), beta=bounded(s[f"beta_{i}"]),
+            df=int(s["df2"]), t=number(s[f"t_{i}"]), p=p_part(p),
+        )  # fmt: skip
+    if tested.p_adj is not None:
+        sentence = with_adjusted(sentence, p, tested.p_adj, method)
+    return sentence
+
+
+def effect_sentence(book: Codebook, tested: Tested, method: str) -> str:
+    """The sentence that answers the hypothesis (D4)."""
+    return effect_only(book, tested, method) or analysis_sentence(tested, method)
+
+
+def adjusted_tables(document: ApaDocument, tested: Tested, method: str) -> ApaDocument:
+    """The analysis's first table with the adjusted p (§ 7): a column right of p, on the
+    tested effect's line only (a t test, a predictor), dashes elsewhere; or, where the p is
+    in the note (ANOVA, chi-square, correlation, a regression's model), in the note."""
+    if tested.p_adj is None or not document.tables:
+        return document
+    table = document.tables[0]
+    family = tested.hypothesis.family or ""
+    kind = tested.hypothesis.effect.kind
+    headers = [plain(c.header) for c in table.columns]
+    row = None
+    if kind == "difference":
+        row = 0
+    elif kind == "predictor" and tested.key:
+        row = int(tested.key.split("_")[1])
+    shown = p_cell(tested.p_adj)
+    if row is not None and "p" in headers and row < len(table.rows):
+        at = headers.index("p") + 1
+        column = Column(marked(_("{p} corrigé ({method})"), p=it("p"), method=CORRECTIONS[method]))
+        rows = tuple(
+            replace(r, cells=(*r.cells[:at], rich(shown if i == row else "—"), *r.cells[at:]))
+            for i, r in enumerate(table.rows)
+        )
+        spanners = tuple(
+            replace(s, first=s.first + 1, last=s.last + 1) if s.first >= at else s
+            for s in table.spanners
+        )
+        note = marked(
+            _("{p} corrigé par la méthode de {method} dans la famille {family} ({m} hypothèses)."),
+            p=it("p"), method=CORRECTIONS[method], family=family, m=str(tested.m),
+        )  # fmt: skip
+        table = replace(
+            table,
+            columns=(*table.columns[:at], column, *table.columns[at:]),
+            rows=rows,
+            spanners=spanners,
+            note=_sentences([table.note, note]),
+        )
+    else:
+        where = ""
+        if kind == "pair" and tested.key and len(tested.result.chosen["variables"]) > 2:
+            line, col = _pair_index(tested.key)
+            where = _(", ligne {row}, colonne {column}").format(row=line + 1, column=col + 1)
+        note = marked(
+            _(
+                "{p} corrigé par la méthode de {method} dans la famille {family} ({m} "
+                "hypothèses){where} : {value}."
+            ),
+            p=it("p"), method=CORRECTIONS[method], family=family, m=str(tested.m),
+            where=where, value=shown,
+        )  # fmt: skip
+        table = replace(table, note=_sentences([table.note, note]))
+    return replace(document, tables=(table, *document.tables[1:]))
+
+
+def observed(book: Codebook, prepared: PreparedData, tested: Tested) -> str:
+    """The observed direction (§ 4): a fact drawn from the sign of the statistic."""
+    s = tested.result.statistics
+    kind = tested.hypothesis.effect.kind
+    if kind == "difference":
+        names = _two_groups(book, prepared, tested.result)[2]
+        if "rb" in s:
+            if s["rb"] == 0:
+                return _("Les rangs observés étaient les mêmes dans les deux groupes.")
+            higher = names[0] if s["rb"] > 0 else names[1]
+            return _("Les rangs observés étaient plus élevés dans le groupe {a}.").format(a=higher)
+        if s["m1"] == s["m2"]:
+            return _("La moyenne observée était la même dans les deux groupes.")
+        higher = names[0] if s["m1"] > s["m2"] else names[1]
+        return _("La moyenne observée était plus élevée dans le groupe {a}.").format(a=higher)
+    if kind == "pair" and tested.key:
+        r = s["r" + tested.key[1:]]
+        if r == 0:
+            return _("La corrélation observée était nulle.")
+        return (
+            _("La corrélation observée était positive.")
+            if r > 0
+            else _("La corrélation observée était négative.")
+        )
+    if kind == "predictor" and tested.key:
+        coefficient = s["coef_" + tested.key.split("_")[1]]
+        x = book.label(tested.variable or "")
+        if coefficient == 0:
+            return _("Le coefficient observé de {x} était nul.").format(x=x)
+        return (
+            _("Le coefficient observé de {x} était positif.")
+            if coefficient > 0
+            else _("Le coefficient observé de {x} était négatif.")
+        ).format(x=x)
+    return ""
+
+
+def discussion(
+    project: Project,
+    book: Codebook,
+    prepared: PreparedData,
+    tested: dict[str, Tested],
+    deviations: dict[str, str],
+    exploratory: bool,
+) -> list[Text]:
+    """D2 to D6, for each hypothesis of the frozen plan, confirmatory then exploratory:
+    its statement, the expected and the observed direction, the effect's sentence, a hole
+    for its interpretation. An hypothesis not tested gets its deviation instead."""
+    method = project.plan.correction
+    found: list[Text] = []
+    ordered = sorted(project.plan.hypotheses, key=lambda h: h.kind != "confirmatory")
+    for h in ordered:
+        parts: list[Text] = [(Run(f"{h.id}.", bold=True), Run(f" {h.statement}"))]
+        done = tested.get(h.id)
+        if done is None:
+            parts.append(rich(deviations.get(h.id, "")))
+            parts.append((hole(_("raison de l'écart au plan pour {id}").format(id=h.id)),))
+        else:
+            if h.direction:
+                expected = _("Le sens attendu était : {direction}.").format(
+                    direction=_direction(project, h)
+                )
+                parts += [rich(expected), rich(observed(book, prepared, done))]
+            parts.append(rich(effect_sentence(book, done, method)))
+        parts.append((hole(_("interprétation de {id}").format(id=h.id)),))
+        found.append(_sentences(parts))
+    if exploratory:
+        found.append((hole(_("interprétation des analyses exploratoires")),))
+    return found

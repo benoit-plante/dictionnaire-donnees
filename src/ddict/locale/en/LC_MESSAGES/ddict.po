@@ -227,6 +227,10 @@ msgid ", après inversion de {items} ({total} - x)"
 msgstr ", after reversing {items} ({total} - x)"
 
 #, python-brace-format
+msgid ", ligne {row}, colonne {column}"
+msgstr ", row {row}, column {column}"
+
+#, python-brace-format
 msgid "- Variables ajoutées (sans équivalent) : {n}"
 msgstr "- Variables added (without a match): {n}"
 
@@ -1995,6 +1999,15 @@ msgstr "The Spearman correlation between {a} and {b} was ρ = {r}, {p} (n = {n})
 msgid "La corrélation entre {a} et {b} était r({df}) = {r}, {ci}, {p}."
 msgstr "The correlation between {a} and {b} was r({df}) = {r}, {ci}, {p}."
 
+msgid "La corrélation observée était nulle."
+msgstr "The observed correlation was zero."
+
+msgid "La corrélation observée était négative."
+msgstr "The observed correlation was negative."
+
+msgid "La corrélation observée était positive."
+msgstr "The observed correlation was positive."
+
 msgid "La cotation exige une source documentée (manuel, article)."
 msgstr "The scoring requires a documented source (manual, article)."
 
@@ -2007,6 +2020,18 @@ msgstr "The definition is empty; use \"Reject\"."
 
 msgid "La définition est vide."
 msgstr "The definition is empty."
+
+#, python-brace-format
+msgid "La famille {family} comptait {k} hypothèses ; aucune n'a pu être testée."
+msgstr "Family {family} included {k} hypotheses; none could be tested."
+
+#, python-brace-format
+msgid "La famille {family} comptait {k} hypothèses ; une a pu être testée."
+msgstr "Family {family} included {k} hypotheses; one could be tested."
+
+#, python-brace-format
+msgid "La famille {family} comptait {k} hypothèses ; {n} ont pu être testées."
+msgstr "Family {family} included {k} hypotheses; {n} could be tested."
 
 msgid ""
 "La langue du questionnaire et des libellés : le modèle écrit ses propositions dans cette langue. "
@@ -2021,6 +2046,13 @@ msgstr "The list is kept on this computer; it holds only the paths of the projec
 #, python-brace-format
 msgid "La longueur maximale doit être entre {low} et {high}."
 msgstr "The maximum length must be between {low} and {high}."
+
+msgid "La moyenne observée était la même dans les deux groupes."
+msgstr "The observed mean was the same in both groups."
+
+#, python-brace-format
+msgid "La moyenne observée était plus élevée dans le groupe {a}."
+msgstr "The observed mean was higher in the {a} group."
 
 msgid "La raison, en clair, telle que publiée."
 msgstr "The reason, in plain words, as published."
@@ -2138,6 +2170,18 @@ msgstr ""
 "a Markdown file to paste into a model, and a datapackage.json (Frictionless format). Only what is"
 " accepted. What may leave your computer is for your team and the study's ethics approval to "
 "decide, not the tool."
+
+#, python-brace-format
+msgid "Le coefficient observé de {x} était nul."
+msgstr "The observed coefficient of {x} was zero."
+
+#, python-brace-format
+msgid "Le coefficient observé de {x} était négatif."
+msgstr "The observed coefficient of {x} was negative."
+
+#, python-brace-format
+msgid "Le coefficient observé de {x} était positif."
+msgstr "The observed coefficient of {x} was positive."
 
 #, python-brace-format
 msgid "Le dictionnaire de données joint ({file}) décrit chaque variable."
@@ -2348,6 +2392,10 @@ msgstr "The expected direction contradicts the one-sided test chosen."
 msgid "Le sens attendu d'une corrélation ou d'un coefficient est positif ou négatif."
 msgstr "The expected direction of a correlation or of a coefficient is positive or negative."
 
+#, python-brace-format
+msgid "Le sens attendu était : {direction}."
+msgstr "The expected direction was: {direction}."
+
 msgid "Le serveur local ne répond pas comme prévu."
 msgstr "The local server does not answer as expected."
 
@@ -2517,6 +2565,13 @@ msgstr "The proposals are to be reviewed in \"Variables\"."
 
 msgid "Les questions suivantes ont été examinées de façon exploratoire :"
 msgstr "The following questions were examined in an exploratory way:"
+
+msgid "Les rangs observés étaient les mêmes dans les deux groupes."
+msgstr "The observed ranks were the same in both groups."
+
+#, python-brace-format
+msgid "Les rangs observés étaient plus élevés dans le groupe {a}."
+msgstr "The observed ranks were higher in the {a} group."
 
 msgid ""
 "Les règles d'exclusion du projet : lister avec leurs effectifs, ajouter, retirer, déplacer ; voir"
@@ -4266,6 +4321,10 @@ msgstr "Unequal variances (Levene {p}): Welch's test fits better."
 msgid "Variances inégales entre les groupes (Levene {p})."
 msgstr "Unequal variances between the groups (Levene {p})."
 
+#, python-brace-format
+msgid "Variante de {id} : {detail}."
+msgstr "Variant of {id}: {detail}."
+
 msgid "Variantes d'écriture d'une même réponse"
 msgstr "Spelling variants of a same answer"
 
@@ -4607,6 +4666,13 @@ msgstr "incomplete"
 msgid "insu"
 msgstr "blinding"
 
+#, python-brace-format
+msgid "interprétation de {id}"
+msgstr "interpretation of {id}"
+
+msgid "interprétation des analyses exploratoires"
+msgstr "interpretation of the exploratory analyses"
+
 msgid "items manquants : somme des items répondus"
 msgstr "missing items: sum of the items answered"
 
@@ -4835,6 +4901,10 @@ msgstr "open"
 msgid "ouvertes"
 msgstr "open"
 
+#, python-brace-format
+msgid "p corrigé ({method}) {value}"
+msgstr "{method}-adjusted p {value}"
+
 msgid "p. ex. Moins de 18 ans"
 msgstr "e.g. Under 18"
 
@@ -4901,6 +4971,10 @@ msgstr "questionnaire"
 
 msgid "questions de recherche"
 msgstr "research questions"
+
+#, python-brace-format
+msgid "raison de l'écart au plan pour {id}"
+msgstr "reason for the deviation from the plan for {id}"
 
 msgid "rappel du but de l'étude"
 msgstr "reminder of the study's aim"
@@ -5726,6 +5800,18 @@ msgid "{proposed} noms proposés, {accepted} acceptés, {to_name} variables à n
 msgstr "{proposed} names proposed, {accepted} accepted, {to_name} variables to name."
 
 #, python-brace-format
+msgid "{p} corrigé ({method})"
+msgstr "{method}-adjusted {p}"
+
+#, python-brace-format
+msgid "{p} corrigé par la méthode de {method} dans la famille {family} ({m} hypothèses)."
+msgstr "{p} adjusted with the {method} method within family {family} ({m} hypotheses)."
+
+#, python-brace-format
+msgid "{p} corrigé par la méthode de {method} dans la famille {family} ({m} hypothèses){where} : {value}."
+msgstr "{p} adjusted with the {method} method within family {family} ({m} hypotheses){where}: {value}."
+
+#, python-brace-format
 msgid "{reason} ({n} = {count})"
 msgstr "{reason} ({n} = {count})"
 
@@ -5810,6 +5896,10 @@ msgstr "{what} missing"
 #, python-brace-format
 msgid "{what} parmi {values}"
 msgstr "{what} among {values}"
+
+#, python-brace-format
+msgid "{x} : b = {b}, {ci}, β = {beta}, t({df}) = {t}, {p}."
+msgstr "{x}: b = {b}, {ci}, β = {beta}, t({df}) = {t}, {p}."
 
 #, python-brace-format
 msgid "{y} selon {x}"
