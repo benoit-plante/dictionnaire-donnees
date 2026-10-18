@@ -1,7 +1,7 @@
 """The Method (v0.12, step 8, D-093 to D-100): the exclusion rules (add, order, remove)
 and who each excluded, the flow diagram, the quality signals of the administration, the
 variables that describe the sample, and the three paragraphs of the Method with their
-holes, as the document « Méthode et Résultats » will hold them; as `ddict exclusions` and
+holes, as the article draft will hold them; as `ddict exclusions` and
 `ddict carnet echantillon` do.
 
 The rules are decisions of the project, saved at once; the variables of the sample are kept
@@ -481,20 +481,20 @@ def paragraph_html(text: Text) -> str:
 
 
 def _preview(project: Project, prepared: PreparedData, notebook: nb.Notebook) -> None:
-    from ddict.workflow import project_stem
+    from ddict.analysis.notebook_export import script_name
 
     st.subheader(_("Aperçu des paragraphes"))
     st.caption(
         _(
-            "Écrits par des gabarits à partir du codebook et du carnet, comme dans le document "
-            "« Méthode et Résultats ». Ce que le codebook ne dit pas devient un trou, surligné : "
+            "Écrits par des gabarits à partir du codebook et du carnet, comme dans l'ébauche "
+            "d'article. Ce que le codebook ne dit pas devient un trou, surligné : "
             "à compléter sur la page Groupes, ou dans Word."
         )
     )
     found = method_facts.facts(project, prepared, notebook)
     flow = prepared.flow
     figure = notebook.first_figure if flow is not None and flow.excluded else None
-    script = project_stem(Path(c.project_path())) + "-resultats.R"
+    script = script_name(Path(c.project_path()))
     sections = [(_("Participants"), [method_text.participants(project, found, figure)])]
     instruments = method_text.instruments(project, prepared, found)
     if instruments:
@@ -510,7 +510,7 @@ def page(project: Project) -> None:
     st.header(_("Méthode"))
     st.caption(
         _(
-            "La section Méthode du document « Méthode et Résultats » : qui a été exclu et "
+            "La section Méthode de l'ébauche d'article : qui a été exclu et "
             "pourquoi, la qualité de la passation, la description de l'échantillon, et les "
             "paragraphes Participants, Instruments et Analyses. Les chiffres viennent de la "
             "base, avec les décisions en vigueur ; rien n'est envoyé hors du poste."

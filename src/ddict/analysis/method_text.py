@@ -262,8 +262,8 @@ def _instrument(
         parts.append(
             marked(
                 _(
-                    "Sur l'échantillon analysé, l'alpha de Cronbach est de {alpha} (IC 95 % {ci}, "
-                    "{n} = {count})."
+                    "Sur l'échantillon analysé, l'alpha de Cronbach est de {alpha} (IC 95 % "
+                    "selon Feldt, 1965, {ci}, {n} = {count})."
                 ),
                 alpha=bounded(reliability.alpha),
                 ci=_("[{low} ; {high}]").format(
@@ -282,6 +282,17 @@ def scale_description(project: Project, group: Group) -> Text:
     """A scored group's description without the data: I1 to I5 (v0.13, the
     preregistration)."""
     return _instrument(project, None, None, group)
+
+
+def cites_feldt(project: Project, found: Facts) -> bool:
+    """Whether a paragraph of the Instruments gives an alpha's interval (Feldt, 1965): the
+    article's References then list it (v0.13)."""
+    alphas = {r.group for r in found.reliabilities if r.alpha is not None}
+    return any(
+        g.group_id in alphas and scorings.structured(g.scoring)
+        for g in project.groups
+        if g.scoring is not None
+    )
 
 
 def instruments(project: Project, prepared: PreparedData, found: Facts) -> list[Text]:

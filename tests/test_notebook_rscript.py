@@ -62,11 +62,11 @@ def test_the_master_script(notebook_and_results):
     nb.move(notebook, "A13", 1)
     written = export.write_results(project, prepared, notebook, path, today=TODAY)
     zipped = written[-1]
-    assert zipped.name == "etude-analyses-resultats-R.zip"
+    assert zipped.name == "etude-analyses-article-R.zip"
     with zipfile.ZipFile(io.BytesIO(zipped.read_bytes())) as archive:
         names = archive.namelist()
-        script = archive.read("etude-analyses-resultats.R").decode("utf-8")
-    assert names == ["etude-analyses-resultats.R", "etude-analyses-metadonnees.R",
+        script = archive.read("etude-analyses-article.R").decode("utf-8")
+    assert names == ["etude-analyses-article.R", "etude-analyses-metadonnees.R",
                      "etude-analyses-preparation.R"]  # fmt: skip
     assert script.count('source("etude-analyses-metadonnees.R"') == 1  # the header once
     assert script.index("resultats$A13 <- local({") < script.index("resultats$A1 <- local({")
@@ -86,7 +86,7 @@ def test_the_same_values_as_r(notebook_and_results, tmp_path):
     with zipfile.ZipFile(io.BytesIO(bundle)) as archive:
         archive.extractall(folder)
     (folder / "run.R").write_text(
-        'source("etude-analyses-resultats.R", encoding = "UTF-8")\n'
+        'source("etude-analyses-article.R", encoding = "UTF-8")\n'
         "valeurs <- unlist(resultats)\n"
         'write.csv(data.frame(nom = names(valeurs), valeur = valeurs), "sortie.csv", '
         "row.names = FALSE)\n",

@@ -10,6 +10,11 @@ Since v0.12 (D-099), the document opens with the Method: Participants (with the 
 diagram, Figure 1 by default), Instruments and Analyses, written by templates
 (`method_text`); the Results follow, numbered after it. Its figures are confirmed as an
 analysis's (D-100).
+
+Since v0.13 (D-106, D-107), the document is the draft of an IMRaD article,
+`<projet>-article.docx`: the title page and the abstract (holes), the Introduction with the
+hypotheses of the frozen plan, the Method with its paragraph "Plan d'analyse", the Results,
+the Discussion and the References (`article_text`).
 """
 
 from __future__ import annotations
@@ -20,11 +25,21 @@ from datetime import date
 from pathlib import Path
 
 from ddict import i18n
+from ddict.analysis import article_text as article
 from ddict.analysis import method as method_facts
-from ddict.analysis import method_text
+from ddict.analysis import method_text, plan_notebook
 from ddict.analysis import notebook as nb
 from ddict.analysis import notebook_check as check
-from ddict.analysis.apa import Edit, Section, assembled, describe, describe_flow, edited
+from ddict.analysis.apa import (
+    Edit,
+    Section,
+    assembled,
+    describe,
+    describe_flow,
+    edited,
+    hole,
+    plain,
+)
 from ddict.analysis.book import Codebook
 from ddict.analysis.catalogue import ROLES, TITLES
 from ddict.analysis.data import PreparedData
@@ -37,6 +52,8 @@ from ddict.export.syntax import render_syntax
 from ddict.i18n import _, semicolon
 from ddict.project import fingerprint
 from ddict.project.model import Project
+
+SUFFIX = "-article"  # v0.13 (D-106); "-resultats" before
 
 
 class ExportBlocked(Exception):
@@ -64,10 +81,28 @@ def _variables(book: Codebook, chosen: dict[str, list[str]]) -> str:
     return semicolon().join(parts)
 
 
-def _method(project, prepared, notebook, found, table: int, figure: int):
-    """The sections of the Method, and the numbers of the next table and figure."""
+def script_name(project_path: Path) -> str:
+    """ "etude-article.R": the R master script, named in the Method (A5) and in the zip."""
     from ddict.workflow import project_stem
 
+    return project_stem(project_path) + SUFFIX + ".R"
+
+
+def _front(project) -> list[Section]:
+    """The title page, the abstract and the Introduction, under the article's title."""
+    title = (hole(_("titre")),)
+    return [
+        Section("titre", "", "", paragraphs=tuple(article.title_page()), level=1,
+                break_after=True),
+        Section("resume", _("Résumé"), "", paragraphs=tuple(article.abstract()), level=1,
+                break_after=True),
+        Section("introduction", plain(title), "",
+                paragraphs=tuple(article.introduction(project)), level=1, title=title),
+    ]  # fmt: skip
+
+
+def _method(project, prepared, notebook, found, table: int, figure: int):
+    """The sections of the Method, and the numbers of the next table and figure."""
     flow = describe_flow(project, prepared.flow, number=figure)
     sections = [Section("methode", _("Méthode"), "", level=1)]
     sections.append(
@@ -83,7 +118,7 @@ def _method(project, prepared, notebook, found, table: int, figure: int):
     paragraphs = method_text.instruments(project, prepared, found)
     if paragraphs:
         sections.append(Section("instruments", _("Instruments"), "", paragraphs=tuple(paragraphs)))
-    script = project_stem(Path(notebook.project.file)) + "-resultats.R"
+    script = script_name(Path(notebook.project.file))
     sections.append(
         Section(
             "analyses",
@@ -92,8 +127,32 @@ def _method(project, prepared, notebook, found, table: int, figure: int):
             paragraphs=(method_text.analyses(found, script),),
         )
     )
+    if plan_notebook.frozen(project):
+        sections.append(
+            Section(
+                "plan",
+                _("Plan d'analyse"),
+                "",
+                paragraphs=(article.plan_paragraph(project, notebook),),
+            )
+        )
     sections.append(Section("resultats", _("Résultats"), "", level=1))
     return sections, table, figure
+
+
+def _back(project, notebook, found) -> list[Section]:
+    """The Discussion and the References."""
+    opening, ending = article.discussion_frame(project)
+    middle = article.discussion_without_plan()
+    references = article.references(
+        project, notebook, feldt=method_text.cites_feldt(project, found)
+    )
+    return [
+        Section("discussion", _("Discussion"), "", paragraphs=(*opening, *middle, *ending),
+                level=1),
+        Section("references", _("Références"), "", paragraphs=tuple(references), level=1,
+                break_before=True),
+    ]  # fmt: skip
 
 
 def _rules(project) -> list[str]:
@@ -135,9 +194,11 @@ def _results(project, prepared, notebook, *, language=None, today=None):
         book = Codebook(project, prepared)
         listed, left_out = [], []
         found = method_facts.facts(project, prepared, notebook)
-        sections, table, figure = _method(
+        sections = _front(project)
+        method, table, figure = _method(
             project, prepared, notebook, found, notebook.first_table, notebook.first_figure
         )
+        sections += method
         for entry in notebook.entries:
             if not entry.retained:
                 continue
@@ -159,6 +220,7 @@ def _results(project, prepared, notebook, *, language=None, today=None):
             analyses.append((entry.id, entry.analysis, result.chosen, dict(entry.options)))
             table += len(document.tables)
             figure += len(document.figures)
+        sections += _back(project, notebook, found)
         made = versions()
         closing = [
             _("Empreinte du codebook : {fingerprint}.").format(
@@ -174,6 +236,7 @@ def _results(project, prepared, notebook, *, language=None, today=None):
             _("Analyses du document :"),
             *listed,
             *_rules(project),
+            *article.closing(project),
         ]
         if left_out:
             closing += [_("Analyses retenues mais écartées, impossibles à calculer :"), *left_out]
@@ -182,10 +245,10 @@ def _results(project, prepared, notebook, *, language=None, today=None):
 
 
 def results_paths(project_path: Path) -> dict[str, Path]:
-    """ "etude-resultats.docx", "-resultats-graphiques.xlsx", "-resultats-R.zip" (D-092)."""
+    """ "etude-article.docx", "-article-graphiques.xlsx", "-article-R.zip" (D-092, D-106)."""
     from ddict.workflow import project_stem
 
-    stem = project_stem(project_path) + "-resultats"
+    stem = project_stem(project_path) + SUFFIX
     return {
         "docx": project_path.with_name(stem + ".docx"),
         "xlsx": project_path.with_name(stem + "-graphiques.xlsx"),
@@ -235,7 +298,7 @@ def r_bundle(
     today = today or date.today().isoformat()
     with i18n.using(language):
         files = {
-            f"{stem}-resultats.R": r_master(project, stem, analyses, today),
+            script_name(project_path): r_master(project, stem, analyses, today),
             f"{stem}-metadonnees.R": render_syntax(project, "r", today),
         }
         if preparation_needed(project):

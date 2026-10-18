@@ -325,13 +325,13 @@ Les deux licences permettent de reprendre et de traduire les questions ; CC BY e
 
 | Partie | Niveau APA | Contenu |
 |---|---|---|
-| Page de titre | — | « [à compléter : titre] », « [à compléter : auteurs et affiliations] » |
-| Résumé | 1 | « [à compléter : résumé] », « Mots-clés : [à compléter] » |
+| Page de titre | — | « [à compléter : titre] », « [à compléter : auteurs et affiliations] », puis un saut de page |
+| Résumé | 1 | « [à compléter : résumé] », « Mots-clés : [à compléter : mots-clés] », puis un saut de page |
 | *(titre de l'article)* | 1 | l'Introduction, sans intertitre « Introduction » (APA 7) |
 | Méthode | 1 | Participants, Instruments, Analyses (v0.12), puis **Plan d'analyse** (nouveau, § 10) |
 | Résultats | 1 | dans l'ordre du § 11 |
 | Discussion | 1 | § 12 |
-| Références | 1 | § 13 |
+| Références | 1 | § 13, sur une nouvelle page |
 
 La numérotation continue des tableaux et des figures (v0.12) vaut sur tout le document. La fin du document (empreinte, date, versions, analyses, règles d'exclusion) reçoit en plus l'empreinte du plan, la date du gel et la liste des amendements.
 
@@ -361,11 +361,11 @@ Seulement avec un plan figé.
 | PL7 | Le jour où le plan a été arrêté, le carnet d'analyses contenait déjà l'analyse prévue pour {H2}. | On the day the plan was finalised, the analysis notebook already contained the planned analysis for {H2}. | `prior` ; omise si vide |
 | PL8 | Les autres analyses sont présentées comme exploratoires. | Other analyses are presented as exploratory. | omise s'il n'y a ni variante ni entrée exploratoire |
 
-Le **résumé du changement** d'un amendement est écrit par l'outil à partir de `before` et `after` : « corrélation de Spearman au lieu de Pearson », « soutien remplacé par soutien_moyen », « énoncé reformulé », « hypothèse ajoutée », « hypothèse retirée », « correction de Bonferroni au lieu de Holm ».
+Le **résumé du changement** d'un amendement est écrit par l'outil à partir de `before` et `after`, champ par champ, séparés par des virgules : « méthode : Spearman au lieu de Pearson » (une option, par son libellé du catalogue), « prédicteurs : soutien au lieu de soutien, charge » (les variables d'un rôle), « énoncé reformulé », « confirmatoire au lieu de exploratoire », « famille : F2 au lieu de F1 », « effet testé modifié », « sens attendu modifié », « hypothèse ajoutée », « hypothèse retirée » ; pour les règles générales, « correction : Bonferroni au lieu de Holm », « seuil α : ,01 au lieu de ,05 », « taille d'échantillon reformulée ». La raison suit, telle que l'équipe l'a écrite, sa première lettre en minuscule.
 
 **Exemple** (plan d'exemple figé, un amendement) :
 
-> Les données sont primaires, recueillies par l'équipe pour cette étude. Selon l'équipe, le plan d'analyse a été écrit après avoir accédé aux données, avant de les analyser. Il a été arrêté dans l'outil le 20 octobre 2026. [à compléter : lieu et identifiant du préenregistrement, s'il y en a un] Il comptait quatre hypothèses confirmatoires et une exploratoire. Le seuil α était fixé à ,05. Les valeurs de *p* ont été corrigées par la méthode de Holm (1979) au sein de chaque famille d'hypothèses : F1 (H1, H2, H3). Le test de H1 était unilatéral, dans le sens attendu. Le plan a été modifié une fois après avoir été arrêté : le 2 novembre 2026, pour H2 (corrélation de Spearman au lieu de Pearson) : distribution des heures de travail très asymétrique. Les autres analyses sont présentées comme exploratoires.
+> Les données sont primaires, recueillies par l'équipe pour cette étude. Selon l'équipe, le plan d'analyse a été écrit après avoir accédé aux données, avant de les analyser. Il a été arrêté dans l'outil le 20 octobre 2026. [à compléter : lieu et identifiant du préenregistrement, s'il y en a un] Il comptait quatre hypothèses confirmatoires et une exploratoire. Le seuil α était fixé à ,05. Les valeurs de *p* ont été corrigées par la méthode de Holm (1979) au sein de chaque famille d'hypothèses : F1 (H1, H2, H3). Le test de H1 était unilatéral, dans le sens attendu. Le plan a été modifié une fois après avoir été arrêté : le 2 novembre 2026, pour H2 (méthode : Spearman au lieu de Pearson) : distribution des heures de travail très asymétrique. Le jour où le plan a été arrêté, le carnet d'analyses contenait déjà l'analyse prévue pour H3. Les autres analyses sont présentées comme exploratoires.
 
 α suit l'APA : sans zéro initial.
 

@@ -155,7 +155,7 @@ def test_the_method_in_the_notebook_by_command(tmp_path, capsys):
     out = capsys.readouterr().out
     assert "Confirmée : A1" in out and "Confirmée : la Méthode (M)" in out
     assert main(["resultats", str(path)]) == 0
-    texts = [p.text for p in Document(path.with_name("etude-passation-resultats.docx")).paragraphs]
+    texts = [p.text for p in Document(path.with_name("etude-passation-article.docx")).paragraphs]
     assert "Méthode" in texts and "Participants" in texts
     assert any(t.startswith("Au total, 400 personnes") for t in texts)
     assert main(["carnet", "echantillon", str(path), "--vider"]) == 0
@@ -273,15 +273,15 @@ def test_the_page_gives_the_command_files(tmp_path):
     assert main(["carnet", "ajouter", str(command_path), *ANALYSIS]) == 0
     assert main(["resultats", str(command_path)]) == 0
     assert load_project(page_path).exclusions == load_project(command_path).exclusions
-    name = "etude-passation-resultats-R.zip"
+    name = "etude-passation-article-R.zip"
     assert page_path.with_name(name).read_bytes() == command_path.with_name(name).read_bytes()
-    name = "etude-passation-resultats.docx"
+    name = "etude-passation-article.docx"
     page, command = Document(page_path.with_name(name)), Document(command_path.with_name(name))
     assert [p.text for p in page.paragraphs] == [p.text for p in command.paragraphs]
     assert [[c.text for c in t._cells] for t in page.tables] == [
         [c.text for c in t._cells] for t in command.tables
     ]
-    name = "etude-passation-resultats-graphiques.xlsx"
+    name = "etude-passation-article-graphiques.xlsx"
     with zipfile.ZipFile(io.BytesIO(page_path.with_name(name).read_bytes())) as book:
         assert "xl/worksheets/sheet1.xml" in book.namelist()
 

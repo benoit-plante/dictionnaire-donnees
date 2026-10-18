@@ -1311,9 +1311,9 @@ def build_parser() -> argparse.ArgumentParser:
         "resultats",
         aliases=["results"],
         help=_(
-            "Produire le document « Méthode et Résultats » : la Méthode, puis les analyses "
-            "retenues du carnet, recalculées ; Word, graphiques Excel et script R maître, à "
-            "côté du projet."
+            "Produire l'ébauche d'article : l'Introduction, la Méthode, les analyses "
+            "retenues du carnet, recalculées, la Discussion et les Références ; Word, "
+            "graphiques Excel et script R maître, à côté du projet."
         ),
     )
     results.add_argument("projet", help=_("Fichier projet (.dd.json)."))

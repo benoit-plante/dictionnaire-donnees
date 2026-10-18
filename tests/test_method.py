@@ -92,7 +92,7 @@ def _paragraphs(ready, language="fr"):
         return (
             plain(method_text.participants(project, found, 1)),
             [plain(p) for p in method_text.instruments(project, prepared, found)],
-            plain(method_text.analyses(found, "etude-passation-resultats.R")),
+            plain(method_text.analyses(found, "etude-passation-article.R")),
         )
 
 
@@ -118,7 +118,7 @@ def test_instruments(ready):
         "items, de 6 à 24. Il est calculé quand au moins 5 items sur 6 sont répondus ; un item "
         "manquant est remplacé par la moyenne des items répondus de la personne. La cotation "
         "suit Laboratoire fictif (2024). Sur l'échantillon analysé, l'alpha de Cronbach est de "
-        ",89 (IC 95 % [,87 ; ,91], n = 343)."
+        ",89 (IC 95 % selon Feldt, 1965, [,87 ; ,91], n = 343)."
     )
 
 
@@ -130,7 +130,7 @@ def test_analyses(ready):
     )
     assert "par le test t de Welch, qui ne suppose pas des variances égales" in text
     assert "corrélation de Pearson, avec son intervalle de confiance à 95 %" in text
-    assert text.endswith("un script R joint (etude-passation-resultats.R) les refait et donne "
+    assert text.endswith("un script R joint (etude-passation-article.R) les refait et donne "
                          "les mêmes valeurs.")  # fmt: skip
 
 
@@ -141,7 +141,7 @@ def test_in_english(ready):
     assert instrument.startswith(
         "The Échelle d'anxiété fictive (Laboratoire fictif, 2024) measures"
     )
-    assert "Cronbach's alpha is .89 (95% CI [.87, .91], n = 343)" in instrument
+    assert "Cronbach's alpha is .89 (95% CI after Feldt, 1965, [.87, .91], n = 343)" in instrument
     assert analyses.startswith("Code 999 (age) was treated as a missing value.")
 
 
@@ -223,6 +223,7 @@ def test_every_number_has_an_origin(ready):
     found = method.facts(project, prepared, notebook)
     participants, instruments, analyses = _paragraphs(ready)
     allowed = {"95", "001", "3", "18", "5", "6", "1", "4", "24", "999", "0", "2024", "2"}
+    allowed.add("1965")  # Feldt (v0.13)
     from ddict.analysis.report import versions
     from ddict.analysis.results import bounded, number
 
@@ -251,8 +252,9 @@ def test_the_document(tmp_path):
     project, _table, prepared, notebook = _ready()
     document = export.results_document(project, prepared, notebook, today=TODAY)
     keys = [s.key for s in document.sections]
-    assert keys == ["methode", "participants", "instruments", "analyses", "resultats", "A1", "A2"]
-    assert [s.level for s in document.sections][:5] == [1, 2, 2, 2, 1]
+    assert keys == ["titre", "resume", "introduction", "methode", "participants", "instruments",
+                    "analyses", "resultats", "A1", "A2", "discussion", "references"]  # fmt: skip
+    assert [s.level for s in document.sections][3:8] == [1, 2, 2, 2, 1]
     assert [f.number for f in document.figures] == [1, 2, 3]  # the flow, then the results
     assert document.figures[0].kind == "flow"
     assert [t.number for t in document.tables] == [1, 2]
@@ -266,20 +268,22 @@ def test_the_document(tmp_path):
     assert [f.number for f in document.figures] == [4, 5, 6]
     path = tmp_path / "etude-passation.dd.json"
     export.write_results(project, prepared, notebook, path, today=TODAY)
-    word = Document(io.BytesIO(path.with_name("etude-passation-resultats.docx").read_bytes()))
+    word = Document(io.BytesIO(path.with_name("etude-passation-article.docx").read_bytes()))
     texts = [p.text for p in word.paragraphs]
-    assert texts[:2] == ["Méthode", "Participants"]
-    assert texts[2].startswith("Au total, 400 personnes")
+    start = texts.index("Méthode")
+    assert texts[start + 1] == "Participants"
+    assert texts[start + 2].startswith("Au total, 400 personnes")
 
 
 def test_holes_are_highlighted_in_word(tmp_path):
     project, _table, prepared, notebook = _ready(named=False)
     path = tmp_path / "etude-passation.dd.json"
     export.write_results(project, prepared, notebook, path, today=TODAY)
-    word = Document(io.BytesIO(path.with_name("etude-passation-resultats.docx").read_bytes()))
+    word = Document(io.BytesIO(path.with_name("etude-passation-article.docx").read_bytes()))
     marked = [r.text for p in word.paragraphs for r in p.runs
               if r.font.highlight_color == WD_COLOR_INDEX.YELLOW]  # fmt: skip
-    assert marked == [
+    instruments = [m for m in marked if "groupe G1" in m]
+    assert instruments == [
         "[à compléter : nom et source de l'instrument du groupe G1]",
         "[à compléter : ce que mesure le groupe G1]",
     ]
@@ -311,9 +315,8 @@ def test_the_method_is_confirmed_like_an_analysis():
         if entry.pending is not None:
             check.confirm(notebook, entry.id)
     document = export.results_document(project, prepared, notebook, today=TODAY)
-    assert "L'échantillon analysé compte 352 personnes." in plain(
-        document.sections[1].paragraphs[0]
-    )
+    participants = next(s for s in document.sections if s.key == "participants")
+    assert "L'échantillon analysé compte 352 personnes." in plain(participants.paragraphs[0])
 
 
 def test_no_individual_data_in_the_notebook():

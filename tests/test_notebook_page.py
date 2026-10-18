@@ -99,10 +99,10 @@ def test_the_commands(project_path, capsys):
     assert notebook.first_table == 3
     assert main(["resultats", str(project_path)]) == 0
     out = capsys.readouterr().out
-    for name in ("resultats.docx", "resultats-graphiques.xlsx", "resultats-R.zip"):
+    for name in ("article.docx", "article-graphiques.xlsx", "article-R.zip"):
         assert project_path.with_name(f"etude-analyses-{name}").is_file()
         assert f"etude-analyses-{name}" in out
-    word = Document(project_path.with_name("etude-analyses-resultats.docx"))
+    word = Document(project_path.with_name("etude-analyses-article.docx"))
     assert next(p.text for p in word.paragraphs if p.text.startswith("Tableau ")) == "Tableau 3"
 
 
@@ -125,7 +125,7 @@ def test_a_change_to_confirm_by_command(tmp_path, capsys):
     _confirm_999(path)
     assert main(["resultats", str(path)]) == 2
     assert "A1" in capsys.readouterr().err
-    assert not path.with_name("etude-sommeil-resultats.docx").exists()
+    assert not path.with_name("etude-sommeil-article.docx").exists()
     assert main(["carnet", "lister", str(path)]) == 0
     out = capsys.readouterr().out
     assert "changée, à confirmer" in out
@@ -212,9 +212,9 @@ def test_the_page_gives_the_command_files(project_path, tmp_path):
     other = _folder(tmp_path, "commande")
     _build_by_command(other)
     assert main(["resultats", str(other)]) == 0
-    name = "etude-analyses-resultats-R.zip"
+    name = "etude-analyses-article-R.zip"
     assert project_path.with_name(name).read_bytes() == other.with_name(name).read_bytes()
-    name = "etude-analyses-resultats.docx"
+    name = "etude-analyses-article.docx"
     page = Document(project_path.with_name(name))
     command = Document(other.with_name(name))
     assert [p.text for p in page.paragraphs] == [p.text for p in command.paragraphs]
@@ -222,7 +222,7 @@ def test_the_page_gives_the_command_files(project_path, tmp_path):
         [c.text for c in t._cells] for t in command.tables
     ]
     with zipfile.ZipFile(io.BytesIO(project_path.with_name(
-        "etude-analyses-resultats-graphiques.xlsx").read_bytes())) as book:  # fmt: skip
+        "etude-analyses-article-graphiques.xlsx").read_bytes())) as book:  # fmt: skip
         assert "xl/charts/chart1.xml" in book.namelist()
 
 
@@ -244,7 +244,7 @@ def test_a_title_changed_on_the_analyses_page_is_kept(project_path):
     app.session_state["mode"] = "notebook"
     app.run()
     app.button(key="notebook-write").click().run()
-    word = Document(project_path.with_name("etude-analyses-resultats.docx"))
+    word = Document(project_path.with_name("etude-analyses-article.docx"))
     texts = [p.text for p in word.paragraphs]
     assert texts[texts.index("Tableau 1") + 1] == "Bien-être selon le groupe"
 

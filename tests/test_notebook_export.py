@@ -139,18 +139,20 @@ def test_the_files_next_to_the_project(ready, tmp_path):
     project_path = tmp_path / "etude-analyses.dd.json"
     paths = export.results_paths(project_path)
     assert [p.name for p in paths.values()] == [
-        "etude-analyses-resultats.docx",
-        "etude-analyses-resultats-graphiques.xlsx",
-        "etude-analyses-resultats-R.zip",
+        "etude-analyses-article.docx",
+        "etude-analyses-article-graphiques.xlsx",
+        "etude-analyses-article-R.zip",
     ]
     written = export.write_results(project, prepared, notebook, project_path, today=TODAY)
     assert written == [paths["docx"], paths["xlsx"], paths["r"]]
     word = Document(io.BytesIO(paths["docx"].read_bytes()))
     headings = [p.text for p in word.paragraphs if p.style.name.startswith("Heading")]
-    assert headings == ["Méthode", "Participants", "Instruments", "Analyses", "Résultats",
+    assert headings == ["Résumé", "[à compléter : titre]", "Méthode", "Participants",
+                        "Instruments", "Analyses", "Résultats",
                         "A2 — Test t : comparer deux groupes",
                         "A3 — ANOVA : comparer plusieurs groupes",
-                        "A1 — Tableau 1 : décrire l'échantillon"]  # fmt: skip
+                        "A1 — Tableau 1 : décrire l'échantillon", "Discussion",
+                        "Références"]  # fmt: skip
     texts = [p.text for p in word.paragraphs]
     assert [t for t in texts if t.startswith("Tableau ")] == [f"Tableau {n}" for n in range(1, 5)]
     assert [t for t in texts if t.startswith("Figure ")] == ["Figure 1", "Figure 2"]

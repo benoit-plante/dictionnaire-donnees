@@ -40,6 +40,7 @@ class Run:
     text: str
     italic: bool = False
     hole: bool = False  # v0.12 (D-097): "[à compléter : …]", highlighted in Word
+    bold: bool = False  # v0.13: "H1." in the Discussion
 
 
 Text = tuple[Run, ...]
@@ -228,6 +229,12 @@ class Section:
     figures: tuple[ApaFigure, ...] = ()
     paragraphs: tuple[Text, ...] = ()
     level: int = 2  # APA heading level
+    # v0.13, the article: a heading with its runs (the title, a hole), `heading` then being
+    # its plain text; no heading at all when `heading` is empty (the title page); a page
+    # break after the section (the title page, the abstract) or before it (References).
+    title: Text = ()
+    break_after: bool = False
+    break_before: bool = False
 
 
 def assembled(language: str, sections: list[Section], closing: list[str], fingerprint: str = ""):

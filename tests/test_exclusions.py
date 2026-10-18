@@ -249,7 +249,7 @@ def test_the_master_script_analyses_the_people_kept(ready, tmp_path):
     with zipfile.ZipFile(io.BytesIO(bundle)) as archive:
         archive.extractall(tmp_path)
     (tmp_path / "run.R").write_text(
-        'source("etude-passation-resultats.R", encoding = "UTF-8")\n'
+        'source("etude-passation-article.R", encoding = "UTF-8")\n'
         "valeurs <- unlist(resultats)\n"
         'write.csv(data.frame(nom = names(valeurs), valeur = valeurs), "sortie.csv", '
         "row.names = FALSE)\n",

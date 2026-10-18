@@ -284,13 +284,14 @@ def page(project: Project) -> None:
         _entry(project, notebook, rank, entry, by_id[entry.id])
     if nb.METHOD in by_id:
         _method(by_id[nb.METHOD])
-    st.subheader(_("Document « Méthode et Résultats »"))
+    st.subheader(_("Ébauche d'article"))
     st.caption(
         _(
-            "La Méthode, puis les analyses retenues, recalculées sur la base avec les décisions "
-            "en vigueur, numérotées à la suite : un document Word, ses graphiques Excel et le "
-            "script R maître, à côté du projet. Ces résultats viennent des données de l'étude : "
-            "rangez-les avec soin."
+            "L'Introduction avec les hypothèses du plan, la Méthode, les analyses retenues, "
+            "recalculées sur la base avec les décisions en vigueur et numérotées à la suite, la "
+            "Discussion et les Références, avec des trous surlignés : un document Word, ses "
+            "graphiques Excel et le script R maître, à côté du projet. Ces résultats viennent "
+            "des données de l'étude : rangez-les avec soin."
         )
     )
     table, figure = st.columns(2)

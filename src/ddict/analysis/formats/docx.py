@@ -97,7 +97,7 @@ def _runs(paragraph, text: Text, bold: bool = False, italic: bool = False) -> No
     for run in text:
         added = paragraph.add_run(run.text)
         added.italic = run.italic or italic
-        added.bold = bold
+        added.bold = bold or run.bold
         if run.hole:  # a fact left for a person (D-097)
             added.font.highlight_color = WD_COLOR_INDEX.YELLOW
 
@@ -215,7 +215,12 @@ def render(found: ApaDocument) -> bytes:
             _apa_heading(document, level=1)
             _apa_heading(document, level=3)
             for section in found.sections:
-                document.add_heading(section.heading, level=section.level)
+                if section.break_before:
+                    document.add_page_break()
+                if section.title:  # v0.13: a heading with its runs (a hole)
+                    _runs(document.add_heading("", level=section.level), section.title)
+                elif section.heading:
+                    document.add_heading(section.heading, level=section.level)
                 for text in section.paragraphs:  # v0.12: the Method
                     _runs(document.add_paragraph(), text)
                 if section.sentence:
@@ -224,6 +229,8 @@ def render(found: ApaDocument) -> bytes:
                     _table(document, table)
                 for figure in section.figures:
                     _figure(document, figure, found.language)
+                if section.break_after:
+                    document.add_page_break()
             for line in found.closing:
                 _small(document.add_paragraph(), line)
         else:
