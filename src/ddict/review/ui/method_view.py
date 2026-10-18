@@ -474,6 +474,8 @@ def paragraph_html(text: Text) -> str:
     parts = []
     for run in text:
         part = html.escape(run.text)
+        if run.sub:
+            part = f"<sub>{part}</sub>"
         if run.italic:
             part = f"<i>{part}</i>"
         if run.hole:

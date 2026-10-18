@@ -23,7 +23,7 @@ from scipy import stats
 from ddict import i18n
 from ddict.analysis.book import Codebook
 from ddict.analysis.data import PreparedData, chosen_levels
-from ddict.analysis.models import _codes
+from ddict.analysis.models import _codes, _mid
 from ddict.analysis.results import MINUS, AnalysisResult, number, p_value
 from ddict.i18n import _
 from ddict.project import fingerprint
@@ -41,6 +41,7 @@ class Run:
     italic: bool = False
     hole: bool = False  # v0.12 (D-097): "[à compléter : …]", highlighted in Word
     bold: bool = False  # v0.13: "H1." in the Discussion
+    sub: bool = False  # v0.14: the "z" of d_z
 
 
 Text = tuple[Run, ...]
@@ -157,7 +158,7 @@ class ApaTable:
     note: Text = ()
 
 
-FigureKind = Literal["bars", "grouped_bars", "scatter", "coefficients", "flow"]
+FigureKind = Literal["bars", "grouped_bars", "scatter", "coefficients", "flow", "line"]
 
 
 @dataclass(frozen=True)
@@ -293,13 +294,6 @@ class _Builder:
             )
         )
         self.figure_number += 1
-
-
-def _mid(label: str) -> str:
-    """A label inside a title: "score de stress", but "TCC" and "QFS total" stay."""
-    if len(label) > 1 and label[0].isupper() and label[1].islower():
-        return label[0].lower() + label[1:]
-    return label
 
 
 def _join(parts: Iterable[Text], separator: str = " ") -> Text:
@@ -535,6 +529,121 @@ def _bars(b, book, label, group, names, samples) -> None:
                 ),
                 N=it("N"),
                 n=total,
+            )
+        ],
+    )
+
+
+# --- Paired t test (v0.14). ---
+
+
+def _paired(b: _Builder, book: Codebook, prepared: PreparedData, result: AnalysisResult) -> None:
+    s = result.statistics
+    first, second = result.chosen["first"][0], result.chosen["second"][0]
+    names = [book.label(first), book.label(second)]
+    data = prepared.table[[first, second]].dropna()
+    title = _("{a} et {b}").format(a=names[0], b=_mid(names[1]))
+    spanners = [Spanner(rich(names[0]), 1, 1), Spanner(rich(names[1]), 2, 2)]
+    if result.options.get("method") == "wilcoxon":
+        b.table(
+            title,
+            [
+                _left(_("Paire")),
+                _col(rich(it("Mdn"))),
+                _col(rich(it("Mdn"))),
+                _col(rich(it("V"))),
+                _col(rich(it("p"))),
+                _col(rich(it("r"))),
+            ],
+            [
+                _row(
+                    marked("{n} = {count}", n=it("n"), count=int(s["n"])),
+                    apa(s["mdn1"]),
+                    apa(s["mdn2"]),
+                    apa(s["V"], 1),
+                    p_cell(s["p"]),
+                    apa(s["rb"], zero=False),
+                )
+            ],
+            spanners=spanners,
+            note=[
+                marked(
+                    _(
+                        "Test de Wilcoxon des rangs signés ; différences nulles écartées : "
+                        "{zeros}. {r} : corrélation bisériale de rang, positive quand la "
+                        "première mesure est plus élevée."
+                    ),
+                    zeros=int(s["zeros"]),
+                    r=it("r"),
+                )
+            ],
+        )
+    else:
+        spanners = [Spanner(rich(names[0]), 1, 2), Spanner(rich(names[1]), 3, 4)]
+        b.table(
+            title,
+            [
+                _left(_("Paire")),
+                _col(rich(it("M"))),
+                _col(rich(it(_("ÉT")))),
+                _col(rich(it("M"))),
+                _col(rich(it(_("ÉT")))),
+                _col(_("Différence")),
+                _col(rich(it("t"), f"({int(s['df'])})")),
+                _col(rich(it("p"))),
+                _col(rich(it("d"), Run("z", sub=True))),
+                _col(marked(_("IC 95 % de {stat}"), stat=rich(it("d"), Run("z", sub=True)))),
+            ],
+            [
+                _row(
+                    marked("{n} = {count}", n=it("n"), count=int(s["n"])),
+                    apa(s["m1"]),
+                    apa(s["sd1"]),
+                    apa(s["m2"]),
+                    apa(s["sd2"]),
+                    _join([rich(apa(s["diff"])), rich(brackets(s["diff_low"], s["diff_high"]))]),
+                    apa(s["t"]),
+                    p_cell(s["p"]),
+                    apa(s["d"]),
+                    brackets(s["d_low"], s["d_high"]),
+                )
+            ],
+            spanners=spanners,
+            note=[
+                marked(
+                    _(
+                        "Test {t} apparié ; la différence est la première mesure moins la "
+                        "seconde, avec son IC 95 %. {d} : moyenne des différences divisée par "
+                        "leur écart-type."
+                    ),
+                    t=it("t"),
+                    d=rich(it("d"), Run("z", sub=True)),
+                )
+            ],
+        )
+    ci = [_mean_ci(data[name].to_numpy(float)) for name in (first, second)]
+    b.figure(
+        title,
+        "line",
+        _("Mesure"),
+        _("Moyenne"),
+        categories=tuple(names),
+        series=(
+            Series(
+                _("Moyenne"),
+                tuple(m for m, _l, _h in ci),
+                tuple(lo for _m, lo, _h in ci),
+                tuple(hi for _m, _l, hi in ci),
+            ),
+        ),
+        note=[
+            marked(
+                _(
+                    "Les barres d'erreur représentent l'intervalle de confiance à 95 % de la "
+                    "moyenne. {N} = {n}, les mêmes personnes aux deux mesures."
+                ),
+                N=it("N"),
+                n=len(data),
             )
         ],
     )
@@ -892,6 +1001,7 @@ def _regression(
 BUILDERS = {
     "table1": _table1,
     "t_test": _t_test,
+    "paired": _paired,
     "anova": _anova,
     "chi_square": _chi_square,
     "correlation": _correlation,

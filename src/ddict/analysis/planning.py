@@ -28,6 +28,7 @@ from ddict.project.model import Amendment, Frozen, Hypothesis, Plan, Project
 # The effects each analysis may test, the first by default when there is no choice.
 EFFECTS = {
     "t_test": ("difference",),
+    "paired": ("difference",),
     "anova": ("group",),
     "chi_square": ("association",),
     "correlation": ("pair",),
@@ -40,6 +41,7 @@ DIRECTIONS = {
     "predictor": ("positive", "negative"),
 }
 ALTERNATIVE = {"first_higher": "greater", "second_higher": "less"}
+ONE_SIDED = ("t_test", "paired")  # the analyses whose expected direction sets the test
 EXTRA_OPTIONS = {"t_test": ("levels",)}  # free options of the catalogue, beyond its choices
 RULE_FIELDS = ("alpha", "correction", "missing", "sample_size", "data_origin", "data_status")
 
@@ -47,6 +49,7 @@ NAMES = Texts(
     {
         "table1": N_("Le Tableau 1"),
         "t_test": N_("Un test t"),
+        "paired": N_("Un test t apparié"),
         "anova": N_("Une ANOVA"),
         "chi_square": N_("Un khi-carré"),
         "correlation": N_("Une corrélation"),
@@ -166,7 +169,12 @@ def _direction(hypothesis: Hypothesis, check: conditions.Check) -> None:
             )
         )
     elif direction not in allowed:
-        if hypothesis.effect.kind == "difference":
+        if hypothesis.analysis == "paired":
+            text = _(
+                "Pour un test t apparié, le sens attendu est la première ou la seconde "
+                "mesure plus élevée."
+            )
+        elif hypothesis.effect.kind == "difference":
             text = _(
                 "Pour un test t, le sens attendu est le premier ou le second groupe plus élevé."
             )
@@ -272,7 +280,7 @@ def build(project: Project, data: dict, hypothesis_id: str) -> Hypothesis:
     if key in CATALOGUE:
         options = {k: v[0] for k, v in CATALOGUE[key].options.items()} | given
         direction = data.get("direction")
-        if key == "t_test" and direction in ALTERNATIVE and "alternative" not in given:
+        if key in ONE_SIDED and direction in ALTERNATIVE and "alternative" not in given:
             options["alternative"] = ALTERNATIVE[direction]
         data["options"] = options
     if data.get("effect") is None:
@@ -372,7 +380,7 @@ def modify(
             data["options"] = {}
     elif "roles" in changes and "effect" not in changes and old.effect.kind == "pair":
         data["effect"] = None  # a correlation of two variables: its one pair again
-    if "direction" in changes and "options" not in changes and old.analysis == "t_test":
+    if "direction" in changes and "options" not in changes and old.analysis in ONE_SIDED:
         data["options"] = {k: v for k, v in data["options"].items() if k != "alternative"}
     new = build(project, data, old.id)
     after = _dump(new)

@@ -334,7 +334,7 @@ def _hypothesis_arguments(command: argparse.ArgumentParser, adding: bool) -> Non
         command.add_argument(
             "analyse",
             choices=list(ANALYSES),
-            help=_("test_t, anova, khi2, correlation ou regression."),
+            help=_("test_t, apparie, anova, khi2, correlation ou regression."),
         )
         command.add_argument(
             "--enonce",
@@ -367,12 +367,29 @@ def _hypothesis_arguments(command: argparse.ArgumentParser, adding: bool) -> Non
         "--predicteurs", "--predictors", nargs="+", help=_("Prédicteurs (régression).")
     )
     command.add_argument(
-        "--methode",
-        "--method",
-        help=_("welch, student, mann_whitney ; anova, kruskal_wallis ; pearson, fisher, spearman."),
+        "--premiere",
+        "--first",
+        nargs=1,
+        help=_("Première mesure (test t apparié)."),
     )
     command.add_argument(
-        "--hypothese", "--alternative", help=_("Test t : two_sided, greater ou less.")
+        "--seconde",
+        "--second",
+        nargs=1,
+        help=_("Seconde mesure (test t apparié)."),
+    )
+    command.add_argument(
+        "--methode",
+        "--method",
+        help=_(
+            "welch, student, mann_whitney ; paired_t, wilcoxon ; anova, kruskal_wallis ; "
+            "pearson, fisher, spearman."
+        ),
+    )
+    command.add_argument(
+        "--hypothese",
+        "--alternative",
+        help=_("Test t et test t apparié : two_sided, greater ou less."),
     )
     command.add_argument("--post-hoc", help=_("ANOVA : none ou tukey."))
     command.add_argument(

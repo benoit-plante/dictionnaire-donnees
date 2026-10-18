@@ -250,6 +250,7 @@ def chi_square(project, prepared, chosen, options) -> AnalysisResult:
 COMPUTE = {
     "table1": table1,
     "t_test": models.t_test,
+    "paired": models.paired,
     "anova": models.anova,
     "chi_square": chi_square,
     "correlation": correlation,

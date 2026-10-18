@@ -51,7 +51,8 @@ MIN_COMMON_CHARS = 15  # a shorter common start of the items' labels says nothin
 MAX_MESSAGE_TOKENS = 3300
 CHARS_PER_TOKEN = 3.5
 
-AnalysisKey = Literal["table1", "t_test", "anova", "chi_square", "correlation", "regression"]
+# The catalogue's keys: the message offers every analysis, a proposal names one of them.
+AnalysisKey = Literal[tuple(CATALOGUE)]  # type: ignore[valid-type]
 RoleKey = Literal["variables", "group", "outcome", "rows", "columns", "predictors"]
 Method = Literal["", "welch", "student", "mann_whitney", "anova", "kruskal_wallis", "pearson",
                  "fisher", "spearman"]  # fmt: skip

@@ -1,6 +1,6 @@
 # Catalogue élargi (v0.14)
 
-> Statut : **à valider par l'auteur (étape 1 de la v0.14)**. Plan : [`plan-v0.14.md`](plan-v0.14.md), décisions D-111 à D-115. Les exemples sont calculés sur la base fictive `etude-suivi` (240 participants, graine fixe, effets plantés ; `scripts/generer_base_suivi.py`, corrigé `corrige-suivi.json`) par un prototype, avec SciPy et statsmodels, puis **refaits dans R** (R 4.6.1, R de base et haven) : mêmes valeurs, aux deux écarts près signalés au § 9.
+> Statut : **validé par l'auteur le 2026-10-18 (étape 1 de la v0.14)**, avec les choix proposés au § 9 : Greenhouse-Geisser dans la phrase quand Mauchly donne *p* < ,05 ; la seconde modalité prédite par défaut. Plan : [`plan-v0.14.md`](plan-v0.14.md), décisions D-111 à D-115. Les exemples sont calculés sur la base fictive `etude-suivi` (240 participants, graine fixe, effets plantés ; `scripts/generer_base_suivi.py`, corrigé `corrige-suivi.json`) par un prototype, avec SciPy et statsmodels, puis **refaits dans R** (R 4.6.1, R de base et haven) : mêmes valeurs, aux deux écarts près signalés au § 9.
 
 ## 1. Règles communes
 

@@ -19,6 +19,7 @@ from ddict.analysis.apa import (
     Column,
     Run,
     Text,
+    _mid,
     _two_groups,
     hole,
     it,
@@ -649,6 +650,18 @@ def observed(book: Codebook, prepared: PreparedData, tested: Tested) -> str:
     the statistic shows as zero, to two decimals, as printed beside it."""
     s = tested.result.statistics
     kind = tested.hypothesis.effect.kind
+    if kind == "difference" and tested.hypothesis.analysis == "paired":
+        chosen = tested.result.chosen
+        names = [book.label(chosen["first"][0]), book.label(chosen["second"][0])]
+        if "rb" in s:
+            if _shown_zero(s["rb"]):
+                return _("Les rangs observés étaient les mêmes aux deux mesures, au centième près.")
+            higher = names[0] if s["rb"] > 0 else names[1]
+            return _("Les rangs observés étaient plus élevés pour {a}.").format(a=_mid(higher))
+        if number(s["m1"]) == number(s["m2"]):
+            return _("Les moyennes observées étaient égales au centième près.")
+        higher = names[0] if s["m1"] > s["m2"] else names[1]
+        return _("La moyenne observée était plus élevée pour {a}.").format(a=_mid(higher))
     if kind == "difference":
         names = _two_groups(book, prepared, tested.result)[2]
         if "rb" in s:

@@ -110,7 +110,19 @@ def _coefficients(ax, figure: ApaFigure) -> None:
     ax.set_ylim(-0.6, len(figure.categories) - 0.4)
 
 
-DRAW = {"bars": _bars, "grouped_bars": _grouped, "scatter": _scatter, "coefficients": _coefficients}
+def _line(ax, figure: ApaFigure) -> None:
+    """v0.14: the means of the measures of the same people, in their order, and their
+    intervals."""
+    series = figure.series[0]
+    x = np.arange(len(figure.categories))
+    ax.errorbar(x, series.values, yerr=_errors(series), color="black", marker="o",
+                linewidth=1, capsize=6)  # fmt: skip
+    ax.set_xticks(x, figure.categories)
+    ax.set_xlim(-0.5, len(x) - 0.5)
+
+
+DRAW = {"bars": _bars, "grouped_bars": _grouped, "scatter": _scatter,
+        "coefficients": _coefficients, "line": _line}  # fmt: skip
 
 
 # --- The flow of participants (v0.12, D-098): boxes and arrows, in centimetres. ---

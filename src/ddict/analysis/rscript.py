@@ -246,6 +246,51 @@ def _t_test(chosen, options, _levels, texts) -> list[str]:
     ]
 
 
+def _paired(chosen, options, _levels, texts) -> list[str]:
+    """v0.14: the paired t test, or Wilcoxon's signed-rank test, with the tool's formulas
+    for d_z and the rank-biserial correlation; the interval of the difference two-sided."""
+    first, second = chosen["first"][0], chosen["second"][0]
+    alternative = R_ALTERNATIVES[options.get("alternative", "two_sided")]
+    lines = [
+        f"x <- {_column(first, texts)}",
+        f"y <- {_column(second, texts)}",
+        "ok <- complete.cases(x, y)",
+        "a <- x[ok]; b <- y[ok]; dd <- a - b; n <- length(dd)",
+        "resultats <- list(n = n, m1 = mean(a), m2 = mean(b), sd1 = sd(a), sd2 = sd(b))",
+    ]
+    if options.get("method") == "wilcoxon":
+        return [
+            *lines,
+            "test <- wilcox.test(a, b, paired = TRUE, exact = FALSE, correct = TRUE,",
+            f'                    alternative = "{alternative}")',
+            "print(test)",
+            "resultats$V <- unname(test$statistic); resultats$p <- test$p.value",
+            "nz <- dd[dd != 0]; rg <- rank(abs(nz))",
+            "plus <- sum(rg[nz > 0]); moins <- sum(rg[nz < 0])",
+            "resultats$rb <- (plus - moins) / (plus + moins); resultats$zeros <- sum(dd == 0)",
+            "resultats$mdn1 <- median(a); resultats$mdn2 <- median(b)",
+            "print(resultats)",
+        ]
+    return [
+        *lines,
+        f'test <- t.test(a, b, paired = TRUE, alternative = "{alternative}")',
+        "print(test)",
+        "resultats$t <- unname(test$statistic); resultats$df <- unname(test$parameter)",
+        "resultats$p <- test$p.value; resultats$diff <- mean(dd)",
+        "demi <- qt(0.975, n - 1) * sd(dd) / sqrt(n)",
+        "resultats$diff_low <- mean(dd) - demi; resultats$diff_high <- mean(dd) + demi",
+        "# d_z (moyenne des différences / leur écart type) et son intervalle par la loi t",
+        "# non centrale",
+        "d <- mean(dd) / sd(dd); k <- 1 / sqrt(n); tt <- d / k; ddl <- n - 1",
+        "bas <- uniroot(function(nc) pt(tt, ddl, nc, lower.tail = FALSE) - 0.025,",
+        "               c(tt - 8, tt), tol = 1e-10)$root",
+        "haut <- uniroot(function(nc) pt(tt, ddl, nc) - 0.025, c(tt, tt + 8),",
+        "                tol = 1e-10)$root",
+        "resultats$d <- d; resultats$d_low <- bas * k; resultats$d_high <- haut * k",
+        "print(resultats)",
+    ]
+
+
 def _anova(chosen, options, _levels, texts) -> list[str]:
     outcome, group = chosen["outcome"][0], chosen["group"][0]
     lines = [
@@ -337,6 +382,7 @@ def _regression(chosen, options, levels, texts) -> list[str]:
 BODIES = {
     "table1": _table1,
     "t_test": _t_test,
+    "paired": _paired,
     "anova": _anova,
     "chi_square": lambda c, o, _l, t: _chi_square(c, o, t),
     "correlation": lambda c, o, _l, t: _correlation(c, o, t),

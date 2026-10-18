@@ -98,6 +98,7 @@ def _runs(paragraph, text: Text, bold: bool = False, italic: bool = False) -> No
         added = paragraph.add_run(run.text)
         added.italic = run.italic or italic
         added.bold = bold or run.bold
+        added.font.subscript = run.sub or None
         if run.hole:  # a fact left for a person (D-097)
             added.font.highlight_color = WD_COLOR_INDEX.YELLOW
 

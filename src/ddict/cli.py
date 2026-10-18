@@ -171,6 +171,8 @@ ANALYSES = {
     "tableau1": "table1",
     "t_test": "t_test",
     "test_t": "t_test",
+    "paired": "paired",
+    "apparie": "paired",
     "anova": "anova",
     "chi_square": "chi_square",
     "khi2": "chi_square",
@@ -184,6 +186,8 @@ ROLE_ARGUMENTS = {
     "rows": "lignes",
     "columns": "colonnes",
     "predictors": "predicteurs",
+    "first": "premiere",
+    "second": "seconde",
 }
 # The actions of `ddict carnet`, in French or in English (v0.11).
 NOTEBOOK_ACTIONS = {
@@ -1613,7 +1617,7 @@ def _analysis_arguments(command: argparse.ArgumentParser) -> None:
     command.add_argument(
         "analyse",
         choices=list(ANALYSES),
-        help=_("tableau1, test_t, anova, khi2, correlation ou regression."),
+        help=_("tableau1, test_t, apparie, anova, khi2, correlation ou regression."),
     )
     command.add_argument("--variables", nargs="+", help=_("Variables (Tableau 1, corrélation)."))
     command.add_argument("--groupe", "--group", nargs=1, help=_("Variable de groupe."))
@@ -1631,15 +1635,29 @@ def _analysis_arguments(command: argparse.ArgumentParser) -> None:
         "--predicteurs", "--predictors", nargs="+", help=_("Prédicteurs (régression).")
     )
     command.add_argument(
+        "--premiere",
+        "--first",
+        nargs=1,
+        help=_("Première mesure (test t apparié)."),
+    )
+    command.add_argument(
+        "--seconde",
+        "--second",
+        nargs=1,
+        help=_("Seconde mesure (test t apparié)."),
+    )
+    command.add_argument(
         "--methode",
         "--method",
         help=_(
-            "welch, student, mann_whitney ; anova, kruskal_wallis ; pearson, fisher, spearman "
-            "(défaut : la première de chaque analyse)."
+            "welch, student, mann_whitney ; paired_t, wilcoxon ; anova, kruskal_wallis ; "
+            "pearson, fisher, spearman (défaut : la première de chaque analyse)."
         ),
     )
     command.add_argument(
-        "--hypothese", "--alternative", help=_("Test t : two_sided, greater ou less.")
+        "--hypothese",
+        "--alternative",
+        help=_("Test t et test t apparié : two_sided, greater ou less."),
     )
     command.add_argument("--post-hoc", help=_("ANOVA : none ou tukey."))
     command.add_argument(

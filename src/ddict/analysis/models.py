@@ -183,6 +183,146 @@ def t_test(project, prepared, chosen, options) -> AnalysisResult:
     )
 
 
+# --- Paired t test and Wilcoxon signed-rank test (v0.14, D-111). ---
+
+
+def paired_d(differences: np.ndarray) -> tuple[float, float, float]:
+    """d_z, the mean difference over its standard deviation, and its 95 % interval by the
+    noncentral t (df = n - 1)."""
+    n = len(differences)
+    dz = float(differences.mean() / differences.std(ddof=1))
+    k = 1 / math.sqrt(n)
+    t, df = dz / k, n - 1
+    low = optimize.brentq(lambda nc: stats.nct.sf(t, df, nc) - 0.025, t - 8, t)
+    high = optimize.brentq(lambda nc: stats.nct.cdf(t, df, nc) - 0.025, t, t + 8)
+    return dz, float(low * k), float(high * k)
+
+
+def wilcoxon(differences: np.ndarray, alternative: str) -> dict[str, float]:
+    """The signed-rank test as R's wilcox.test(exact = FALSE, correct = TRUE) computes it
+    (R 4.6, stats:::.wilcox_test_one_pval_asymp, `correct` then 0): zero differences left
+    out; the normal approximation with the ties and continuity corrections; the two-sided p
+    as 2 min(p, 1 - p). The rank-biserial correlation is (W+ - W-) / (W+ + W-)."""
+    nonzero = differences[differences != 0]
+    n = len(nonzero)
+    ranks = stats.rankdata(np.abs(nonzero))
+    plus, minus = float(ranks[nonzero > 0].sum()), float(ranks[nonzero < 0].sum())
+    _values, ties = np.unique(ranks, return_counts=True)
+    sigma = math.sqrt(n * (n + 1) * (2 * n + 1) / 24 - float((ties**3 - ties).sum()) / 48)
+    z = plus - n * (n + 1) / 4
+    correction = {"two-sided": math.copysign(0.5, z) if z else 0.0, "greater": 0.5,
+                  "less": -0.5}[alternative]  # fmt: skip
+    z = (z - correction) / sigma
+    low = float(stats.norm.cdf(z))
+    if alternative == "less":
+        p = low
+    elif alternative == "greater":
+        p = float(stats.norm.sf(z))
+    else:
+        p = 2 * min(low, 1 - low)
+    return {"V": plus, "p": p, "rb": (plus - minus) / (plus + minus),
+            "zeros": float(len(differences) - n)}  # fmt: skip
+
+
+def paired(project, prepared, chosen, options) -> AnalysisResult:
+    book = Codebook(project, prepared)
+    first, second = chosen["first"][0], chosen["second"][0]
+    data = prepared.table[[first, second]].dropna()
+    a, b = data[first].to_numpy(float), data[second].to_numpy(float)
+    differences = a - b
+    n = len(differences)
+    names = [book.label(first), book.label(second)]
+    alternative = ALTERNATIVES[options.get("alternative", "two_sided")]
+    warnings: list[str] = []
+    found: dict[str, float] = {
+        "n": n,
+        "m1": float(a.mean()),
+        "m2": float(b.mean()),
+        "sd1": float(a.std(ddof=1)),
+        "sd2": float(b.std(ddof=1)),
+    }
+    shapiro = _shapiro(differences)
+    if shapiro is not None:
+        found["shapiro_p"] = shapiro
+        if shapiro < 0.05 and n < SHAPIRO_FEW:
+            warnings.append(
+                _(
+                    "Différences peu normales (Shapiro-Wilk {p}) avec moins de {n} personnes."
+                ).format(p=p_part(shapiro), n=SHAPIRO_FEW)
+            )
+    rows = [
+        [names[0], str(n), f"{number(a.mean())} ({number(a.std(ddof=1))})"],
+        [names[1], str(n), f"{number(b.mean())} ({number(b.std(ddof=1))})"],
+    ]
+    tables = [Table(_("Mesures"), [_("Mesure"), "n", _("M (ÉT)")], rows)]
+    if options["method"] == "wilcoxon":
+        test = wilcoxon(differences, alternative)
+        found |= test | {"mdn1": float(np.median(a)), "mdn2": float(np.median(b))}
+        if test["zeros"]:
+            warnings.append(
+                _("{n} différences nulles écartées par le test de Wilcoxon.").format(
+                    n=int(test["zeros"])
+                )
+            )
+        sentence = _(
+            "{a} : médiane de {m1} ; {b} : médiane de {m2} ; V = {v}, {p}, r = {r} (n = {n})."
+        ).format(
+            a=names[0],
+            m1=number(found["mdn1"]),
+            b=_mid(names[1]),
+            m2=number(found["mdn2"]),
+            v=number(test["V"], 1),
+            p=p_part(test["p"]),
+            r=bounded(test["rb"]),
+            n=n,
+        )
+    else:
+        test = stats.ttest_rel(a, b, alternative=alternative)
+        diff = float(differences.mean())
+        half = stats.t.ppf(0.975, n - 1) * differences.std(ddof=1) / math.sqrt(n)
+        dz, dz_low, dz_high = paired_d(differences)
+        found |= {
+            "t": float(test.statistic),
+            "df": float(n - 1),
+            "p": float(test.pvalue),
+            "diff": diff,
+            "diff_low": float(diff - half),
+            "diff_high": float(diff + half),
+            "d": dz,
+            "d_low": dz_low,
+            "d_high": dz_high,
+        }
+        sentence = _(
+            "{a} : M = {m1} (ÉT = {s1}) ; {b} : M = {m2} (ÉT = {s2}) ; différence {diff}, "
+            "{diff_ci}, t({df}) = {t}, {p}, d_z = {d}, {ci} (n = {n})."
+        ).format(
+            a=names[0],
+            m1=number(a.mean()),
+            s1=number(a.std(ddof=1)),
+            b=_mid(names[1]),
+            m2=number(b.mean()),
+            s2=number(b.std(ddof=1)),
+            diff=number(diff),
+            diff_ci=interval(diff - half, diff + half),
+            df=n - 1,
+            t=number(test.statistic),
+            p=p_part(test.pvalue),
+            d=number(dz),
+            ci=interval(dz_low, dz_high),
+            n=n,
+        )
+    return AnalysisResult(
+        "paired", chosen, options, n, len(prepared.table) - n, tables, found, sentence, warnings
+    )
+
+
+def _mid(label: str) -> str:
+    """A label inside a title: "score de stress", but "TCC" and "QFS total" stay."""
+    if len(label) > 1 and label[0].isupper() and label[1].islower():
+        return label[0].lower() + label[1:]
+    return label
+
+
 # --- ANOVA. ---
 
 

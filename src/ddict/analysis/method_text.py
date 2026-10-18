@@ -340,6 +340,28 @@ def _method_sentences(analysis: str, method: str, post_hoc: str) -> list[Text]:
             )
         )
         return [marked(template, t=t, d=d)]
+    if analysis == "paired" and method == "wilcoxon":
+        return [
+            rich(
+                _(
+                    "Deux mesures d'une même personne ont été comparées par le test de "
+                    "Wilcoxon des rangs signés ; la taille d'effet est la corrélation "
+                    "bisériale des rangs."
+                )
+            )
+        ]
+    if analysis == "paired":
+        return [
+            marked(
+                _(
+                    "Deux mesures d'une même personne ont été comparées par le test {t} "
+                    "apparié ; la taille d'effet est le {dz}, avec son intervalle de confiance "
+                    "à 95 %."
+                ),
+                t=t,
+                dz=rich(it("d"), Run("z", sub=True)),
+            )
+        ]
     if analysis == "anova" and method == "kruskal_wallis":
         return [
             rich(

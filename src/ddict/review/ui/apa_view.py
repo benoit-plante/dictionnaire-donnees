@@ -72,9 +72,12 @@ def _cached(signature: str, what: tuple, make) -> bytes:
 
 
 def _html(text: Text) -> str:
-    return "".join(
-        f"<i>{html.escape(r.text)}</i>" if r.italic else html.escape(r.text) for r in text
-    )
+    parts = []
+    for r in text:
+        part = html.escape(r.text)
+        part = f"<sub>{part}</sub>" if r.sub else part
+        parts.append(f"<i>{part}</i>" if r.italic else part)
+    return "".join(parts)
 
 
 RULE = "border-top:1px solid currentColor;"

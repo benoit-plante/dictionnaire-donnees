@@ -125,6 +125,8 @@ def _effect(project: Project, hypothesis: Hypothesis) -> str:
         return _("la corrélation entre {a} et {b}").format(a=a, b=b)
     if effect.kind == "predictor":
         return _("le coefficient de {x}").format(x=_name(project, effect.variable))
+    if hypothesis.analysis == "paired":
+        return _("la différence entre les deux mesures")
     return EFFECT_NAMES[effect.kind]
 
 
@@ -147,9 +149,24 @@ def levels_text(project: Project, roles: dict, value: str) -> str:
     return ", ".join(_label(labels, c) or p for c, p in zip(codes, parts, strict=True))
 
 
+def _measures(project: Project, hypothesis: Hypothesis) -> tuple[str, str] | None:
+    """The two measures a paired t test compares, by their labels (v0.14)."""
+    found = []
+    for role in ("first", "second"):
+        refs = hypothesis.roles.get(role, [])
+        if not refs:
+            return None
+        name = _name(project, refs[0])
+        entry = _entry(project, name)
+        found.append(w.label_text(entry, "final") if entry is not None else name)
+    return found[0], found[1]
+
+
 def _groups(project: Project, hypothesis: Hypothesis) -> tuple[str, str] | None:
     """The two groups a t test compares, by their labels: the modalities chosen, or the two
-    value labels of the group variable."""
+    value labels of the group variable; the two measures of a paired t test."""
+    if hypothesis.analysis == "paired":
+        return _measures(project, hypothesis)
     refs = hypothesis.roles.get("group", [])
     entry = _entry(project, _name(project, refs[0])) if refs else None
     if entry is None:

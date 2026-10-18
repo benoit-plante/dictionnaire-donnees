@@ -27,6 +27,7 @@ class Analysis:
     roles: tuple[Role, ...]
     options: dict[str, tuple[str, ...]] = field(default_factory=dict)  # first is the default
     independent: bool = True  # assumes independent observations
+    same_person: bool = False  # v0.14 (D-112): columns of one row, refused in long format
 
     def role(self, key: str) -> Role:
         return next(r for r in self.roles if r.key == key)
@@ -50,6 +51,16 @@ CATALOGUE = {
                 "method": ("welch", "student", "mann_whitney"),
                 "alternative": ("two_sided", "greater", "less"),
             },
+        ),
+        Analysis(
+            "paired",
+            (Role("first", (SCALE,)), Role("second", (SCALE,))),
+            {
+                "method": ("paired_t", "wilcoxon"),
+                "alternative": ("two_sided", "greater", "less"),
+            },
+            independent=False,
+            same_person=True,
         ),
         Analysis(
             "anova",
@@ -80,6 +91,7 @@ TITLES = Texts(
     {
         "table1": N_("Tableau 1 : décrire l'échantillon"),
         "t_test": N_("Test t : comparer deux groupes"),
+        "paired": N_("Test t apparié : comparer deux mesures d'une même personne"),
         "anova": N_("ANOVA : comparer plusieurs groupes"),
         "chi_square": N_("Khi-carré : associer deux variables catégorielles"),
         "correlation": N_("Corrélation : relier des variables continues"),
@@ -94,6 +106,8 @@ ROLES = Texts(
         "rows": N_("Variable en lignes"),
         "columns": N_("Variable en colonnes"),
         "predictors": N_("Prédicteurs"),
+        "first": N_("Première mesure"),
+        "second": N_("Seconde mesure"),
     }
 )
 PURPOSES = Texts(
@@ -105,6 +119,9 @@ PURPOSES = Texts(
         "t_test": N_(
             "Compare la moyenne d'une variable continue entre deux groupes, par exemple "
             "intervention et contrôle."
+        ),
+        "paired": N_(
+            "Compare deux mesures d'une même personne, par exemple avant et après une intervention."
         ),
         "anova": N_("Compare la moyenne d'une variable continue entre trois groupes ou plus."),
         "chi_square": N_(
@@ -130,6 +147,8 @@ CHOICES = Texts(
         "welch": N_("Welch (variances inégales permises)"),
         "student": N_("Student (variances égales)"),
         "mann_whitney": N_("Mann-Whitney (sans supposer la normalité)"),
+        "paired_t": N_("Test t apparié"),
+        "wilcoxon": N_("Wilcoxon des rangs signés (sans supposer la normalité)"),
         "two_sided": N_("Bilatérale"),
         "greater": N_("Unilatérale : le premier groupe plus élevé"),
         "less": N_("Unilatérale : le premier groupe moins élevé"),

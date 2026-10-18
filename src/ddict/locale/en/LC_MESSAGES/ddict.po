@@ -998,6 +998,9 @@ msgstr "Pairwise comparisons (Tukey)"
 msgid "Comparaisons deux à deux de {outcome} (Tukey)"
 msgstr "Pairwise comparisons of {outcome} (Tukey)"
 
+msgid "Compare deux mesures d'une même personne, par exemple avant et après une intervention."
+msgstr "Compares two measures of the same person, for example before and after an intervention."
+
 msgid ""
 "Compare la moyenne d'une variable continue entre deux groupes, par exemple intervention et "
 "contrôle."
@@ -1274,6 +1277,21 @@ msgstr ""
 "Two distributions were compared with the Mann-Whitney test; the effect size is the rank-biserial "
 "correlation."
 
+msgid ""
+"Deux mesures d'une même personne ont été comparées par le test de Wilcoxon des rangs signés ; la "
+"taille d'effet est la corrélation bisériale des rangs."
+msgstr ""
+"Two measures of the same person were compared with the Wilcoxon signed-rank test; the effect size"
+" is the rank-biserial correlation."
+
+#, python-brace-format
+msgid ""
+"Deux mesures d'une même personne ont été comparées par le test {t} apparié ; la taille d'effet "
+"est le {dz}, avec son intervalle de confiance à 95 %."
+msgstr ""
+"Two measures of the same person were compared with the paired {t} test; the effect size is {dz}, "
+"with its 95% confidence interval."
+
 #, python-brace-format
 msgid ""
 "Deux moyennes ont été comparées par le test {t} de Student, qui suppose des variances égales ; la"
@@ -1312,6 +1330,10 @@ msgstr "Difference"
 #, python-brace-format
 msgid "Différences de moyennes ; intervalles et {p} ajustés par la méthode de Tukey."
 msgstr "Mean differences; intervals and {p} adjusted by Tukey's method."
+
+#, python-brace-format
+msgid "Différences peu normales (Shapiro-Wilk {p}) avec moins de {n} personnes."
+msgstr "Differences far from normal (Shapiro-Wilk {p}) with fewer than {n} people."
 
 msgid "Discussion"
 msgstr "Discussion"
@@ -2084,6 +2106,13 @@ msgstr ""
 "The database is in long format (several rows per person): this analysis assumes independent "
 "observations."
 
+msgid ""
+"La base est en format long (plusieurs lignes par personne) : les mesures d'une même personne "
+"doivent être des colonnes d'une même ligne."
+msgstr ""
+"The database is in long format (several rows per person): the measures of the same person must be"
+" columns of the same row."
+
 msgid "La base n'a pas été trouvée."
 msgstr "The database was not found."
 
@@ -2172,6 +2201,10 @@ msgstr "The maximum length must be between {low} and {high}."
 #, python-brace-format
 msgid "La moyenne observée était plus élevée dans le groupe {a}."
 msgstr "The observed mean was higher in the {a} group."
+
+#, python-brace-format
+msgid "La moyenne observée était plus élevée pour {a}."
+msgstr "The observed mean was higher for {a}."
 
 msgid "La raison, en clair, telle que publiée."
 msgstr "The reason, in plain words, as published."
@@ -2633,6 +2666,14 @@ msgid "Les barres d'erreur représentent l'IC 95 % de β. {N} = {n}."
 msgstr "Error bars represent the 95% CI of β. {N} = {n}."
 
 #, python-brace-format, python-format
+msgid ""
+"Les barres d'erreur représentent l'intervalle de confiance à 95 % de la moyenne. {N} = {n}, les "
+"mêmes personnes aux deux mesures."
+msgstr ""
+"Error bars represent the 95% confidence interval of the mean. {N} = {n}, the same people at both "
+"measures."
+
+#, python-brace-format, python-format
 msgid "Les barres d'erreur représentent l'intervalle de confiance à 95 % de la moyenne. {N} = {n}."
 msgstr "Error bars represent the 95% confidence interval of the mean. {N} = {n}."
 
@@ -2748,12 +2789,19 @@ msgstr "The proposals are to be reviewed in \"Variables\"."
 msgid "Les questions suivantes ont été examinées de façon exploratoire :"
 msgstr "The following questions were examined in an exploratory way:"
 
+msgid "Les rangs observés étaient les mêmes aux deux mesures, au centième près."
+msgstr "The observed ranks were the same at both measures, to two decimals."
+
 msgid "Les rangs observés étaient les mêmes dans les deux groupes, au centième près."
 msgstr "The observed ranks were the same in both groups, to two decimals."
 
 #, python-brace-format
 msgid "Les rangs observés étaient plus élevés dans le groupe {a}."
 msgstr "The observed ranks were higher in the {a} group."
+
+#, python-brace-format
+msgid "Les rangs observés étaient plus élevés pour {a}."
+msgstr "The observed ranks were higher for {a}."
 
 msgid ""
 "Les règles d'exclusion du projet : lister avec leurs effectifs, ajouter, retirer, déplacer ; voir"
@@ -2958,6 +3006,9 @@ msgstr "Message of block {block}"
 msgid "Messages enregistrés dans : {path}"
 msgstr "Messages saved in: {path}"
 
+msgid "Mesure"
+msgstr "Measure"
+
 msgid "Mesure la force du lien entre deux variables continues ou plus."
 msgstr "Measures the strength of the relation between two continuous variables or more."
 
@@ -2970,6 +3021,9 @@ msgid ""
 msgstr ""
 "Measure an installed model on the tool's fictional databases: correct links, flagged inventions, "
 "duration."
+
+msgid "Mesures"
+msgstr "Measures"
 
 msgid "Mettre une analyse à un autre rang."
 msgstr "Put an analysis at another rank."
@@ -3017,6 +3071,10 @@ msgstr "Fewer than MIN items of the group answered."
 #, python-brace-format
 msgid "Moins de {n} personnes : {cases}."
 msgstr "Fewer than {n} people: {cases}."
+
+#, python-brace-format
+msgid "Moins de {n} personnes ont toutes les mesures."
+msgstr "Fewer than {n} people have all the measures."
 
 #, python-brace-format
 msgid "Moins de {n} personnes{where} : {cases}."
@@ -3276,6 +3334,9 @@ msgstr "Open a project"
 msgid "Page"
 msgstr "Page"
 
+msgid "Paire"
+msgstr "Pair"
+
 msgid "Paire testée"
 msgstr "Tested pair"
 
@@ -3391,6 +3452,9 @@ msgstr ""
 "For an instrument protected by copyright: the codebook gives the reference of each question, "
 "without its text (D-014)."
 
+msgid "Pour un test t apparié, le sens attendu est la première ou la seconde mesure plus élevée."
+msgstr "For a paired t test, the expected direction is the first or the second measure higher."
+
 msgid "Pour un test t, le sens attendu est le premier ou le second groupe plus élevé."
 msgstr "For a t test, the expected direction is the first or the second group higher."
 
@@ -3432,6 +3496,12 @@ msgstr "First figure"
 
 msgid "Première figure (défaut : 1)."
 msgstr "First figure (default: 1)."
+
+msgid "Première mesure"
+msgstr "First measure"
+
+msgid "Première mesure (test t apparié)."
+msgstr "First measure (paired t test)."
 
 msgid "Primaires"
 msgstr "Primary"
@@ -4018,6 +4088,12 @@ msgstr "Equivalent R script"
 msgid "Secondaires"
 msgstr "Secondary"
 
+msgid "Seconde mesure"
+msgstr "Second measure"
+
+msgid "Seconde mesure (test t apparié)."
+msgstr "Second measure (paired t test)."
+
 msgid "Sens attendu"
 msgstr "Expected direction"
 
@@ -4265,6 +4341,14 @@ msgstr "Type the plan's α level."
 msgid "Tapé par l'équipe : la page n'en enregistre aucun d'office."
 msgstr "Typed by the team: the page never saves one by default."
 
+#, python-brace-format
+msgid ""
+"Test de Wilcoxon des rangs signés ; différences nulles écartées : {zeros}. {r} : corrélation "
+"bisériale de rang, positive quand la première mesure est plus élevée."
+msgstr ""
+"Wilcoxon signed-rank test; zero differences left out: {zeros}. {r}: rank-biserial correlation, "
+"positive when the first measure is higher."
+
 msgid "Test exact de Fisher"
 msgstr "Fisher's exact test"
 
@@ -4278,8 +4362,22 @@ msgstr "t test: compare two groups"
 msgid "Test t : les deux codes du groupe à comparer, p. ex. 1,3."
 msgstr "t test: the two codes of the group to compare, e.g. 1,3."
 
-msgid "Test t : two_sided, greater ou less."
-msgstr "t test: two_sided, greater or less."
+msgid "Test t apparié"
+msgstr "Paired t test"
+
+msgid "Test t apparié : comparer deux mesures d'une même personne"
+msgstr "Paired t test: compare two measures of the same person"
+
+msgid "Test t et test t apparié : two_sided, greater ou less."
+msgstr "t test and paired t test: two_sided, greater or less."
+
+#, python-brace-format
+msgid ""
+"Test {t} apparié ; la différence est la première mesure moins la seconde, avec son IC 95 %. {d} :"
+" moyenne des différences divisée par leur écart-type."
+msgstr ""
+"Paired {t} test; the difference is the first measure minus the second, with its 95% CI. {d}: mean"
+" of the differences divided by their standard deviation."
 
 msgid "Texte"
 msgstr "Text"
@@ -4414,6 +4512,9 @@ msgstr "A duration threshold is the team's choice: give its source."
 
 msgid "Un test t"
 msgstr "A t test"
+
+msgid "Un test t apparié"
+msgstr "A paired t test"
 
 msgid "Une ANOVA"
 msgstr "An ANOVA"
@@ -4709,6 +4810,9 @@ msgstr "Check again"
 
 msgid "Welch (variances inégales permises)"
 msgstr "Welch (unequal variances allowed)"
+
+msgid "Wilcoxon des rangs signés (sans supposer la normalité)"
+msgstr "Wilcoxon signed-rank (without assuming normality)"
 
 msgid "Word (tableaux et figures APA)"
 msgstr "Word (APA tables and figures)"
@@ -5064,6 +5168,9 @@ msgstr "the correlation between {a} and {b}"
 
 msgid "la différence entre les deux groupes"
 msgstr "the difference between the two groups"
+
+msgid "la différence entre les deux mesures"
+msgstr "the difference between the two measures"
 
 msgid "la structure"
 msgstr "the structure"
@@ -5455,8 +5562,8 @@ msgstr "source"
 msgid "structure de la plateforme"
 msgstr "platform structure"
 
-msgid "tableau1, test_t, anova, khi2, correlation ou regression."
-msgstr "tableau1, test_t, anova, khi2, correlation or regression (or table1, t_test, chi_square)."
+msgid "tableau1, test_t, apparie, anova, khi2, correlation ou regression."
+msgstr "table1, t_test, paired, anova, chi_square, correlation or regression."
 
 msgid "taille d'effet prévue"
 msgstr "predicted effect size"
@@ -5476,8 +5583,8 @@ msgstr "one-sided test, the first group lower"
 msgid "test unilatéral, le premier groupe plus élevé"
 msgstr "one-sided test, the first group higher"
 
-msgid "test_t, anova, khi2, correlation ou regression."
-msgstr "t_test, anova, chi_square, correlation or regression."
+msgid "test_t, apparie, anova, khi2, correlation ou regression."
+msgstr "t_test, paired, anova, chi_square, correlation or regression."
 
 msgid "texte"
 msgstr "text"
@@ -5641,14 +5748,18 @@ msgid "vraie valeur"
 msgstr "real value"
 
 msgid ""
-"welch, student, mann_whitney ; anova, kruskal_wallis ; pearson, fisher, spearman (défaut : la "
-"première de chaque analyse)."
+"welch, student, mann_whitney ; paired_t, wilcoxon ; anova, kruskal_wallis ; pearson, fisher, "
+"spearman (défaut : la première de chaque analyse)."
 msgstr ""
-"welch, student, mann_whitney; anova, kruskal_wallis; pearson, fisher, spearman (default: the "
-"first of each analysis)."
+"welch, student, mann_whitney; paired_t, wilcoxon; anova, kruskal_wallis; pearson, fisher, "
+"spearman (default: the first of each analysis)."
 
-msgid "welch, student, mann_whitney ; anova, kruskal_wallis ; pearson, fisher, spearman."
-msgstr "welch, student, mann_whitney; anova, kruskal_wallis; pearson, fisher, spearman."
+msgid ""
+"welch, student, mann_whitney ; paired_t, wilcoxon ; anova, kruskal_wallis ; pearson, fisher, "
+"spearman."
+msgstr ""
+"welch, student, mann_whitney; paired_t, wilcoxon; anova, kruskal_wallis; pearson, fisher, "
+"spearman."
 
 msgid "zéro"
 msgstr "zero"
@@ -5672,6 +5783,22 @@ msgstr "{analysis} tests no direction; leave the expected direction empty."
 #, python-brace-format
 msgid "{analysis} teste {allowed}, pas {effect}."
 msgstr "{analysis} tests {allowed}, not {effect}."
+
+#, python-brace-format
+msgid ""
+"{a} : M = {m1} (ÉT = {s1}) ; {b} : M = {m2} (ÉT = {s2}) ; différence {diff}, {diff_ci}, t({df}) ="
+" {t}, {p}, d_z = {d}, {ci} (n = {n})."
+msgstr ""
+"{a}: M = {m1} (SD = {s1}); {b}: M = {m2} (SD = {s2}); difference {diff}, {diff_ci}, t({df}) = "
+"{t}, {p}, d_z = {d}, {ci} (n = {n})."
+
+#, python-brace-format
+msgid "{a} : médiane de {m1} ; {b} : médiane de {m2} ; V = {v}, {p}, r = {r} (n = {n})."
+msgstr "{a}: median of {m1}; {b}: median of {m2}; V = {v}, {p}, r = {r} (n = {n})."
+
+#, python-brace-format
+msgid "{a} et {b}"
+msgstr "{a} and {b}"
 
 #, python-brace-format
 msgid "{base} : libellés et descriptions…"
@@ -5840,6 +5967,10 @@ msgstr "{label} ({shares})"
 #, python-brace-format
 msgid "{label} : {n} valeurs manquantes"
 msgstr "{label}: {n} missing values"
+
+#, python-brace-format
+msgid "{names} : la même variable dans deux rôles."
+msgstr "{names}: the same variable in two roles."
 
 #, python-brace-format
 msgid "{names} : niveau modifié et « Rejeter » choisi ; gardez l'un ou l'autre."
@@ -6014,6 +6145,10 @@ msgid "{n} catégories rares retirées (confidentialité)"
 msgstr "{n} rare categories removed (privacy)"
 
 #, python-brace-format
+msgid "{n} différences nulles écartées par le test de Wilcoxon."
+msgstr "{n} zero differences left out by the Wilcoxon test."
+
+#, python-brace-format
 msgid ""
 "{n} durées ({invalid} manquantes ou impossibles) ; médiane {median}, 5e centile {p5}, 10e centile"
 " {p10}."
@@ -6084,6 +6219,10 @@ msgstr "{n} were excluded, for the following reasons, in this order: {reasons} (
 #, python-brace-format
 msgid "{n} options à cocher"
 msgstr "{n} checkbox options"
+
+#, python-brace-format
+msgid "{n} personnes ont toutes les mesures : il en faut au moins {least}."
+msgstr "{n} people have all the measures: at least {least} are needed."
 
 #, python-brace-format
 msgid "{n} personnes sans {group} écartées."

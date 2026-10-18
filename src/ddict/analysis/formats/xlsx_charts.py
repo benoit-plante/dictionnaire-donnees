@@ -17,7 +17,7 @@ import io
 import math
 
 from openpyxl import Workbook, load_workbook
-from openpyxl.chart import BarChart, Reference, ScatterChart, Series
+from openpyxl.chart import BarChart, LineChart, Reference, ScatterChart, Series
 from openpyxl.chart.data_source import NumDataSource, NumRef
 from openpyxl.chart.error_bar import ErrorBars
 from openpyxl.chart.shapes import GraphicalProperties
@@ -116,6 +116,33 @@ def _bars(sheet, figure: ApaFigure):
     chart.set_categories(Reference(sheet, min_col=1, min_row=FIRST_ROW, max_row=last))
     _grey(chart.series[0], "B3B3B3")
     chart.series[0].errBars = _errors(sheet, 3, 4, FIRST_ROW, last)
+    return chart, last
+
+
+def _line(sheet, figure: ApaFigure):
+    """v0.14: the means of the measures in their order, joined, with their intervals."""
+    series = figure.series[0]
+    rows = [
+        [name, mean, high - mean, mean - low]
+        for name, mean, low, high in zip(
+            figure.categories, series.values, series.low, series.high, strict=True
+        )
+    ]
+    last = _write_rows(
+        sheet, [figure.x_label, figure.y_label, _("IC 95 % (+)"), _("IC 95 % (−)")], rows
+    )
+    chart = LineChart()
+    chart.legend = None
+    chart.add_data(
+        Reference(sheet, min_col=2, min_row=FIRST_ROW - 1, max_row=last), titles_from_data=True
+    )
+    chart.set_categories(Reference(sheet, min_col=1, min_row=FIRST_ROW, max_row=last))
+    line = chart.series[0]
+    line.graphicalProperties.line.solidFill = "000000"
+    line.marker.symbol = "circle"
+    line.marker.graphicalProperties = GraphicalProperties(solidFill="000000")
+    line.smooth = False
+    line.errBars = _errors(sheet, 3, 4, FIRST_ROW, last)
     return chart, last
 
 
@@ -229,6 +256,7 @@ DRAW = {
     "scatter": _scatter,
     "coefficients": _coefficients,
     "flow": _flow,
+    "line": _line,
 }
 
 

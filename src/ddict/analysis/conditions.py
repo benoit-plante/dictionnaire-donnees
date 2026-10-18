@@ -118,6 +118,19 @@ def check(
                         name=name, level=w.MEASURES[known[name]], role=_role(role.key)
                     )
                 )
+    roles_used = [n for names in chosen.values() for n in names]
+    twice = sorted({n for n in roles_used if roles_used.count(n) > 1})
+    if analysis.same_person and twice:
+        found.refusals.append(
+            _("{names} : la même variable dans deux rôles.").format(names=", ".join(twice))
+        )
+    if analysis.same_person and _long_format(project):
+        found.refusals.append(
+            _(
+                "La base est en format long (plusieurs lignes par personne) : les mesures "
+                "d'une même personne doivent être des colonnes d'une même ligne."
+            )
+        )
     if analysis.independent and _long_format(project):
         found.warnings.append(
             _(
@@ -187,6 +200,17 @@ def _with_data(project, analysis, chosen, options, table: pd.DataFrame, found: C
                         name=name, n=SMALL, codes=_codes(project, name, small.index)
                     )
                 )
+    if analysis.same_person:
+        if len(complete) < GROUP_LEAST:
+            found.refusals.append(
+                _("{n} personnes ont toutes les mesures : il en faut au moins {least}.").format(
+                    n=len(complete), least=GROUP_LEAST
+                )
+            )
+        elif len(complete) < SMALL:
+            found.warnings.append(
+                _("Moins de {n} personnes ont toutes les mesures.").format(n=SMALL)
+            )
     if analysis.key == "regression":
         predictors = chosen.get("predictors", [])
         terms = sum(
