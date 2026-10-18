@@ -45,6 +45,8 @@ def isolated_session_config(tmp_path_factory):
 def isolated_config(tmp_path_factory, monkeypatch):
     """The list of recent projects (v0.3) goes to a temporary folder, never the user's."""
     monkeypatch.setenv("DDICT_CONFIG_DIR", str(tmp_path_factory.mktemp("config")))
+    # The trial on the fictional database (v0.16): never the user's Documents.
+    monkeypatch.setenv("DDICT_TRIAL_DIR", str(tmp_path_factory.mktemp("trial") / "essai"))
     # The interface language (v0.5): French in every test, whatever this computer chose.
     monkeypatch.delenv("DDICT_LANG", raising=False)
     i18n.set_language("fr")

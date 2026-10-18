@@ -594,9 +594,6 @@ msgstr "No reversed item"
 msgid "Aucun niveau de mesure proposé."
 msgstr "No measure level proposed."
 
-msgid "Aucun projet récent."
-msgstr "No recent project."
-
 msgid "Aucun préfixe proposé pour ce groupe."
 msgstr "No prefix proposed for this group."
 
@@ -1864,6 +1861,12 @@ msgstr ""
 msgid "Erreur de fichier : {detail}"
 msgstr "File error: {detail}"
 
+msgid "Essayer avec la base fictive"
+msgstr "Try with the fictional database"
+
+msgid "Essayer l'outil"
+msgstr "Try the tool"
+
 msgid ""
 "Estime comment des prédicteurs expliquent une issue à deux modalités, par exemple avoir abandonné"
 " ou non, en rapports de cotes."
@@ -2195,6 +2198,10 @@ msgstr "Cannot read the project: {detail}"
 msgid "Impossible de lire le questionnaire : {detail}"
 msgstr "Cannot read the questionnaire: {detail}"
 
+#, python-brace-format
+msgid "Impossible de préparer l'essai : {detail}"
+msgstr "Cannot prepare the trial: {detail}"
+
 msgid "Inclure les propositions de l'IA en attente, marquées comme telles."
 msgstr "Include the pending AI proposals, marked as such."
 
@@ -2265,6 +2272,9 @@ msgstr "Items probably reversed: {s}"
 
 msgid "Items répondus, au minimum"
 msgstr "Items answered, at least"
+
+msgid "Je recommence : les décisions de l'essai seront perdues."
+msgstr "I start again: the trial's decisions will be lost."
 
 msgid "Justification de la taille d'échantillon"
 msgstr "Sample size rationale"
@@ -4482,6 +4492,9 @@ msgstr "Recode this variable: cut into classes"
 msgid "Recoder cette variable : regrouper ses modalités"
 msgstr "Recode this variable: regroup its categories"
 
+msgid "Recommencer l'essai"
+msgstr "Start the trial again"
+
 msgid "Refaire l'analyse dans R"
 msgstr "Redo the analysis in R"
 
@@ -4551,6 +4564,9 @@ msgstr "Also send again the questions whose base name the model already proposed
 
 msgid "Reprendre cette proposition"
 msgstr "Take up this proposal"
+
+msgid "Reprendre l'essai"
+msgstr "Resume the trial"
 
 msgid "Reprendre la décision."
 msgstr "Take the decision back."
@@ -5111,6 +5127,14 @@ msgid ""
 msgstr ""
 "In the analysed sample, Cronbach's alpha is {alpha} (95% CI after Feldt, 1965, {ci}, {n} = "
 "{count})."
+
+#, python-brace-format
+msgid ""
+"Sur une base fictive de 200 personnes et son questionnaire, copiés dans le dossier {folder}. Rien"
+" de réel ; les fichiers de l'essai s'écrivent là."
+msgstr ""
+"On a fictional database of 200 people and its questionnaire, copied into the folder {folder}. "
+"Nothing real; the trial's files are written there."
 
 msgid "Syntaxe SPSS"
 msgstr "SPSS syntax"

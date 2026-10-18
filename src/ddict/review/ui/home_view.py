@@ -7,6 +7,7 @@ file is written next to it.
 
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 
 import streamlit as st
@@ -15,6 +16,7 @@ from ddict import i18n, recents, settings
 from ddict.i18n import _
 from ddict.io import ReadError
 from ddict.project import ProjectError, load_project
+from ddict.review import trial
 from ddict.review.ui import common as c
 from ddict.review.ui import dialog
 from ddict.workflow import ProjectExists, default_project_path, profile_database
@@ -123,6 +125,8 @@ def page() -> None:
         )
     )
 
+    _recent()  # v0.16 (finding 16): taking up one's work first
+    _trial()
     st.header(_("Nouveau projet"))
     st.write(
         _(
@@ -178,26 +182,86 @@ def page() -> None:
     )
     c.show_message("home-open")
 
-    st.header(_("Projets récents"))
+
+def _modified(path: Path) -> str:
+    try:
+        moment = datetime.fromtimestamp(path.stat().st_mtime)
+    except OSError:
+        return ""
+    return moment.strftime("%Y-%m-%d %H:%M")
+
+
+def _recent() -> None:
+    """The recent projects, latest first: name, folder, last change of the project file."""
     found = recents.load()
     if not found:
-        st.caption(_("Aucun projet récent."))
+        return
+    st.header(_("Projets récents"))
     for index, path in enumerate(found):
-        st.button(
-            path.name,
-            key=f"home-recent-{index}",
-            on_click=_open,
-            args=(path, f"home-recent-{index}"),
-            help=str(path.parent),
-        )
-        st.caption(str(path.parent))
+        name, where, when = st.columns([2, 4, 1.4], vertical_alignment="center")
+        with name:
+            st.button(
+                path.name,
+                key=f"home-recent-{index}",
+                on_click=_open,
+                args=(path, f"home-recent-{index}"),
+                icon=":material/folder_open:",
+            )
+        where.write(str(path.parent))
+        when.write(_modified(path))
         c.show_message(f"home-recent-{index}")
-    if found:
+    with st.container(horizontal=True, vertical_alignment="center"):
         st.button(_("Effacer la liste"), key="home-clear", on_click=_clear_recents)
-    c.show_message("home-clear")
-    st.caption(
-        _(
-            "La liste est gardée sur cet ordinateur ; elle ne contient que les chemins des "
-            "fichiers projet."
+        st.caption(
+            _(
+                "La liste est gardée sur cet ordinateur ; elle ne contient que les chemins des "
+                "fichiers projet."
+            )
         )
+    c.show_message("home-clear")
+
+
+def _start_trial(again: bool) -> None:
+    key = "home-trial-again" if again else "home-trial"
+    try:
+        path = trial.start(again=again)
+    except (OSError, ReadError, ProjectError) as error:
+        _message("error", _("Impossible de préparer l'essai : {detail}").format(detail=error),
+                 key)  # fmt: skip
+        return
+    c.open_project(path)
+
+
+def _trial() -> None:
+    """Try the tool on the fictional database (v0.16, D-125)."""
+    st.header(_("Essayer l'outil"))
+    where = trial.folder()
+    st.write(
+        _(
+            "Sur une base fictive de 200 personnes et son questionnaire, copiés dans le "
+            "dossier {folder}. Rien de réel ; les fichiers de l'essai s'écrivent là."
+        ).format(folder=where)
     )
+    exists = trial.project_path(where).is_file()
+    st.button(
+        _("Reprendre l'essai") if exists else _("Essayer avec la base fictive"),
+        key="home-trial",
+        on_click=_start_trial,
+        args=(False,),
+        icon=":material/science:",
+    )
+    c.show_message("home-trial")
+    if exists:
+        with st.expander(_("Recommencer l'essai")):
+            st.checkbox(
+                _("Je recommence : les décisions de l'essai seront perdues."),
+                key="home-trial-sure",
+            )
+            st.button(
+                _("Recommencer l'essai"),
+                key="home-trial-again",
+                on_click=_start_trial,
+                args=(True,),
+                disabled=not st.session_state.get("home-trial-sure"),
+            )
+            c.show_message("home-trial-again")
