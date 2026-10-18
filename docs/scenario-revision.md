@@ -1,6 +1,6 @@
 # Scénario manuel : l'interface, de l'accueil au codebook
 
-À faire dans un vrai navigateur, sur la base fictive, après chaque changement important de l'interface. La logique est couverte par les tests automatiques ; ce scénario vérifie ce que les tests ne voient pas : l'affichage, la lisibilité, les clics rapides, la vraie fenêtre « Ouvrir » et le vrai modèle.
+À faire sur la base fictive, après chaque changement important de l'interface : depuis la 0.16, dans la fenêtre de l'icône (1400 × 900, puis réduite à 900 × 600 pour les étapes 64 à 68), et au besoin dans un vrai navigateur. La logique est couverte par les tests automatiques ; ce scénario vérifie ce que les tests ne voient pas : l'affichage, la lisibilité, les clics rapides, la vraie fenêtre « Ouvrir » et le vrai modèle.
 
 ## Préparation
 
@@ -9,7 +9,7 @@ Copier `etude-sommeil.sav` et `questionnaire-sommeil.pdf` (dossier `exemples\bas
 - double-cliquer sur l'icône **Dictionnaire de données** (outil installé) ;
 - ou, depuis le dépôt : `uv run ddict`.
 
-Pour ne pas mêler les projets d'essai à la liste des projets récents, lancer l'outil avec la variable `DDICT_CONFIG_DIR` pointant vers un dossier temporaire.
+Pour ne pas mêler les projets d'essai à la liste des projets récents, lancer l'outil avec la variable `DDICT_CONFIG_DIR` pointant vers un dossier temporaire. Pour que l'essai de la base fictive (étape 65) n'écrive pas dans vos Documents, `DDICT_TRIAL_DIR` peut de même pointer vers un dossier temporaire ; l'étape 65 se fait, elle, sans cette variable.
 
 Le navigateur s'ouvre sur `http://127.0.0.1:8501`. Aucun bouton « Deploy » en haut à droite. Ollama doit tourner pour les étapes 8 à 11, 19, 23 et 24, avec `qwen2.5:7b-instruct-q4_K_M`.
 

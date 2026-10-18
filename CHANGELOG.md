@@ -1,5 +1,20 @@
 # Changements
 
+## Non publiée — v0.16 en cours
+
+L'interface guide la personne de la base à l'article (plan : `docs/plan-v0.16.md`, D-121 à D-128). Ni le calcul, ni les formats de fichier, ni les règles de confidentialité ne changent ; aucune IA ajoutée. Lot A (corrections locales) terminé ; les lots B (navigation par phases, progression) et C (un seul geste pour décider et enregistrer) suivront avant la version 0.16.0.
+
+- **Rien de proposé ne s'affiche comme décidé** (D-126) : les items inversés, la cotation (items, calcul, bornes, items répondus au minimum, règle des manquants), l'étendue théorique, les seuils et la question à rattacher partent vides ; un bouton « Reprendre… » nomme ce que l'outil propose et le met dans le champ, sans rien enregistrer.
+- **Le glossaire** (D-121) : « Accepter » prend la définition affichée, corrigée ou non ; « Rejeter » juste à côté ; « Tout accepter (N)… » montre la liste exacte avant d'accepter.
+- **Aucun écran blanc** : la page « Variables » s'ouvre sur un filtre qui contient des variables, et un filtre vide le dit au centre avec les filtres non vides ; sur « Plan », ce qui manque pour figer est une liste à cocher, plus des erreurs rouges.
+- **Le thème** (D-123, D-128) : clair, bleu ardoise pour les actions, le rouge réservé aux erreurs, toutes les couleurs de texte au-dessus de 4,5:1 ; les explications qui portent une décision en texte normal.
+- **Des boutons dans les messages** qui renvoient à une autre page, déjà remplie (« Définir anx » ouvre le glossaire avec le sigle).
+- **Analyses** : sous « Lancer l'analyse », la barre « Ajouter au carnet · Word · Excel · Script R », puis le résultat ; une analyse déjà au carnet le dit (« Déjà au carnet : A3 »), même dans une autre séance.
+- **L'accueil** (D-125) : les projets récents en tête, avec leur dossier et leur date ; « Essayer avec la base fictive » copie la base et son questionnaire dans `Documents\Dictionnaire de données - essai` et ouvre le projet.
+- **Finitions** : « Choisir… » au lieu de « Choose an option » ; « — » au lieu de « None » ; largeurs de colonnes ; bornes entières (« 1 », pas « 1.00 ») ; groupes nommés par ce qu'ils sont ; « Précédente » et « Suivante » sur la page « Variables » ; l'aide de « Premier tableau » et « Première figure » ; plus d'avertissement `use_container_width`.
+- **Corrections** : le paquet de reproduction donne les mêmes octets quelle que soit l'heure ; la page « Plan » ne plante plus sans la base quand un score figure parmi les variables.
+- Guides en français et en anglais ; le scénario manuel gagne les étapes 64 à 68.
+
 ## 0.15.0 — 2026-10-18
 
 Recoder une variable, vérifier les chiffres d'un manuscrit, préparer le dépôt (plan : `docs/plan-v0.15.md`, D-117 à D-120 ; fiche validée : `docs/verification-depot.md`). Aucune IA dans cette version.
