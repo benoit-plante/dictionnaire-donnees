@@ -170,13 +170,28 @@ def _question(project: Project, entry: VariableEntry) -> None:
     # "none" may already be first (v0.6, D-039): each choice once.
     choices = list(dict.fromkeys([*found, link.NO_QUESTION, *by_id]))
 
-    def start() -> str:
+    def start() -> str | None:
+        # The computed candidate is offered by a button, never chosen in advance (D-126).
         current = c.project().variable(name).question
         if current.value in choices and current.status != "rejected":
             return current.value
-        return found[0] if found else link.NO_QUESTION
+        return None
 
-    st.selectbox(_("Rattacher à"), choices, format_func=option_text, key=c.field(key, start))
+    if found and start() is None:
+        first = _("aucune question") if found[0] == link.NO_QUESTION else found[0]
+        c.offer(
+            _("Reprendre la proposition du calcul : {choice}").format(choice=first),
+            f"offer-{key}",
+            key,
+            found[0],
+        )
+    st.selectbox(
+        _("Rattacher à"),
+        choices,
+        format_func=option_text,
+        placeholder=_("Choisir une question"),
+        key=c.field(key, start),
+    )
     if found and found[0] == link.NO_QUESTION:
         why = {
             "identifier": N_("un identifiant"),
@@ -402,8 +417,8 @@ def _sourced(entry: VariableEntry) -> None:
             )
         with st.form(f"form-range-{name}", border=False):
             c1, c2, c3 = st.columns([1, 1, 3])
-            c1.number_input(_("Min"), key=c.field(f"range-min-{name}", lambda: 0.0))
-            c2.number_input(_("Max"), key=c.field(f"range-max-{name}", lambda: 1.0))
+            c1.number_input(_("Min"), key=c.field(f"range-min-{name}", lambda: None))
+            c2.number_input(_("Max"), key=c.field(f"range-max-{name}", lambda: None))
             c3.text_input(_("Source de l'étendue"), key=c.field(f"range-source-{name}", str))
             c.button(
                 _("Enregistrer l'étendue"),
@@ -430,7 +445,7 @@ def _sourced(entry: VariableEntry) -> None:
                 )
         with st.form(f"form-threshold-{name}", border=False):
             c1, c2, c3 = st.columns([1, 2, 3])
-            c1.number_input(_("Seuil"), key=c.field(f"threshold-value-{name}", lambda: 0.0))
+            c1.number_input(_("Seuil"), key=c.field(f"threshold-value-{name}", lambda: None))
             c2.text_input(_("Signification"), key=c.field(f"threshold-meaning-{name}", str))
             c3.text_input(_("Source du seuil"), key=c.field(f"threshold-source-{name}", str))
             c.button(

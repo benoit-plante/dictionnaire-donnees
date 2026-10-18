@@ -73,6 +73,47 @@ def set_scoring(
         raise ReviewError(" ".join(SCORING_PROBLEMS[p] for p in error.problems)) from error
 
 
+def set_scoring_chosen(
+    project: Project,
+    group_id: str,
+    items: list[str],
+    aggregation: str | None,
+    scale_min: float | None,
+    scale_max: float | None,
+    least: int | None,
+    score_name: str,
+    source: str,
+    note: str,
+    missing_rule: str | None,
+) -> None:
+    """The scoring as the page's fields give it (v0.16, D-126): nothing is chosen by default,
+    so a structured scoring says its calculation and how many items must be answered (0: all);
+    a sum that accepts missing items says its rule."""
+    if items and (source or "").strip():
+        if aggregation is None:
+            raise ReviewError(_("Choisissez le calcul du score : somme ou moyenne."))
+        if least is None:
+            raise ReviewError(
+                _("Dites combien d'items doivent être répondus, au minimum (0 : tous).")
+            )
+        partial = 0 < int(least) < len(items)
+        if aggregation == "sum" and partial and missing_rule is None:
+            raise ReviewError(_("Choisissez comment la somme traite les items manquants."))
+    set_scoring(
+        project,
+        group_id,
+        items,
+        aggregation or "sum",
+        scale_min,
+        scale_max,
+        int(least or 0) or None,
+        score_name,
+        source,
+        note,
+        missing_rule or "prorate",
+    )
+
+
 def remove_scoring(project: Project, group_id: str) -> None:
     sc.set_scoring(project, group_id, None)
 

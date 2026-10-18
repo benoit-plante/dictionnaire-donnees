@@ -102,6 +102,12 @@ def test_the_page_says_why_none_comes_first(bases, tmp_path):
     test.sidebar.radio(key="filter").set_value("unlinked").run()
     test.selectbox(key="variable").set_value("date_passation").run()
     assert not test.exception, test.exception
+    # "none" comes first and is offered, never chosen in advance (v0.16, D-126).
+    choice = test.selectbox(key="question-date_passation")
+    assert choice.value is None and choice.options[0] == "Aucune question du questionnaire"
+    offer = test.button(key="offer-question-date_passation")
+    assert offer.label.endswith(": aucune question")
+    offer.click().run()
     assert test.selectbox(key="question-date_passation").value == link.NO_QUESTION
     captions = [c.value for c in test.caption]
     assert any("semble être une date de passation" in c for c in captions), captions

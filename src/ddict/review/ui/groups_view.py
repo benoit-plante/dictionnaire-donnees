@@ -43,13 +43,20 @@ def page(project: Project, group_id: str) -> None:
     if suspects:
         st.warning(_("Items probablement inversés : {s}").format(s=", ".join(suspects)))
     key = f"reverse-{group_id}"
+    if suspects:  # a proposal, never shown as confirmed (D-126)
+        c.offer(
+            _("Reprendre les items probables ({items})").format(items=", ".join(suspects)),
+            f"offer-{key}",
+            key,
+            suspects,
+        )
     # A form: a change of the list must not reload the page before the click is seen.
     with st.form(f"form-{key}", border=False):
         st.multiselect(
             _("Items inversés confirmés"),
             members,
             placeholder=_("Aucun item inversé"),
-            key=c.field(key, lambda: logic.group(c.project(), group_id).reverse_items or suspects),
+            key=c.field(key, lambda: list(logic.group(c.project(), group_id).reverse_items)),
         )
         c.button(
             _("Enregistrer les items inversés"),
@@ -86,44 +93,74 @@ def _scoring(project: Project, group_id: str) -> None:
         value = getattr(found, part) if found else None
         return default if value is None else value
 
+    def least() -> int | None:
+        # Kept as None when every item is required: 0 in the field, once a scoring exists.
+        found = logic.group(c.project(), group_id).scoring
+        return None if found is None or not found.items else found.min_items_answered or 0
+
+    def rule() -> str | None:
+        found = logic.group(c.project(), group_id).scoring
+        return found.missing_rule if found is not None and found.items else None
+
     bounds = scoring.scale_bounds(project.variable(members[0])) if members else None
     keys = {part: f"scoring-{part}-{group_id}" for part in
             ("items", "how", "min", "max", "least", "rule", "name", "source", "note")}  # fmt: skip
+    # Nothing computed or chosen by default is shown as the team's (D-126): buttons take it up.
+    offers = st.columns(2)
+    if members:
+        with offers[0]:
+            c.offer(
+                _("Prendre les {n} items du groupe").format(n=len(members)),
+                f"offer-{keys['items']}",
+                keys["items"],
+                list(members),
+            )
+    if bounds:
+        with offers[1]:
+            low, high = bounds
+            st.button(
+                _("Reprendre les bornes des étiquettes ({low} à {high})").format(
+                    low=w.number(low), high=w.number(high)
+                ),
+                key=f"offer-bounds-{group_id}",
+                on_click=lambda: st.session_state.update({keys["min"]: low, keys["max"]: high}),
+                icon=":material/arrow_downward:",
+            )
     with st.form(f"form-scoring-{group_id}", border=False):
         st.multiselect(
             _("Items du score"),
             members,
             placeholder=_("Choisir les items"),
-            key=c.field(keys["items"], lambda: current("items", []) or list(members)),
+            key=c.field(keys["items"], lambda: list(current("items", []))),
         )
         st.radio(
             _("Calcul"),
             list(w.AGGREGATIONS),
             format_func=w.AGGREGATIONS.__getitem__,
             horizontal=True,
-            key=c.field(keys["how"], lambda: current("aggregation", "sum")),
+            key=c.field(keys["how"], lambda: current("aggregation", None)),
         )
         left, middle, right = st.columns(3)
         left.number_input(
             _("Minimum de l'échelle"),
-            key=c.field(keys["min"], lambda: current("scale_min", bounds[0] if bounds else None)),
+            key=c.field(keys["min"], lambda: current("scale_min", None)),
         )
         middle.number_input(
             _("Maximum de l'échelle"),
-            key=c.field(keys["max"], lambda: current("scale_max", bounds[1] if bounds else None)),
+            key=c.field(keys["max"], lambda: current("scale_max", None)),
         )
         right.number_input(
             _("Items répondus, au minimum"),
             min_value=0,
             step=1,
-            key=c.field(keys["least"], lambda: current("min_items_answered", 0)),
+            key=c.field(keys["least"], least),
             help=_("0 : le score exige tous les items."),
         )
         st.radio(
             _("Somme avec des items manquants"),
             list(w.MISSING_RULES),
             format_func=lambda r: w.MISSING_RULES[r].format(n="N"),
-            key=c.field(keys["rule"], lambda: current("missing_rule", "prorate")),
+            key=c.field(keys["rule"], rule),
             help=_(
                 "Seulement pour une somme qui accepte des items manquants : la règle du "
                 "manuel de l'instrument, avec la même source."
@@ -137,13 +174,13 @@ def _scoring(project: Project, group_id: str) -> None:
         c.button(
             _("Enregistrer la cotation"),
             f"save-scoring-{group_id}",
-            study.set_scoring,
+            study.set_scoring_chosen,
             group_id,
             c.state(keys["items"]),
             c.state(keys["how"]),
             c.state(keys["min"]),
             c.state(keys["max"]),
-            lambda: int(st.session_state[keys["least"]] or 0) or None,
+            c.state(keys["least"]),
             c.state(keys["name"]),
             c.state(keys["source"]),
             c.state(keys["note"]),

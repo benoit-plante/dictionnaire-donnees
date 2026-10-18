@@ -214,6 +214,11 @@ def _app(path: Path, mode: str) -> AppTest:
 @pytest.mark.allow_hosts(["127.0.0.1"])
 def test_the_scoring_form(project_path):
     app = _app(project_path, "groups")
+    # Nothing is chosen in advance (v0.16, D-126): the computed choices are taken up.
+    app.button(key="offer-scoring-items-G1").click().run()
+    app.button(key="offer-bounds-G1").click().run()
+    app.radio(key="scoring-how-G1").set_value("sum")
+    app.number_input(key="scoring-least-G1").set_value(0)
     app.text_input(key="scoring-name-G1").input("sommeil_total")
     app.text_input(key="scoring-source-G1").input(SOURCE)
     app.button(key="save-scoring-G1").click().run()

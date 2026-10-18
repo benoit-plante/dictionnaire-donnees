@@ -164,11 +164,13 @@ def write(project: Project, name: str, field: Field, value: str, *, now: str) ->
         decide(project, name, field, "correct", now=now, value=text)
 
 
-def link_question(project: Project, name: str, target_id: str, *, now: str) -> None:
+def link_question(project: Project, name: str, target_id: str | None, *, now: str) -> None:
     """Link a variable to a question, a row or an option, or to none (link.NO_QUESTION).
 
     Choosing what the model proposed accepts it; choosing something else corrects it.
     """
+    if target_id is None:  # the list starts on no choice (v0.16, D-126)
+        raise ReviewError(_("Choisissez une question, ou « Aucune question du questionnaire »."))
     if target_id != link.NO_QUESTION and link.target(project.questionnaire, target_id) is None:
         raise ReviewError(_("Question inconnue : {id}").format(id=target_id))
     entry = project.variable(name)
@@ -233,8 +235,25 @@ def _sourced(build):
         raise ReviewError(" ".join(messages) or _("Valeur invalide.")) from error
 
 
-def add_threshold(project: Project, name: str, value: float, meaning: str, source: str) -> None:
-    threshold = _sourced(lambda: Threshold(value=value, meaning=meaning, source=source))
+def _all_said(missing: list[str], build):
+    """Build a sourced value, saying the missing numbers with the other problems."""
+    try:
+        built = _sourced(build)
+    except ReviewError as error:
+        raise ReviewError(" ".join([*missing, str(error)])) from error
+    if missing:
+        raise ReviewError(" ".join(missing))
+    return built
+
+
+def add_threshold(
+    project: Project, name: str, value: float | None, meaning: str, source: str
+) -> None:
+    # The field starts empty (v0.16, D-126): said with what else is missing.
+    missing = [_("Tapez la valeur du seuil.")] if value is None else []
+    threshold = _all_said(
+        missing, lambda: Threshold(value=value or 0, meaning=meaning, source=source)
+    )
     project.variable(name).thresholds.append(threshold)
 
 
@@ -243,9 +262,14 @@ def remove_threshold(project: Project, name: str, index: int) -> None:
 
 
 def set_theoretical_range(
-    project: Project, name: str, low: float, high: float, source: str
+    project: Project, name: str, low: float | None, high: float | None, source: str
 ) -> None:
-    value = _sourced(lambda: TheoreticalRange(min=low, max=high, source=source))
+    empty = low is None or high is None  # the fields start empty (v0.16, D-126)
+    missing = [_("Tapez le minimum et le maximum de l'étendue.")] if empty else []
+    value = _all_said(
+        missing,
+        lambda: TheoreticalRange(min=0 if empty else low, max=1 if empty else high, source=source),
+    )
     project.variable(name).theoretical_range = value
 
 

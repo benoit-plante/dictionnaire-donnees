@@ -1458,3 +1458,90 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
 - **Justification :** C'est la dernière préparation que les essais AMATUS ont dû faire hors de l'outil, et elle reste du calcul déterministe. Comme il touche à tout, il vient avant le vérificateur ; si la version s'allonge, c'est le paquet de reproduction qui passe en 0.15.1.
 - **Conséquences :** le projet passe au format 0.7.0.
 - **Références :** D-093, D-113 ; `docs/plan-v0.15.md`, § 5.
+
+### D-121 — Un seul geste pour décider : « Accepter » prend la valeur affichée
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Partout où une proposition attend, « Accepter » prend la valeur affichée dans le champ : identique à la proposition, elle est validée ; changée, elle est enregistrée comme corrigée, la proposition d'origine gardée. « Rejeter » est à côté. Une proposition n'a plus de bouton « Enregistrer » séparé.
+- **Options considérées :**
+  1. « Accepter » prend la valeur affichée (ce choix).
+  2. Garder trois gestes : accepter la proposition, corriger, enregistrer.
+- **Justification :** Avec trois gestes, une définition corrigée puis acceptée était perdue. Le rattachement et la classe de confidentialité suivaient déjà cette règle.
+- **Conséquences :** le geste change sur toutes les pages ; le scénario et les guides le disent. La règle vit dans `review/logic.py`, testée sans Streamlit.
+- **Références :** `docs/plan-v0.16.md`, § 5.2 et § 7.1.
+
+### D-122 — La navigation par phases
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Les pages se rangent en trois sections avec `st.navigation` : Documenter (Base, Questionnaire, Glossaire, Variables, Groupes, Noms, Export), Analyser (Plan, Analyses, Carnet), Rédiger (Méthode, Vérifier), puis Réglages (IA locale et banc d'essai), hors des étapes. Chaque page porte son état. Les pages qui se servent du modèle portent un lien vers ses réglages.
+- **Options considérées :**
+  1. Sections avec `st.navigation` (ce choix ; Streamlit 1.65 suffit).
+  2. Garder la liste de boutons radio.
+- **Justification :** La personne voit les trois métiers et ce qui reste à faire ; l'IA reste facultative et hors du chemin.
+- **Conséquences :** la clé `mode` de la séance reste le moyen de choisir la page, pour les tests et les boutons.
+- **Références :** `docs/plan-v0.16.md`, § 6.1.
+
+### D-123 — Le thème de l'interface
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Couleur principale #1F4E79 (contraste 8,66:1 avec le blanc), rouge des erreurs #B42318 (6,57:1), texte secondaire #555867 (7,05:1), thème clair imposé ; le tout passé par `review_command()` en options `--theme.*`. Les explications qui portent une décision sont en texte normal, pas en `st.caption`.
+- **Options considérées :**
+  1. Un bleu ardoise sombre, le rouge réservé aux erreurs (ce choix).
+  2. Le thème par défaut de Streamlit (rouge #FF4B4B, 3,30:1).
+- **Justification :** Le rouge par défaut colorait les actions comme les erreurs et restait sous le seuil WCAG AA (4,5:1). Passé par la commande, le thème s'applique quel que soit le dossier de lancement.
+- **Références :** `docs/plan-v0.16.md`, § 5.4.
+
+### D-124 — Un enregistrement par section, et l'avertissement de saisie non enregistrée
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Une section, un seul « Enregistrer », sans `st.form` là où une saisie peut se perdre (Variables, Groupes, Noms, Base) : une saisie différente de la valeur enregistrée est gardée comme brouillon quand on change de page ou de variable, et la page d'arrivée le dit (« Revenir », « Abandonner ») ; « Quitter l'outil » prévient aussi. Les formulaires d'ajout (règle, hypothèse, sigle) restent des `st.form`. La fermeture de la fenêtre n'est pas signalée.
+- **Options considérées :**
+  1. Sections sans `st.form`, brouillon et avertissement (ce choix).
+  2. Un `st.form` par section : rien n'est envoyé avant le clic, l'outil ne peut donc pas savoir qu'une saisie attend.
+  3. Du JavaScript ajouté à la page pour intercepter la sortie.
+- **Justification :** C'est ce que Streamlit permet sans code ajouté à la page.
+- **Références :** `docs/plan-v0.16.md`, § 7.2.
+
+### D-125 — Essayer l'outil sur la base fictive
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** L'accueil propose « Essayer avec la base fictive » : `etude-sommeil.sav` et `questionnaire-sommeil.pdf` sont copiés dans `Documents\Dictionnaire de données - essai\` (le dossier Documents de Windows), le projet est créé et ouvert ; s'il existe, il est rouvert. `etude-sommeil.sav` entre dans le paquet installé.
+- **Options considérées :**
+  1. Dans le dossier Documents (ce choix) : visible, facile à retrouver.
+  2. Dans `%LOCALAPPDATA%\ddict` : jamais synchronisé, mais caché.
+- **Justification :** Les fichiers sont fictifs ; la personne doit pouvoir ouvrir les fichiers écrits à côté du projet.
+- **Références :** `docs/plan-v0.16.md`, § 5.7.
+
+### D-126 — Aucun champ de décision pré-rempli par un calcul
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Un champ qui porte une décision humaine ne part jamais d'une valeur calculée ou choisie d'office : il est vide tant que rien n'est décidé, et un bouton « Reprendre… » nomme ce que le calcul propose et le met dans le champ, sans rien enregistrer. Huit champs sont concernés : items inversés, bornes de l'échelle, items du score, calcul, règle des items manquants, items répondus au minimum (page « Groupes ») ; étendue théorique, seuil, question à rattacher (page « Variables »). Les réglages d'affichage et une valeur proposée qui porte son origine et son statut n'en sont pas.
+- **Options considérées :**
+  1. Champs vides et bouton « Reprendre… » (ce choix).
+  2. Garder le pré-remplissage en le signalant.
+- **Justification :** Une proposition affichée dans un champ de décision se lit comme une décision : c'est l'écart avec le principe « l'outil propose, une personne décide ».
+- **Références :** `docs/plan-v0.16.md`, § 5.1.
+
+### D-127 — Captures d'écran automatiques, outil de développement
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Playwright (Apache-2.0) entre au groupe de développement, jamais dans le paquet installé, au lot B de la v0.16 : un script hors de `pytest` lance l'outil sur la base fictive et enregistre les pages à 1400 × 900 et 900 × 600.
+- **Options considérées :**
+  1. Playwright en outil de développement (ce choix).
+  2. Le scénario manuel seul.
+- **Justification :** Les vérifications visuelles sont aujourd'hui toutes manuelles. Playwright télécharge un navigateur à son installation ; les tests restent sans réseau.
+- **Références :** `docs/plan-v0.16.md`, § 9.

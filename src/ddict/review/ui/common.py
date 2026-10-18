@@ -87,6 +87,17 @@ def field(key: str, fresh) -> str:
     return key
 
 
+def offer(label: str, key: str, target: str, value) -> None:
+    """A button that puts what the tool computes into the field `target`, without saving it
+    (v0.16, D-126): a decision field never starts from a computed value."""
+    st.button(
+        label,
+        key=key,
+        on_click=lambda: st.session_state.update({target: value}),
+        icon=":material/arrow_downward:",
+    )
+
+
 def show_message(key: str) -> None:
     message = st.session_state.get("shown_message")
     if message and message[2] == key:

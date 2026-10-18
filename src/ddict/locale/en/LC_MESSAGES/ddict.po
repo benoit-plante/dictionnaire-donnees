@@ -938,6 +938,9 @@ msgstr "Choose a project file…"
 msgid "Choisir une base…"
 msgstr "Choose a database…"
 
+msgid "Choisir une question"
+msgstr "Choose a question"
+
 msgid "Choisir une valeur"
 msgstr "Choose a value"
 
@@ -954,6 +957,9 @@ msgstr "Choose \"Accept\" for the {n} proposed names"
 
 msgid "Choisir…"
 msgstr "Choose…"
+
+msgid "Choisissez comment la somme traite les items manquants."
+msgstr "Choose how the sum handles missing items."
 
 msgid "Choisissez d'abord le fichier de la vague précédente."
 msgstr "First choose the file of the earlier wave."
@@ -977,6 +983,9 @@ msgstr ""
 msgid "Choisissez la paire testée."
 msgstr "Choose the tested pair."
 
+msgid "Choisissez le calcul du score : somme ou moyenne."
+msgstr "Choose how the score is computed: sum or mean."
+
 msgid "Choisissez les items du score, ou décrivez la cotation en note."
 msgstr "Choose the items of the score, or describe the scoring in a note."
 
@@ -986,6 +995,9 @@ msgid ""
 msgstr ""
 "Choose the links in the interface (ddict review), or add --model to have a local model propose a "
 "choice among the candidates."
+
+msgid "Choisissez une question, ou « Aucune question du questionnaire »."
+msgstr "Choose a question, or “No question of the questionnaire”."
 
 msgid "Choisissez une variable."
 msgstr "Choose a variable."
@@ -1516,6 +1528,9 @@ msgstr "Discussion"
 #, python-brace-format
 msgid "Distribution peu normale pour {group} (Shapiro-Wilk {p}) avec moins de {n} personnes."
 msgstr "Distribution far from normal for {group} (Shapiro-Wilk {p}) with fewer than {n} people."
+
+msgid "Dites combien d'items doivent être répondus, au minimum (0 : tous)."
+msgstr "Say how many items must be answered, at least (0: all)."
 
 msgid "Dites l'origine des données et leur état quand le plan a été écrit."
 msgstr "Give the origin of the data and their state when the plan was written."
@@ -4007,6 +4022,10 @@ msgstr "First measure"
 msgid "Première mesure (test t apparié)."
 msgstr "First measure (paired t test)."
 
+#, python-brace-format
+msgid "Prendre les {n} items du groupe"
+msgstr "Take the {n} items of the group"
+
 msgid "Primaires"
 msgstr "Primary"
 
@@ -4447,6 +4466,18 @@ msgstr "Take up this proposal"
 
 msgid "Reprendre la décision."
 msgstr "Take the decision back."
+
+#, python-brace-format
+msgid "Reprendre la proposition du calcul : {choice}"
+msgstr "Take up the computed proposal: {choice}"
+
+#, python-brace-format
+msgid "Reprendre les bornes des étiquettes ({low} à {high})"
+msgstr "Take up the bounds of the labels ({low} to {high})"
+
+#, python-brace-format
+msgid "Reprendre les items probables ({items})"
+msgstr "Take up the likely items ({items})"
 
 msgid "Reprendre les noms"
 msgstr "Take the names"
@@ -5039,6 +5070,12 @@ msgstr "Sample size"
 #, python-brace-format
 msgid "Taille d'échantillon : {text}"
 msgstr "Sample size: {text}"
+
+msgid "Tapez la valeur du seuil."
+msgstr "Type the value of the threshold."
+
+msgid "Tapez le minimum et le maximum de l'étendue."
+msgstr "Type the minimum and the maximum of the range."
 
 msgid "Tapez le seuil α du plan."
 msgstr "Type the plan's α level."
@@ -5707,6 +5744,9 @@ msgstr "none"
 
 msgid "aucune"
 msgstr "none"
+
+msgid "aucune question"
+msgstr "no question"
 
 msgid "aucune question correspondante dans la base"
 msgstr "no matching question in the database"
