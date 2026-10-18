@@ -21,14 +21,18 @@ from ddict.analysis import notebook as nb
 from ddict.analysis import notebook_check as check
 from ddict.analysis import plan_notebook as pn
 from ddict.analysis.catalogue import ROLES
+from ddict.analysis.data import DataError
 from ddict.analysis.notebook_export import ExportBlocked, heading, write_results
 from ddict.i18n import _
+from ddict.io import ReadError
 from ddict.project import fingerprint
 from ddict.project.model import Project
 from ddict.review.ui import analyses_view
 from ddict.review.ui import common as c
+from ddict.workflow import NotebookState
 
 STATUSES = "notebook-statuses"  # (signature, [Status]): the last recomputation
+DASHBOARD = "notebook-dashboard"  # (signature, NotebookState): for the sidebar (v0.16)
 ICONS = {
     "current": ":material/check_circle:",
     "unchanged": ":material/check_circle:",
@@ -96,6 +100,32 @@ def _statuses(project: Project, notebook: nb.Notebook, prepared) -> list[check.S
         _save(notebook)
     st.session_state[STATUSES] = (_signature(project, notebook, prepared), statuses)
     return statuses
+
+
+def dashboard_state(project: Project) -> NotebookState | None:
+    """What the notebook's recomputation says, for the dashboard (v0.16): recomputed only
+    when the project, the notebook or the database changed; never written from here (the
+    page "Carnet" does). None without a notebook, or without the database."""
+    if not _path().is_file():
+        return None
+    try:
+        notebook = nb.open_notebook(project, c.project_path())
+        prepared = analyses_view.load_prepared(project)
+    except (nb.NotebookError, DataError, ReadError, OSError):
+        return None
+    if not notebook.entries:
+        return None
+    signature = _signature(project, notebook, prepared)
+    stored = st.session_state.get(DASHBOARD)
+    if stored is not None and stored[0] == signature:
+        return stored[1]
+    statuses = check.check_everything(notebook, project, prepared, today=date.today().isoformat())
+    found = NotebookState(
+        to_confirm=len(check.blocking(notebook, statuses)),
+        impossible=sum(1 for s in statuses if s.state == "impossible"),
+    )
+    st.session_state[DASHBOARD] = (signature, found)
+    return found
 
 
 def _write(project: Project) -> None:

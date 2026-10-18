@@ -302,6 +302,18 @@ def instruments(project: Project, prepared: PreparedData, found: Facts) -> list[
     ]
 
 
+def instrument_holes(project: Project) -> int:
+    """How many holes the Instruments paragraph leaves (v0.16, the dashboard): the same
+    paragraphs, without the database, counted."""
+    return sum(
+        1
+        for g in project.groups
+        if g.scoring is not None
+        for run in _instrument(project, None, None, g)
+        if getattr(run, "hole", False)
+    )
+
+
 # --- Analyses (A1 to A5). ---
 
 

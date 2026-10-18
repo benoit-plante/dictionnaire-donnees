@@ -13,6 +13,7 @@ from pydantic import ValidationError
 from ddict import glossary, i18n
 from ddict.export.wording import entry_anomalies
 from ddict.i18n import N_, Texts, _, quoted
+from ddict.project import completeness
 from ddict.project.decisions import DecisionError, correct, enter, reject, validate
 from ddict.project.model import (
     Group,
@@ -105,6 +106,16 @@ def select(project: Project, which: Filter) -> list[VariableEntry]:
         "suspects": has_undecided_suspects,
     }
     return [e for e in project.variables if tests[which](e)]
+
+
+def codebook_progress(project: Project) -> float:
+    """How far the codebook is documented, from 0 to 1 (v0.16): the mean of its parts, as the
+    page "Base" lists them (questions, labels, value labels, levels, scorings...), the
+    description of the database being one of them. A file that brings its labels does not
+    make a new project look finished: each part counts the same."""
+    shares = [p.done / p.applicable for p in completeness.parts(project) if p.applicable]
+    shares.append(1 - len(completeness.dataset_missing(project)) / 2)
+    return sum(shares) / len(shares)
 
 
 def progress(project: Project) -> tuple[int, int]:

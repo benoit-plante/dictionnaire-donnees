@@ -143,18 +143,13 @@ def main() -> None:
         _messages_end(top)
         return
     project = c.project()
-    done, total = logic.progress(project)
-    waiting = tasks(project)
+    waiting = tasks(project, c.project_path(), notebook_view.dashboard_state(project))
     mode = _navigation(project, waiting)
     with st.sidebar:
         st.button(_("Accueil"), key="home", on_click=c.close_project, icon=":material/home:")
         st.title(project.source.name)
-        st.progress(
-            done / total if total else 1.0,
-            text=_("{done} variables sur {total} sans proposition en attente").format(
-                done=done, total=total
-            ),
-        )
+        share = logic.codebook_progress(project)  # v0.16: never full on a new project
+        st.progress(share, text=_("Codebook documenté à {p} %").format(p=round(100 * share)))
         _dashboard(waiting)
         chosen = None
         if mode == "variables":

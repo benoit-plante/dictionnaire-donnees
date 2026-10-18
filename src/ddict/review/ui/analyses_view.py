@@ -64,13 +64,19 @@ def prepared_data(project: Project, where: str = "analysis") -> PreparedData | N
     """The data with the accepted decisions, read once per session and prepared again when
     a decision changes; None, with the reason shown, when the database is not found (the
     Analyses and the Notebook pages share it, `where` names the button)."""
-    chosen = st.session_state.get(DATABASE)
     try:
-        path = find_database(project, c.project_path(), Path(chosen) if chosen else None)
+        return load_prepared(project)
     except DataError as error:
         st.info(copy_error_text(error, project.source.name))
         st.button(_("Choisir la base…"), key=f"{where}-choose", on_click=_choose_database)
         return None
+
+
+def load_prepared(project: Project) -> PreparedData:
+    """The data with the accepted decisions, kept in the session; raises DataError when the
+    database is not found. Says nothing: the sidebar's dashboard uses it too (v0.16)."""
+    chosen = st.session_state.get(DATABASE)
+    path = find_database(project, c.project_path(), Path(chosen) if chosen else None)
     read = st.session_state.get(TABLE)
     if read is None or read[0] != str(path):
         with st.spinner(_("Lecture de la base…")):

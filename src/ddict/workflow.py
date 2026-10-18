@@ -328,9 +328,24 @@ class Task:
     filter: str | None = None  # for the variables
 
 
-def tasks(project: Project) -> list[Task]:
+@dataclass(frozen=True)
+class NotebookState:
+    """What the notebook's recomputation says (v0.16): computed by the interface, which
+    keeps it while nothing changes, since it reads the database."""
+
+    to_confirm: int  # retained analyses, or the Method, whose numbers changed
+    impossible: int  # analyses that can no longer be computed
+
+
+def tasks(
+    project: Project,
+    project_path: Path | None = None,
+    notebook: NotebookState | None = None,
+) -> list[Task]:
     """What is waiting, in the recommended order: questionnaire, glossary, links, value
-    labels, labels and descriptions. Empty when nothing waits."""
+    labels, labels and descriptions; then (v0.16) the plan to freeze, the notebook's numbers
+    to confirm, the Method's holes, the draft to check. Empty when nothing waits. Without
+    the project's path or the notebook's state, those parts are left out."""
     found: list[Task] = []
     if project.questionnaire is None:
         found.append(Task(1, _("Ajouter le questionnaire de l'étude"), "questionnaire"))
@@ -401,6 +416,37 @@ def tasks(project: Project) -> list[Task]:
                 "to_review",
             )
         )
+    found.extend(_writing_tasks(project, project_path, notebook))
+    return found
+
+
+def _writing_tasks(
+    project: Project, project_path: Path | None, notebook: NotebookState | None
+) -> list[Task]:
+    """From the analysis to the article (v0.16): only what the files already say."""
+    from ddict.analysis import notebook as nb
+    from ddict.analysis.method_text import instrument_holes
+    from ddict.analysis.notebook_export import SUFFIX
+    from ddict.analysis.verify import paths as report_paths
+
+    found: list[Task] = []
+    if project.plan.hypotheses and project.plan.frozen is None:
+        found.append(Task(1, _("Plan à figer"), "plan"))
+    if notebook is not None and notebook.to_confirm:
+        found.append(Task(notebook.to_confirm, _("Chiffres à confirmer au carnet : {n}"),
+                          "notebook"))  # fmt: skip
+    if notebook is not None and notebook.impossible:
+        found.append(Task(notebook.impossible, _("Analyses impossibles à calculer : {n}"),
+                          "notebook"))  # fmt: skip
+    if project_path is None or not nb.notebook_path(project_path).is_file():
+        return found
+    holes = instrument_holes(project)
+    if holes:
+        found.append(Task(holes, _("Trous de la Méthode à combler (groupes) : {n}"), "groups"))
+    draft = project_path.with_name(project_stem(project_path) + SUFFIX + ".docx")
+    report = report_paths(draft)["md"]
+    if draft.is_file() and (not report.is_file() or report.stat().st_mtime < draft.stat().st_mtime):
+        found.append(Task(1, _("Vérifier les chiffres de l'ébauche"), "verify"))
     return found
 
 

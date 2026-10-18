@@ -490,6 +490,10 @@ msgstr "Analyses of the document:"
 msgid "Analyses exploratoires"
 msgstr "Exploratory analysis"
 
+#, python-brace-format
+msgid "Analyses impossibles à calculer : {n}"
+msgstr "Analyses that cannot be computed: {n}"
+
 msgid "Analyses retenues mais écartées, impossibles à calculer :"
 msgstr "Retained analyses left out, impossible to compute:"
 
@@ -922,6 +926,10 @@ msgstr ""
 "not. Untick those that do not fit."
 
 #, python-brace-format
+msgid "Chiffres à confirmer au carnet : {n}"
+msgstr "Numbers to confirm in the notebook: {n}"
+
+#, python-brace-format
 msgid "Choisir de {least} à {most} variables"
 msgstr "Choose from {least} to {most} variables"
 
@@ -1097,6 +1105,10 @@ msgstr "Excel codebook: {path}"
 
 msgid "Codebook Excel à écrire."
 msgstr "Excel codebook to write."
+
+#, python-brace-format
+msgid "Codebook documenté à {p} %"
+msgstr "Codebook {p}% documented"
 
 #, python-brace-format
 msgid ""
@@ -4015,6 +4027,9 @@ msgstr "Plan refused:"
 msgid "Plan retiré."
 msgstr "Plan removed."
 
+msgid "Plan à figer"
+msgstr "Plan to freeze"
+
 msgid ""
 "Plusieurs distributions ont été comparées par le test de Kruskal-Wallis ; la taille d'effet est "
 "ε²."
@@ -5354,6 +5369,10 @@ msgstr "Transformations"
 msgid "Travaux antérieurs sur ces données"
 msgstr "Prior work based on the dataset"
 
+#, python-brace-format
+msgid "Trous de la Méthode à combler (groupes) : {n}"
+msgstr "Gaps to fill in the Method (groups): {n}"
+
 msgid "Tukey"
 msgstr "Tukey"
 
@@ -5824,6 +5843,9 @@ msgid ""
 msgstr ""
 "Verify the figures of a Word manuscript against what the tool writes: a report and a commented "
 "copy, next to the manuscript."
+
+msgid "Vérifier les chiffres de l'ébauche"
+msgstr "Check the draft's numbers"
 
 msgid "Welch (variances inégales permises)"
 msgstr "Welch (unequal variances allowed)"
@@ -7047,10 +7069,6 @@ msgstr "{c} {name} ({group}): theoretical range not given."
 #, python-brace-format
 msgid "{day} {month} {year}"
 msgstr "{day} {month} {year}"
-
-#, python-brace-format
-msgid "{done} variables sur {total} sans proposition en attente"
-msgstr "{done} of {total} variables without a pending proposal"
 
 #, python-brace-format
 msgid "{field} : choix non permis."
