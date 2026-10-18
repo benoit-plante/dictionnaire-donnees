@@ -7,6 +7,7 @@ otherwise a value typed just before the click would be lost.
 from __future__ import annotations
 
 import sys
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
@@ -80,11 +81,138 @@ def field(key: str, fresh) -> str:
 
     The value is set through the session state, never with `value=`: after a decision, `act`
     sets it again, which the browser shows (it keeps its own copy of a field otherwise).
+    The field remembers where it is drawn (`set_place`): a value typed there and not saved
+    becomes a draft when the person goes elsewhere (v0.16, D-124).
     """
     st.session_state.setdefault("fresh", {})[key] = fresh
+    st.session_state.setdefault(PLACES, {})[key] = st.session_state.get(PLACE)
     if key not in st.session_state:
         st.session_state[key] = fresh()
     return key
+
+
+# --- Typed and not saved (v0.16, D-124). ---
+
+PLACE = "place"  # Place of the fields drawn now
+PLACES = "field-places"  # key -> the Place where the field was drawn
+DRAFTS = "drafts"  # [Draft]: what was typed, not saved, where the person left it
+TAKEN_BACK = "drafts-taken-back"  # a draft went back into its fields on this run
+
+
+@dataclass(frozen=True)
+class Place:
+    """Where a field is: its page, the variable or group it belongs to, words for a person,
+    and what opens it again (the fields `go_to` fills: a filter, a variable, a tab)."""
+
+    mode: str
+    item: str | None
+    title: str
+    opens: tuple[tuple[str, object], ...] = ()
+
+    def same(self, other: Place | None) -> bool:
+        return other is not None and (self.mode, self.item) == (other.mode, other.item)
+
+
+@dataclass(frozen=True)
+class Draft:
+    place: Place
+    values: tuple[tuple[str, object], ...]
+
+
+def set_place(mode: str, item: str | None, title: str, **opens) -> None:
+    """Where the fields drawn from now on are (`opens`: what `go_to` fills to come back)."""
+    st.session_state[PLACE] = Place(mode, item, title, tuple(opens.items()))
+
+
+def _plain(value):
+    if value is None:
+        return ""  # an empty list or field: no value either way
+    if isinstance(value, str):
+        return value.strip()
+    if isinstance(value, list | tuple):
+        return [_plain(v) for v in value]
+    if isinstance(value, float) and value.is_integer():
+        return int(value)
+    return value
+
+
+def _differs(key: str) -> bool:
+    fresh = st.session_state.get("fresh", {}).get(key)
+    if fresh is None or key not in st.session_state:
+        return False
+    try:
+        return _plain(st.session_state[key]) != _plain(fresh())
+    except (KeyError, ValueError, AttributeError, IndexError):
+        return False  # the project changed under the field (a variable gone): no draft
+
+
+def unsaved(keys=None) -> list[str]:
+    """The fields that differ from the project: typed, not saved."""
+    places = st.session_state.get(PLACES, {})
+    return [k for k in (keys if keys is not None else list(places)) if _differs(k)]
+
+
+def keep_drafts(here: Place) -> None:
+    """Before a page is drawn: what was typed elsewhere and not saved becomes a draft (the
+    fields of another page are not drawn, and Streamlit forgets their values)."""
+    places = st.session_state.get(PLACES, {})
+    found: dict[Place, dict] = {}
+    for key in unsaved():
+        place = places.get(key)
+        if place is not None and not place.same(here):
+            found.setdefault(place, {})[key] = st.session_state[key]
+    drafts = [d for d in st.session_state.get(DRAFTS, []) if d.place not in found]
+    drafts += [Draft(place, tuple(values.items())) for place, values in found.items()]
+    # Back where a draft was typed (by "Revenir", by the menu, or when a click on the menu
+    # was lost while the field was being sent): its values go back into its fields.
+    kept = [d for d in drafts if not d.place.same(here)]
+    for draft in drafts:
+        if draft.place.same(here):
+            st.session_state.update(dict(draft.values))
+            st.session_state[TAKEN_BACK] = True
+    st.session_state[DRAFTS] = kept
+
+
+def _back(draft: Draft) -> None:
+    """Open the draft's place; its values go back into its fields there (`keep_drafts`)."""
+    go_to(draft.place.mode, **dict(draft.place.opens))
+
+
+def _drop() -> None:
+    st.session_state[DRAFTS] = []
+
+
+def drafts_notice(here: Place) -> None:
+    """On the page where the person arrives: what was left unsaved, to go back to or drop;
+    and, back where it was typed, that it was taken back."""
+    if st.session_state.pop(TAKEN_BACK, False):
+        st.info(_("Votre saisie non enregistrée est reprise dans ses champs."))
+    drafts = st.session_state.get(DRAFTS, [])
+    if not drafts:
+        return
+    with st.container(border=True):
+        st.warning(
+            _("Saisie non enregistrée : {places}.").format(
+                places=" ; ".join(d.place.title for d in drafts)
+            ),
+            icon=":material/edit_note:",
+        )
+        with st.container(horizontal=True):
+            for index, draft in enumerate(drafts):
+                st.button(
+                    _("Revenir à {place}").format(place=draft.place.title),
+                    key=f"draft-back-{index}",
+                    on_click=_back,
+                    args=(draft,),
+                    type="primary",
+                )
+            st.button(_("Abandonner"), key="draft-drop", on_click=_drop)
+
+
+def unsaved_note(keys) -> None:
+    """Next to the "Enregistrer" of a section: its fields hold what is not saved yet."""
+    if keys and unsaved(list(keys)):
+        st.caption(_(":material/edit: Modifications non enregistrées."))
 
 
 DASH = "—"  # an empty cell of a table, never "None" (v0.16, finding 17)
@@ -160,19 +288,24 @@ def button(
     reset: tuple[str, ...] = (),
     submit: bool = False,
     message: bool = True,
+    watch: tuple[str, ...] = (),
 ) -> None:
     """A button that runs a decision; `submit` for the button of a form (st.form), whose
     fields are sent together when it is clicked. Without `message`, its message is shown
     by the caller (buttons side by side, v0.16)."""
     widget = st.form_submit_button if submit else st.button
-    widget(
-        label,
-        key=key,
-        on_click=act,
-        args=(action, *args),
-        kwargs={"key": key, "timed": timed, "reset": reset},
-        type="primary" if primary else "secondary",
-    )
+    with st.container(horizontal=True, vertical_alignment="center"):
+        widget(
+            label,
+            key=key,
+            on_click=act,
+            args=(action, *args),
+            kwargs={"key": key, "timed": timed, "reset": reset},
+            type="primary" if primary else "secondary",
+        )
+        # Beside the button, never above it: a note that appears must not move the button
+        # under the pointer (v0.16, found in the browser).
+        unsaved_note(watch)
     if message:
         show_message(key)
 

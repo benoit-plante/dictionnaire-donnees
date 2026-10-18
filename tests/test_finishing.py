@@ -95,7 +95,7 @@ def test_groups_are_named_by_what_they_are(sleep):
     assert options[0].startswith("G1 — 8 items"), options
     app.sidebar.selectbox(key="group").select("G2").run()
     app.text_input(key="prefix-G2").input("anx")
-    app.button(key="save-prefix-G2").click().run()
+    app.button(key="save-items-G2").click().run()
     assert not app.exception, app.exception
     assert app.sidebar.selectbox(key="group").value == "G2"  # its new text keeps the choice
 

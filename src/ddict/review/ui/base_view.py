@@ -87,64 +87,63 @@ def _dataset(project: Project) -> None:
              "description", *(f"design_{k}" for k in DESIGN_KEYS))}  # fmt: skip
     names = [e.name for e in project.variables]
     shown = {e.name: w.final_name(e) for e in project.variables}
-    with st.form("form-dataset", border=False):
-        left, right = st.columns(2)
-        left.selectbox(
-            _("Une ligne représente"),
-            ["", *w.UNITS],
+    left, right = st.columns(2)
+    left.selectbox(
+        _("Une ligne représente"),
+        ["", *w.UNITS],
+        placeholder=_("Choisir…"),
+        format_func=lambda u: w.UNITS[u] if u else _("(non précisé)"),
+        key=c.field(keys["unit_of_observation"], lambda: now_("unit_of_observation")),
+    )
+    right.text_input(
+        _("Autre : laquelle ?"), key=c.field(keys["unit_other"], lambda: now_("unit_other"))
+    )
+    st.selectbox(
+        _("Structure"),
+        ["", *w.STRUCTURES],
+        placeholder=_("Choisir…"),
+        format_func=lambda s: w.STRUCTURES[s] if s else _("(non précisée)"),
+        key=c.field(keys["structure"], lambda: now_("structure")),
+    )
+    left, right = st.columns(2)
+    left.text_input(
+        _("Vague de ce fichier (une vague par fichier)"),
+        key=c.field(keys["wave"], lambda: now_("wave")),
+    )
+    right.text_input(
+        _("Suffixes de temps (format large), séparés par des virgules"),
+        key=c.field(keys["suffixes"], lambda: now_("suffixes")),
+        placeholder="_t1, _t2",
+    )
+    columns = st.columns(len(DESIGN_KEYS))
+    for column, part in zip(columns, DESIGN_KEYS, strict=True):
+        column.selectbox(
+            w.DESIGN[part].capitalize(),
+            ["", *names],
             placeholder=_("Choisir…"),
-            format_func=lambda u: w.UNITS[u] if u else _("(non précisé)"),
-            key=c.field(keys["unit_of_observation"], lambda: now_("unit_of_observation")),
+            format_func=lambda n: shown.get(n, "—") if n else "—",
+            key=c.field(keys[f"design_{part}"], lambda part=part: now_(f"design_{part}")),
         )
-        right.text_input(
-            _("Autre : laquelle ?"), key=c.field(keys["unit_other"], lambda: now_("unit_other"))
-        )
-        st.selectbox(
-            _("Structure"),
-            ["", *w.STRUCTURES],
-            placeholder=_("Choisir…"),
-            format_func=lambda s: w.STRUCTURES[s] if s else _("(non précisée)"),
-            key=c.field(keys["structure"], lambda: now_("structure")),
-        )
-        left, right = st.columns(2)
-        left.text_input(
-            _("Vague de ce fichier (une vague par fichier)"),
-            key=c.field(keys["wave"], lambda: now_("wave")),
-        )
-        right.text_input(
-            _("Suffixes de temps (format large), séparés par des virgules"),
-            key=c.field(keys["suffixes"], lambda: now_("suffixes")),
-            placeholder="_t1, _t2",
-        )
-        columns = st.columns(len(DESIGN_KEYS))
-        for column, part in zip(columns, DESIGN_KEYS, strict=True):
-            column.selectbox(
-                w.DESIGN[part].capitalize(),
-                ["", *names],
-                placeholder=_("Choisir…"),
-                format_func=lambda n: shown.get(n, "—") if n else "—",
-                key=c.field(keys[f"design_{part}"], lambda part=part: now_(f"design_{part}")),
-            )
-        st.text_area(
-            _("Description (courte)"),
-            key=c.field(keys["description"], lambda: now_("description")),
-            height=68,
-        )
-        c.button(
-            _("Enregistrer la description"),
-            "dataset-save",
-            study.set_dataset,
-            c.state(keys["unit_of_observation"]),
-            c.state(keys["unit_other"]),
-            c.state(keys["structure"]),
-            c.state(keys["wave"]),
-            c.state(keys["suffixes"]),
-            lambda: {part: st.session_state[keys[f"design_{part}"]] for part in DESIGN_KEYS},
-            c.state(keys["description"]),
-            timed=True,
-            reset=tuple(keys.values()),
-            submit=True,
-        )
+    st.text_area(
+        _("Description (courte)"),
+        key=c.field(keys["description"], lambda: now_("description")),
+        height=68,
+    )
+    c.button(
+        _("Enregistrer la description"),
+        "dataset-save",
+        study.set_dataset,
+        c.state(keys["unit_of_observation"]),
+        c.state(keys["unit_other"]),
+        c.state(keys["structure"]),
+        c.state(keys["wave"]),
+        c.state(keys["suffixes"]),
+        lambda: {part: st.session_state[keys[f"design_{part}"]] for part in DESIGN_KEYS},
+        c.state(keys["description"]),
+        timed=True,
+        reset=tuple(keys.values()),
+        watch=tuple(keys.values()),
+    )
 
 
 def _final(key: str, names: list[str], shown: list[str], column: str) -> dict[str, str]:

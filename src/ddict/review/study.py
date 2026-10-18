@@ -168,3 +168,37 @@ def set_dataset(
     found.time_suffixes = [s.strip() for s in (suffixes or "").split(",") if s.strip()]
     found.design = DesignVariables(**{k: (design.get(k) or None) for k in ds.DESIGN})
     found.description = (description or "").strip() or None
+
+
+# --- One "Enregistrer" for each tab of a group (v0.16, D-124). ---
+
+
+def save_items(
+    project: Project, group_id: str, prefix: str | None, reverse: list[str], *, now: str
+) -> None:
+    """The tab "Items": the prefix of the new names (a scale only) and the reversed items,
+    each saved when it changed. A refused prefix changes nothing."""
+    from ddict.review import logic, names
+
+    target = group(project, group_id)
+    if prefix is not None and prefix.strip() != (target.name_prefix.value or ""):
+        names.set_group_prefix(project, group_id, prefix, now=now)
+    if list(reverse or []) != list(target.reverse_items):
+        logic.set_reverse_items(project, group_id, list(reverse or []))
+
+
+def save_instrument(
+    project: Project, group_id: str, value: str, source: str, omit: bool | None
+) -> None:
+    """The tab "Instrument": its name with its source, and the choice not to reproduce the
+    text of its questions (when there is a questionnaire), each saved when it changed."""
+    from ddict.review import logic
+
+    target = group(project, group_id)
+    current = target.instrument_name
+    if (value or "").strip() != (current.value if current else "") or (
+        current is not None and (source or "").strip() != current.source
+    ):
+        logic.set_instrument(project, group_id, value or "", source or "")
+    if omit is not None and bool(omit) != target.omit_question_text:
+        logic.set_omit_question_text(project, group_id, omit)

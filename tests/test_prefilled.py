@@ -58,7 +58,7 @@ def test_likely_reversed_items_are_offered_not_confirmed(project_path):
     offer.click().run()
     assert app.multiselect(key="reverse-G1").value == ["sommeil_q3", "sommeil_q6"]
     assert load_project(project_path).groups[0].reverse_items == []  # nothing saved
-    app.button(key="save-reverse-G1").click().run()
+    app.button(key="save-items-G1").click().run()
     assert load_project(project_path).groups[0].reverse_items == ["sommeil_q3", "sommeil_q6"]
 
 

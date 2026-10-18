@@ -122,10 +122,8 @@ def _save_stems(rows: list[tuple]) -> None:
 
 def _settings(project: Project) -> None:
     started = any(e.new_name.value for e in project.variables)
-    with (
-        st.expander(_("Réglages de nommage"), expanded=not started),
-        st.form("form-names-settings", border=False),
-    ):
+    fields = (WAVE, POSITION, LENGTH)
+    with st.expander(_("Réglages de nommage"), expanded=not started):
         st.text_input(
             _("Marque de vague (vide s'il n'y en a pas)"),
             key=c.field(WAVE, lambda: c.project().settings.naming.wave or ""),
@@ -145,15 +143,17 @@ def _settings(project: Project) -> None:
             key=c.field(LENGTH, lambda: c.project().settings.naming.max_length),
             help=_("32, la limite de Stata, convient à SPSS, R et Stata."),
         )
-        c.button(
-            _("Enregistrer et proposer les noms"),
-            "names-settings-save",
-            names.set_settings,
-            c.state(WAVE),
-            c.state(POSITION),
-            c.state(LENGTH),
-            submit=True,
-        )
+    # One action (v0.16, finding 9): the settings are saved, then the rules propose.
+    c.button(
+        _("Proposer les noms"),
+        "names-settings-save",
+        names.set_settings,
+        c.state(WAVE),
+        c.state(POSITION),
+        c.state(LENGTH),
+        primary=not started,
+        watch=fields,
+    )
 
 
 def _earlier_wave() -> None:
@@ -321,6 +321,5 @@ def page(project: Project) -> None:
         st.write(line)
     _settings(project)
     _earlier_wave()
-    c.button(_("Proposer les noms par les règles"), "names-propose", names.propose)
     _table(project)
     _stems(project)

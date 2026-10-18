@@ -75,7 +75,26 @@ def _tracked_field(project: Project, entry: VariableEntry, field: str, title: st
         changed=tracked.status == "proposed" and shown != (tracked.value or ""),
         accept=(logic.accept_shown, entry.name, field, c.state(input_key)),
         reject=(logic.decide, entry.name, field, "reject"),
-        save=(logic.write, entry.name, field, c.state(input_key)),
+    )  # once decided, the section's one "Enregistrer" (v0.16, D-124)
+
+
+def _save_texts(entry: VariableEntry) -> None:
+    """One "Enregistrer" for the label, the unit and the description (v0.16, D-124); a
+    proposal waits for its own "Accepter"."""
+    fields = {
+        f: f"input-{entry.name}-{f}" for f in logic.TEXTS if getattr(entry, f).status != "proposed"
+    }
+    if not fields:
+        return
+    c.button(
+        _("Enregistrer"),
+        f"save-texts-{entry.name}",
+        logic.write_texts,
+        entry.name,
+        lambda: {f: st.session_state.get(k, "") for f, k in fields.items()},
+        timed=True,
+        reset=tuple(fields.values()),  # never a correction typed in a proposal
+        watch=tuple(fields.values()),
     )
 
 
@@ -501,6 +520,7 @@ def page(project: Project, entry: VariableEntry) -> None:
         _tracked_field(project, entry, "unit", _("Unité"))
     with right:
         _tracked_field(project, entry, "description", _("Description"))
+    _save_texts(entry)
     _level(project, entry)
     _new_name(project, entry)
     for index, issue in enumerate(entry.issues):

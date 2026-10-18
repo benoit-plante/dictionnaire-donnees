@@ -177,6 +177,25 @@ def accept_shown(project: Project, name: str, field: Field, shown: str, *, now: 
     decide(project, name, field, action, now=now, value=text)
 
 
+TEXTS: tuple[Field, ...] = ("label", "unit", "description")
+
+
+def write_texts(project: Project, name: str, values: dict, *, now: str) -> None:
+    """The texts of a variable, one "Enregistrer" (v0.16, D-124): each one that is not a
+    proposal waiting for "Accepter" is written when it changed."""
+    entry = project.variable(name)
+    for field, value in values.items():
+        tracked = getattr(entry, field)
+        if tracked.status == "proposed":
+            continue
+        text = (value or "").strip()
+        before = tracked.value if tracked.status != "rejected" else None
+        if field == "label" and before is None:
+            before = entry.file.label
+        if text != (before or ""):
+            write(project, name, field, text, now=now)
+
+
 def write(project: Project, name: str, field: Field, value: str, *, now: str) -> None:
     """Enter or change a value by hand, whatever its origin."""
     entry = project.variable(name)

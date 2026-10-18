@@ -228,7 +228,7 @@ def test_the_chosen_variable_stays_after_a_decision(app):
     test.sidebar.radio(key="filter").set_value("all").run()
     test.sidebar.selectbox(key="variable").select("sommeil_q2").run()
     test.text_input(key="input-sommeil_q2-label").input("Sommeil réparateur")
-    test.button(key="save-sommeil_q2-label").click().run()
+    test.button(key="save-texts-sommeil_q2").click().run()
     assert test.sidebar.selectbox(key="variable").value == "sommeil_q2"
     assert test.header[0].value.startswith("sommeil_q2")
 
@@ -258,7 +258,7 @@ def test_rejected_label_is_not_offered_again(app):
     test.sidebar.radio(key="filter").set_value("all").run()
     test.button(key="reject-sommeil_q7-label").click().run()
     assert test.text_input(key="input-sommeil_q7-label").value == ""
-    test.button(key="save-sommeil_q7-label").click().run()
+    test.button(key="save-texts-sommeil_q7").click().run()
     assert load_project(path).variable("sommeil_q7").label.status == "rejected"
 
 

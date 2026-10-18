@@ -36,12 +36,20 @@ def page(project: Project, group_id: str | None) -> None:
     scale = group.kind != "multiple_response"
     labels = [_("Items"), *([_("Cotation")] if scale else []), tab_instrument(), _("Recodages")]
     found = dict(zip(labels, c.tabs(TAB, labels), strict=True))
+
+    def here(label: str) -> None:
+        c.set_place("groups", group_id, f"{_('Groupes')}, {group_id}, {label}",
+                    group=group_id, **{TAB: label})  # fmt: skip
+
     with found[_("Items")]:
+        here(_("Items"))
         _items(project, group_id)
     if scale:
         with found[_("Cotation")]:
+            here(_("Cotation"))
             _scoring(project, group_id)
     with found[tab_instrument()]:
+        here(tab_instrument())
         _instrument_and_text(project, group_id)
     with found[_("Recodages")]:
         recode_view.listing(project)  # v0.15 (D-120)
@@ -53,6 +61,7 @@ def _items(project: Project, group_id: str) -> None:
     members = group.members.value or []
     st.write(f"{field_label('Variables')}" + ", ".join(members))
     st.write(f"{field_label('Indices du regroupement')}{w.basis_text(group.basis)}")
+    prefix = f"prefix-{group_id}"
     if group.kind == "scale":
         _prefix(project, group_id)
     if group.kind == "multiple_response":
@@ -82,23 +91,24 @@ def _items(project: Project, group_id: str) -> None:
             key,
             suspects,
         )
-    # A form: a change of the list must not reload the page before the click is seen.
-    with st.form(f"form-{key}", border=False):
-        st.multiselect(
-            _("Items inversés confirmés"),
-            members,
-            placeholder=_("Aucun item inversé"),
-            key=c.field(key, lambda: list(logic.group(c.project(), group_id).reverse_items)),
-        )
-        c.button(
-            _("Enregistrer les items inversés"),
-            f"save-{key}",
-            logic.set_reverse_items,
-            group_id,
-            c.state(key),
-            reset=(key,),
-            submit=True,
-        )
+    st.multiselect(
+        _("Items inversés confirmés"),
+        members,
+        placeholder=_("Aucun item inversé"),
+        key=c.field(key, lambda: list(logic.group(c.project(), group_id).reverse_items)),
+    )
+    fields = (prefix, key) if group.kind == "scale" else (key,)
+    c.button(
+        _("Enregistrer"),
+        f"save-items-{group_id}",
+        study.save_items,
+        group_id,
+        (lambda: st.session_state[prefix]) if group.kind == "scale" else None,
+        c.state(key),
+        timed=True,
+        reset=fields,
+        watch=tuple(fields),
+    )
 
 
 def _scoring(project: Project, group_id: str) -> None:
@@ -163,70 +173,67 @@ def _scoring(project: Project, group_id: str) -> None:
                 icon=":material/arrow_downward:",
             )
     number = {"step": 1, "format": "%d"} if whole else {}
-    with st.form(f"form-scoring-{group_id}", border=False):
-        st.multiselect(
-            _("Items du score"),
-            members,
-            placeholder=_("Choisir les items"),
-            key=c.field(keys["items"], lambda: list(current("items", []))),
-        )
-        st.radio(
-            _("Calcul"),
-            list(w.AGGREGATIONS),
-            format_func=w.AGGREGATIONS.__getitem__,
-            horizontal=True,
-            key=c.field(keys["how"], lambda: current("aggregation", None)),
-        )
-        left, middle, right = st.columns(3)
-        left.number_input(
-            _("Minimum de l'échelle"),
-            **number,
-            key=c.field(keys["min"], lambda: bound(current("scale_min", None))),
-        )
-        middle.number_input(
-            _("Maximum de l'échelle"),
-            **number,
-            key=c.field(keys["max"], lambda: bound(current("scale_max", None))),
-        )
-        right.number_input(
-            _("Items répondus, au minimum"),
-            min_value=0,
-            step=1,
-            key=c.field(keys["least"], least),
-            help=_("0 : le score exige tous les items."),
-        )
-        st.radio(
-            _("Somme avec des items manquants"),
-            list(w.MISSING_RULES),
-            format_func=lambda r: w.MISSING_RULES[r].format(n="N"),
-            key=c.field(keys["rule"], rule),
-            help=_(
-                "Seulement pour une somme qui accepte des items manquants : la règle du "
-                "manuel de l'instrument, avec la même source."
-            ),
-        )
-        st.text_input(
-            _("Nom du score"), key=c.field(keys["name"], lambda: current("score_name", ""))
-        )
-        st.text_input(_("Source"), key=c.field(keys["source"], lambda: current("source", "")))
-        st.text_area(_("Note"), key=c.field(keys["note"], lambda: current("note", "")), height=68)
-        c.button(
-            _("Enregistrer la cotation"),
-            f"save-scoring-{group_id}",
-            study.set_scoring_chosen,
-            group_id,
-            c.state(keys["items"]),
-            c.state(keys["how"]),
-            c.state(keys["min"]),
-            c.state(keys["max"]),
-            c.state(keys["least"]),
-            c.state(keys["name"]),
-            c.state(keys["source"]),
-            c.state(keys["note"]),
-            c.state(keys["rule"]),
-            reset=tuple(keys.values()),
-            submit=True,
-        )
+    st.multiselect(
+        _("Items du score"),
+        members,
+        placeholder=_("Choisir les items"),
+        key=c.field(keys["items"], lambda: list(current("items", []))),
+    )
+    st.radio(
+        _("Calcul"),
+        list(w.AGGREGATIONS),
+        format_func=w.AGGREGATIONS.__getitem__,
+        horizontal=True,
+        key=c.field(keys["how"], lambda: current("aggregation", None)),
+    )
+    left, middle, right = st.columns(3)
+    left.number_input(
+        _("Minimum de l'échelle"),
+        **number,
+        key=c.field(keys["min"], lambda: bound(current("scale_min", None))),
+    )
+    middle.number_input(
+        _("Maximum de l'échelle"),
+        **number,
+        key=c.field(keys["max"], lambda: bound(current("scale_max", None))),
+    )
+    right.number_input(
+        _("Items répondus, au minimum"),
+        min_value=0,
+        step=1,
+        key=c.field(keys["least"], least),
+        help=_("0 : le score exige tous les items."),
+    )
+    st.radio(
+        _("Somme avec des items manquants"),
+        list(w.MISSING_RULES),
+        format_func=lambda r: w.MISSING_RULES[r].format(n="N"),
+        key=c.field(keys["rule"], rule),
+        help=_(
+            "Seulement pour une somme qui accepte des items manquants : la règle du "
+            "manuel de l'instrument, avec la même source."
+        ),
+    )
+    st.text_input(_("Nom du score"), key=c.field(keys["name"], lambda: current("score_name", "")))
+    st.text_input(_("Source"), key=c.field(keys["source"], lambda: current("source", "")))
+    st.text_area(_("Note"), key=c.field(keys["note"], lambda: current("note", "")), height=68)
+    c.button(
+        _("Enregistrer la cotation"),
+        f"save-scoring-{group_id}",
+        study.set_scoring_chosen,
+        group_id,
+        c.state(keys["items"]),
+        c.state(keys["how"]),
+        c.state(keys["min"]),
+        c.state(keys["max"]),
+        c.state(keys["least"]),
+        c.state(keys["name"]),
+        c.state(keys["source"]),
+        c.state(keys["note"]),
+        c.state(keys["rule"]),
+        reset=tuple(keys.values()),
+        watch=tuple(keys.values()),
+    )
     if group.scoring:
         c.button(
             _("Retirer la cotation"),
@@ -250,25 +257,14 @@ def _prefix(project: Project, group_id: str) -> None:
             group_id,
             timed=True,
         )
-    with st.form(f"form-{key}", border=False):
-        st.text_input(
-            _("Préfixe des noms de ses items"),
-            key=c.field(key, lambda: logic.group(c.project(), group_id).name_prefix.value or ""),
-            help=_(
-                "Le sigle de l'échelle, en minuscules (k6, stai…) : ses items s'appelleront "
-                "k6_1, k6_2… Donné par vous, jamais par l'IA."
-            ),
-        )
-        c.button(
-            _("Enregistrer le préfixe"),
-            f"save-{key}",
-            names.set_group_prefix,
-            group_id,
-            c.state(key),
-            timed=True,
-            reset=(key,),
-            submit=True,
-        )
+    st.text_input(
+        _("Préfixe des noms de ses items"),
+        key=c.field(key, lambda: logic.group(c.project(), group_id).name_prefix.value or ""),
+        help=_(
+            "Le sigle de l'échelle, en minuscules (k6, stai…) : ses items s'appelleront "
+            "k6_1, k6_2… Donné par vous, jamais par l'IA."
+        ),
+    )
 
 
 def _instrument_and_text(project: Project, group_id: str) -> None:
@@ -279,51 +275,35 @@ def _instrument_and_text(project: Project, group_id: str) -> None:
         current = logic.group(c.project(), group_id).instrument_name
         return getattr(current, part) if current else ""
 
-    with st.form(f"form-instrument-{group_id}", border=False):
-        st.text_input(
-            _("Instrument"), key=c.field(f"instrument-{group_id}", lambda: instrument("value"))
-        )
-        st.text_input(
-            _("Source de l'instrument"),
-            key=c.field(f"instrument-source-{group_id}", lambda: instrument("source")),
-        )
-        c.button(
-            _("Enregistrer l'instrument"),
-            f"save-instrument-{group_id}",
-            logic.set_instrument,
-            group_id,
-            c.state(f"instrument-{group_id}"),
-            c.state(f"instrument-source-{group_id}"),
-            reset=(f"instrument-{group_id}", f"instrument-source-{group_id}"),
-            submit=True,
-        )
-
+    fields = [f"instrument-{group_id}", f"instrument-source-{group_id}"]
+    st.text_input(_("Instrument"), key=c.field(fields[0], lambda: instrument("value")))
+    st.text_input(_("Source de l'instrument"), key=c.field(fields[1], lambda: instrument("source")))
+    omit = None
     if project.questionnaire is not None:
-        st.divider()
-        key = f"omit-text-{group_id}"
-        # A form: ticking the box must not reload the page before the click is seen (a
-        # quick click on the button saved the old state, found in the browser).
-        with st.form(f"form-{key}", border=False):
-            st.checkbox(
-                _(
-                    "Ne pas reproduire le texte des questions de ce groupe dans le codebook "
-                    "(instrument protégé par le droit d'auteur)"
-                ),
-                key=c.field(key, lambda: logic.group(c.project(), group_id).omit_question_text),
+        omit = f"omit-text-{group_id}"
+        fields.append(omit)
+        st.checkbox(
+            _(
+                "Ne pas reproduire le texte des questions de ce groupe dans le codebook "
+                "(instrument protégé par le droit d'auteur)"
+            ),
+            key=c.field(omit, lambda: logic.group(c.project(), group_id).omit_question_text),
+        )
+        st.write(
+            _(
+                "Reproduire les items d'un instrument protégé relève de l'équipe ; le "
+                "codebook donnera alors la référence de la question (Q12.r3, p. 4) sans "
+                "son texte."
             )
-            st.write(
-                _(
-                    "Reproduire les items d'un instrument protégé relève de l'équipe ; le "
-                    "codebook donnera alors la référence de la question (Q12.r3, p. 4) sans "
-                    "son texte."
-                )
-            )
-            c.button(
-                _("Enregistrer ce choix"),
-                f"save-{key}",
-                logic.set_omit_question_text,
-                group_id,
-                c.state(key),
-                reset=(key,),
-                submit=True,
-            )
+        )
+    c.button(
+        _("Enregistrer"),
+        f"save-instrument-{group_id}",
+        study.save_instrument,
+        group_id,
+        c.state(fields[0]),
+        c.state(fields[1]),
+        c.state(omit) if omit else None,
+        reset=tuple(fields),
+        watch=tuple(fields),
+    )

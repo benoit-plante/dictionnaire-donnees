@@ -190,6 +190,6 @@ def test_omit_choice_in_the_interface(project, tmp_path):
     test.session_state["mode"] = "groups"  # v0.16: the pages are a navigation, no longer a radio
     test.run()
     test.checkbox(key="omit-text-G1").check()
-    test.button(key="save-omit-text-G1").click().run()
+    test.button(key="save-instrument-G1").click().run()
     assert not test.exception, test.exception
     assert load_project(path).groups[0].omit_question_text is True

@@ -187,7 +187,7 @@ def test_the_names_page(project_path):
 def test_the_prefix_in_the_groups_view(project_path):
     app = _app(project_path, "groups")
     app.text_input(key="prefix-G1").input("eft")
-    app.button(key="save-prefix-G1").click().run()
+    app.button(key="save-items-G1").click().run()
     assert not app.exception, app.exception
     project = load_project(project_path)
     assert project.groups[0].name_prefix.value == "eft"

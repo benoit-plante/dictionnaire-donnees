@@ -305,6 +305,9 @@ msgstr ""
 msgid "32, la limite de Stata, convient à SPSS, R et Stata."
 msgstr "32, Stata's limit, suits SPSS, R and Stata."
 
+msgid ":material/edit: Modifications non enregistrées."
+msgstr ":material/edit: Changes not saved."
+
 msgid "< plus petit que"
 msgstr "< less than"
 
@@ -325,6 +328,9 @@ msgstr "Fisher's ANOVA"
 
 msgid "ANOVA à mesures répétées : comparer trois mesures ou plus"
 msgstr "Repeated-measures ANOVA: compare three measures or more"
+
+msgid "Abandonner"
+msgstr "Discard"
 
 msgid "Absentes du fichier : le script de préparation les crée, après les scores et avant les exclusions."
 msgstr "Not in the file: the preparation script creates them, after the scores and before the exclusions."
@@ -1832,15 +1838,6 @@ msgstr "Encoding: UTF-8. Codebook fingerprint: {fingerprint}."
 msgid "Enregistrer"
 msgstr "Save"
 
-msgid "Enregistrer ce choix"
-msgstr "Save this choice"
-
-msgid "Enregistrer et proposer les noms"
-msgstr "Save and propose the names"
-
-msgid "Enregistrer l'instrument"
-msgstr "Save the instrument"
-
 msgid "Enregistrer l'étendue"
 msgstr "Save the range"
 
@@ -1850,14 +1847,8 @@ msgstr "Save the scoring"
 msgid "Enregistrer la description"
 msgstr "Save the description"
 
-msgid "Enregistrer le préfixe"
-msgstr "Save the prefix"
-
 msgid "Enregistrer le recodage"
 msgstr "Save the recoding"
-
-msgid "Enregistrer les items inversés"
-msgstr "Save the reversed items"
 
 msgid "Enregistrer les noms de base"
 msgstr "Save the base names"
@@ -4229,8 +4220,8 @@ msgid ""
 "jamais modifié."
 msgstr "Propose new names for the variables, by the naming rules; the original file is never changed."
 
-msgid "Proposer les noms par les règles"
-msgstr "Propose names by the rules"
+msgid "Proposer les noms"
+msgstr "Propose the names"
 
 msgid "Propositions du modèle, à vérifier : rien n'est calculé sans vous."
 msgstr "Proposals of the model, to check: nothing is computed without you."
@@ -4426,6 +4417,9 @@ msgstr ""
 
 msgid "Quitter l'outil"
 msgstr "Quit the tool"
+
+msgid "Quitter quand même"
+msgstr "Quit anyway"
 
 msgid "R de base et haven seulement ; à exécuter dans le dossier du projet."
 msgstr "Base R and haven only; to run in the project's folder."
@@ -4720,6 +4714,10 @@ msgstr "Removed from the notebook: {id}"
 msgid "Revenir sur cette décision"
 msgstr "Undo this decision"
 
+#, python-brace-format
+msgid "Revenir à {place}"
+msgstr "Back to {place}"
+
 msgid "Rien en attente."
 msgstr "Nothing waiting."
 
@@ -4893,6 +4891,10 @@ msgstr "Abstract"
 
 msgid "Révision du dictionnaire"
 msgstr "Data dictionary review"
+
+#, python-brace-format
+msgid "Saisie non enregistrée : {places}."
+msgstr "Typed and not saved: {places}."
 
 msgid "Sans elles, le contexte ne contient que des métadonnées, aucune donnée."
 msgstr "Without them, the context holds metadata only, no data."
@@ -5595,6 +5597,9 @@ msgstr "An answer that repeats another on these variables; the first is kept."
 msgid "Une réponse qui répète une réponse antérieure sur toutes ces variables."
 msgstr "An answer that repeats an earlier answer on all these variables."
 
+msgid "Une saisie n'est pas enregistrée : elle sera perdue."
+msgstr "Something typed is not saved: it will be lost."
+
 msgid "Une source documentée est obligatoire."
 msgstr "A documented source is required."
 
@@ -5845,6 +5850,9 @@ msgstr "See what would be sent"
 
 msgid "Voir exactement ce qui serait envoyé (rien n'est envoyé)"
 msgstr "See exactly what would be sent (nothing is sent)"
+
+msgid "Votre saisie non enregistrée est reprise dans ses champs."
+msgstr "What you typed and did not save is back in its fields."
 
 msgid "Vous pouvez fermer cette fenêtre. Vos décisions sont enregistrées."
 msgstr "You can close this window. Your decisions are saved."

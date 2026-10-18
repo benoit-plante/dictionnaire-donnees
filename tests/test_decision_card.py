@@ -112,13 +112,13 @@ def test_a_proposal_has_accept_and_reject_and_no_save(project, tmp_path):
     for field in ("label", "description"):
         assert {f"accept-sommeil_q1-{field}", f"reject-sommeil_q1-{field}"} <= keys
         assert f"save-sommeil_q1-{field}" not in keys  # no third button
-    assert "save-sommeil_q1-unit" in keys  # nothing proposed: "Enregistrer"
+    assert "save-texts-sommeil_q1" in keys  # the unit: the section's one "Enregistrer"
     app.text_input(key="input-sommeil_q1-label").input("Endormissement difficile").run()
     assert any("enregistrera votre correction" in m.value for m in app.markdown)
     app.button(key="accept-sommeil_q1-label").click().run()
     label = load_project(path).variable("sommeil_q1").label
     assert (label.value, label.status) == ("Endormissement difficile", "corrected")
-    assert "save-sommeil_q1-label" in _keys(app)  # decided: it can still be changed
+    assert "accept-sommeil_q1-label" not in _keys(app)  # decided: the section's button
 
 
 @pytest.mark.allow_hosts(["127.0.0.1"])

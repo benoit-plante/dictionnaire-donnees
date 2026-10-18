@@ -72,15 +72,36 @@ def _dashboard(waiting) -> None:
 
 
 QUITTING = "quitting"
+QUIT_ASK = "quit-ask"  # "Quitter" clicked with something typed and not saved (v0.16)
+
+
+def _quit() -> None:
+    """Stop at once, unless something typed is not saved (v0.16, D-124): then ask first."""
+    if st.session_state.get(c.DRAFTS) or c.unsaved():
+        st.session_state[QUIT_ASK] = True
+    else:
+        st.session_state[QUITTING] = True
 
 
 def _quit_button() -> None:
     """At the bottom of the sidebar (v0.7.1, D-055): the way to stop the tool."""
     st.divider()
+    if st.session_state.get(QUIT_ASK):
+        st.warning(_("Une saisie n'est pas enregistrée : elle sera perdue."))
+        with st.container(horizontal=True):
+            st.button(
+                _("Quitter quand même"),
+                key="quit-anyway",
+                on_click=lambda: st.session_state.update({QUITTING: True}),
+            )
+            st.button(
+                _("Annuler"), key="quit-cancel", on_click=lambda: st.session_state.pop(QUIT_ASK)
+            )
+        return
     st.button(
         _("Quitter l'outil"),
         key="quit",
-        on_click=lambda: st.session_state.update({QUITTING: True}),
+        on_click=_quit,
         icon=":material/power_settings_new:",
         help=_("Arrête l'outil. Vos décisions sont déjà enregistrées dans le fichier projet."),
     )
@@ -91,6 +112,16 @@ def _stopped() -> None:
     st.write(_("Vous pouvez fermer cette fenêtre. Vos décisions sont enregistrées."))
     shutdown.stop_soon()
     st.stop()
+
+
+def _place(project, mode: str, chosen: str | None) -> c.Place:
+    """Where the page drawn now is, for the drafts (v0.16, D-124)."""
+    page = _(navigation.PAGES[mode].title)
+    if mode == "variables" and chosen is not None:
+        return c.Place(mode, chosen, f"{page}, {chosen}", tuple(c.variable_fields(chosen).items()))
+    if mode == "groups" and chosen is not None:
+        return c.Place(mode, chosen, f"{page}, {chosen}", (("group", chosen),))
+    return c.Place(mode, None, page)
 
 
 def _root_page() -> str:
@@ -206,6 +237,10 @@ def main() -> None:
     notice = st.session_state.pop("notice", None)
     if notice:
         st.info(notice)
+    here = _place(project, mode, chosen)
+    c.set_place(here.mode, here.item, here.title, **dict(here.opens))
+    c.keep_drafts(here)  # v0.16 (D-124): what was typed elsewhere, not saved
+    c.drafts_notice(here)
     top = _messages_start()
     if mode == "base":
         base_view.page(project)
