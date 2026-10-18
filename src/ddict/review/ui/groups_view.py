@@ -13,6 +13,11 @@ from ddict.review.ui import bulk_view
 from ddict.review.ui import common as c
 
 
+def option_text(project: Project, group_id: str) -> str:
+    """A group in the list of the sidebar: its number and what it is (v0.16)."""
+    return f"{group_id} — {w.group_description(logic.group(project, group_id), 'work')}"
+
+
 def page(project: Project, group_id: str) -> None:
     group = logic.group(project, group_id)
     st.header(f"{group.group_id} — {w.group_description(group, 'work')}")
@@ -103,6 +108,14 @@ def _scoring(project: Project, group_id: str) -> None:
         return found.missing_rule if found is not None and found.items else None
 
     bounds = scoring.scale_bounds(project.variable(members[0])) if members else None
+    found = logic.group(project, group_id).scoring
+    known = [*(bounds or ()), *((found.scale_min, found.scale_max) if found else ())]
+    # Whole codes (1 to 5): whole numbers in the fields, "1" and not "1.00" (finding 19).
+    whole = all(v is None or float(v).is_integer() for v in known)
+
+    def bound(value):
+        return int(value) if whole and value is not None else value
+
     keys = {part: f"scoring-{part}-{group_id}" for part in
             ("items", "how", "min", "max", "least", "rule", "name", "source", "note")}  # fmt: skip
     # Nothing computed or chosen by default is shown as the team's (D-126): buttons take it up.
@@ -117,7 +130,7 @@ def _scoring(project: Project, group_id: str) -> None:
             )
     if bounds:
         with offers[1]:
-            low, high = bounds
+            low, high = bound(bounds[0]), bound(bounds[1])
             st.button(
                 _("Reprendre les bornes des étiquettes ({low} à {high})").format(
                     low=w.number(low), high=w.number(high)
@@ -126,6 +139,7 @@ def _scoring(project: Project, group_id: str) -> None:
                 on_click=lambda: st.session_state.update({keys["min"]: low, keys["max"]: high}),
                 icon=":material/arrow_downward:",
             )
+    number = {"step": 1, "format": "%d"} if whole else {}
     with st.form(f"form-scoring-{group_id}", border=False):
         st.multiselect(
             _("Items du score"),
@@ -143,11 +157,13 @@ def _scoring(project: Project, group_id: str) -> None:
         left, middle, right = st.columns(3)
         left.number_input(
             _("Minimum de l'échelle"),
-            key=c.field(keys["min"], lambda: current("scale_min", None)),
+            **number,
+            key=c.field(keys["min"], lambda: bound(current("scale_min", None))),
         )
         middle.number_input(
             _("Maximum de l'échelle"),
-            key=c.field(keys["max"], lambda: current("scale_max", None)),
+            **number,
+            key=c.field(keys["max"], lambda: bound(current("scale_max", None))),
         )
         right.number_input(
             _("Items répondus, au minimum"),

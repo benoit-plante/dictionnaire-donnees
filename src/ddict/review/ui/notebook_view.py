@@ -355,6 +355,13 @@ def page(project: Project) -> None:
         on_change=_change,
         args=(_numbers,),
     )
+    st.write(
+        _(
+            "Les numéros que prennent le premier tableau et la première figure de l'ébauche. "
+            "Par exemple, 3 si l'introduction de l'article a déjà deux tableaux : le premier "
+            "tableau de l'outil sera le Tableau 3, et les suivants continueront à partir de là."
+        )
+    )
     blocked = check.blocking(notebook, statuses)
     if blocked:
         st.warning(

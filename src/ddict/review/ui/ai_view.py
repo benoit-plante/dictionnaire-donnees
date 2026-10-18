@@ -116,7 +116,7 @@ def _model_section() -> tuple[str, str] | None:
         return None
     if st.session_state.get(MODEL) not in models:
         st.session_state[MODEL] = RECOMMENDED if RECOMMENDED in models else models[0]
-    st.selectbox(_("Modèle"), models, key=MODEL)
+    st.selectbox(_("Modèle"), models, placeholder=_("Choisir…"), key=MODEL)
     st.caption(
         _(
             "Le modèle tourne sur cet ordinateur. Il ne reçoit jamais les réponses des "

@@ -429,7 +429,13 @@ def page(project: Project) -> None:
         return
     advice_view.panel(project)
     book = Codebook(project, prepared)
-    key = st.selectbox(_("Analyse"), list(CATALOGUE), key=ANALYSIS, format_func=TITLES.__getitem__)
+    key = st.selectbox(
+        _("Analyse"),
+        list(CATALOGUE),
+        placeholder=_("Choisir…"),
+        key=ANALYSIS,
+        format_func=TITLES.__getitem__,
+    )
     st.caption(PURPOSES[key])
     chosen = _choose_variables(project, key, book)
     options = _choose_options(key, chosen, prepared, book)

@@ -160,6 +160,7 @@ def panel(project: Project, entry: VariableEntry) -> None:
         which = st.selectbox(
             _("Recodage"),
             options,
+            placeholder=_("Choisir…"),
             key=_key(name, "which"),
             format_func=lambda o: (
                 _("Nouveau recodage")

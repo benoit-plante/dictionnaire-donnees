@@ -85,7 +85,7 @@ def _dashboard(project) -> None:
             key=f"task-{index}",
             on_click=_go,
             args=(task.mode, task.filter),
-            use_container_width=True,
+            width="stretch",
         )
 
 
@@ -152,6 +152,7 @@ def main() -> None:
                 chosen = st.selectbox(
                     _("Variable"),
                     names,
+                    placeholder=_("Choisir…"),
                     key="variable",
                     format_func=lambda n: variables_view.option_text(project, n),
                     on_change=variables_view.remember_variable,
@@ -164,7 +165,14 @@ def main() -> None:
                 _("{n} sigles, dont {p} à valider").format(n=len(project.glossary), p=pending)
             )
         elif mode == "groups" and project.groups:
-            chosen = st.selectbox(_("Groupe"), [g.group_id for g in project.groups], key="group")
+            chosen = st.selectbox(
+                _("Groupe"),
+                [g.group_id for g in project.groups],
+                placeholder=_("Choisir…"),
+                key="group",
+                # v0.16 (finding 20): what the group is, not only its number.
+                format_func=lambda g: groups_view.option_text(project, g),
+            )
         elif mode == "groups":
             st.info(_("Aucun groupe trouvé."))
         _quit_button()
@@ -198,6 +206,7 @@ def main() -> None:
         bulk_view.links_panel(project)
         variables_view.empty_filter(project, which, filters)
     elif mode == "variables":
+        variables_view.neighbours(names, chosen)  # v0.16 (finding 23): at the top
         bulk_view.links_panel(project)
         variables_view.page(project, project.variable(chosen))
     elif mode == "groups":

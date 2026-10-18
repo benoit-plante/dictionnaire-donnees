@@ -87,6 +87,14 @@ def field(key: str, fresh) -> str:
     return key
 
 
+DASH = "—"  # an empty cell of a table, never "None" (v0.16, finding 17)
+
+
+def dash(value) -> str:
+    """A cell to show: the value, or the dash when there is none."""
+    return DASH if value is None or value == "" else str(value)
+
+
 def go_to(mode: str, **filled) -> None:
     """Open another page with its fields filled (v0.16): the only place that knows how a
     page is chosen, so that the navigation by phases changes only this function."""

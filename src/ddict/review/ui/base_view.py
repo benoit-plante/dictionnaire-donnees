@@ -39,6 +39,7 @@ def _study_language(project: Project) -> None:
     st.selectbox(
         _("Langue de l'étude"),
         list(i18n.LANGUAGES),
+        placeholder=_("Choisir…"),
         key=STUDY_LANGUAGE,
         format_func=i18n.LANGUAGES.__getitem__,
         on_change=c.act,
@@ -91,6 +92,7 @@ def _dataset(project: Project) -> None:
         left.selectbox(
             _("Une ligne représente"),
             ["", *w.UNITS],
+            placeholder=_("Choisir…"),
             format_func=lambda u: w.UNITS[u] if u else _("(non précisé)"),
             key=c.field(keys["unit_of_observation"], lambda: now_("unit_of_observation")),
         )
@@ -100,6 +102,7 @@ def _dataset(project: Project) -> None:
         st.selectbox(
             _("Structure"),
             ["", *w.STRUCTURES],
+            placeholder=_("Choisir…"),
             format_func=lambda s: w.STRUCTURES[s] if s else _("(non précisée)"),
             key=c.field(keys["structure"], lambda: now_("structure")),
         )
@@ -118,6 +121,7 @@ def _dataset(project: Project) -> None:
             column.selectbox(
                 w.DESIGN[part].capitalize(),
                 ["", *names],
+                placeholder=_("Choisir…"),
                 format_func=lambda n: shown.get(n, "—") if n else "—",
                 key=c.field(keys[f"design_{part}"], lambda part=part: now_(f"design_{part}")),
             )
@@ -205,11 +209,11 @@ def _levels(project: Project) -> None:
     table_key = f"{LEVEL_TABLE}-{which}"
     accept = levels.DECISIONS["accept"]
     prefilled = st.session_state.get(LEVEL_PREFILL) == which
-    levels_shown = [w.MEASURES[r.level] if r.level else "" for r in rows]
-    decisions_shown = [accept if prefilled and r.waiting else "" for r in rows]
+    levels_shown = [w.MEASURES[r.level] if r.level else c.DASH for r in rows]
+    decisions_shown = [accept if prefilled and r.waiting else c.DASH for r in rows]
     frame = pd.DataFrame(
         [
-            (r.name, r.label, r.kind, r.file_level, lv, d, r.status)
+            (r.name, c.dash(r.label), c.dash(r.kind), c.dash(r.file_level), lv, d, c.dash(r.status))
             for r, lv, d in zip(rows, levels_shown, decisions_shown, strict=True)
         ],
         columns=["name", "label", "kind", "file_level", "level", "decision", "status"],
@@ -218,20 +222,24 @@ def _levels(project: Project) -> None:
         frame,
         key=table_key,
         hide_index=True,
-        use_container_width=True,
+        width="stretch",
         disabled=["name", "label", "kind", "file_level", "status"],
         column_config={
-            "name": _("Variable"),
-            "label": _("Libellé"),
-            "kind": _("Type"),
-            "file_level": _("Dans le fichier"),
+            "name": st.column_config.TextColumn(_("Variable"), width="medium"),
+            "label": st.column_config.TextColumn(_("Libellé"), width="large"),
+            "kind": st.column_config.TextColumn(_("Type"), width="small"),
+            "file_level": st.column_config.TextColumn(_("Dans le fichier"), width="small"),
             "level": st.column_config.SelectboxColumn(
-                _("Niveau"), options=["", *(w.MEASURES[k] for k in w.MEASURES)]
+                _("Niveau"),
+                options=[c.DASH, *(w.MEASURES[k] for k in w.MEASURES)],
+                width="small",
             ),
             "decision": st.column_config.SelectboxColumn(
-                _("Décision"), options=["", *(levels.DECISIONS[k] for k in levels.DECISIONS)]
+                _("Décision"),
+                options=[c.DASH, *(levels.DECISIONS[k] for k in levels.DECISIONS)],
+                width="small",
             ),
-            "status": _("Statut"),
+            "status": st.column_config.TextColumn(_("Statut"), width="medium"),
         },
     )
     left, right = st.columns(2)
@@ -303,11 +311,12 @@ def page(project: Project) -> None:
     )
     st.subheader(_("Complétude"))
     st.caption(_("Éléments décidés par l'équipe, sur ceux qui s'appliquent."))
+    missing = _("À documenter")
     st.dataframe(
-        pd.DataFrame(
-            w.completeness_rows(project), columns=[_("Élément"), _("Décidés"), _("À documenter")]
-        ),
+        pd.DataFrame(w.completeness_rows(project), columns=[_("Élément"), _("Décidés"), missing]),
         hide_index=True,
+        width="stretch",
+        column_config={missing: st.column_config.TextColumn(missing, width="large")},
     )
     _levels(project)
     if sensitive:

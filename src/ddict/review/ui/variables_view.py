@@ -384,6 +384,7 @@ def _privacy(entry: VariableEntry) -> None:
     st.selectbox(
         _("Classe"),
         logic.PRIVACY_CLASSES,
+        placeholder=_("Choisir…"),
         format_func=lambda c: w.PRIVACY[c],
         key=c.field(
             key, lambda: c.project().variable(name).privacy.privacy_class.value or "ordinary"
@@ -588,6 +589,35 @@ def choose_variable(project: Project, names: list[str], which: str) -> None:
     if chosen is not None:
         st.session_state.current = chosen
         st.session_state.variable = chosen  # set before the list is drawn
+
+
+def _show_variable(name: str) -> None:
+    st.session_state.variable = name
+    st.session_state.current = name
+
+
+def neighbours(names: list[str], chosen: str) -> None:
+    """ "Précédente" and "Suivante" at the top of the page (v0.16, finding 23), in the order
+    of the filter; the list of the sidebar stays."""
+    at = names.index(chosen)
+    with st.container(horizontal=True, vertical_alignment="center"):
+        st.button(
+            _("Précédente"),
+            key="variable-previous",
+            icon=":material/arrow_back:",
+            disabled=at == 0,
+            on_click=_show_variable,
+            args=(names[at - 1] if at else chosen,),
+        )
+        st.write(_("{n} sur {total}").format(n=at + 1, total=len(names)))
+        st.button(
+            _("Suivante"),
+            key="variable-next",
+            icon=":material/arrow_forward:",
+            disabled=at == len(names) - 1,
+            on_click=_show_variable,
+            args=(names[at + 1] if at < len(names) - 1 else chosen,),
+        )
 
 
 def remember_variable() -> None:

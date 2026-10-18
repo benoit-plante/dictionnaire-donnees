@@ -63,6 +63,7 @@ def page(project: Project) -> None:
     kinds = st.multiselect(
         _("Classes montrées"),
         list(verify.ORDER),
+        placeholder=_("Choisir…"),
         default=[k for k in verify.ORDER if k != "agrees"],
         key=CLASSES,
         format_func=verify.CLASSES.__getitem__,
@@ -74,7 +75,7 @@ def page(project: Project) -> None:
         st.dataframe(
             [dict(zip(header, row, strict=True)) for row in table],
             hide_index=True,
-            use_container_width=True,
+            width="stretch",
         )
     else:
         st.success(_("Aucune valeur dans ces classes."))

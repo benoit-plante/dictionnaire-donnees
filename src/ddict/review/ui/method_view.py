@@ -208,12 +208,22 @@ def _form(project: Project, prepared: PreparedData | None) -> None:
     opened = st.session_state.setdefault(OPEN, False) or c.message_for("method-add")
     st.session_state[OPEN] = opened
     with st.expander(_("Ajouter une règle"), expanded=opened):
-        kind = st.selectbox(_("Sorte de règle"), list(KINDS), key=KIND, format_func=KINDS.get)
+        kind = st.selectbox(
+            _("Sorte de règle"),
+            list(KINDS),
+            placeholder=_("Choisir…"),
+            key=KIND,
+            format_func=KINDS.get,
+        )
         if kind in ("condition", "score"):
             if kind == "condition":
                 originals = [e.name for e in project.variables]
                 chosen = st.selectbox(
-                    _("Variable"), originals, key="method-new-variable", format_func=shown
+                    _("Variable"),
+                    originals,
+                    placeholder=_("Choisir…"),
+                    key="method-new-variable",
+                    format_func=shown,
                 )
                 if chosen and (labels := _value_labels(project, chosen)):
                     st.caption(_("Valeurs : {labels}").format(labels=labels))
@@ -222,10 +232,12 @@ def _form(project: Project, prepared: PreparedData | None) -> None:
                 if not scored:
                     st.info(_("Aucun groupe n'a de cotation structurée, donc aucun score."))
                     return
-                st.selectbox(_("Score du groupe"), scored, key="method-new-score")
+                st.selectbox(
+                    _("Score du groupe"), scored, placeholder=_("Choisir…"), key="method-new-score"
+                )
             operator = st.selectbox(
-                _("Condition"), list(OPERATORS), key="method-new-operator",
-                format_func=OPERATORS.get,
+                _("Condition"), list(OPERATORS), placeholder=_("Choisir…"),
+                key="method-new-operator", format_func=OPERATORS.get,
             )  # fmt: skip
             if operator != "missing":
                 st.text_input(_("Valeur"), key="method-new-value")
@@ -239,7 +251,7 @@ def _form(project: Project, prepared: PreparedData | None) -> None:
                 return
             key = "method-new-group" if kind == "completeness" else "method-new-grid"
             group = st.selectbox(
-                _("Groupe"), list(groups), key=key,
+                _("Groupe"), list(groups), placeholder=_("Choisir…"), key=key,
                 format_func=lambda g: _("{group} ({k} items)").format(group=g, k=len(groups[g])),
             )  # fmt: skip
             if kind == "completeness":
@@ -259,8 +271,16 @@ def _form(project: Project, prepared: PreparedData | None) -> None:
             st.session_state.setdefault("method-new-start", proposed[0])
             st.session_state.setdefault("method-new-end", proposed[1])
             start, end = st.columns(2)
-            start.selectbox(_("Début"), dates, key="method-new-start", format_func=shown)
-            end.selectbox(_("Fin"), dates, key="method-new-end", format_func=shown)
+            start.selectbox(
+                _("Début"),
+                dates,
+                placeholder=_("Choisir…"),
+                key="method-new-start",
+                format_func=shown,
+            )
+            end.selectbox(
+                _("Fin"), dates, placeholder=_("Choisir…"), key="method-new-end", format_func=shown
+            )
             st.number_input(
                 _("Exclure les passations de moins de … secondes"),
                 min_value=1.0,
@@ -364,8 +384,16 @@ def _signals(project: Project, prepared: PreparedData) -> None:
         st.session_state.setdefault("method-signal-start", proposed[0])
         st.session_state.setdefault("method-signal-end", proposed[1])
         start, end, threshold = st.columns(3)
-        first = start.selectbox(_("Début"), dates, key="method-signal-start", format_func=shown)
-        last = end.selectbox(_("Fin"), dates, key="method-signal-end", format_func=shown)
+        first = start.selectbox(
+            _("Début"),
+            dates,
+            placeholder=_("Choisir…"),
+            key="method-signal-start",
+            format_func=shown,
+        )
+        last = end.selectbox(
+            _("Fin"), dates, placeholder=_("Choisir…"), key="method-signal-end", format_func=shown
+        )
         seconds = threshold.number_input(
             _("Seuil, en secondes"), min_value=1.0, value=None, step=10.0,
             key="method-signal-seconds",

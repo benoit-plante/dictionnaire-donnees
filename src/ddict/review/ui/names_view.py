@@ -200,10 +200,21 @@ def _table(project: Project) -> None:
     # One table per filter: changes typed under one filter never land on another's rows.
     table_key = f"{TABLE}-{which}"
     accept = names.DECISIONS["accept"]
-    shown = [accept if st.session_state.get(PREFILL) == which and r.waiting else "" for r in rows]
+    shown = [
+        accept if st.session_state.get(PREFILL) == which and r.waiting else c.DASH for r in rows
+    ]
     frame = pd.DataFrame(
         [
-            (r.name, r.label, r.question, r.new_name, d, r.origin, r.status, r.problem)
+            (
+                r.name,
+                c.dash(r.label),
+                c.dash(r.question),
+                r.new_name,
+                d,
+                c.dash(r.origin),
+                c.dash(r.status),
+                c.dash(r.problem),
+            )
             for r, d in zip(rows, shown, strict=True)
         ],
         columns=[
@@ -221,19 +232,21 @@ def _table(project: Project) -> None:
         frame,
         key=table_key,
         hide_index=True,
-        use_container_width=True,
+        width="stretch",
         disabled=["name", "label", "question", "origin", "status", "problem"],
         column_config={
-            "name": _("Nom d'origine"),
-            "label": _("Étiquette"),
-            "question": _("Question"),
-            "new_name": _("Nouveau nom"),
+            "name": st.column_config.TextColumn(_("Nom d'origine"), width="medium"),
+            "label": st.column_config.TextColumn(_("Étiquette"), width="large"),
+            "question": st.column_config.TextColumn(_("Question"), width="small"),
+            "new_name": st.column_config.TextColumn(_("Nouveau nom"), width="medium"),
             "decision": st.column_config.SelectboxColumn(
-                _("Décision"), options=["", *(names.DECISIONS[k] for k in names.DECISIONS)]
+                _("Décision"),
+                options=[c.DASH, *(names.DECISIONS[k] for k in names.DECISIONS)],
+                width="small",
             ),
-            "origin": _("Origine"),
-            "status": _("Statut"),
-            "problem": _("Problème"),
+            "origin": st.column_config.TextColumn(_("Origine"), width="small"),
+            "status": st.column_config.TextColumn(_("Statut"), width="medium"),
+            "problem": st.column_config.TextColumn(_("Problème"), width="medium"),
         },
     )
     waiting = sum(r.waiting for r in rows)
@@ -275,13 +288,13 @@ def _stems(project: Project) -> None:
             frame,
             key=STEMS,
             hide_index=True,
-            use_container_width=True,
+            width="stretch",
             disabled=["key", "text", "status"],
             column_config={
-                "key": _("Question"),
-                "text": _("Texte"),
-                "stem": _("Nom de base"),
-                "status": _("Statut"),
+                "key": st.column_config.TextColumn(_("Question"), width="small"),
+                "text": st.column_config.TextColumn(_("Texte"), width="large"),
+                "stem": st.column_config.TextColumn(_("Nom de base"), width="medium"),
+                "status": st.column_config.TextColumn(_("Statut"), width="medium"),
             },
         )
         st.button(

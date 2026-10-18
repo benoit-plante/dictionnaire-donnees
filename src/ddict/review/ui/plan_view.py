@@ -138,6 +138,7 @@ def _rules(project: Project) -> None:
     right.selectbox(
         _("Correction pour comparaisons multiples"),
         ["none", "holm", "bonferroni"],
+        placeholder=_("Choisir…"),
         key=fields["correction"],
         format_func=article.CORRECTIONS.__getitem__,
         **changed("correction"),
@@ -407,7 +408,13 @@ def _form_data(project: Project, prepared: PreparedData | None) -> dict | None:
     """The form's widgets, and the fields of the hypothesis they describe."""
     book = Codebook(project, prepared)
     statement = st.text_area(_("Hypothèse"), key=NEW + "statement", height=80)
-    key = st.selectbox(_("Analyse"), ANALYSES, key=NEW + "analysis", format_func=TITLES.__getitem__)
+    key = st.selectbox(
+        _("Analyse"),
+        ANALYSES,
+        placeholder=_("Choisir…"),
+        key=NEW + "analysis",
+        format_func=TITLES.__getitem__,
+    )
     chosen = _choose(project, key, book)
     options = {}
     for option, values in CATALOGUE[key].options.items():
@@ -437,6 +444,7 @@ def _form_data(project: Project, prepared: PreparedData | None) -> dict | None:
             predictor = st.selectbox(
                 _("Prédicteur testé"),
                 chosen.get("predictors", []),
+                placeholder=_("Choisir…"),
                 index=None,
                 key=NEW + "predictor",
                 format_func=_shown(book),
