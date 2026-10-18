@@ -59,7 +59,8 @@ def test_the_state_of_a_page(sleep):
     )
     assert counts == {"glossary": 3, "variables": 3}
     assert navigation.title(project, "glossary", counts) == "Glossaire (3)"
-    assert navigation.title(project, "groups", counts) == "Groupes ✓"  # followed, nothing waits
+    assert navigation.title(project, "questionnaire", counts) == "Questionnaire ✓"
+    assert navigation.title(project, "groups", counts) == "Groupes"  # its tasks come later
     assert navigation.title(project, "export", counts) == "Export"  # nothing to follow
     assert navigation.title(project, "plan", counts) == "Plan"
     project.plan.frozen = Frozen(date="2026-10-18", fingerprint="0" * 64)

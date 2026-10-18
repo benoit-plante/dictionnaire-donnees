@@ -8,6 +8,8 @@ at once. The views are in `review/ui/`.
 
 from __future__ import annotations
 
+from urllib.parse import urlparse
+
 import streamlit as st
 
 from ddict import settings
@@ -91,21 +93,32 @@ def _stopped() -> None:
     st.stop()
 
 
+def _root_page() -> str:
+    """The page at the root address: the session's "mode", the first page otherwise. Never
+    the page the address asks for by name: Streamlit serves the root page at the root only,
+    and a reload on "/base" would say "Page not found"."""
+    current = st.session_state.get("mode")
+    if current not in navigation.PAGES:
+        current = navigation.FIRST
+    asked = urlparse(st.context.url or "").path.rstrip("/").rsplit("/", 1)[-1]
+    if asked != current:
+        return current
+    return next(m for m in navigation.PAGES if m != current)
+
+
 def _navigation(project, waiting):
     """The pages by phase (v0.16, D-122), each with its state. The session's "mode" names the
     page shown at the root address (the first one, or the one a test chooses); a page asked
     for by a button ("goto", set by `c.go_to`) is opened with `st.switch_page`."""
     counts = navigation.waiting(waiting)
-    current = st.session_state.get("mode")
-    if current not in navigation.PAGES:
-        current = navigation.FIRST
+    root = _root_page()
     pages = {
         info.mode: st.Page(
             lambda: None,  # the page is drawn below, with the sidebar it needs
             title=navigation.title(project, info.mode, counts),
             icon=info.icon,
             url_path=info.mode,
-            default=info.mode == current,
+            default=info.mode == root,
         )
         for info in navigation.PAGES.values()
     }

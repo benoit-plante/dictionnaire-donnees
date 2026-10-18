@@ -49,7 +49,9 @@ Pour le faire vous-même, comme avec vos propres données :
 
 Votre premier codebook est fait, sans IA : tout ce qu'il contient a été calculé exactement à partir du fichier. Les sections suivantes l'enrichissent ; on peut s'arrêter à n'importe laquelle et exporter.
 
-En haut de la barre latérale, le **tableau de bord** dit ce qui attend, dans l'ordre recommandé (« Ajouter le questionnaire de l'étude », « Sigles à valider : 3 »…). Chaque ligne est un bouton qui mène à la bonne page. Le bouton **Accueil** ramène à l'accueil, où vos **projets récents** viennent en tête, avec leur dossier et la date de leur dernière modification, et se rouvrent en un clic.
+**Le menu de la barre latérale** (depuis la 0.16) range les pages en trois métiers : **Documenter** (Base, Questionnaire, Glossaire, Variables, Groupes, Noms, Export), **Analyser** (Plan, Analyses, Carnet) et **Rédiger** (Méthode, Vérifier), puis **Réglages** (IA locale). Chaque page dit ce qui y attend (« Glossaire (2) ») ou ✓ quand rien n'y attend. La barre **Codebook documenté à N %** mesure ce que votre équipe a décidé, partie par partie (le détail est dans l'onglet Résumé de la page Base). Les pages longues sont en **onglets** : Base (Résumé, Description, Niveaux de mesure, Sensibles), un groupe (Items, Cotation, Instrument, Recodages), le résultat d'une analyse (Résultat, Tableaux et figures, Fichiers).
+
+Sous le menu, le **tableau de bord** dit ce qui attend, dans l'ordre recommandé (« Ajouter le questionnaire de l'étude », « Sigles à valider : 3 »…), jusqu'à l'article : le plan à figer, les chiffres à confirmer au carnet, les trous de la Méthode, l'ébauche à vérifier. Chaque ligne est un bouton qui mène à la bonne page. Le bouton **Accueil** ramène à l'accueil, où vos **projets récents** viennent en tête, avec leur dossier et la date de leur dernière modification, et se rouvrent en un clic.
 
 Quand un message renvoie à une autre page (« Le niveau de mesure se décide sur la page Base », « Sigles… sans définition : anx »), un bouton l'accompagne et y mène, déjà rempli : **Définir anx** ouvre le glossaire avec le sigle dans son champ.
 
@@ -154,7 +156,7 @@ La démarche est la même avec votre fichier : SPSS (`.sav`), CSV (y compris ceu
 
 ## 11. Renommer les variables
 
-Un export de plateforme donne des noms comme `q0003_0004`, et une étude longitudinale veut les mêmes noms d'une vague à l'autre. La page **Noms** (après **Groupes** dans la barre latérale) propose de nouveaux noms ; vous les décidez. Le nom d'origine reste celui de votre fichier, qui n'est jamais modifié.
+Un export de plateforme donne des noms comme `q0003_0004`, et une étude longitudinale veut les mêmes noms d'une vague à l'autre. La page **Noms** (section Documenter du menu) propose de nouveaux noms ; vous les décidez. Le nom d'origine reste celui de votre fichier, qui n'est jamais modifié.
 
 1. **Donnez le préfixe des grilles.** Page **Groupes**, sur chaque grille : **Préfixe des noms de ses items** (par exemple `k6`), puis **Enregistrer le préfixe**. Ses items seront nommés `k6_1`, `k6_2`… L'outil ne propose jamais de préfixe lui-même : le sigle d'un instrument est votre décision.
 2. **Réglages de nommage** (page **Noms**) : la **marque de vague** (`_t2`, ou vide pour une étude à un seul temps), sa place (à la fin ou au début) et la longueur maximale des noms (32, la limite de Stata, convient à SPSS, R et Stata). **Enregistrer et proposer les noms**.
@@ -178,7 +180,7 @@ Le contexte d'analyse (section 8) est fait pour être donné tel quel à un assi
 
 ## 13. Analyser la base
 
-La page **Analyses** (après **Noms** dans la barre latérale) calcule, sur votre base et avec vos décisions acceptées, six analyses écrites et vérifiées d'avance : **Tableau 1** (décrire l'échantillon), **test t** (comparer deux groupes), **ANOVA** (plusieurs groupes), **khi-carré** (deux variables catégorielles), **corrélation** et **régression linéaire**. Le détail de chacune (conditions, options, formules, exemples) est dans [`catalogue-analyses.md`](catalogue-analyses.md). Rien n'est envoyé hors de votre ordinateur, et votre fichier n'est jamais modifié.
+La page **Analyses** (section Analyser du menu) calcule, sur votre base et avec vos décisions acceptées, six analyses écrites et vérifiées d'avance : **Tableau 1** (décrire l'échantillon), **test t** (comparer deux groupes), **ANOVA** (plusieurs groupes), **khi-carré** (deux variables catégorielles), **corrélation** et **régression linéaire**. Le détail de chacune (conditions, options, formules, exemples) est dans [`catalogue-analyses.md`](catalogue-analyses.md). Rien n'est envoyé hors de votre ordinateur, et votre fichier n'est jamais modifié.
 
 **Avant de commencer**, vos décisions comptent : les codes manquants confirmés (999, −9) sont retirés, les nouveaux noms appliqués, les items inversés et les scores calculés selon votre cotation (section 7). Le **niveau de mesure** de chaque variable (page **Base**) décide des analyses où elle peut entrer : une variable sans niveau décidé n'est proposée nulle part. En ligne de commande, `ddict niveaux lister` montre les niveaux proposés, `ddict niveaux accepter` (des noms, ou `--tout`), `rejeter` et `fixer age echelle` les décident ; `ddict codes lister` montre les codes manquants suspects, `ddict codes manquant -9 nb_reveils`, `valeur` et `annuler` les décident, comme les pages **Base** et **Variables**. Les identifiants, les textes libres et les dates sont toujours exclus. Depuis la 0.13, une catégorie écrite en toutes lettres dans un CSV (« oui », « non ») entre dans les analyses dès que son niveau est « nominal » ; une case vide y compte comme une valeur manquante.
 

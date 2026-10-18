@@ -49,7 +49,9 @@ The fictional database is a small invented study of sleep (200 fictional partici
 
 Your first codebook is done, without AI: everything in it was computed exactly from the file. The next sections enrich it; you can stop at any of them and export.
 
-At the top of the sidebar, the **to-do list** says what is waiting, in the recommended order ("Add the study questionnaire", "Acronyms to accept: 3"…). Each line is a button that leads to the right page. The **Home** button takes you back to the home page, where your **Recent projects** come first, with their folder and the date of their last change, and open again in one click.
+**The menu of the sidebar** (since 0.16) arranges the pages in three jobs: **Document** (Database, Questionnaire, Glossary, Variables, Groups, Names, Export), **Analyse** (Plan, Analyses, Notebook) and **Write** (Method, Verify), then **Settings** (Local AI). Each page shows what waits there ("Glossary (2)"), or ✓ when nothing waits. The **Codebook N% documented** bar measures what your team has decided, part by part (the detail is in the Summary tab of the Database page). The long pages are in **tabs**: Database (Summary, Description, Measure levels, Sensitive), a group (Items, Scoring, Instrument, Recodings), the result of an analysis (Result, Tables and figures, Files).
+
+Under the menu, the **to-do list** says what is waiting, in the recommended order ("Add the study questionnaire", "Acronyms to accept: 3"…), up to the article: the plan to freeze, the numbers to confirm in the notebook, the gaps of the Method, the draft to check. Each line is a button that leads to the right page. The **Home** button takes you back to the home page, where your **Recent projects** come first, with their folder and the date of their last change, and open again in one click.
 
 When a message points to another page ("The measure level is decided on the Database page", "acronyms… without a definition: anx"), a button comes with it and leads there, already filled in: **Define anx** opens the glossary with the acronym in its field.
 
@@ -154,7 +156,7 @@ It works the same with your file: SPSS (`.sav`), CSV (including those of Excel i
 
 ## 11. Rename the variables
 
-A platform export gives names like `q0003_0004`, and a longitudinal study wants the same names from one wave to the next. The **Names** page (after **Groups** in the sidebar) proposes new names; you decide them. The original name stays that of your file, which is never changed.
+A platform export gives names like `q0003_0004`, and a longitudinal study wants the same names from one wave to the next. The **Names** page (Document section of the menu) proposes new names; you decide them. The original name stays that of your file, which is never changed.
 
 1. **Give the prefix of the grids.** **Groups** page, on each grid: **Prefix of its items' names** (for example `k6`), then **Save the prefix**. Its items will be named `k6_1`, `k6_2`… The tool never proposes a prefix itself: the acronym of an instrument is your decision.
 2. **Naming settings** (**Names** page): the **wave mark** (`_t2`, or empty for a study with a single time point), its place (at the end or at the start) and the maximum length of the names (32, Stata's limit, suits SPSS, R and Stata). **Save and propose the names**.
@@ -178,7 +180,7 @@ The analysis context (section 8) is made to be given as it is to an assistant th
 
 ## 13. Analyse the database
 
-The **Analyses** page (after **Names** in the sidebar) computes, on your database and with your accepted decisions, six analyses written and checked in advance: **Table 1** (describe the sample), **t test** (compare two groups), **ANOVA** (several groups), **chi-square** (two categorical variables), **correlation** and **linear regression**. Each one is described in detail (conditions, options, formulas, examples, in French) in [`../catalogue-analyses.md`](../catalogue-analyses.md). Nothing is sent outside your computer, and your file is never changed.
+The **Analyses** page (Analyse section of the menu) computes, on your database and with your accepted decisions, six analyses written and checked in advance: **Table 1** (describe the sample), **t test** (compare two groups), **ANOVA** (several groups), **chi-square** (two categorical variables), **correlation** and **linear regression**. Each one is described in detail (conditions, options, formulas, examples, in French) in [`../catalogue-analyses.md`](../catalogue-analyses.md). Nothing is sent outside your computer, and your file is never changed.
 
 **Before you start**, your decisions count: the confirmed missing codes (999, −9) are removed, the new names applied, the reversed items and the scores computed from your scoring (section 7). The **measure level** of each variable (**Database** page) decides which analyses it may enter: a variable without a decided level is offered nowhere. On the command line, `ddict levels list` shows the proposed levels, `ddict levels accept` (names, or `--all`), `reject` and `set age scale` decide them; `ddict codes list` shows the suspect missing codes, `ddict codes missing -9 nb_reveils`, `value` and `undo` decide them, as the **Database** and **Variables** pages do. Identifiers, free texts and dates are always left out. Since 0.13, a category written out in a CSV ("yes", "no") enters the analyses once its level is "nominal"; an empty cell counts there as a missing value.
 

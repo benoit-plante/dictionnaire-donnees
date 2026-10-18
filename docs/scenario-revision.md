@@ -1,6 +1,6 @@
 # Scénario manuel : l'interface, de l'accueil au codebook
 
-À faire sur la base fictive, après chaque changement important de l'interface : depuis la 0.16, dans la fenêtre de l'icône (1400 × 900, puis réduite à 900 × 600 pour les étapes 64 à 68), et au besoin dans un vrai navigateur. La logique est couverte par les tests automatiques ; ce scénario vérifie ce que les tests ne voient pas : l'affichage, la lisibilité, les clics rapides, la vraie fenêtre « Ouvrir » et le vrai modèle.
+À faire sur la base fictive, après chaque changement important de l'interface : depuis la 0.16, dans la fenêtre de l'icône (1400 × 900, puis réduite à 900 × 600 pour les étapes 64 à 68), et au besoin dans un vrai navigateur. Avant la fenêtre, `uv run python scripts/captures.py` photographie chaque page à 1400 × 900 et 900 × 600 (dans `%TEMP%\ddict-captures`, depuis la 0.16) : un premier coup d'œil, qui ne remplace pas le scénario. La logique est couverte par les tests automatiques ; ce scénario vérifie ce que les tests ne voient pas : l'affichage, la lisibilité, les clics rapides, la vraie fenêtre « Ouvrir » et le vrai modèle.
 
 ## Préparation
 

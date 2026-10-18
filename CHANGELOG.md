@@ -2,7 +2,7 @@
 
 ## Non publiée — v0.16 en cours
 
-L'interface guide la personne de la base à l'article (plan : `docs/plan-v0.16.md`, D-121 à D-128). Ni le calcul, ni les formats de fichier, ni les règles de confidentialité ne changent ; aucune IA ajoutée. Lot A (corrections locales) terminé ; les lots B (navigation par phases, progression) et C (un seul geste pour décider et enregistrer) suivront avant la version 0.16.0.
+L'interface guide la personne de la base à l'article (plan : `docs/plan-v0.16.md`, D-121 à D-128). Ni le calcul, ni les formats de fichier, ni les règles de confidentialité ne changent ; aucune IA ajoutée. Lots A (corrections locales) et B (navigation, progression, onglets) terminés ; le lot C (un seul geste pour décider et enregistrer) suivra avant la version 0.16.0.
 
 - **Rien de proposé ne s'affiche comme décidé** (D-126) : les items inversés, la cotation (items, calcul, bornes, items répondus au minimum, règle des manquants), l'étendue théorique, les seuils et la question à rattacher partent vides ; un bouton « Reprendre… » nomme ce que l'outil propose et le met dans le champ, sans rien enregistrer.
 - **Le glossaire** (D-121) : « Accepter » prend la définition affichée, corrigée ou non ; « Rejeter » juste à côté ; « Tout accepter (N)… » montre la liste exacte avant d'accepter.
@@ -13,7 +13,11 @@ L'interface guide la personne de la base à l'article (plan : `docs/plan-v0.16.m
 - **L'accueil** (D-125) : les projets récents en tête, avec leur dossier et leur date ; « Essayer avec la base fictive » copie la base et son questionnaire dans `Documents\Dictionnaire de données - essai` et ouvre le projet.
 - **Finitions** : « Choisir… » au lieu de « Choose an option » ; « — » au lieu de « None » ; largeurs de colonnes ; bornes entières (« 1 », pas « 1.00 ») ; groupes nommés par ce qu'ils sont ; « Précédente » et « Suivante » sur la page « Variables » ; l'aide de « Premier tableau » et « Première figure » ; plus d'avertissement `use_container_width`.
 - **Corrections** : le paquet de reproduction donne les mêmes octets quelle que soit l'heure ; la page « Plan » ne plante plus sans la base quand un score figure parmi les variables.
-- Guides en français et en anglais ; le scénario manuel gagne les étapes 64 à 68.
+- **La navigation par phases** (D-122) : un menu Documenter, Analyser, Rédiger, puis Réglages pour l'IA locale, au lieu de treize boutons au même niveau ; chaque page dit ce qui y attend, ou ✓ ; chaque page garde son adresse au rechargement.
+- **Une progression honnête** : « Codebook documenté à N % », partie par partie, jamais pleine sur un projet neuf ; le tableau de bord continue jusqu'à l'article (plan à figer, chiffres à confirmer au carnet, analyses impossibles, trous de la Méthode, ébauche à vérifier).
+- **Les pages longues en onglets** : Base (le résumé d'abord), un groupe, le résultat d'une analyse ; l'onglet ouvert reste après une action, et un bouton d'une autre page ouvre le bon onglet.
+- **Captures d'écran automatiques** pour le développement (D-127) : `scripts/captures.py` photographie chaque page à 1400 × 900 et 900 × 600 avec le Microsoft Edge du poste (Playwright, outil de développement seulement).
+- Guides en français et en anglais ; le scénario manuel gagne les étapes 64 à 72.
 
 ## 0.15.0 — 2026-10-18
 

@@ -42,8 +42,10 @@ SECTIONS: dict[str, tuple[PageInfo, ...]] = {
 PAGES = {page.mode: page for pages in SECTIONS.values() for page in pages}
 FIRST = "base"  # a project opens on its database (v0.3)
 
-# The pages whose work the dashboard follows: a tick when nothing waits there.
-FOLLOWED = ("base", "questionnaire", "glossary", "variables", "groups", "names", "plan")
+# The pages whose whole work the dashboard follows: a tick when nothing waits there. Not the
+# groups nor the names: their tasks appear only once the team has begun (a scoring, a name),
+# so a tick there would say "done" of work not started.
+FOLLOWED = ("base", "questionnaire", "glossary", "variables", "plan")
 DONE = "✓"
 
 
