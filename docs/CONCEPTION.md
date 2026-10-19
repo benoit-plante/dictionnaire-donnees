@@ -165,12 +165,13 @@ Statuts affichés : `proposed` = « proposé par IA », `validated` = « validé
 Un seul fichier JSON (`mon-projet.dd.json`), écrit de façon déterministe (clés dans un ordre fixe, indentation 2, UTF-8, fins de ligne LF) pour qu'il se compare bien d'une version à l'autre :
 
 - `schema_version` ;
-- `source` : nom du fichier, empreinte SHA-256, nombre de lignes et de colonnes (pour détecter qu'on rouvre le projet avec une base modifiée) — **jamais les données** ;
+- `source` : nom du fichier, empreinte SHA-256, nombre de lignes et de colonnes (pour détecter qu'on rouvre le projet avec une base modifiée) — **jamais les données** ; absente (`null`) pour un projet conçu avant la collecte, tant que la base n'est pas arrivée (v0.20, D-145) ;
 - `settings` : seuils (cardinalité, petits effectifs), langue ;
 - `variables` (§ 5.2) et `groups` (§ 5.3) ;
 - `ai_runs` : pour chaque passage de l'IA, l'adresse du serveur, le nom exact du modèle, les paramètres (température, graine), la version du prompt, l'empreinte du message envoyé, la date, le résultat (réussi, réponse invalide, refusé) ;
 - `questionnaire` (v0.2, D-012) : nom et empreinte du questionnaire de l'étude, ses questions découpées (identifiant `Q7`, page, texte exact, type, options, lignes de grille, points à vérifier) et ses autres paragraphes ; absent tant qu'aucun questionnaire n'a été lu.
 - `glossary` (v0.2, D-015) : sigles et leur définition, chacun avec son origine (questionnaire ou équipe, jamais l'IA), son statut (à valider, validé, corrigé, rejeté) et l'endroit du questionnaire où il est défini.
+- `design` (v0.20, D-145, D-146) : seulement pour un projet créé par « Concevoir un questionnaire » : date de création, sections, publications marquées (date, copie du questionnaire, empreinte), points de relecture gardés tels quels, derniers identifiants donnés. Le questionnaire conçu lui-même est `questionnaire`, au format `designed`, et ses variables prévues sont dans `variables`, sans profil.
 
 Le fichier projet ne contient aucune valeur individuelle : seulement des métadonnées et des agrégats, avec les petits effectifs masqués. Il reste néanmoins à traiter comme un document de recherche (les étiquettes et les étendues peuvent être sensibles).
 
@@ -495,6 +496,8 @@ Toutes les dépendances ci-dessus sont sous licences permissives (BSD, MIT, Apac
 
 **v0.11 et suivantes** : de la base à l'ébauche d'article au format IMRaD, d'abord sans IA (carnet d'analyses, section Méthode, plan d'analyse, catalogue élargi, vérification du manuscrit), les modèles externes à la toute fin ; feuille de route proposée dans [`feuille-de-route-article.md`](feuille-de-route-article.md).
 
+**v0.20 et v0.21** : concevoir le questionnaire avant la collecte (projet sans base, questionnaire structuré, Word, fichier LimeSurvey, rapport de conformité à l'arrivée de la base), puis les sources, la vérification mot pour mot et l'extraction d'un instrument par l'IA ; plan dans [`plan-v0.20.md`](plan-v0.20.md).
+
 **Plus tard** (hors v0.1) :
 - bases SQL ;
 - export Frictionless Table Schema ;
@@ -674,3 +677,13 @@ Plan : [`plan-v0.18.md`](plan-v0.18.md), décisions D-134 à D-139. La version c
 - **Partie B, le niveau 1** (D-136). Libellés : consigne `variables-v4`, sans codes observés, proportions, manquants, minimum, maximum, moyenne ni années ; la description calculée d'un groupe perd son étendue de codes observés (`wording.group_description(…, observed=False)`). Rattachement et radicaux : leurs consignes, déjà de niveau 1, restent. Conseillère : `advise-v3` pour Anthropic (libellés entiers, items avec leurs libellés, une seule borne de 100 000 caractères) ; `advise-v2`, compacte (D-080), pour un serveur compatible OpenAI. Le type, le niveau de mesure et la note de confidentialité restent : ils décrivent la colonne, pas une réponse. Test à chaînes témoins sur les quatre usages.
 - **Partie C, l'interface, la ligne de commande, l'installation.** La page « IA » (réglages, clé masquée, « Tester la connexion », « Ce qui part ») et la case de la barre latérale, enregistrée par `c.save` (C1) ; la ligne de commande par les réglages, `--protocole`, `--ia` pour `rattacher` et `renommer`, `ddict ia cle | oublier | tester | autoriser | interdire` (C2) ; l'installateur sans Ollama, le désinstalleur qui efface la clé par `cmdkey` après une question (C2) ; les guides et ce document (C3).
 - **Partie D, le banc avec la clé de l'auteur** (D1, D2 ; `docs/essais/2026-10-19-anthropic.md`). Le banc compte les jetons et le coût de chaque passage et, avec `--niveau-2`, mesure aussi les libellés au niveau 2 (banc seulement). Haiku 5.5 et Sonnet 5.5 font mieux que le modèle local partout et que le calcul seul sur le rattachement (113 / 121), les noms de base (7 / 10) et la conseillère (13 / 13) ; aucun libellé de niveau 1 n'est signalé ; le niveau 2 n'améliore rien et fait recopier l'étendue observée. D'où : `claude-haiku-5-5` et la réflexion `medium` par défaut (D-140, `defaults.DEFAULT_MODEL`), « Faire proposer : noms de base » sur la page « Noms » (D-141), la conseillère sans compression avec Anthropic (D-142). Le nombre de candidates du rattachement reste 5. `ia.json` se lit même avec une signature UTF-8, et le rapport du banc dit ses paramètres.
+
+## 25. Concevoir le questionnaire (v0.20, v0.21)
+
+Plan : [`plan-v0.20.md`](plan-v0.20.md), décisions D-143 à D-155. Le module passe après la v0.19 (dossier d'étude). Deux versions : la v0.20, sans sources ni IA ; la v0.21, les sources, la vérification mot pour mot et l'IA (D-143, D-144 et D-147 s'y appliquent). Le principe : **l'IA recopie, le calcul vérifie, une personne décide.**
+
+- **Le projet sans base** (D-145) : format 0.9.0, `source` et `profile` facultatifs, `design` pour un projet de conception. Un projet 0.8.0 s'ouvre tel quel, même codebook et même empreinte.
+- **Le questionnaire structuré** (D-146) : le modèle `Question` étendu (sections, consigne, obligatoire, codes, « autre », provenance, texte d'affichage), identifiants jamais redonnés ; le code d'une question est son radical, les items inversés et l'instrument sont ceux du groupe que crée la grille. Les variables prévues en découlent par une seule fonction, avec leurs noms de D-048 ; le dictionnaire de données s'exporte avant la collecte, et le plan d'analyse s'y fige (D-153).
+- **LimeSurvey** (D-148) : lecture du `.lss` et du texte à colonnes ; description des conventions dans `ddict.platforms`, chacune vérifiée sur un export de l'auteur (LimeSurvey Cloud 7) ; rattachement par les codes ; écriture du texte à colonnes, par le calcul.
+- **L'interface** (D-149, D-154) : une phase « Concevoir » (Questionnaire, Relecture, Publier ; Sources en v0.21) pour les projets de conception ; ils s'ouvrent sur « Questionnaire » tant que la base n'est pas là ; « Mes projets » dit Concevoir ou En collecte.
+- **Publier** (D-150, D-152) : aperçu ; Word pour le comité et de travail, mêmes octets à chaque production ; fichier LimeSurvey ; comparaison du réexport, chaque différence réglée par une décision ; « Marquer comme envoyé », puis différences calculées depuis chaque version ; à l'arrivée de la base, rapport de conformité.

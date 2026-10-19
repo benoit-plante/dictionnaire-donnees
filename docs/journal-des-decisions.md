@@ -1740,3 +1740,169 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   2. Le message compact partout.
 - **Justification :** Avec `advise-v3`, Haiku 5.5 et Sonnet 5.5 donnent la bonne analyse et les bonnes variables au premier rang pour 13 objectifs sur 13 et 6 sur 6 (qwen2.5 7B avec le message compact : 10 / 13 et 4 / 6).
 - **Références :** `docs/essais/2026-10-19-anthropic.md`.
+
+### D-143 — L'exception à la règle 4 : l'extraction d'une source déposée
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** La règle 4 garde son principe et reçoit une seule exception : le modèle peut relever, dans une source déposée par l'équipe, un nom d'instrument, une consigne, des items, des choix de réponse, une cotation ou une référence, chacun avec sa page, et seulement si le calcul retrouve ce texte mot pour mot à cette page (D-147) ; un texte introuvable ne peut pas être accepté. Une cotation proposée est justifiée par un extrait vérifié, et chacun de ses nombres (bornes, items inversés, nombre d'items) doit s'y lire. Rien ne vient de la mémoire du modèle. Les seuils restent humains. Les schémas des libellés, du rattachement, des radicaux et de la conseillère ne changent pas.
+- **Options considérées :**
+  1. Une exception étroite, vérifiée par le calcul (ce choix).
+  2. La règle entière : l'équipe tape tout instrument elle-même.
+  3. Une exception qui comprend aussi les seuils cliniques.
+- **Justification :** Recopier un instrument est long et sujet aux fautes de frappe ; une copie vérifiée mot pour mot contre la source de l'équipe n'invente rien. Les seuils sont le plus risqué et le moins utile pour construire un questionnaire.
+- **Conséquences :** La formulation de `CLAUDE.md` (règle 4) et de `CONCEPTION.md` (principe 4 et son tableau de garanties) est celle du § 11.1 du plan ; elle est écrite au début de la v0.21, quand le schéma d'extraction existe.
+- **Références :** `docs/plan-v0.20.md`, § 11.1.
+
+### D-144 — Ce qui part vers le modèle depuis une source
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Pour une extraction (v0.21), partent seulement les pages choisies par la personne, au plus 10 par requête, en texte extrait sur le poste par pypdf, jamais le fichier PDF ; jamais une page exclue, même choisie ; jamais une page sans texte. Par la porte de confidentialité, pour un projet qui permet l'envoi (D-138). Au dépôt, l'outil rappelle de ne jamais déposer un document qui contient des réponses de participants.
+- **Options considérées :**
+  1. Les pages choisies, en texte (ce choix).
+  2. Le document entier.
+  3. Le fichier PDF tel quel.
+- **Justification :** Une source est une métadonnée (règle 3), mais une page de consentement ou de remerciements porte des noms (comme D-012). Un PDF porte ses propriétés, ses calques et ses images ; le texte extrait est ce que la personne peut relire dans « Ce qui part ».
+- **Conséquences :** Un test à chaînes témoins vérifie qu'un témoin placé sur une page exclue du faux protocole n'entre dans aucun message.
+- **Références :** `docs/plan-v0.20.md`, § 11.2.
+
+### D-145 — Le projet sans base
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Format du projet 0.9.0 : `source` facultative (`None` tant qu'il n'y a pas de base) ; `profile` d'une variable facultatif (`None` pour une variable prévue par le questionnaire, distincte d'une variable vide) ; `design`, présent seulement pour un projet créé par « Concevoir un questionnaire » et gardé après l'arrivée de la base. Le projet est écrit dans le dossier choisi. Un projet 0.8.0 s'ouvre tel quel, avec la même empreinte du codebook et le même codebook. Le carnet (D-091) ne change pas : sans base, il n'y en a pas.
+- **Options considérées :**
+  1. Source et profil facultatifs (ce choix).
+  2. Une fausse source vide (empreinte vide, 0 ligne) et des profils vides.
+- **Justification :** Avec l'option 2, chaque endroit qui lit la source croirait à une base de 0 ligne, et une variable prévue serait affichée « vide » et exclue des analyses ; les erreurs seraient silencieuses. Un type facultatif fait refuser bruyamment ce qui serait oublié.
+- **Conséquences :** Chaque endroit qui lit `source` ou `profile` (inventaire du plan, § 5.3) reçoit une branche et un test sans base. Une version 0.19 refuse un projet 0.9.0 (`ProjectNewer`).
+- **Références :** `docs/plan-v0.20.md`, § 5.3 et 6.1.
+
+### D-146 — Le questionnaire structuré
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Le questionnaire conçu est `project.questionnaire`, au format `designed` (dans le projet, pas dans `etude.json`). Le modèle `Question` est étendu par des champs facultatifs : sections, consigne, obligatoire, réponse ouverte (court, long, nombre, date), liste ou boutons, code des choix et des énoncés, option « autre », provenance (équipe, source, IA), et une cinquième nature, `display` (texte d'affichage). Les identifiants (`Q7`, `Q7.r3`, `Q10.o2`, `S2`) ne sont jamais redonnés ; le numéro affiché se calcule par l'ordre. Le code d'une question est son radical (`Project.stems`) ; les items inversés, le nom de l'instrument, sa référence et sa cotation sont ceux du groupe que la grille crée.
+- **Options considérées :**
+  1. Le modèle existant étendu, dans le projet (ce choix).
+  2. Un second modèle de question, propre à la conception.
+  3. Le questionnaire dans `etude.json`.
+- **Justification :** Les variables, les groupes, les noms et l'empreinte du codebook s'y réfèrent ; un seul fichier s'enregistre d'un coup sous le contrôle de D-129. Un second modèle doublerait chaque fonction qui lit un questionnaire.
+- **Conséquences :** Pour un questionnaire conçu, l'empreinte suit son contenu ; les rattachements y suivent les identifiants, et `drop_stale_links` ne les retire plus tous quand l'empreinte change.
+- **Références :** `docs/plan-v0.20.md`, § 6.2 à 6.5.
+
+### D-147 — La vérification mot pour mot
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Un texte est « retrouvé, p. N » s'il est une sous-chaîne du texte de la page après une normalisation fixe : espaces et fins de ligne, trait d'union de coupure en fin de ligne, coupure entre deux pages (« p. 4-5 ») après retrait des en-têtes, pieds et numéros de page répétés, apostrophes et guillemets typographiques, ligatures, numérotation devant l'item dans la source. La casse, les accents et la ponctuation finale sont tolérés comme différences, montrées en surbrillance (« retrouvé avec différences »). Jamais tolérés : un mot ajouté, retiré ou changé, un chiffre différent, un texte coupé, une ressemblance approchée. `link.texts_agree` n'est pas utilisée.
+- **Options considérées :**
+  1. Sous-chaîne après une normalisation fixe et montrée (ce choix).
+  2. `link.texts_agree` (ratio de ressemblance ≥ 0,9, début d'un texte).
+- **Justification :** Mesuré avec `texts_agree`, « Je ne suis pas satisfait de mon sommeil » concorde avec « Je suis satisfait de mon sommeil » (0,90), et une phrase plus longue privée de sa négation passe à 0,95. Bon pour rattacher une variable, pas pour accepter un item.
+- **Conséquences :** Les tests (item dans un tableau, coupé entre deux pages, numéroté, apostrophes typographiques, négation retirée, mot changé) sont écrits avant le code, en v0.21.
+- **Références :** `docs/plan-v0.20.md`, § 5.1 et 11.3.
+
+### D-148 — Le format d'importation LimeSurvey
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** L'outil écrit la structure en texte à colonnes de LimeSurvey (« Tab Separated Values », `.txt`, UTF-8) et lit les deux formats, `.lss` (XML, avant et depuis LimeSurvey 4) et `.txt`. Il est vérifié sur LimeSurvey Cloud, version 7, celle de l'auteur ; l'importation réelle de l'auteur tranche, et si le `.txt` coince, l'outil écrit un `.lss` dans la forme exacte de ce que cette version exporte.
+- **Options considérées :**
+  1. Écrire le texte à colonnes, lire les deux (ce choix).
+  2. Écrire et lire le `.lss`.
+- **Justification :** Le texte à colonnes est documenté (colonnes, classes, parenté par la position, aucun identifiant à calculer) ; le schéma du `.lss` n'a aucune description publique et a changé de forme avec LimeSurvey 4. Le `.lss` reste à lire : c'est ce que LimeSurvey exporte par défaut.
+- **Conséquences :** Aucune convention de LimeSurvey (types, longueur des codes, noms des colonnes de l'export) n'est écrite sans avoir été vue sur un fichier de l'auteur. Ces fichiers n'entrent pas dans le dépôt (le `.lss` porte le nom et le courriel de l'administrateur) ; un script fictif les reproduit.
+- **Références :** `docs/plan-v0.20.md`, § 5.5 et 9.3 ; https://www.limesurvey.org/manual/Tab_Separated_Value_survey_structure.
+
+### D-149 — La phase « Concevoir » et la page d'ouverture
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** D-122 (en partie : une phase de plus, en tête, pour certains projets)
+- **Décision :** Une phase « Concevoir » (Questionnaire, Relecture, Publier ; Sources en v0.21), en tête du menu, pour les projets qui ont un `design` seulement ; elle reste après l'arrivée de la base. `navigation.first(project)` : « Questionnaire » tant qu'il n'y a pas de base, « Base » ensuite et pour tout autre projet. Pour un projet de conception, l'ancienne page « Questionnaire » de Documenter n'est pas au menu.
+- **Options considérées :**
+  1. Pour les projets de conception seulement (ce choix).
+  2. Visible pour tous les projets.
+- **Justification :** Pour une base existante, le questionnaire est une source lue, pas un document à modifier ; une phase vide en tête du menu brouillerait le chemin. Le besoin d'une équipe qui prépare sa vague suivante sera servi plus tard par « Préparer la vague suivante », qui créera un projet de conception.
+- **Références :** `docs/plan-v0.20.md`, § 8.2.
+
+### D-150 — Modifier un questionnaire après sa publication
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** « Marquer comme envoyé » (au comité, ou publié dans LimeSurvey) garde, avec la date, une copie du questionnaire structuré et son empreinte. Une modification ensuite reste permise, avec un avertissement clair (LimeSurvey doit être mis à jour) et un nouveau fichier proposé ; la page montre, calculées, les différences depuis chaque version envoyée. Une raison tapée est facultative, jamais exigée.
+- **Options considérées :**
+  1. Avertissement et différences calculées (ce choix).
+  2. Une raison exigée, comme pour un amendement du plan figé.
+- **Justification :** Le plan figé est un engagement scientifique que personne d'autre ne garde ; ici, le comité et LimeSurvey gardent chacun la version reçue, et ce dont un comité a besoin pour un amendement est la liste des différences, que le calcul donne exactement.
+- **Références :** `docs/plan-v0.20.md`, § 9.5.
+
+### D-151 — L'éditeur du questionnaire, dans l'outil seulement
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Le questionnaire se construit dans l'outil (page « Questionnaire »). Pas d'aller-retour par un gabarit Word à styles dans cette version.
+- **Options considérées :**
+  1. Dans l'outil seulement (ce choix).
+  2. Aussi un aller-retour par un gabarit Word à styles (Question, Option, Grille…), lu sans IA.
+- **Justification :** Un aller-retour ferait deux sources de vérité, et un style mal appliqué se lirait comme une autre nature de question. À reconsidérer si les équipes le demandent, en lecture seule (importer un questionnaire déjà écrit), jamais en aller-retour.
+- **Références :** `docs/plan-v0.20.md`, § 8.4.
+
+### D-152 — Le Word du questionnaire
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Deux versions produites par le calcul (python-docx) : « pour le comité d'éthique » (le questionnaire seul, dans la langue de l'étude, sans nom, code ni provenance) et « de travail » (en plus : codes, nature et type LimeSurvey, obligatoire, codes des choix et des énoncés, items inversés, provenance, groupe et instrument, points de relecture). Pied de page : version, date du dernier changement du questionnaire et empreinte. Mêmes octets à chaque production (propriétés du document fixées).
+- **Options considérées :**
+  1. Deux versions (ce choix).
+  2. Une seule version, les codes en option.
+- **Justification :** Le comité lit ce que verra la personne qui répond ; l'équipe a besoin de tout ce qui se décide. La date du jour changerait les octets ; celle du dernier changement dit la version.
+- **Références :** `docs/plan-v0.20.md`, § 9.2.
+
+### D-153 — Figer le plan d'analyse sans la base
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** — (la base ouverte pour figer venait de la v0.13, étape 3, `plan_notebook.freeze`, pas d'une décision)
+- **Décision :** Le plan peut être figé sans base : il reçoit sa date et son empreinte, sans entrée du carnet ; à l'arrivée de la base, `plan_notebook.sync` crée l'entrée de chaque hypothèse, comme après un amendement. Avec une base, rien ne change.
+- **Options considérées :**
+  1. Figer sans base, le carnet suit à l'arrivée (ce choix).
+  2. Garder l'exigence de la base.
+- **Justification :** Pour une étude conçue dans l'outil, le plan se fige avant la collecte : c'est le sens d'un préenregistrement. `planning.freeze` n'a pas besoin de la base ; seul le lien au carnet en avait besoin.
+- **Références :** `docs/plan-v0.20.md`, § 5.2 et 6.7.
+
+### D-154 — Les phases de « Mes projets »
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** D-133 (en partie : deux phases ajoutées)
+- **Décision :** Avant les trois phases de D-133 : **Concevoir** (un `design`, aucune publication marquée) et **En collecte** (une publication marquée, pas encore de base) ; puis Documenter, Analyser, Rédiger comme aujourd'hui. Toujours calculé à partir du projet seul, sans lire aucune base.
+- **Options considérées :**
+  1. Deux phases ajoutées (ce choix).
+  2. Une seule phase « Concevoir », jusqu'à la base.
+- **Justification :** Entre la publication et l'arrivée de la base, il n'y a rien à faire dans l'outil ; l'équipe doit le voir d'un coup d'œil.
+- **Références :** `docs/plan-v0.20.md`, § 8.6.
+
+### D-155 — lxml, dépendance directe
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** `lxml` (BSD-3-Clause), déjà installé avec python-docx, est déclaré directement dans `pyproject.toml`, puisque l'outil l'importe pour lire et écrire les fichiers de LimeSurvey. L'analyseur refuse les entités externes et le réseau (`resolve_entities=False`, `no_network=True`).
+- **Options considérées :**
+  1. lxml déclaré directement (ce choix).
+  2. `xml.etree` de la bibliothèque standard.
+- **Justification :** Aucun paquet nouveau ; une dépendance qu'on importe se déclare, pour ne pas dépendre de ce que python-docx tire. lxml lit aussi le HTML des textes de LimeSurvey.
+- **Conséquences :** La ligne de `docs/dependances.md` est mise à jour à l'étape A1, avec le changement de `pyproject.toml`.
+- **Références :** `docs/plan-v0.20.md`, § 5.1.
