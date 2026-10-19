@@ -487,6 +487,9 @@ msgstr "Added to the notebook: {id}"
 msgid "Ajoutée au carnet : {id}. Le carnet se trouve sur la page Carnet."
 msgstr "Added to the notebook: {id}. The notebook is on the Notebook page."
 
+msgid "Aller au questionnaire"
+msgstr "Go to the questionnaire"
+
 msgid "Alpha de Cronbach observé"
 msgstr "Observed Cronbach's alpha"
 
@@ -538,6 +541,9 @@ msgstr "Retained analyses left out, impossible to compute:"
 
 msgid "Ancien nom de « ddict article », gardé pour cette version."
 msgstr "Former name of “ddict article”, kept for this version."
+
+msgid "Anglais"
+msgstr "English"
 
 msgid "Annuler"
 msgstr "Cancel"
@@ -627,6 +633,9 @@ msgstr "No suspect code."
 
 msgid "Aucun dossier choisi."
 msgstr "No folder chosen."
+
+msgid "Aucun dossier choisi. Vous pouvez aussi coller son chemin dans le champ."
+msgstr "No folder chosen. You can also paste its path in the field."
 
 msgid "Aucun fichier choisi : rien n'est changé."
 msgstr "No file chosen: nothing is changed."
@@ -725,6 +734,9 @@ msgstr "No proposal ({detail})."
 msgid "Aucune proposition du questionnaire pour {term}."
 msgstr "No proposal from the questionnaire for {term}."
 
+msgid "Aucune question dans cette section."
+msgstr "No question in this section."
+
 msgid "Aucune question du questionnaire"
 msgstr "No question in the questionnaire"
 
@@ -733,6 +745,9 @@ msgstr "No exclusion rule: every answer is analysed."
 
 msgid "Aucune règle d'exclusion n'est prévue."
 msgstr "No exclusion rule is planned."
+
+msgid "Aucune statistique avant l'arrivée de la base."
+msgstr "No statistics before the database arrives."
 
 msgid "Aucune structure proposée."
 msgstr "No structure proposed."
@@ -795,6 +810,12 @@ msgstr "With the likely reversed items reversed: {a}"
 
 msgid "Avec signalements"
 msgstr "With flags"
+
+msgid "Avec « creer » : la langue de l'étude (fr ou en)."
+msgstr "With “creer”: the language of the study (fr or en)."
+
+msgid "Avec « creer » : le nom du questionnaire et du projet."
+msgstr "With “creer”: the name of the questionnaire and of the project."
 
 msgid "Avertissement"
 msgstr "Warning"
@@ -957,6 +978,11 @@ msgid "Ce nom n'attend plus de décision."
 msgstr "This name no longer waits for a decision."
 
 msgid ""
+"Ce projet a un questionnaire conçu dans l'outil : aucun fichier ne le remplace. Rien n'a été "
+"changé."
+msgstr "This project has a questionnaire designed in the tool: no file replaces it. Nothing was changed."
+
+msgid ""
 "Ce projet a été modifié ailleurs depuis que vous l'avez ouvert (autre onglet, autre personne ou "
 "ligne de commande)."
 msgstr ""
@@ -1112,6 +1138,9 @@ msgstr "Choose the values"
 msgid "Choisir les variables"
 msgstr "Choose the variables"
 
+msgid "Choisir un dossier…"
+msgstr "Choose a folder…"
+
 msgid "Choisir un fichier projet"
 msgstr "Choose a project file"
 
@@ -1143,6 +1172,9 @@ msgstr "Choose…"
 
 msgid "Choisissez comment la somme traite les items manquants."
 msgstr "Choose how the sum handles missing items."
+
+msgid "Choisissez d'abord le dossier du projet."
+msgstr "First choose the project's folder."
 
 msgid "Choisissez d'abord le fichier de la vague précédente."
 msgstr "First choose the file of the earlier wave."
@@ -1390,6 +1422,12 @@ msgstr "Understood"
 msgid "Compter les passations plus courtes que ce seuil, choisi par l'équipe."
 msgstr "Count the administrations shorter than this threshold, chosen by the team."
 
+msgid "Concevoir"
+msgstr "Design"
+
+msgid "Concevoir un questionnaire"
+msgstr "Design a questionnaire"
+
 msgid "Condition"
 msgstr "Condition"
 
@@ -1584,6 +1622,9 @@ msgstr ""
 
 msgid "Créer le projet"
 msgstr "Create the project"
+
+msgid "Créer le questionnaire"
+msgstr "Create the questionnaire"
 
 msgid "D'où vient la règle ou son seuil (p. ex. un procès-verbal)."
 msgstr "Where the rule or its threshold comes from (e.g. minutes of a meeting)."
@@ -1805,6 +1846,9 @@ msgstr "Give the reason of the rule, in plain words."
 msgid "Donnez la raison du recodage, en clair."
 msgstr "Give the reason for the recoding, in plain words."
 
+msgid "Donnez le nom du questionnaire : --nom."
+msgstr "Give the name of the questionnaire: --name."
+
 msgid "Donnez le seuil de durée, en secondes."
 msgstr "Give the duration threshold, in seconds."
 
@@ -2013,6 +2057,13 @@ msgstr "Codebook fingerprint: {fingerprint}."
 
 msgid "En attente"
 msgstr "Waiting"
+
+msgid ""
+"En attente de la base : cette page s'ouvrira quand les réponses de la collecte seront arrivées. "
+"D'ici là, le questionnaire est la source du dictionnaire."
+msgstr ""
+"Waiting for the database: this page will open once the responses of the collection have arrived. "
+"Until then, the questionnaire is the source of the dictionary."
 
 msgid "En conflit"
 msgstr "In conflict"
@@ -2238,6 +2289,13 @@ msgstr "Data file"
 msgid "Fichier de la vague précédente"
 msgstr "File of the earlier wave"
 
+msgid ""
+"Fichier projet (.dd.json) ; ou « creer », pour un questionnaire à concevoir dans l'outil, dans le"
+" dossier donné ensuite."
+msgstr ""
+"Project file (.dd.json); or “creer”, for a questionnaire to design in the tool, in the folder "
+"given next."
+
 msgid "Fichier projet (.dd.json)."
 msgstr "Project file (.dd.json)."
 
@@ -2318,6 +2376,9 @@ msgstr "Project format"
 #, python-brace-format
 msgid "Format inconnu : {formats}. Formats : {known}."
 msgstr "Unknown format: {formats}. Formats: {known}."
+
+msgid "Français"
+msgstr "French"
 
 msgid "Gardée"
 msgstr "Kept"
@@ -3384,6 +3445,13 @@ msgid "Le questionnaire de l'étude est joint ({file})."
 msgstr "The study's questionnaire is attached ({file})."
 
 msgid ""
+"Le questionnaire de l'étude, conçu dans l'outil : il est la source du dictionnaire de données, et"
+" chaque question donne ses variables avant la collecte."
+msgstr ""
+"The study's questionnaire, designed in the tool: it is the source of the data dictionary, and "
+"each question gives its variables before the collection."
+
+msgid ""
 "Le questionnaire dit ce que chaque variable veut dire : le texte exact des questions, le sens des"
 " sigles, les options de réponse. Il est lu sur cet ordinateur, sans IA : PDF (SurveyMonkey, "
 "LimeSurvey, REDCap…), texte (.txt copié depuis Word) ou export Excel de SurveyMonkey, dont l'en-"
@@ -4236,6 +4304,9 @@ msgstr ""
 "Invalid score name: lower case, digits and \"_\", a letter first, different from the names of the"
 " variables."
 
+msgid "Nom du questionnaire"
+msgstr "Name of the questionnaire"
+
 msgid "Nom du score"
 msgstr "Score name"
 
@@ -4425,6 +4496,9 @@ msgstr "Tool"
 
 msgid "Ouvrez la base pour figer le plan : chaque hypothèse devient une analyse du carnet."
 msgstr "Open the database to finalise the plan: each hypothesis becomes an analysis of the notebook."
+
+msgid "Ouvrez-le avec « ddict » pour concevoir le questionnaire."
+msgstr "Open it with “ddict” to design the questionnaire."
 
 msgid "Ouvrir"
 msgstr "Open"
@@ -4685,6 +4759,14 @@ msgstr ""
 "For a new version of the file. Links that pointed to the former version are removed; acronyms "
 "already decided are kept."
 
+msgid ""
+"Pour une étude qui n'a pas encore de questionnaire : construisez-le dans l'outil, et le "
+"dictionnaire de données existe avant la collecte. Le fichier projet est créé dans le dossier "
+"choisi."
+msgstr ""
+"For a study with no questionnaire yet: build it in the tool, and the data dictionary exists "
+"before the collection. The project file is created in the folder chosen."
+
 msgid "Pourcentage de la colonne"
 msgstr "Percentage of the column"
 
@@ -4919,6 +5001,9 @@ msgstr ""
 msgid "Préparé par dictionnaire-donnees {version} le {date}."
 msgstr "Prepared by dictionnaire-donnees {version} on {date}."
 
+msgid "Prévu par le questionnaire"
+msgstr "Planned by the questionnaire"
+
 msgid "Puissance statistique"
 msgstr "Statistical power"
 
@@ -4968,8 +5053,12 @@ msgstr "Multiple-response question: one variable per ticked option."
 msgid "Questionnaire"
 msgstr "Questionnaire"
 
-msgid "Questionnaire (.pdf, .txt, ou export .xlsx d'une plateforme)."
-msgstr "Questionnaire (.pdf, .txt, or a platform's .xlsx export)."
+msgid ""
+"Questionnaire (.pdf, .txt, export .xlsx d'une plateforme, structure LimeSurvey .lss ou .txt) ; "
+"ou, avec « creer », le dossier du projet."
+msgstr ""
+"Questionnaire (.pdf, .txt, a platform's .xlsx export, a LimeSurvey structure .lss or .txt); or, "
+"with “creer”, the project's folder."
 
 msgid "Questionnaire de l'étude"
 msgstr "Study questionnaire"
@@ -5568,6 +5657,9 @@ msgstr "Second measure (paired t test)."
 #, python-brace-format
 msgid "Section inconnue : {id}."
 msgstr "Unknown section: {id}."
+
+msgid "Section sans titre"
+msgstr "Untitled section"
 
 msgid "Sens attendu"
 msgstr "Expected direction"
@@ -6186,6 +6278,14 @@ msgid ""
 msgstr ""
 "One base name per question, shared by its variables: \"taches\" gives taches_1, taches_2… and "
 "taches_autre_txt. Correct it here, once."
+
+#, python-brace-format
+msgid "Un projet de ce nom existe déjà : {path}. Rien n'a été écrit."
+msgstr "A project of this name exists already: {path}. Nothing was written."
+
+#, python-brace-format
+msgid "Un projet de ce nom existe déjà dans ce dossier : {name}. Ouvrez-le, ou choisissez un autre nom."
+msgstr "A project of this name exists already in this folder: {name}. Open it, or choose another name."
 
 #, python-brace-format
 msgid ""
@@ -7376,6 +7476,9 @@ msgstr "origin of the data"
 
 msgid "origine des données modifiée"
 msgstr "origin of the data changed"
+
+msgid "ou collez le chemin du dossier"
+msgstr "or paste the folder's path"
 
 msgid "ou collez le chemin du fichier"
 msgstr "or paste the path of the file"

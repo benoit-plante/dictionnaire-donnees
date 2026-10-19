@@ -39,8 +39,39 @@ SECTIONS: dict[str, tuple[PageInfo, ...]] = {
     ),
     N_("Réglages"): (PageInfo("ai", N_("IA"), ":material/smart_toy:"),),
 }
-PAGES = {page.mode: page for pages in SECTIONS.values() for page in pages}
+# v0.20 (D-149): designing the questionnaire, first, for a project created by "Concevoir
+# un questionnaire"; its questionnaire is this one, not a file read on "Questionnaire".
+DESIGN: tuple[PageInfo, ...] = (
+    PageInfo("design", N_("Questionnaire"), ":material/edit_document:"),
+)
+PAGES = {page.mode: page for pages in (DESIGN, *SECTIONS.values()) for page in pages}
 FIRST = "base"  # a project opens on its database (v0.3)
+# The pages that show the database: before it arrives (v0.20, D-145), they say they wait.
+NEEDS_BASE = ("base", "analyses", "notebook", "method", "verify")
+
+
+def sections(project: Project) -> dict[str, tuple[PageInfo, ...]]:
+    """The phases and their pages for this project: "Concevoir" first for a designed one,
+    kept after its database arrives (D-149)."""
+    if project.design is None:
+        return SECTIONS
+    found = {N_("Concevoir"): DESIGN}
+    for name, pages in SECTIONS.items():
+        found[name] = tuple(p for p in pages if p.mode != "questionnaire")
+    return found
+
+
+def first(project: Project) -> str:
+    """The page a project opens on: its questionnaire while a designed one has no database
+    yet, its database otherwise (v0.20, D-149)."""
+    if project.design is not None and project.source is None:
+        return "design"
+    return FIRST
+
+
+def waits_for_base(project: Project, mode: str) -> bool:
+    return project.source is None and mode in NEEDS_BASE
+
 
 # The pages whose whole work the dashboard follows: a tick when nothing waits there. Not the
 # groups nor the names: their tasks appear only once the team has begun (a scoring, a name),

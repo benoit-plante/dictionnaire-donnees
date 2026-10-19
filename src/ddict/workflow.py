@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import glob
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -156,10 +157,43 @@ class QuestionnaireExists(ValueError):
     """The project has a questionnaire already: replacing it may remove links."""
 
 
+class DesignedQuestionnaire(ValueError):
+    """The project's questionnaire is designed in the tool (v0.20): no file replaces it."""
+
+
+# Characters Windows refuses in a file name.
+_UNSAFE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
+
+
+def design_path(folder: Path | str, name: str) -> Path:
+    """The project file of a questionnaire designed in the tool: its name, in the folder
+    chosen (v0.20, D-145); a character Windows refuses becomes "-"."""
+    stem = _UNSAFE.sub("-", name.strip()).rstrip(". ")
+    return Path(folder) / f"{stem}.dd.json"
+
+
+def create_design(folder: Path | str, name: str, language: str, today: str) -> Path:
+    """A project to design a questionnaire, before its collection (v0.20): written in the
+    folder chosen, never over an existing file (ProjectExists). Raises DesignError for a
+    name that is empty, FileNotFoundError for a folder that is not there."""
+    from ddict import design
+
+    project = design.new_project(name, language, today)
+    if not Path(folder).is_dir():
+        raise FileNotFoundError(str(folder))
+    path = design_path(folder, name)
+    if path.exists():
+        raise ProjectExists(str(path))
+    save_project(project, path)
+    return path
+
+
 def add_questionnaire(project: Project, path: Path | str, *, replace: bool = False) -> int:
     """Read the questionnaire into the project (not saved): acronyms it defines become
     proposals, links to a former questionnaire are removed, value labels are refreshed.
     Returns the number of links removed. Raises ReadError when the file cannot be read."""
+    if project.design is not None:  # v0.20: the questionnaire designed in the tool
+        raise DesignedQuestionnaire(project.questionnaire.file_name)
     if project.questionnaire is not None and not replace:
         raise QuestionnaireExists(project.questionnaire.file_name)
     # The kind of each question of a platform's export header, from the database (v0.7).

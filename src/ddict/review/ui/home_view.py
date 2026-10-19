@@ -8,21 +8,34 @@ file is written next to it.
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 
 import streamlit as st
 
 from ddict import i18n, overview, recents, settings, tracked
+from ddict.design import DesignError
 from ddict.i18n import _
 from ddict.io import ReadError
 from ddict.project import ProjectError, load_project, ondisk
 from ddict.review import trial
 from ddict.review.ui import common as c
 from ddict.review.ui import dialog
-from ddict.workflow import ProjectExists, default_project_path, profile_database
+from ddict.workflow import (
+    ProjectExists,
+    create_design,
+    default_project_path,
+    design_path,
+    profile_database,
+)
 
 DATABASE = "home-database"
+# v0.20 (D-145): a questionnaire to design, in a folder, before its collection.
+DESIGN_FOLDER, DESIGN_NAME, DESIGN_LANGUAGE = (
+    "home-design-folder",
+    "home-design-name",
+    "home-design-language",
+)
 LANGUAGE = "interface-language"
 PROJECT = "home-project"
 
@@ -73,6 +86,75 @@ def _create(replace: bool) -> None:
     c.open_project(output)
     if not tracked.follow(output):  # v0.17 (D-131): a new project is followed
         _message("error", tracked.not_written(), key)
+
+
+def _browse_folder() -> None:
+    folder = dialog.choose(dialog.FOLDER)
+    if folder:
+        st.session_state[DESIGN_FOLDER] = folder
+    else:
+        _message(
+            "error",
+            _("Aucun dossier choisi. Vous pouvez aussi coller son chemin dans le champ."),
+            "home-design-browse",
+        )
+
+
+def _create_design() -> None:
+    """A project to design a questionnaire, before its collection (v0.20, D-145)."""
+    key = "home-design-create"
+    folder = _path(DESIGN_FOLDER)
+    name = str(st.session_state.get(DESIGN_NAME) or "")
+    if folder is None or not folder.is_dir():
+        _message("error", _("Choisissez d'abord le dossier du projet."), key)
+        return
+    try:
+        path = create_design(
+            folder, name, st.session_state.get(DESIGN_LANGUAGE) or "fr", date.today().isoformat()
+        )
+    except DesignError as error:
+        _message("error", " ".join(error.reasons), key)
+        return
+    except ProjectExists as error:
+        _message(
+            "error",
+            _(
+                "Un projet de ce nom existe déjà dans ce dossier : {name}. Ouvrez-le, ou "
+                "choisissez un autre nom."
+            ).format(name=Path(str(error)).name),
+            key,
+        )
+        return
+    c.open_project(path)
+    if not tracked.follow(path):  # v0.17 (D-131): a new project is followed
+        _message("error", tracked.not_written(), key)
+
+
+def _design_section() -> None:
+    st.header(_("Concevoir un questionnaire"))
+    st.write(
+        _(
+            "Pour une étude qui n'a pas encore de questionnaire : construisez-le dans l'outil, "
+            "et le dictionnaire de données existe avant la collecte. Le fichier projet est "
+            "créé dans le dossier choisi."
+        )
+    )
+    st.button(_("Choisir un dossier…"), key="home-design-browse", on_click=_browse_folder)
+    c.show_message("home-design-browse")
+    st.text_input(_("ou collez le chemin du dossier"), key=DESIGN_FOLDER)
+    st.text_input(_("Nom du questionnaire"), key=DESIGN_NAME)
+    st.segmented_control(
+        _("Langue de l'étude"),
+        ["fr", "en"],
+        key=DESIGN_LANGUAGE,
+        default="fr",
+        format_func={"fr": _("Français"), "en": _("Anglais")}.__getitem__,
+    )
+    folder, name = _path(DESIGN_FOLDER), str(st.session_state.get(DESIGN_NAME) or "").strip()
+    if folder is not None and name:
+        st.caption(_("Fichier projet : {path}").format(path=design_path(folder, name).name))
+    st.button(_("Créer le questionnaire"), key="home-design-create", on_click=_create_design)
+    c.show_message("home-design-create")
 
 
 def _open(path: Path | None, key: str) -> None:
@@ -176,6 +258,8 @@ def page() -> None:
             on_click=_create,
             args=(True,),
         )
+
+    _design_section()
 
     st.header(_("Ouvrir un projet"))
     st.button(

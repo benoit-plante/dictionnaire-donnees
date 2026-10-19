@@ -23,6 +23,7 @@ from ddict.review.ui import (
     analyses_view,
     base_view,
     bulk_view,
+    design_view,
     export_view,
     glossary_view,
     groups_view,
@@ -181,17 +182,17 @@ def _place(project, mode: str, chosen: str | None) -> c.Place:
     return c.Place(mode, None, page)
 
 
-def _root_page() -> str:
+def _root_page(project, modes: list[str]) -> str:
     """The page at the root address: the session's "mode", the first page otherwise. Never
     the page the address asks for by name: Streamlit serves the root page at the root only,
     and a reload on "/base" would say "Page not found"."""
     current = st.session_state.get("mode")
-    if current not in navigation.PAGES:
-        current = navigation.FIRST
+    if current not in modes:
+        current = navigation.first(project)
     asked = urlparse(st.context.url or "").path.rstrip("/").rsplit("/", 1)[-1]
     if asked != current:
         return current
-    return next(m for m in navigation.PAGES if m != current)
+    return next(m for m in modes if m != current)
 
 
 def _navigation(project, waiting):
@@ -199,7 +200,9 @@ def _navigation(project, waiting):
     page shown at the root address (the first one, or the one a test chooses); a page asked
     for by a button ("goto", set by `c.go_to`) is opened with `st.switch_page`."""
     counts = navigation.waiting(waiting)
-    root = _root_page()
+    phases = navigation.sections(project)  # v0.20 (D-149): "Concevoir" for a designed one
+    shown_pages = [info for infos in phases.values() for info in infos]
+    root = _root_page(project, [info.mode for info in shown_pages])
     pages = {
         info.mode: st.Page(
             lambda: None,  # the page is drawn below, with the sidebar it needs
@@ -208,11 +211,10 @@ def _navigation(project, waiting):
             url_path=info.mode,
             default=info.mode == root,
         )
-        for info in navigation.PAGES.values()
+        for info in shown_pages
     }
     sections = {
-        _(section): [pages[info.mode] for info in infos]
-        for section, infos in navigation.SECTIONS.items()
+        _(section): [pages[info.mode] for info in infos] for section, infos in phases.items()
     }
     shown = st.navigation(sections, position="sidebar", expanded=True)
     mode = next(m for m, page in pages.items() if page.url_path == shown.url_path)
@@ -303,7 +305,11 @@ def main() -> None:
     c.keep_drafts(here)  # v0.16 (D-124): what was typed elsewhere, not saved
     c.drafts_notice(here)
     top = _messages_start()
-    if mode == "base":
+    if navigation.waits_for_base(project, mode):  # v0.20 (D-145): no database yet
+        design_view.waiting_for_base(project, mode)
+    elif mode == "design":
+        design_view.page(project)
+    elif mode == "base":
         base_view.page(project)
     elif mode == "questionnaire":
         questionnaire_view.page(project)

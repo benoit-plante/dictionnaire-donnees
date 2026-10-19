@@ -240,27 +240,40 @@ def _file_and_computed(entry: VariableEntry) -> None:
         if w.missing_codes(entry):
             st.write(f"{field_label('Codes manquants déclarés')}{w.missing_codes(entry)}")
     with right:
-        st.subheader(_("Calculé"))
-        st.write(f"{field_label('Type')}{w.TYPES.get(p.inferred_type, p.inferred_type)}")
-        st.write(
-            _("Valides : {v} ; cases vides : {e} ; manquants déclarés : {d}").format(
-                v=p.n_valid, e=p.n_system_missing, d=p.n_declared_missing
-            )
+        if p is None:  # v0.20 (D-145): planned by the questionnaire, before the database
+            st.subheader(_("Prévu par le questionnaire"))
+            st.write(f"{field_label('Type')}{w.TYPES.get(entry.data_type, entry.data_type)}")
+            st.write(_("Aucune statistique avant l'arrivée de la base."))
+            if entry.group_id.value:
+                st.write(f"{field_label('Groupe')}{entry.group_id.value}")
+        else:
+            _computed(entry, p)
+    _values(entry)
+
+
+def _computed(entry: VariableEntry, p) -> None:
+    st.subheader(_("Calculé"))
+    st.write(f"{field_label('Type')}{w.TYPES.get(p.inferred_type, p.inferred_type)}")
+    st.write(
+        _("Valides : {v} ; cases vides : {e} ; manquants déclarés : {d}").format(
+            v=p.n_valid, e=p.n_system_missing, d=p.n_declared_missing
         )
-        if p.min is not None:
-            stats = f"{_('Min')} {w.number(p.min)} ; {_('max')} {w.number(p.max)}"
-            if p.mean is not None:
-                stats += f" ; {_('moyenne')} {w.number(p.mean)}"
-            st.write(stats)
-        if p.date_min:
-            st.write(f"{field_label('Dates')}{p.date_min} – {p.date_max}")
-        if entry.group_id.value:
-            group = f"{field_label('Groupe')}{entry.group_id.value}"
-            if p.item_rest_r is not None:
-                group += " " + _("(corrélation avec le reste : {r})").format(
-                    r=w.number(p.item_rest_r)
-                )
-            st.write(group)
+    )
+    if p.min is not None:
+        stats = f"{_('Min')} {w.number(p.min)} ; {_('max')} {w.number(p.max)}"
+        if p.mean is not None:
+            stats += f" ; {_('moyenne')} {w.number(p.mean)}"
+        st.write(stats)
+    if p.date_min:
+        st.write(f"{field_label('Dates')}{p.date_min} – {p.date_max}")
+    if entry.group_id.value:
+        group = f"{field_label('Groupe')}{entry.group_id.value}"
+        if p.item_rest_r is not None:
+            group += " " + _("(corrélation avec le reste : {r})").format(r=w.number(p.item_rest_r))
+        st.write(group)
+
+
+def _values(entry: VariableEntry) -> None:
     rows = w.value_rows(entry)
     if rows:
         table = pd.DataFrame(
@@ -271,6 +284,9 @@ def _file_and_computed(entry: VariableEntry) -> None:
             columns=[_("Code"), _("Étiquette"), _("Effectif"), _("Manquant déclaré")],
         )
         st.dataframe(table, hide_index=True)
+    p = entry.profile
+    if p is None:  # planned: nothing observed yet
+        return
     # Suspect codes are shown apart, each with its decision (D-028).
     for text in w.anomalies(p, frozenset(p.suspect_missing_codes)):
         st.warning(text)

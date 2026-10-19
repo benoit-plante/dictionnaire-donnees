@@ -46,6 +46,7 @@ from ddict.questionnaire.link import candidates
 from ddict.review import theme
 from ddict.waves import ReferenceError
 from ddict.workflow import (
+    DesignedQuestionnaire,
     ProjectExists,
     QuestionnaireExists,
     UnknownGroups,
@@ -796,11 +797,54 @@ def cmd_advise(args: argparse.Namespace) -> int:
     return 0
 
 
+def _create_design(args: argparse.Namespace) -> int:
+    """`ddict questionnaire creer <dossier> --nom …` (v0.20, D-145): a project to design a
+    questionnaire, before its collection."""
+    from datetime import date
+
+    from ddict.design import DesignError
+    from ddict.workflow import ProjectExists, create_design
+
+    if not args.nom:
+        print(_("Donnez le nom du questionnaire : --nom."), file=sys.stderr)
+        return EXIT_ERROR
+    try:
+        path = create_design(args.fichier, args.nom, args.langue, date.today().isoformat())
+    except DesignError as error:
+        print(" ".join(error.reasons), file=sys.stderr)
+        return EXIT_ERROR
+    except FileNotFoundError:
+        print(_("Dossier introuvable : {path}").format(path=args.fichier), file=sys.stderr)
+        return EXIT_ERROR
+    except ProjectExists as error:
+        print(
+            _("Un projet de ce nom existe déjà : {path}. Rien n'a été écrit.").format(path=error),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
+    if not tracked.follow(path):  # D-131: a new project is followed
+        print(tracked.not_written(), file=sys.stderr)
+    print(_("Projet créé : {path}").format(path=path))
+    print(_("Ouvrez-le avec « ddict » pour concevoir le questionnaire."))
+    return 0
+
+
 def cmd_questionnaire(args: argparse.Namespace) -> int:
+    if args.projet in ("creer", "create"):  # v0.20: no file to read, a questionnaire to design
+        return _create_design(args)
     project_path = Path(args.projet)
     project = load_project(project_path)
     try:
         removed = add_questionnaire(project, args.fichier, replace=args.remplacer)
+    except DesignedQuestionnaire:
+        print(
+            _(
+                "Ce projet a un questionnaire conçu dans l'outil : aucun fichier ne le remplace. "
+                "Rien n'a été changé."
+            ),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
     except QuestionnaireExists as error:
         print(
             _(
@@ -1559,9 +1603,29 @@ def build_parser() -> argparse.ArgumentParser:
             "et l'ajouter au projet."
         ),
     )
-    questionnaire.add_argument("projet", help=_("Fichier projet (.dd.json)."))
     questionnaire.add_argument(
-        "fichier", help=_("Questionnaire (.pdf, .txt, ou export .xlsx d'une plateforme).")
+        "projet",
+        help=_(
+            "Fichier projet (.dd.json) ; ou « creer », pour un questionnaire à concevoir dans "
+            "l'outil, dans le dossier donné ensuite."
+        ),
+    )
+    questionnaire.add_argument(
+        "fichier",
+        help=_(
+            "Questionnaire (.pdf, .txt, export .xlsx d'une plateforme, structure LimeSurvey "
+            ".lss ou .txt) ; ou, avec « creer », le dossier du projet."
+        ),
+    )
+    questionnaire.add_argument(
+        "--nom", "--name", help=_("Avec « creer » : le nom du questionnaire et du projet.")
+    )
+    questionnaire.add_argument(
+        "--langue",
+        "--language",
+        choices=["fr", "en"],
+        default="fr",
+        help=_("Avec « creer » : la langue de l'étude (fr ou en)."),
     )
     questionnaire.add_argument(
         "--remplacer",
