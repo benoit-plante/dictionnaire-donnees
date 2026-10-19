@@ -676,6 +676,11 @@ def waiting_for_base(project: Project, mode: str) -> None:
     """A page that shows the database, before it arrives: it says so, and leads to the step
     that comes first (v0.20, D-145)."""
     st.header(_(navigation.PAGES[mode].title))
+    waiting_note(project, f"waiting-{mode}")
+
+
+def waiting_note(project: Project, key: str) -> None:
+    """What waits for the database, and the button to the step that comes first."""
     st.info(
         _(
             "En attente de la base : cette page s'ouvrira quand les réponses de la collecte "
@@ -683,4 +688,4 @@ def waiting_for_base(project: Project, mode: str) -> None:
         )
     )
     if project.design is not None:
-        c.go_button(_("Aller au questionnaire"), key=f"waiting-{mode}", mode="design")
+        c.go_button(_("Aller au questionnaire"), key=key, mode="design")

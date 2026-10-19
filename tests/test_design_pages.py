@@ -146,3 +146,31 @@ def test_ddict_questionnaire_creer(tmp_path, capsys):
     assert main(["questionnaire", str(path), str(pdf), "--remplacer"]) == 2
     assert "conçu dans l'outil" in capsys.readouterr().err
     assert load_project(path).questionnaire.format == "designed"
+
+
+# --- Step D4: the page "Base" and the dashboard ----------------------------------------------
+
+
+def test_the_review_points_are_the_first_task():
+    from ddict.project.model import Publication
+    from ddict.workflow import tasks
+
+    project = designed()
+    found = tasks(project)
+    assert found[0].mode == "design_review" and found[0].count == 5
+    assert "Points de relecture" in found[0].text
+    project.design.publications = [
+        Publication(kind="limesurvey", date="2026-10-20", fingerprint="0" * 64,
+                    questionnaire=project.questionnaire.model_copy(deep=True))
+    ]  # fmt: skip
+    assert tasks(project)[0].mode == "design_review"  # sent, the points stay to be seen
+
+
+@pytest.mark.allow_hosts(["127.0.0.1"])
+def test_the_base_page_opens_and_only_its_summary_waits(design_file):
+    app = _open(design_file, "base")
+    assert app.session_state["mode"] == "base"
+    assert any("En attente de la base" in i.value for i in app.info)
+    app.button(key="waiting-base").click().run()
+    assert not app.exception, app.exception
+    assert app.session_state["mode"] == "design"

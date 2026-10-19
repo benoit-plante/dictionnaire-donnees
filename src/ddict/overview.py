@@ -31,7 +31,11 @@ from ddict.workflow import Task, project_stem, tasks
 # are those of the interface's sections; the first page of each opens a project with
 # nothing waiting.
 DOCUMENT, ANALYSE, WRITE = N_("Documenter"), N_("Analyser"), N_("Rédiger")
-PHASES = (DOCUMENT, ANALYSE, WRITE)
+# v0.20 (D-154): a questionnaire designed in the tool, before its database: being designed,
+# then out for collection once a version is marked as sent.
+DESIGN, COLLECT = N_("Concevoir"), N_("En collecte")
+PHASES = (DESIGN, COLLECT, DOCUMENT, ANALYSE, WRITE)
+FIRST_PAGES = {DESIGN: "design", COLLECT: "design"}
 
 
 @dataclass(frozen=True)
@@ -66,6 +70,8 @@ class ProjectRow:
         phase."""
         if self.tasks:
             return self.tasks[0].mode, self.tasks[0].filter
+        if self.phase in FIRST_PAGES:
+            return FIRST_PAGES[self.phase], None
         return SECTIONS[self.phase or DOCUMENT][0].mode, None
 
 
@@ -132,7 +138,9 @@ def _read(path: Path, stats: list) -> ProjectRow:
     row: dict = {}
     analyses = _notebook(row, project, files[1])
     plan = project.plan
-    if files[2].is_file():
+    if project.design is not None and project.source is None:
+        phase = COLLECT if project.design.publications else DESIGN
+    elif files[2].is_file():
         phase = WRITE
     elif plan.hypotheses or analyses:
         phase = ANALYSE
@@ -247,6 +255,8 @@ def notebook_text(row: ProjectRow) -> str:
 
 
 def base_text(row: ProjectRow) -> str:
+    if row.phase in FIRST_PAGES:  # designed, its database not there yet
+        return _("pas encore")
     if row.base is None:
         return "—"
     return _("trouvée") if row.base else _("introuvable")

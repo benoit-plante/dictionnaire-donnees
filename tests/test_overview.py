@@ -38,6 +38,8 @@ EXPECTED = {
     "recent": ("—", "Écrit par une version plus récente de l'outil (format 0.999.0) : mettez "
                "l'outil à jour.", "—", "—", "—"),
     "abime": ("—", "Fichier projet illisible.", "—", "—", "—"),
+    "concu": ("Concevoir", "5 · Points de relecture : 5", "—", "—", "pas encore"),
+    "collecte": ("En collecte", "5 · Points de relecture : 5", "—", "—", "pas encore"),
 }  # fmt: skip
 
 
@@ -57,7 +59,7 @@ def fresh():
 def test_each_column(made, stage):
     found = overview.row(made[stage])
     assert tuple(text(found) for text in COLUMNS) == EXPECTED[stage]
-    assert found.name in ("etude-sommeil", "etude-analyses")
+    assert found.name in ("etude-sommeil", "etude-analyses", "etude-concue")
     assert "Études 2026" in found.folder
 
 

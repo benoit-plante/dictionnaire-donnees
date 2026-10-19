@@ -390,6 +390,12 @@ def tasks(
     to confirm, the Method's holes, the draft to check. Empty when nothing waits. Without
     the project's path or the notebook's state, those parts are left out."""
     found: list[Task] = []
+    if project.design is not None:  # v0.20: the review of the designed questionnaire, first
+        from ddict import design_points
+
+        open_points = len(design_points.points(project))
+        if open_points:
+            found.append(Task(open_points, _("Points de relecture : {n}"), "design_review"))
     if project.questionnaire is None:
         found.append(Task(1, _("Ajouter le questionnaire de l'étude"), "questionnaire"))
     pending_terms = sum(1 for e in project.glossary if e.status == "proposed")

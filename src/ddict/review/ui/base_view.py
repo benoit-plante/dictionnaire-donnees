@@ -14,6 +14,7 @@ from ddict.project.model import Project
 from ddict.review import levels, logic, study
 from ddict.review.logic import ReviewError
 from ddict.review.ui import common as c
+from ddict.review.ui import design_view
 from ddict.workflow import format_note, platform_notes, profile_summary
 
 FORMATS = {
@@ -292,7 +293,8 @@ def tab_levels() -> str:
 
 def page(project: Project) -> None:
     source = project.source
-    st.header(source.name + (f" — {source.label}" if source.label else ""))
+    label = f" — {source.label}" if source is not None and source.label else ""
+    st.header(w.dataset_title(project) + label)
     sensitive = [e for e in project.variables if logic.is_sensitive(e)]
     labels = [_("Résumé"), _("Description"), tab_levels(), _("Sensibles ({n})").format(
         n=len(sensitive))]  # fmt: skip
@@ -310,6 +312,10 @@ def page(project: Project) -> None:
 
 def _summary(project: Project, sensitive: list) -> None:
     source = project.source
+    if source is None:  # v0.20 (D-145): what the file says waits for the file
+        st.write(profile_summary(project))
+        design_view.waiting_note(project, "waiting-base")
+        return
     st.write(profile_summary(project))
     for note in platform_notes(project):
         st.info(note)

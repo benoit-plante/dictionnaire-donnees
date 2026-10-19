@@ -2120,6 +2120,9 @@ msgstr ""
 "Waiting for the database: this page will open once the responses of the collection have arrived. "
 "Until then, the questionnaire is the source of the dictionary."
 
+msgid "En collecte"
+msgstr "Collecting"
+
 msgid "En conflit"
 msgstr "In conflict"
 
@@ -4797,6 +4800,10 @@ msgstr "Several means were compared with a one-way analysis of variance; the eff
 
 msgid "Point fermé : il reviendra si la question change."
 msgstr "Point closed: it will come back if the question changes."
+
+#, python-brace-format
+msgid "Points de relecture : {n}"
+msgstr "Review points: {n}"
 
 #, python-brace-format
 msgid "Points gardés tels quels ({n})"
@@ -7706,6 +7713,9 @@ msgstr "among"
 
 msgid "parmi (valeurs séparées par des virgules)"
 msgstr "among (values separated by commas)"
+
+msgid "pas encore"
+msgstr "not yet"
 
 msgid "pas encore de base (dictionnaire prévu, avant la collecte)"
 msgstr "no database yet (planned dictionary, before the collection)"

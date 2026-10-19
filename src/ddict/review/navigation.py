@@ -48,7 +48,9 @@ DESIGN: tuple[PageInfo, ...] = (
 PAGES = {page.mode: page for pages in (DESIGN, *SECTIONS.values()) for page in pages}
 FIRST = "base"  # a project opens on its database (v0.3)
 # The pages that show the database: before it arrives (v0.20, D-145), they say they wait.
-NEEDS_BASE = ("base", "analyses", "notebook", "method", "verify")
+# The page "Base" opens: its description of the database, its measure levels and its
+# sensitive variables are decided before the collection; only its summary waits.
+NEEDS_BASE = ("analyses", "notebook", "method", "verify")
 
 
 def sections(project: Project) -> dict[str, tuple[PageInfo, ...]]:

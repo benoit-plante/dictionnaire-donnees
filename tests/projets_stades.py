@@ -11,7 +11,9 @@ from ddict.analysis.compute import run
 from ddict.analysis.notebook_export import SUFFIX
 from ddict.project import SCHEMA_VERSION, dumps, save_project
 from ddict.project.decisions import validate
+from ddict.project.model import Publication
 from ddict.workflow import add_questionnaire, default_project_path, profile_database
+from projet_concu import project as designed
 from test_analysis_data import KEY, _prepared, analyses_project
 from test_plan import EXAMPLE, RULES
 
@@ -21,7 +23,7 @@ SLEEP, ANALYSES = "etude-sommeil.sav", KEY["sav"]
 NOW = "2026-10-18T09:00:00"
 STAGES = (
     "neuf", "moitie", "plan", "carnet", "article", "sans-base", "introuvable", "recent",
-    "abime",
+    "abime", "concu", "collecte",
 )  # fmt: skip
 
 
@@ -120,5 +122,19 @@ def make(root: Path) -> dict[str, Path]:
     text = dumps(project)
     path.write_text(text[: len(text) // 2], encoding="utf-8", newline="\n")
     found["abime"] = path
+
+    # v0.20 (D-154): a questionnaire designed in the tool, then marked as sent.
+    for stage in ("concu", "collecte"):
+        folder = root / "Études 2026" / "Vague 2" / stage
+        folder.mkdir(parents=True)
+        project = designed()
+        if stage == "collecte":
+            project.design.publications = [
+                Publication(kind="limesurvey", date="2026-10-20", fingerprint="0" * 64,
+                            questionnaire=project.questionnaire.model_copy(deep=True))
+            ]  # fmt: skip
+        path = folder / "etude-concue.dd.json"
+        save_project(project, path)
+        found[stage] = path
 
     return found
