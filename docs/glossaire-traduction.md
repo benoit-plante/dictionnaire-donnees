@@ -44,7 +44,10 @@ Termes fixés pour la traduction anglaise de l'interface, du codebook et des gui
 | version finale / de travail | final / working version | export |
 | fichiers de commandes | command files | syntaxe SPSS, script R |
 | copie documentée | documented copy | |
-| IA locale | local AI | |
+| IA | AI | |
+| clé d'API | API key | |
+| Permettre l'envoi des métadonnées de ce projet à l'IA | Allow the metadata of this project to be sent to the AI | La case de la barre latérale (v0.18). |
+| Ce qui part | What is sent | |
 | banc d'essai des modèles | model bench | |
 | tableau de bord (« À faire ») | to-do list (« To do ») | |
 | décisions groupées | grouped decisions | |

@@ -1,6 +1,6 @@
 # Installing and using the tool on Windows
 
-This guide is for people who do not program. It goes from the installation to a complete codebook, made from the fictional database and its questionnaire that come with the tool. Everything is done by double-clicking and in the tool's window; there are no commands to type. Allow an hour, plus the download of the AI model if you choose to use it.
+This guide is for people who do not program. It goes from the installation to a complete codebook, made from the fictional database and its questionnaire that come with the tool. Everything is done by double-clicking and in the tool's window; there are no commands to type. Allow an hour.
 
 En français : [`../installation-windows.md`](../installation-windows.md).
 
@@ -9,8 +9,8 @@ En français : [`../installation-windows.md`](../installation-windows.md).
 ## What you need
 
 - Windows 10 or 11. No administrator rights needed.
-- An Internet connection **during the installation only**. Afterwards, the tool no longer talks to the Internet: it reads your files and writes its results on your computer.
-- For the AI, which is optional: about 5 GB of free space and 16 GB of memory (8 GB will do, more slowly). A graphics card speeds things up but is not needed; without one, a smaller model is advised (section 6).
+- An Internet connection **during the installation**. Afterwards, the tool reads your files and writes its results on your computer, without the Internet; it uses it only for the AI, if you use it, and only for a project that allows it.
+- For the AI, which is optional: an API key, paid by your team (section 6). Nothing to install, no graphics card.
 
 ## 1. Install
 
@@ -18,13 +18,8 @@ En français : [`../installation-windows.md`](../installation-windows.md).
 2. In File Explorer, right-click the downloaded file, **Extract All**, then **Extract**. Open the extracted folder; if it holds only one folder of the same name, open that one: it is **the tool's folder**, with `installer.bat`, `docs` and `exemples`.
 3. Double-click **`installer.bat`**.
    - If Windows shows "**Windows protected your PC**", click **More info**, then **Run anyway**. This message appears for any downloaded program that is not signed by a paying publisher; the installer is a plain script, readable in the `windows` folder.
-4. A window opens and goes through four steps (in French): uv (the Python manager, installed in your user folder), the tool (a minute or two the first time), the icons ("Les icônes"), then the local AI ("IA locale"). A warning in English about the "PATH" may appear: that is normal, the installer takes care of it.
-5. At the AI step, answer `y` (yes) or `n` (no) — the French `o`/`n` works too:
-   - if Ollama is not installed, the installer offers to open its download page ("Ouvrir la page de téléchargement d'Ollama… ?"); install it, then run `installer.bat` again;
-   - if Ollama is installed but not the recommended model, it offers to download it ("Le télécharger maintenant ?", about 4.7 GB, once).
-
-   You can answer no and come back to it later: the tool works without AI.
-6. "Installation terminée" (installation finished): press Enter to close the window. A **Dictionnaire de données** icon is on your desktop and in the Start menu.
+4. A window opens and goes through three steps (in French): uv (the Python manager, installed in your user folder), the tool (a minute or two the first time), then the icons ("Les icônes"). A warning in English about the "PATH" may appear: that is normal, the installer takes care of it. The AI needs no installation: its key is typed later, in the tool (section 6).
+5. "Installation terminée" (installation finished): press Enter to close the window. A **Dictionnaire de données** icon is on your desktop and in the Start menu.
 
 ## 2. Open the tool
 
@@ -49,7 +44,7 @@ The fictional database is a small invented study of sleep (200 fictional partici
 
 Your first codebook is done, without AI: everything in it was computed exactly from the file. The next sections enrich it; you can stop at any of them and export.
 
-**The menu of the sidebar** (since 0.16) arranges the pages in three jobs: **Document** (Database, Questionnaire, Glossary, Variables, Groups, Names, Export), **Analyse** (Plan, Analyses, Notebook) and **Write** (Method, Verify), then **Settings** (Local AI). Each page shows what waits there ("Glossary (2)"), or ✓ when nothing waits. The **Codebook N% documented** bar measures what your team has decided, part by part (the detail is in the Summary tab of the Database page). The long pages are in **tabs**: Database (Summary, Description, Measure levels, Sensitive), a group (Items, Scoring, Instrument, Recodings), the result of an analysis (Result, Tables and figures, Files).
+**The menu of the sidebar** (since 0.16) arranges the pages in three jobs: **Document** (Database, Questionnaire, Glossary, Variables, Groups, Names, Export), **Analyse** (Plan, Analyses, Notebook) and **Write** (Method, Verify), then **Settings** (AI). Each page shows what waits there ("Glossary (2)"), or ✓ when nothing waits. The **Codebook N% documented** bar measures what your team has decided, part by part (the detail is in the Summary tab of the Database page). The long pages are in **tabs**: Database (Summary, Description, Measure levels, Sensitive), a group (Items, Scoring, Instrument, Recodings), the result of an analysis (Result, Tables and figures, Files).
 
 Under the menu, the **to-do list** says what is waiting, in the recommended order ("Add the study questionnaire", "Acronyms to accept: 3"…), up to the article: the plan to freeze, the numbers to confirm in the notebook, the gaps of the Method, the draft to check. Each line is a button that leads to the right page. The **Home** button takes you back to the home page, where the table **My projects** comes first (section 19), then your **Recent projects**, with their folder and the date of their last change; each opens again in one click.
 
@@ -76,20 +71,34 @@ Each variable comes from a question, a grid item or an option of a checkbox ques
 
 When the file has no value labels (a CSV, for example), the tool proposes "1 = Not at all … 5 = Extremely" from the options of the linked question, only in safe cases. The words "**assumed order, to check**" are meant seriously: check the order of the codes in your survey platform or recoding script before accepting. A recoded database may have 0 = "Other" where the questionnaire puts "Other" last.
 
-## 6. Optional: the local AI
+## 6. Optional: the AI, with an API key
 
-The AI proposes links to questions, then labels and descriptions easier to read than variable names. It runs on your computer, with the free software **Ollama**. The model never receives the participants' answers, only summary information (names, labels, proportions, questions). Every proposal waits for your decision.
+The AI proposes links to questions, then labels and descriptions easier to read than variable names; on the Analyses page, it also proposes an analysis for an objective (section 13). Every proposal waits for your decision. The tool works fully without it: the computation alone already proposes the candidate questions.
 
-**Which model?** (trials of 2026-10-14, in `docs/essais/`): with a graphics card of at least 6 GB, **qwen2.5 7B** (`ollama pull qwen2.5:7b-instruct-q4_K_M`, 4.7 GB). Without a graphics card, **qwen2.5 3B** (`ollama pull qwen2.5:3b-instruct`, 1.9 GB) is faster but makes more mistakes: review every proposal; its licence restricts commercial use. You can also do without a model: the computation alone already proposes the candidate questions.
+**What is sent.** The AI is an external service (Anthropic by default, or your university's AI server). It receives **metadata only**, what the questionnaire and the codebook say: the names and labels of variables and values, the declared missing codes, the text of the questions whose link you accepted, the accepted acronyms of the glossary, the type and level of measurement. **Never** an answer of a participant, nor a statistic drawn from the answers (counts, proportions, missing values, minimum, maximum, mean, years), nor a value of a free text or of an identifier, nor the name of the database, nor your notes. And **only for a project that allows it**: a box, not ticked by default. At Anthropic, for the API, requests and answers are deleted within 30 days, with exceptions (a "zero data retention" agreement, content flagged under the usage policy, kept up to 2 years, a legal obligation; [their policy](https://privacy.claude.com/en/articles/7996866-how-long-does-anthropic-store-my-organizations-data), read on 2026-10-19). Submit these rules to your ethics board if your certificate requires it.
 
-1. **Local AI** page: the tool checks that Ollama answers and shows the chosen model. If something is missing, the page explains what to do; the tool never downloads a model itself.
-2. **Links to questions**: **See exactly what would be sent (nothing is sent)** shows the messages, without sending anything. Then **Get proposals: links to questions**. A progress bar moves block by block.
-3. **Review the links** (Variables page, "To review" filter; or the to-do list) before going further. The order matters: for the labels, the model receives the text of the questions whose link you accepted, and the meaning of the acronyms you accepted. A wrong link would give it a wrong question.
-4. **Labels and descriptions**: **Get proposals: labels and descriptions**, then review them.
+**Getting an API key (Anthropic)**, once, by the person who manages the team's budget:
 
-During a job, **Stop** (or a change of page) interrupts it after the block in progress. The finished blocks are saved; run it again to continue where it stopped. Allow about a minute for the fictional database with a graphics card, several minutes without.
+1. Create an account on Anthropic's console, [console.anthropic.com](https://console.anthropic.com).
+2. Add a payment method or credits: each request is billed on this account.
+3. **Set a spending limit** in the console's billing settings: it protects the team from a mistake or a lost key.
+4. Create an API key and copy it. It is shown only once; do not e-mail it to anyone, do not write it in any file.
 
-**Model bench** (at the bottom of the same page): to choose a model, **Measure this model** tries it on the tool's fictional databases (three in French, one in English), whose right answers are known; the fourth, a fictional study of physical activity, served to check version 0.6 without any tuning. The report says how many links are right (and those of the computation alone, for comparison), how many labels or descriptions may contain an invention (citation, threshold, instrument name, meaning of an acronym, range, meaning of codes without a label) and the duration. Your data is not used. The report is written next to the project (`banc-essai-<model>-<date>.md`) and can be downloaded. About three minutes with a graphics card.
+(The names of the console's menus may change; what matters is the spending limit.) For a university's server, ask its IT service for its address (often ending with `/v1`), the model's name and a key.
+
+**In the tool:**
+
+1. **AI** page (Settings menu): the service (Anthropic by default), the address, the model (`claude-haiku-5-5` is the least costly), then **Save the settings**. Paste the key in **New API key**, then **Record the key**: it is kept in Windows' Credential Manager, never in a project nor in a file, and will not be shown again; **Forget the key** erases it. **Test the connection** asks for the list of models: nothing of a project is sent, nothing is billed.
+2. In the project's sidebar, tick **Allow the metadata of this project to be sent to the AI**. The box is saved in the project, with its date: your colleagues see it. Without it, no AI button sends anything.
+3. **Links to questions**: **See exactly what would be sent (nothing is sent)** shows the messages, without sending anything (always possible, even without the box). Then **Get proposals: links to questions**. A progress bar moves block by block (20 variables per message).
+4. **Review the links** (Variables page, "To review" filter; or the to-do list) before going further. The order matters: for the labels, the model receives the text of the questions whose link you accepted, and the meaning of the acronyms you accepted. A wrong link would give it a wrong question.
+5. **Labels and descriptions**: **Get proposals: labels and descriptions** (25 variables per message), then review them.
+
+During a job, **Stop** (or a change of page) interrupts it after the block in progress. The finished blocks are saved; run it again to continue where it stopped. Each exchange is kept next to the project, in the `<project>.dd-envois` folder.
+
+**What it costs**: a few cents for the labels of a database of a few hundred variables with `claude-haiku-5-5`, more with a larger model; the model bench gives the real figures.
+
+**Model bench** (at the bottom of the same page, or `ddict evaluate`): to choose a model, **Measure this model** tries it on the tool's fictional databases (three in French, one in English), whose right answers are known; the fourth, a fictional study of physical activity, served to check version 0.6 without any tuning. The report says how many links are right (and those of the computation alone, for comparison), how many labels or descriptions may contain an invention (citation, threshold, instrument name, meaning of an acronym, range, meaning of codes without a label) and the duration. Your data is not used. The bench sends several dozen messages: it asks before spending. The report is written next to the project (`banc-essai-<model>-<date>.md`) and can be downloaded.
 
 ## 7. Review
 
@@ -175,7 +184,7 @@ On the command line: `ddict rename project.dd.json --suffix _t2 --reference wave
 The analysis context (section 8) is made to be given as it is to an assistant that writes the code of your analysis. **The model never sees your data**: it receives the description of the database, writes code, and your computer runs that code on the real data.
 
 - **What you send is for your team and your ethics approval to decide**, not the tool. The context without statistics holds metadata only, but the text of the questions, the variable names or the description of the study may be sensitive. The tool itself sends nothing: you copy the file.
-- **Choose an assistant that can write code.** In the trial (fictional database, `docs/essais/2026-10-15-contexte-analyse-modele.md`), three online assistants wrote a correct analysis from the context alone; the tool's small local model (qwen2.5 7B) failed, not knowing how to program in R. The local model remains useful for labels and links, not for writing an analysis.
+- **Choose an assistant that can write code.** In the trial (fictional database, `docs/essais/2026-10-15-contexte-analyse-modele.md`), three online assistants wrote a correct analysis from the context alone; a small model of 7 billion parameters, installed on the computer, failed, not knowing how to program in R.
 - **Give it the scores already computed** when you can: the preparation script (section 9) does without AI what an AI most often gets wrong (reversed items, missing items, missing codes).
 - **Always read and check the code before running it** on your data: in the trial, one assistant kept an empty "Prefer not to answer" group in its results. Note the codebook fingerprint with the code and the results.
 
@@ -205,7 +214,7 @@ The **Analyses** page (Analyse section of the menu) computes, on your database a
 
 **These results come from your data**: store the reports as you store the data, and decide before publishing what small counts (flagged below 5) may show.
 
-**Ask the local AI for a proposal (optional).** At the top of the page, the **Ask the local AI for a proposal** box: write your objective in one sentence ("Do women and men have the same sleep quality?"), then **Ask for a proposal**. The model chosen on the **Local AI** page receives this objective as is, the list of the analyses and that of the variables (name, label, level, group): **no data, no statistic**; **See what would be sent** shows the exact message. Do not write any participant data in the objective. It answers within seconds with one to three proposals, each with its reason; **Take up this proposal** fills the page's choices, and nothing is computed before **Run the analysis**.
+**Ask the AI for a proposal (optional).** At the top of the page, the **Ask the AI for a proposal** box: write your objective in one sentence ("Do women and men have the same sleep quality?"), then **Ask for a proposal** (the project must allow it, section 6). The model chosen on the **AI** page receives this objective as is, the list of the analyses and that of the variables (name, label, level, group): **no data, no statistic**; **See what would be sent** shows the exact message. Do not write any participant data in the objective. It answers within seconds with one to three proposals, each with its reason; **Take up this proposal** fills the page's choices, and nothing is computed before **Run the analysis**.
 
 What to expect (trials `docs/essais/2026-10-16-ia-conseillere.md` and `2026-10-16-essai-analyses.md`, in French): on the fictional database, the right analysis and the right variables 9 times out of 13; on a real database of 250 variables, the right kind of analysis two times out of three, but less reliable variables. The model proposes an analysis even when none fits, and sometimes picks a less fitting method (Student rather than Welch). **It helps to find the kind of analysis; the choice stays yours.** For a very large database, the tool may refuse to send the message, too long for the model: then choose the analysis yourself.
 
@@ -303,7 +312,7 @@ ddict analyse etude-suivi.dd.json partial --variables stress sommeil --covariate
 ddict analyse etude-suivi.dd.json moderation --outcome epuisement --focal charge --moderator soutien
 ```
 
-The fictional database `etude-suivi.sav` (folder `exemples\bases-fictives`) is there to try them. The advising AI knows these analyses too: on six objectives written for this database, the model `qwen2.5:7b-instruct-q4_K_M` proposed the right analysis first four times, and among its proposals five times; it sometimes adds covariates the objective does not ask for. The subgroup is not part of its proposals: it is yours to choose.
+The fictional database `etude-suivi.sav` (folder `exemples\bases-fictives`) is there to try them. The advising AI knows these analyses too: on six objectives written for this database, a small model installed on the computer (trial of version 0.14) proposed the right analysis first four times, and among its proposals five times; it sometimes added covariates the objective does not ask for. The subgroup is not part of its proposals: it is yours to choose.
 
 A second trial on the open AMATUS database is described in [`essais/2026-10-18-essai-v014-amatus.md`](../essais/2026-10-18-essai-v014-amatus.md) (in French): the subgroups of the published article, chosen in the tool on the whole database, give its figures again, and R gives the tool's.
 
@@ -361,8 +370,8 @@ On the command line: `ddict projects list` prints the table; `ddict projects fol
 
 ## Update or uninstall
 
-- **Update**: download and extract the new archive, then double-click its `installer.bat`. If the tool is open, the installer offers to close it (answer `y`): it cannot replace it while it runs. Your project files are kept. A project opened with version 0.8 no longer opens with an older version (its format changed); the reverse works.
-- **Uninstall**: double-click `desinstaller.bat`, in the tool's folder. It removes the tool and its icons, without touching your projects, codebooks or data; it asks before clearing the lists of recent and followed projects. uv and Ollama stay installed.
+- **Update**: download and extract the new archive, then double-click its `installer.bat`. If the tool is open, the installer offers to close it (answer `y`): it cannot replace it while it runs. Your project files are kept. A project opened with version 0.8 no longer opens with an older version (its format changed); the reverse works. Likewise, a project saved by version 0.18 (which notes in it whether it may be sent to the AI) no longer opens with 0.17.
+- **Uninstall**: double-click `desinstaller.bat`, in the tool's folder. It removes the tool and its icons, without touching your projects, codebooks or data; it asks before clearing the lists of recent and followed projects with the AI settings, then, separately, the API key of Windows' Credential Manager. uv stays installed.
 
 ## For those who prefer the command line
 
@@ -372,8 +381,11 @@ Every step also exists as a command, in PowerShell (`ddict --help` lists them). 
 ddict                                         # open the interface on the home page
 ddict profile sleep-study.sav                 # read the database, create the project file
 ddict questionnaire sleep-study.dd.json questionnaire-sleep.pdf
-ddict link sleep-study.dd.json --model qwen2.5:7b-instruct-q4_K_M
-ddict enrich sleep-study.dd.json --model qwen2.5:7b-instruct-q4_K_M
+ddict ai key                                  # type the API key (nothing shows), once
+ddict ai test --model claude-haiku-5-5        # the key and the connection, nothing of a project sent
+ddict ai allow sleep-study.dd.json            # this project allows its metadata to be sent
+ddict link sleep-study.dd.json --ai
+ddict enrich sleep-study.dd.json --model claude-haiku-5-5
 ddict review sleep-study.dd.json              # open a project directly
 ddict export sleep-study.dd.json --language en          # Excel codebook and report
 ddict export sleep-study.dd.json --syntax     # and the SPSS and R command files
@@ -396,11 +408,11 @@ ddict verify sleep-study.dd.json manuscript.docx   # the figures of a Word manus
 ddict deposit sleep-study.dd.json            # the reproduction package, without the database
 ddict projects list                          # the followed projects, as the home page's table
 ddict projects search "C:\Users\you\Documents\Studies" --follow   # follow those of a folder
-ddict advise sleep-study.dd.json "Compare the sleep of women and men." --model qwen2.5:7b-instruct-q4_K_M
-ddict evaluate --model qwen2.5:7b-instruct-q4_K_M       # model bench
+ddict advise sleep-study.dd.json "Compare the sleep of women and men."
+ddict evaluate --model claude-haiku-5-5       # model bench (billed)
 ```
 
-`--preview` (with `link` or `enrich`, without `--model`) writes the messages that would be sent into the `sleep-study.dd-envois\apercu` folder, without sending anything. `ddict export --no-text G2` leaves out the question text of a group for one export. `ddict analyse` writes the report, the tables and the R script next to the project (analyses: `table1`, `t_test`, `paired`, `rm_anova`, `anova`, `chi_square`, `correlation`, `partial`, `regression`, `logistic`, `moderation`; `--subgroup` for part of the people); `ddict advise` shows the model's proposals without computing anything (`--preview` to see the message only).
+The service, the address and the model come from the settings of the **AI** page, unless `--protocol`, `--address` or `--model` give them; the key is never given as an argument (PowerShell keeps the history of commands), only through `ddict ai key`. `ddict ai forget` erases it; `ddict ai deny` withdraws a project's permission. `--preview` (with `link`, `enrich`, `rename` or `advise`) writes the messages that would be sent into the `sleep-study.dd-envois\apercu` folder, without sending anything, even for a project that does not allow it. `ddict export --no-text G2` leaves out the question text of a group for one export. `ddict analyse` writes the report, the tables and the R script next to the project (analyses: `table1`, `t_test`, `paired`, `rm_anova`, `anova`, `chi_square`, `correlation`, `partial`, `regression`, `logistic`, `moderation`; `--subgroup` for part of the people); `ddict advise` shows the model's proposals without computing anything (`--preview` to see the message only).
 
 ## If something goes wrong
 
@@ -413,8 +425,10 @@ ddict evaluate --model qwen2.5:7b-instruct-q4_K_M       # model bench
 | The "Open" window does not appear | It may be behind the tool's window: look in the taskbar. Otherwise, paste the file's path in the field under the button (right-click the file in File Explorer, **Copy as path**). |
 | Nothing opens when double-clicking the icon | Wait ten seconds or so. Otherwise, open the tool's journal: paste `%APPDATA%\ddict\journal.txt` in the address bar of File Explorer, then Enter. It holds its start-up messages (no data): pass it on. |
 | "A project already exists for this database" | The tool does not overwrite your work: **Open the existing project**, or **Replace the project** if you really want to start over (its decisions will be lost). |
-| Local AI page: "Is Ollama running?" | Start Ollama from the Start menu, wait for its icon next to the clock, then **Check again**. |
-| Local AI page: no model installed | Run `installer.bat` again and answer `y` to download the model, or follow the page's instructions. |
+| AI buttons greyed out: "Sending to the AI is not allowed for this project" | Tick **Allow the metadata of this project to be sent to the AI** in the sidebar (section 6), if your team allows it. |
+| "The key is refused (or missing)" | Record the key again on the **AI** page; check in Anthropic's console that it was not disabled and that the credit or the spending limit is not used up. |
+| "Cannot reach …" when testing the connection | Check the Internet connection; on an institution's network, a firewall may block the service: ask your IT support. |
+| "Too many requests" or "service overloaded" | Wait a few minutes, then run it again: the finished blocks are kept. |
 | A grid of the questionnaire is "to check" | Its column headings run together in the PDF: the tool then proposes no value labels for its variables. A `.txt` copied from Word avoids the problem. |
 | "Cannot write the files" when exporting | The codebook is probably open in Excel: close it, then try again. |
 | Documented copy: "The database … cannot be found next to the project" | Put the database in the project's folder, or **Choose the database…**. |

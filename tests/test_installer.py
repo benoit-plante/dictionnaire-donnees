@@ -119,3 +119,16 @@ def test_the_icon_opens_the_window_without_console():
     for name in SCRIPTS:
         script = (ROOT / "windows" / f"{name}.ps1").read_text(encoding="utf-8-sig")
         assert "$_.Path -eq $toolWindow" in script  # an open window is closed too
+
+
+def test_no_local_model_left_in_the_guides():
+    """v0.18, C3: the guides and the rules. The design (one section per version), the
+    roadmap, the trials, the plans, the journal and the changelog keep their history."""
+    guides = ["README.md", "CLAUDE.md", "docs/installation-windows.md",
+              "docs/en/installation-windows.md", "docs/scenario-revision.md",
+              "docs/dependances.md", "docs/glossaire-traduction.md"]  # fmt: skip
+    found = []
+    for name in guides:
+        text = (ROOT / name).read_text(encoding="utf-8").casefold()
+        found += [f"{name}: {word}" for word in GONE if word in text]
+    assert not found

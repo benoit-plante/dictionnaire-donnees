@@ -1,14 +1,14 @@
 # Installer et utiliser l'outil sous Windows
 
-Ce guide s'adresse aux personnes qui ne programment pas. Il mène de l'installation jusqu'à un codebook complet, produit à partir de la base fictive et de son questionnaire, fournis avec l'outil. Tout se fait par des doubles-clics et dans la fenêtre de l'outil ; aucune commande n'est à taper. Comptez une heure, plus le téléchargement du modèle d'IA si vous choisissez de l'utiliser.
+Ce guide s'adresse aux personnes qui ne programment pas. Il mène de l'installation jusqu'à un codebook complet, produit à partir de la base fictive et de son questionnaire, fournis avec l'outil. Tout se fait par des doubles-clics et dans la fenêtre de l'outil ; aucune commande n'est à taper. Comptez une heure.
 
 In English: [`en/installation-windows.md`](en/installation-windows.md).
 
 ## Ce qu'il faut
 
 - Windows 10 ou 11. Pas besoin de droits d'administrateur.
-- Une connexion Internet **pendant l'installation seulement**. Ensuite, l'outil ne communique plus avec Internet : il lit vos fichiers et écrit ses résultats sur votre ordinateur.
-- Pour l'IA, facultative : environ 5 Go d'espace libre et 16 Go de mémoire vive (8 Go suffisent, en plus lent). Une carte graphique accélère le travail, mais n'est pas nécessaire ; sans elle, un modèle plus petit est conseillé (section 6).
+- Une connexion Internet **pendant l'installation**. Ensuite, l'outil lit vos fichiers et écrit ses résultats sur votre ordinateur, sans Internet ; il ne s'en sert que pour l'IA, si vous l'utilisez, et seulement pour un projet qui le permet.
+- Pour l'IA, facultative : une clé d'API, payée par votre équipe (section 6). Aucune installation, aucune carte graphique.
 
 ## 1. Installer
 
@@ -16,13 +16,8 @@ In English: [`en/installation-windows.md`](en/installation-windows.md).
 2. Dans l'Explorateur, clic droit sur le fichier téléchargé, **Extraire tout**, puis **Extraire**. Ouvrez le dossier extrait ; s'il ne contient qu'un seul dossier du même nom, ouvrez celui-là : c'est **le dossier de l'outil**, avec `installer.bat`, `docs` et `exemples`.
 3. Double-cliquez sur **`installer.bat`**.
    - Si Windows affiche « **Windows a protégé votre ordinateur** », cliquez sur **Informations complémentaires**, puis **Exécuter quand même**. Ce message apparaît pour tout programme téléchargé qui n'est pas signé par un éditeur payant ; l'installateur est un simple script, lisible dans le dossier `windows`.
-4. Une fenêtre s'ouvre et suit quatre étapes : uv (le gestionnaire de Python, installé dans votre dossier d'utilisateur), l'outil (une ou deux minutes la première fois), les icônes, puis l'IA locale. Un avertissement en anglais sur le « PATH » peut s'afficher : c'est normal, l'installateur s'en occupe.
-5. À l'étape de l'IA, répondez par `o` (oui) ou `n` (non) :
-   - si Ollama n'est pas installé, l'installateur propose d'ouvrir sa page de téléchargement ; installez-le, puis relancez `installer.bat` ;
-   - si Ollama est installé mais pas le modèle recommandé, il propose de le télécharger (environ 4,7 Go, une seule fois).
-
-   Vous pouvez répondre non et y revenir plus tard : l'outil fonctionne sans IA.
-6. « Installation terminée » : appuyez sur Entrée pour fermer la fenêtre. Une icône **Dictionnaire de données** est sur votre bureau et dans le menu Démarrer.
+4. Une fenêtre s'ouvre et suit trois étapes : uv (le gestionnaire de Python, installé dans votre dossier d'utilisateur), l'outil (une ou deux minutes la première fois), puis les icônes. Un avertissement en anglais sur le « PATH » peut s'afficher : c'est normal, l'installateur s'en occupe. L'IA ne demande aucune installation : sa clé se saisit plus tard, dans l'outil (section 6).
+5. « Installation terminée » : appuyez sur Entrée pour fermer la fenêtre. Une icône **Dictionnaire de données** est sur votre bureau et dans le menu Démarrer.
 
 ## 2. Ouvrir l'outil
 
@@ -49,7 +44,7 @@ Pour le faire vous-même, comme avec vos propres données :
 
 Votre premier codebook est fait, sans IA : tout ce qu'il contient a été calculé exactement à partir du fichier. Les sections suivantes l'enrichissent ; on peut s'arrêter à n'importe laquelle et exporter.
 
-**Le menu de la barre latérale** (depuis la 0.16) range les pages en trois métiers : **Documenter** (Base, Questionnaire, Glossaire, Variables, Groupes, Noms, Export), **Analyser** (Plan, Analyses, Carnet) et **Rédiger** (Méthode, Vérifier), puis **Réglages** (IA locale). Chaque page dit ce qui y attend (« Glossaire (2) ») ou ✓ quand rien n'y attend. La barre **Codebook documenté à N %** mesure ce que votre équipe a décidé, partie par partie (le détail est dans l'onglet Résumé de la page Base). Les pages longues sont en **onglets** : Base (Résumé, Description, Niveaux de mesure, Sensibles), un groupe (Items, Cotation, Instrument, Recodages), le résultat d'une analyse (Résultat, Tableaux et figures, Fichiers).
+**Le menu de la barre latérale** (depuis la 0.16) range les pages en trois métiers : **Documenter** (Base, Questionnaire, Glossaire, Variables, Groupes, Noms, Export), **Analyser** (Plan, Analyses, Carnet) et **Rédiger** (Méthode, Vérifier), puis **Réglages** (IA). Chaque page dit ce qui y attend (« Glossaire (2) ») ou ✓ quand rien n'y attend. La barre **Codebook documenté à N %** mesure ce que votre équipe a décidé, partie par partie (le détail est dans l'onglet Résumé de la page Base). Les pages longues sont en **onglets** : Base (Résumé, Description, Niveaux de mesure, Sensibles), un groupe (Items, Cotation, Instrument, Recodages), le résultat d'une analyse (Résultat, Tableaux et figures, Fichiers).
 
 Sous le menu, le **tableau de bord** dit ce qui attend, dans l'ordre recommandé (« Ajouter le questionnaire de l'étude », « Sigles à valider : 3 »…), jusqu'à l'article : le plan à figer, les chiffres à confirmer au carnet, les trous de la Méthode, l'ébauche à vérifier. Chaque ligne est un bouton qui mène à la bonne page. Le bouton **Accueil** ramène à l'accueil, où le tableau **Mes projets** vient en tête (section 19), puis vos **projets récents**, avec leur dossier et la date de leur dernière modification ; chacun se rouvre en un clic.
 
@@ -76,20 +71,34 @@ Chaque variable vient d'une question, d'un énoncé de grille ou d'une option d'
 
 Quand le fichier n'a pas d'étiquettes de valeurs (un CSV, par exemple), l'outil propose « 1 = Pas du tout … 5 = Extrêmement » d'après les options de la question rattachée, seulement dans les cas sûrs. La mention « **ordre supposé, à vérifier** » est sérieuse : vérifiez l'ordre des codes dans votre plateforme d'enquête ou votre script de recodage avant d'accepter. Une base recodée peut avoir 0 = « Autre » là où le questionnaire place « Autre » en dernier.
 
-## 6. Facultatif : l'IA locale
+## 6. Facultatif : l'IA, avec une clé d'API
 
-L'IA propose des rattachements aux questions, puis des libellés et des descriptions plus lisibles que les noms de variables. Elle tourne sur votre ordinateur, avec le logiciel libre **Ollama**. Le modèle ne reçoit jamais les réponses des participants, seulement des informations résumées (noms, étiquettes, proportions, questions). Chaque proposition attend votre décision.
+L'IA propose des rattachements aux questions, puis des libellés et des descriptions plus lisibles que les noms de variables ; sur la page Analyses, elle propose aussi une analyse pour un objectif (section 13). Chaque proposition attend votre décision. L'outil fonctionne entièrement sans elle : le calcul seul propose déjà les questions candidates.
 
-**Quel modèle ?** (essai du 2026-10-14, `docs/essais/2026-10-14-trois-modeles.md`) : avec une carte graphique d'au moins 6 Go, **qwen2.5 7B** (`ollama pull qwen2.5:7b-instruct-q4_K_M`, 4,7 Go). Sans carte graphique, **qwen2.5 3B** (`ollama pull qwen2.5:3b-instruct`, 1,9 Go) est plus rapide mais se trompe plus souvent : révisez chaque proposition ; sa licence restreint l'usage commercial. On peut aussi se passer de modèle : le calcul seul propose déjà les questions candidates.
+**Ce qui part.** L'IA est un service externe (Anthropic par défaut, ou le serveur d'IA de votre université). Elle ne reçoit **que des métadonnées**, ce que disent le questionnaire et le codebook : les noms et les étiquettes des variables et des valeurs, les codes manquants déclarés, le texte des questions dont vous avez accepté le rattachement, les sigles acceptés du glossaire, le type et le niveau de mesure. **Jamais** une réponse d'un participant, ni une statistique tirée des réponses (effectifs, proportions, manquants, minimum, maximum, moyenne, années), ni une valeur d'un texte libre ou d'un identifiant, ni le nom de la base, ni vos notes. Et **seulement pour un projet qui le permet** : une case, non cochée par défaut. Chez Anthropic, pour l'API, les demandes et les réponses sont supprimées dans les 30 jours, sauf exceptions (une entente « zéro conservation », un contenu signalé pour la politique d'usage, gardé jusqu'à 2 ans, une obligation légale ; [leur politique](https://privacy.claude.com/en/articles/7996866-how-long-does-anthropic-store-my-organizations-data), lue le 2026-10-19). Soumettez ces règles à votre comité d'éthique si votre certificat l'exige.
 
-1. Page **IA locale** : l'outil vérifie qu'Ollama répond et montre le modèle choisi. S'il manque quelque chose, la page explique quoi faire ; l'outil ne télécharge jamais de modèle lui-même.
-2. **Rattachement aux questions** : **Voir exactement ce qui serait envoyé** montre les messages, sans rien envoyer. Puis **Faire proposer : rattachement aux questions**. Une barre de progression avance bloc par bloc.
-3. **Révisez les rattachements** (page Variables, filtre « À réviser » ; ou le tableau de bord) avant d'aller plus loin. L'ordre compte : pour les libellés, le modèle reçoit le texte des questions dont vous avez accepté le rattachement, et le sens des sigles que vous avez acceptés. Un rattachement faux lui donnerait une fausse question.
-4. **Libellés et descriptions** : **Faire proposer : libellés et descriptions**, puis révisez-les.
+**Obtenir une clé d'API (Anthropic)**, une seule fois, par la personne qui gère le budget de l'équipe :
 
-Pendant un travail, **Arrêter** (ou un changement de page) l'interrompt après le bloc en cours. Les blocs terminés sont enregistrés ; relancez pour continuer là où il s'était arrêté. Comptez environ une minute pour la base fictive avec une carte graphique, plusieurs minutes sans.
+1. Créez un compte sur la console d'Anthropic, [console.anthropic.com](https://console.anthropic.com).
+2. Ajoutez un moyen de paiement ou des crédits : chaque envoi est facturé sur ce compte.
+3. **Fixez une limite de dépenses** dans les réglages de facturation de la console : elle protège l'équipe d'une erreur ou d'une clé perdue.
+4. Créez une clé d'API et copiez-la. Elle ne s'affiche qu'une fois ; ne l'envoyez par courriel à personne, ne l'écrivez dans aucun fichier.
 
-**Banc d'essai des modèles** (en bas de la même page, ou `ddict evaluer --modele …`) : pour choisir un modèle, **Mesurer ce modèle** l'essaie sur les bases fictives de l'outil (trois en français, une en anglais), dont on connaît les bonnes réponses ; la quatrième, une étude fictive sur l'activité physique, a servi à vérifier la version 0.6 sans aucun réglage. Le rapport dit combien de rattachements sont justes (et ceux du calcul seul, pour comparer), combien de libellés ou de descriptions contiennent peut-être une invention (citation, seuil, nom d'instrument, sens d'un sigle, étendue, sens de codes sans étiquette) et la durée. Vos données ne sont pas utilisées. Le rapport est écrit à côté du projet (`banc-essai-<modèle>-<date>.md`) et peut être téléchargé. Environ trois minutes avec une carte graphique.
+(Les noms des menus de la console peuvent changer ; l'essentiel est la limite de dépenses.) Pour le serveur d'une université, demandez son adresse (souvent terminée par `/v1`), le nom du modèle et une clé à son service informatique.
+
+**Dans l'outil :**
+
+1. Page **IA** (menu Réglages) : le service (Anthropic par défaut), l'adresse, le modèle (`claude-haiku-5-5` est le moins coûteux), puis **Enregistrer les réglages**. Collez la clé dans **Nouvelle clé d'API**, puis **Enregistrer la clé** : elle est gardée dans le gestionnaire d'identifiants de Windows, jamais dans un projet ni dans un fichier, et ne s'affichera plus ; **Oublier la clé** l'efface. **Tester la connexion** demande la liste des modèles : rien d'un projet n'est envoyé, rien n'est facturé.
+2. Dans la barre latérale du projet, cochez **Permettre l'envoi des métadonnées de ce projet à l'IA**. La case est enregistrée dans le projet, avec sa date : vos collègues la voient. Sans elle, aucun bouton d'IA n'envoie rien.
+3. **Rattachement aux questions** : **Voir exactement ce qui serait envoyé** montre les messages, sans rien envoyer (toujours possible, même sans la case). Puis **Faire proposer : rattachement aux questions**. Une barre de progression avance bloc par bloc (20 variables par message).
+4. **Révisez les rattachements** (page Variables, filtre « À réviser » ; ou le tableau de bord) avant d'aller plus loin. L'ordre compte : pour les libellés, le modèle reçoit le texte des questions dont vous avez accepté le rattachement, et le sens des sigles que vous avez acceptés. Un rattachement faux lui donnerait une fausse question.
+5. **Libellés et descriptions** : **Faire proposer : libellés et descriptions** (25 variables par message), puis révisez-les.
+
+Pendant un travail, **Arrêter** (ou un changement de page) l'interrompt après le bloc en cours. Les blocs terminés sont enregistrés ; relancez pour continuer là où il s'était arrêté. Chaque échange est gardé à côté du projet, dans le dossier `<projet>.dd-envois`.
+
+**Ce que cela coûte** : de l'ordre de quelques cents pour les libellés d'une base de quelques centaines de variables avec `claude-haiku-5-5`, davantage avec un modèle plus grand ; le banc d'essai donne les vrais chiffres.
+
+**Banc d'essai des modèles** (en bas de la même page, ou `ddict evaluer`) : pour choisir un modèle, **Mesurer ce modèle** l'essaie sur les bases fictives de l'outil (trois en français, une en anglais), dont on connaît les bonnes réponses ; la quatrième, une étude fictive sur l'activité physique, a servi à vérifier la version 0.6 sans aucun réglage. Le rapport dit combien de rattachements sont justes (et ceux du calcul seul, pour comparer), combien de libellés ou de descriptions contiennent peut-être une invention (citation, seuil, nom d'instrument, sens d'un sigle, étendue, sens de codes sans étiquette) et la durée. Vos données ne sont pas utilisées. Le banc envoie plusieurs dizaines de messages : il demande confirmation avant de dépenser. Le rapport est écrit à côté du projet (`banc-essai-<modèle>-<date>.md`) et peut être téléchargé.
 
 ## 7. Réviser
 
@@ -175,7 +184,7 @@ En ligne de commande : `ddict renommer projet.dd.json --suffixe _t2 --reference 
 Le contexte d'analyse (section 8) est fait pour être donné tel quel à un assistant qui écrit le code de votre analyse. **Le modèle ne voit jamais vos données** : il reçoit la description de la base, écrit du code, et c'est votre ordinateur qui exécute ce code sur les vraies données.
 
 - **Ce que vous envoyez relève de votre équipe et de votre certificat d'éthique**, pas de l'outil. Le contexte sans statistiques ne contient que des métadonnées, mais le texte des questions, les noms de variables ou la description de l'étude peuvent être sensibles. L'outil, lui, n'envoie rien : c'est vous qui copiez le fichier.
-- **Choisissez un assistant qui sait écrire du code.** À l'essai (base fictive, `docs/essais/2026-10-15-contexte-analyse-modele.md`), trois assistants en ligne ont écrit une analyse juste à partir du seul contexte ; le petit modèle local de l'outil (qwen2.5 7B) a échoué, faute de savoir programmer en R. Le modèle local reste utile pour les libellés et les rattachements, pas pour écrire une analyse.
+- **Choisissez un assistant qui sait écrire du code.** À l'essai (base fictive, `docs/essais/2026-10-15-contexte-analyse-modele.md`), trois assistants en ligne ont écrit une analyse juste à partir du seul contexte ; un petit modèle de 7 milliards de paramètres, installé sur l'ordinateur, a échoué, faute de savoir programmer en R.
 - **Donnez-lui les scores déjà calculés** quand c'est possible : le script de préparation (section 9) fait sans IA ce qu'une IA rate le plus souvent (items inversés, items manquants, codes manquants).
 - **Relisez et vérifiez toujours le code avant de l'exécuter** sur vos données : à l'essai, un assistant a gardé un groupe vide « Préfère ne pas répondre » dans ses résultats. Notez l'empreinte du codebook avec le code et les résultats.
 
@@ -205,7 +214,7 @@ La page **Analyses** (section Analyser du menu) calcule, sur votre base et avec 
 
 **Ces résultats viennent de vos données** : rangez les rapports comme les données, et décidez avant de publier ce que peuvent montrer les petits effectifs (signalés sous 5).
 
-**Demander une proposition à l'IA locale (facultatif).** En haut de la page, l'encadré **Demander une proposition à l'IA locale** : écrivez votre objectif en une phrase (« Les hommes et les femmes ont-ils la même qualité de sommeil ? »), puis **Demander une proposition**. Le modèle choisi sur la page **IA locale** reçoit cet objectif tel quel, la liste des analyses et celle des variables (nom, libellé, niveau, groupe) : **aucune donnée, aucune statistique** ; **Voir ce qui serait envoyé** montre le message exact. N'écrivez aucune donnée de participant dans l'objectif. Il répond en quelques secondes par une à trois propositions, chacune avec sa raison ; **Reprendre cette proposition** remplit les choix de la page, et rien n'est calculé avant **Lancer l'analyse**.
+**Demander une proposition à l'IA (facultatif).** En haut de la page, l'encadré **Demander une proposition à l'IA** : écrivez votre objectif en une phrase (« Les hommes et les femmes ont-ils la même qualité de sommeil ? »), puis **Demander une proposition** (le projet doit le permettre, section 6). Le modèle choisi sur la page **IA** reçoit cet objectif tel quel, la liste des analyses et celle des variables (nom, libellé, niveau, groupe) : **aucune donnée, aucune statistique** ; **Voir ce qui serait envoyé** montre le message exact. N'écrivez aucune donnée de participant dans l'objectif. Il répond en quelques secondes par une à trois propositions, chacune avec sa raison ; **Reprendre cette proposition** remplit les choix de la page, et rien n'est calculé avant **Lancer l'analyse**.
 
 Ce qu'il faut en attendre (essais `docs/essais/2026-10-16-ia-conseillere.md` et `2026-10-16-essai-analyses.md`) : sur la base fictive, la bonne analyse et les bonnes variables 9 fois sur 13 ; sur une vraie base de 250 variables, le bon type d'analyse deux fois sur trois, mais des variables moins sûres. Le modèle propose une analyse même quand aucune ne convient, et choisit parfois une méthode moins adaptée (Student plutôt que Welch). **C'est une aide pour retrouver le type d'analyse ; le choix reste le vôtre.** Pour une très grande base, l'outil peut refuser d'envoyer le message, trop long pour le modèle : choisissez alors l'analyse vous-même.
 
@@ -303,7 +312,7 @@ ddict analyser etude-suivi.dd.json partielle --variables stress sommeil --covari
 ddict analyser etude-suivi.dd.json moderation --dependante epuisement --focal charge --moderateur soutien
 ```
 
-La base fictive `etude-suivi.sav` (dossier `exemples\bases-fictives`) sert à les essayer. L'IA conseillère connaît aussi ces analyses : sur six objectifs écrits pour cette base, le modèle `qwen2.5:7b-instruct-q4_K_M` a proposé la bonne analyse en premier quatre fois, et parmi ses propositions cinq fois ; il ajoute parfois des covariables que l'objectif ne demande pas. Le sous-groupe n'entre pas dans ses propositions : c'est à vous de le choisir.
+La base fictive `etude-suivi.sav` (dossier `exemples\bases-fictives`) sert à les essayer. L'IA conseillère connaît aussi ces analyses : sur six objectifs écrits pour cette base, un petit modèle installé sur l'ordinateur (essai de la version 0.14) a proposé la bonne analyse en premier quatre fois, et parmi ses propositions cinq fois ; il ajoutait parfois des covariables que l'objectif ne demande pas. Le sous-groupe n'entre pas dans ses propositions : c'est à vous de le choisir.
 
 Un second essai sur la base ouverte AMATUS est décrit dans [`essais/2026-10-18-essai-v014-amatus.md`](essais/2026-10-18-essai-v014-amatus.md) : les sous-groupes de l'article publié, choisis dans l'outil sur la base entière, redonnent ses chiffres, et R ceux de l'outil.
 
@@ -361,8 +370,8 @@ En ligne de commande : `ddict projets lister` imprime le tableau ; `ddict projet
 
 ## Mettre à jour ou désinstaller
 
-- **Mettre à jour** : téléchargez et décompressez la nouvelle archive, puis double-cliquez sur son `installer.bat`. Si l'outil est ouvert, l'installateur propose de le fermer (répondez `o`) : il ne peut pas le remplacer pendant qu'il tourne. Vos fichiers projet sont conservés. Un projet ouvert avec la version 0.8 ne s'ouvre plus avec une version plus ancienne (son format a changé) ; l'inverse fonctionne.
-- **Désinstaller** : double-cliquez sur `desinstaller.bat`, dans le dossier de l'outil. Il retire l'outil et ses icônes, sans toucher à vos projets, codebooks ou données ; il demande avant d'effacer les listes des projets récents et des projets suivis. uv et Ollama restent installés.
+- **Mettre à jour** : téléchargez et décompressez la nouvelle archive, puis double-cliquez sur son `installer.bat`. Si l'outil est ouvert, l'installateur propose de le fermer (répondez `o`) : il ne peut pas le remplacer pendant qu'il tourne. Vos fichiers projet sont conservés. Un projet ouvert avec la version 0.8 ne s'ouvre plus avec une version plus ancienne (son format a changé) ; l'inverse fonctionne. De même, un projet enregistré par la version 0.18 (qui y note la permission d'envoyer à l'IA) ne s'ouvre plus avec la 0.17.
+- **Désinstaller** : double-cliquez sur `desinstaller.bat`, dans le dossier de l'outil. Il retire l'outil et ses icônes, sans toucher à vos projets, codebooks ou données ; il demande avant d'effacer les listes des projets récents et des projets suivis avec les réglages de l'IA, puis, à part, la clé d'API du gestionnaire d'identifiants de Windows. uv reste installé.
 
 ## Pour qui préfère la ligne de commande
 
@@ -372,8 +381,11 @@ Toutes les étapes existent aussi en commandes, dans PowerShell (`ddict --help` 
 ddict                                         # ouvrir l'interface sur l'accueil
 ddict profiler etude-sommeil.sav              # lire la base, créer le fichier projet
 ddict questionnaire etude-sommeil.dd.json questionnaire-sommeil.pdf
-ddict rattacher etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M
-ddict enrichir etude-sommeil.dd.json --modele qwen2.5:7b-instruct-q4_K_M
+ddict ia cle                                  # saisir la clé d'API (rien ne s'affiche), une fois
+ddict ia tester --modele claude-haiku-5-5     # la clé et la connexion, sans rien envoyer d'un projet
+ddict ia autoriser etude-sommeil.dd.json      # ce projet permet l'envoi de ses métadonnées
+ddict rattacher etude-sommeil.dd.json --ia
+ddict enrichir etude-sommeil.dd.json --modele claude-haiku-5-5
 ddict reviser etude-sommeil.dd.json           # ouvrir directement un projet
 ddict exporter etude-sommeil.dd.json          # codebook Excel et rapport
 ddict exporter etude-sommeil.dd.json --syntaxe   # et les fichiers de commandes SPSS et R
@@ -397,11 +409,11 @@ ddict verifier etude-sommeil.dd.json manuscrit.docx   # les chiffres d'un manusc
 ddict deposer etude-sommeil.dd.json          # le paquet de reproduction, sans la base
 ddict projets lister                          # les projets suivis, comme le tableau de l'accueil
 ddict projets chercher "C:\Users\vous\Documents\Études" --suivre   # suivre ceux d'un dossier
-ddict conseiller etude-sommeil.dd.json "Comparer le sommeil des femmes et des hommes." --modele qwen2.5:7b-instruct-q4_K_M
-ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M   # banc d'essai d'un modèle
+ddict conseiller etude-sommeil.dd.json "Comparer le sommeil des femmes et des hommes."
+ddict evaluer --modele claude-haiku-5-5       # banc d'essai d'un modèle (facturé)
 ```
 
-Les commandes et leurs options ont aussi des noms anglais (`ddict export --work`, `--replace`…). `--apercu` (à `rattacher` ou `enrichir`, sans `--modele`) écrit les messages qui seraient envoyés dans le dossier `etude-sommeil.dd-envois\apercu`, sans rien envoyer. `ddict exporter --sans-texte G2` omet le texte des questions d'un groupe pour un seul export. `ddict analyser` écrit le rapport, les tableaux et le script R à côté du projet (analyses : `tableau1`, `test_t`, `apparie`, `anova_rm`, `anova`, `khi2`, `correlation`, `partielle`, `regression`, `logistique`, `moderation` ; `--sous-groupe` pour une partie des personnes) ; `ddict conseiller` affiche les propositions du modèle sans rien calculer (`--apercu` pour voir le message seulement).
+Les commandes et leurs options ont aussi des noms anglais (`ddict export --work`, `--replace`…). Le service, l'adresse et le modèle viennent des réglages de la page **IA**, sauf si `--protocole`, `--adresse` ou `--modele` les donnent ; la clé ne se donne jamais en argument (PowerShell garde l'historique des commandes), seulement par `ddict ia cle`. `ddict ia oublier` l'efface ; `ddict ia interdire` retire la permission d'un projet. `--apercu` (à `rattacher`, `enrichir`, `renommer` ou `conseiller`) écrit les messages qui seraient envoyés dans le dossier `etude-sommeil.dd-envois\apercu`, sans rien envoyer, même pour un projet qui ne le permet pas. `ddict exporter --sans-texte G2` omet le texte des questions d'un groupe pour un seul export. `ddict analyser` écrit le rapport, les tableaux et le script R à côté du projet (analyses : `tableau1`, `test_t`, `apparie`, `anova_rm`, `anova`, `khi2`, `correlation`, `partielle`, `regression`, `logistique`, `moderation` ; `--sous-groupe` pour une partie des personnes) ; `ddict conseiller` affiche les propositions du modèle sans rien calculer (`--apercu` pour voir le message seulement).
 
 ## En cas de problème
 
@@ -413,8 +425,10 @@ Les commandes et leurs options ont aussi des noms anglais (`ddict export --work`
 | La fenêtre « Ouvrir » ne s'affiche pas | Elle est peut-être derrière la fenêtre de l'outil : regardez dans la barre des tâches. Sinon, collez le chemin du fichier dans le champ sous le bouton (clic droit sur le fichier dans l'Explorateur, **Copier en tant que chemin d'accès**). |
 | Rien ne s'ouvre au double-clic sur l'icône | Attendez une dizaine de secondes. Sinon, ouvrez le journal de l'outil : collez `%APPDATA%\ddict\journal.txt` dans la barre d'adresse de l'Explorateur, puis Entrée. Il contient ses messages de démarrage (aucune donnée) : transmettez-le. |
 | « Un projet existe déjà pour cette base » | L'outil n'écrase pas votre travail : **Ouvrir le projet existant**, ou **Remplacer le projet** si vous voulez vraiment repartir de zéro (vos décisions seront perdues). |
-| Page IA locale : « Ollama ne répond pas » | Lancez Ollama depuis le menu Démarrer, attendez son icône près de l'horloge, puis **Vérifier de nouveau**. |
-| Page IA locale : aucun modèle installé | Relancez `installer.bat` et répondez `o` pour télécharger le modèle, ou suivez les indications de la page. |
+| Boutons d'IA grisés : « L'envoi à l'IA n'est pas permis pour ce projet » | Cochez **Permettre l'envoi des métadonnées de ce projet à l'IA** dans la barre latérale (section 6), si votre équipe le permet. |
+| « La clé est refusée (ou absente) » | Enregistrez de nouveau la clé sur la page **IA** ; vérifiez dans la console d'Anthropic qu'elle n'a pas été désactivée et que le crédit ou la limite de dépenses n'est pas épuisé. |
+| « Impossible de joindre … » à **Tester la connexion** | Vérifiez la connexion Internet ; sur un réseau d'établissement, un pare-feu peut bloquer le service : adressez-vous au soutien informatique. |
+| « Trop de demandes » ou « service surchargé » | Attendez quelques minutes, puis relancez : les blocs terminés sont gardés. |
 | Une grille du questionnaire est « à vérifier » | Ses titres de colonnes sont collés dans le PDF : l'outil ne propose alors pas d'étiquettes de valeurs pour ses variables. Un `.txt` copié depuis Word évite le problème. |
 | « Impossible d'écrire les fichiers » à l'export | Le codebook est probablement ouvert dans Excel : fermez-le, puis recommencez. |
 | Copie documentée : « La base … est introuvable à côté du projet » | Placez la base dans le dossier du projet, ou **Choisir la base…**. |

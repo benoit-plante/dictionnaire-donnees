@@ -245,6 +245,8 @@ La médiation, les modèles multiniveaux, les équations structurelles et l'anal
 
 **À planifier seulement quand l'auteur jugera le niveau déterministe satisfaisant.** Ce qui suit n'est qu'une liste de pistes, pour que les choix des versions 0.11 à 0.15 ne les ferment pas.
 
+> **Fait en v0.18** (`docs/plan-v0.18.md`, D-134 à D-139) : la règle est reformulée (« Aucune donnée de participant ne quitte le poste »), l'envoi externe est activé projet par projet, et seul le **niveau 1** existe dans l'outil, pour les quatre usages d'avant (libellés, rattachement, radicaux, conseillère), par une clé d'API (Anthropic, ou le serveur d'une université). Le niveau 2 n'existe que dans le banc. Le reste de cette section (rédaction de l'article, bibliographie, code hors catalogue) demeure une piste.
+
 - **La règle à reformuler.** Aujourd'hui : « Rien ne quitte le poste ». Proposition : « **Aucune donnée ne quitte le poste** », avec un envoi externe activé explicitement, projet par projet. Cela changera la règle 3 du `CLAUDE.md`, `check_local()` et D-073.
 - **Des niveaux d'envoi**, choisis par l'équipe selon son certificat d'éthique :
   - 0 : rien ;

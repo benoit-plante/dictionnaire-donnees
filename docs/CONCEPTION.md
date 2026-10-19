@@ -55,15 +55,15 @@ Le produit final est un codebook Excel et un rapport Markdown, plus un fichier p
                                      ┌────────────▼────────────┐
                                      │ porte de confidentialité │
                                      └────────────┬────────────┘
-                                                  │ (facultatif)
+                                                  │ métadonnées seulement (facultatif, projet permis)
                                      ┌────────────▼────────────┐
-                                     │ enrichissement IA (local)│
+                                     │ IA, service externe      │
                                      └────────────┬────────────┘
                                                   ▼
                       fichier projet JSON ⇄ révision (Streamlit) → export .xlsx / .md
 ```
 
-Les données brutes ne sortent jamais du module de lecture et du module de profilage : les autres modules ne voient que le **profil** (métadonnées et agrégats).
+Les données brutes ne sortent jamais du module de lecture et du module de profilage : les autres modules ne voient que le **profil** (métadonnées et agrégats). Depuis la v0.18, l'IA n'en reçoit que les métadonnées (§ 6.1, D-136), et seulement pour un projet qui le permet (D-138).
 
 | Module | Rôle | Entrée → sortie |
 |---|---|---|
@@ -71,7 +71,7 @@ Les données brutes ne sortent jamais du module de lecture et du module de profi
 | `profile` (profilage) | Calculer, pour chaque variable, toutes les statistiques déterministes (§ 5.2) et les anomalies de codage. | tableau + métadonnées → profil |
 | `privacy` (confidentialité) | Classer les variables (texte libre, identifiant probable, date, quasi-identifiant) ; masquer les petits effectifs ; construire la vue agrégée autorisée pour l'IA et pour l'export. | profil → vue filtrée |
 | `groups` (regroupement) | Proposer des groupes déterministes : préfixe commun (`bdi_1`…`bdi_21`), même jeu d'étiquettes de valeurs, contiguïté ; calculer pour chaque groupe les corrélations item-total (signe négatif → item inversé probable). | profil + tableau → groupes candidats |
-| `llm` (enrichissement) | Construire les messages par petits blocs, appeler le serveur local, valider la réponse (pydantic), enregistrer la trace. | vue filtrée → propositions |
+| `llm` (enrichissement) | Construire les messages par blocs, appeler le service d'IA (Anthropic ou un serveur compatible OpenAI, D-135) pour un projet qui le permet, valider la réponse (pydantic), enregistrer la trace. | vue filtrée → propositions |
 | `project` (projet) | Modèle de données, statuts, sauvegarde et chargement du fichier projet JSON, versions du schéma. | — |
 | `review` (révision) | Interface Streamlit : parcourir les variables et les groupes, accepter, corriger, rejeter ; saisir les champs humains avec leur source. Logique dans `project`, interface mince. | projet → projet |
 | `export` | Codebook `.xlsx` (openpyxl) et rapport `.md`. | projet → fichiers |
@@ -202,6 +202,7 @@ Les variables sensibles (identifiants probables, texte libre, quasi-identifiants
 
 - **Libellés, descriptions, incohérences** : blocs de 10 à 15 variables consécutives (réglable), pour tenir dans le contexte d'un modèle de 7-8 milliards de paramètres quantifié et limiter les erreurs.
 - **v0.2, prompt `variables-v3`** : blocs de 8 variables par défaut (`--taille-bloc`), pour laisser à la réponse sa place dans les 4 096 jetons d'Ollama. Chaque variable dont le rattachement est accepté par une personne reçoit le texte exact de sa question (`question.text`, et `question.item` pour un énoncé ou une option) ; le bloc reçoit les sigles acceptés du glossaire qui le concernent (`glossary`). Un rattachement seulement proposé n'est pas transmis. Une proposition qui donne le sens d'un sigle absent du glossaire est signalée (essai : `docs/essais/2026-10-14-prompt-v3.md`).
+- **v0.18, par une clé d'API** : aucun contexte à respecter ; blocs de 25 variables pour les libellés (`API_BLOCK_SIZE`) et de 20 pour le rattachement (`API_LINK_BLOCK_SIZE`), réglables par `--taille-bloc`.
 - **Regroupement** : le module `groups` propose d'abord des candidats déterministes ; l'IA reçoit ensuite, groupe candidat par groupe candidat, la liste compacte des noms et étiquettes, et répond « garder, scinder, fusionner avec le voisin » plus une hypothèse.
 
 ### 6.3 Exemple de message (bloc de variables)
@@ -276,9 +277,9 @@ Réponse attendue (contrainte par le schéma JSON, transmise au serveur par `res
 4. Filtre « aucune invention » : tout texte qui ressemble à une citation, à un seuil ou à un nom d'instrument présenté comme certain est **signalé** dans l'interface (il reste une proposition que la personne peut rejeter).
 5. En cas d'échec : un nouvel essai, puis le bloc est marqué « échec » dans `ai_runs`. Aucune réponse partielle n'est acceptée.
 
-Paramètres par défaut : température 0, graine fixe. Même ainsi, un modèle local n'est pas parfaitement reproductible ; d'où la trace complète dans `ai_runs`.
+Paramètres : avec un serveur compatible OpenAI, température 0 et graine fixe ; avec Anthropic (v0.18), aucun paramètre d'échantillonnage (Haiku 5.5 et Sonnet 5.5 les refusent), pas de graine, mais un niveau de réflexion explicite (`effort`, `low` par défaut), inscrit dans la trace. Un modèle n'est jamais parfaitement reproductible ; d'où la trace complète dans `ai_runs` et, depuis la v0.18, le numéro de chaque requête et ses jetons dans le dossier des envois. Le schéma envoyé à Anthropic perd les bornes que le service refuse (`wire_schema`) ; la validation complète, sur le poste, reste la seule garantie.
 
-Avant tout envoi, la commande `enrichir --apercu` affiche les messages qui partiraient, sans rien envoyer.
+Avant tout envoi, la commande `enrichir --apercu` affiche les messages qui partiraient, sans rien envoyer ; l'aperçu reste permis pour un projet qui ne permet pas l'envoi.
 
 ### 6.5 Rattachement aux questions (v0.2, D-013)
 
@@ -433,9 +434,11 @@ Taille mesurée, sans le texte des questions (caractères ÷ 4) : **37 tokens pa
 - **Fichiers de référence** (« golden files ») : profil JSON et rapport Markdown comparés octet par octet ; deux exécutions donnent le même fichier.
 - **Tests à chaînes témoins** pour la confidentialité : la base fictive contient des chaînes uniques (`TEMOIN-7f3a…`) dans le texte libre et les identifiants ; on vérifie qu'elles n'apparaissent **jamais** dans un message destiné au modèle, ni dans le fichier projet, ni dans les exports.
 - **Réseau bloqué** dans les tests (pytest-socket). Le client IA est testé contre un faux serveur en mémoire qui renvoie des réponses valides, invalides, avec champs en trop, avec variables inventées.
-- **Test du refus d'adresse** : le client refuse une adresse non locale.
+- **Test du refus d'adresse** : le client refuse une adresse en `http://` vers un autre ordinateur, un identifiant, un paramètre ou un fragment dans l'adresse, et ne suit aucune redirection (v0.18 ; avant, toute adresse qui n'était pas sur le poste).
+- **La clé d'API** (v0.18) : les tests remplacent le gestionnaire d'identifiants de Windows par un gestionnaire en mémoire ; un test à chaîne témoin fait passer une fausse clé connue par un enrichissement complet, une clé refusée et une erreur du serveur, et ne la trouve dans aucun fichier ni aucune sortie.
+- **Le niveau 1** (v0.18) : une base fictive dont les réponses donnent des nombres introuvables ailleurs ; aucun n'entre dans un message des quatre usages, et le message de niveau 2 du banc, qui les contient tous, sert de contrôle.
 - **Test sans IA** : la chaîne complète tourne sans les dépendances facultatives installées.
-- **Essais manuels avec un vrai modèle** (Ollama sur la machine de développement) : marqués `llm`, exclus de l'intégration continue.
+- **Tests `externe`** (v0.18, D-139) : de vrais appels à Anthropic avec la clé de l'auteur, sur les bases fictives seulement ; sautés sans `DDICT_TESTS_EXTERNES=1` et une clé enregistrée, jamais en intégration continue ; le réseau n'est ouvert que vers `api.anthropic.com`, pour ces tests seuls.
 - ruff pour le style ; intégration continue GitHub Actions sous Windows, puis Linux.
 
 ## 10. Structure du dépôt
@@ -470,10 +473,11 @@ dictionnaire-donnees/
 | pydantic | Garder | Sert à la fois aux schémas de réponse de l'IA et au fichier projet. |
 | openpyxl | Garder | — |
 | Streamlit | Garder pour la v0.1, **avec deux réglages obligatoires** (écoute locale, télémétrie coupée) | Rapide à construire ; son modèle « tout se réexécute à chaque clic » devient lent au-delà de quelques centaines de variables, d'où une interface mince. |
-| Client compatible OpenAI | **httpx directement** plutôt que la bibliothèque `openai` | Moins de dépendances, contrôle total de l'adresse (refus du non-local), aucun comportement caché. Les trois serveurs visés acceptent `response_format` avec un schéma JSON. |
+| Clients d'IA (v0.18 : Anthropic, ou compatible OpenAI) | **httpx directement** plutôt que les bibliothèques `anthropic` ou `openai` | Moins de dépendances, contrôle total de l'adresse (HTTPS, aucun proxy ni redirection), aucun comportement caché. Anthropic contraint la réponse par `output_config.format`, un serveur compatible OpenAI par `response_format`. |
+| Clé d'API (v0.18) | **keyring**, gestionnaire d'identifiants de Windows (D-137) | La clé n'est écrite nulle part ailleurs ; Windows la protège par la session. |
 | Installation | **uv** (outil d'Astral) | Une commande installe Python et l'outil, sans connaître pip ni les environnements virtuels ; prépare le futur installateur Windows. |
 | pytest, pytest-socket, ruff | Garder | — |
-| Modèle de départ | Un modèle « instruct » de 7-8 milliards de paramètres en quantification Q4, qui tient dans 8 Go de VRAM ; le choix exact est documenté dans le journal des décisions après essai | — |
+| Modèle par défaut | Jusqu'à la v0.17, un modèle de 7-8 milliards de paramètres sur le poste ; depuis la v0.18, un modèle d'Anthropic, choisi d'après le banc et consigné au journal | — |
 
 Toutes les dépendances ci-dessus sont sous licences permissives (BSD, MIT, Apache 2.0), compatibles avec Apache 2.0 comme avec AGPL.
 
@@ -655,3 +659,17 @@ Plan : [`plan-v0.17.md`](plan-v0.17.md), décisions D-129 à D-133. Ni le calcul
   - **La ligne d'un projet** (B1, D-133, `ddict.overview`) : `row(path)` lit le projet et le carnet, jamais la base ; les mêmes chiffres que le projet ouvert (`logic.codebook_progress`, `workflow.tasks` sans l'état recalculé du carnet) ; un projet introuvable, illisible ou trop récent (`ProjectNewer`) donne une ligne qui le dit. Cache en mémoire, partagé par les séances, par chemin et langue, tant que la date et la taille du projet, du carnet, de l'ébauche et de son rapport ne changent pas. Projets de test à chaque stade : `tests/projets_stades.py`.
   - **Le tableau** (B2) : des lignes de boutons plutôt qu'un `st.dataframe` (choix de l'auteur : un clic ouvre, et les tests de Streamlit savent cliquer un bouton, pas une ligne de tableau) ; `c.go_to_task` choisit la page d'une tâche pour le tableau de bord et pour l'accueil.
 - **La version 0.17.0** (D1) : guides, scénario (étapes 76 à 82), journal des changements, numéro de version.
+
+## 24. L'IA par une clé d'API (v0.18)
+
+Plan : [`plan-v0.18.md`](plan-v0.18.md), décisions D-134 à D-139. La version change de moteur, pas de fonctions : les quatre usages de l'IA (libellés et descriptions, rattachement, radicaux, conseillère) et le banc restent ; ni le calcul, ni les exports, ni le carnet, ni l'ébauche d'article ne changent. Les sections précédentes décrivent chaque version telle qu'elle a été faite ; pour l'IA, celle-ci les remplace.
+
+- **Partie A, le moteur.**
+  - **Deux clients** (A2, D-135, `ddict.llm.client`) : `AnthropicClient` (`POST /v1/messages` ; la consigne dans `system` ; ni température ni graine ; `output_config.effort` explicite ; la réponse lue dans le bloc `text` ; `refusal` et `max_tokens` traités comme une réponse invalide ; pas de `fallbacks`) et `OpenAICompatibleClient` (le client d'avant, avec une clé facultative). `check_endpoint` (`ddict.llm.defaults`) : HTTPS, ou `http` vers cet ordinateur seulement. Erreurs : `auth`, `bad_request`, `rate_limit` et `overloaded` (une attente selon `retry-after`, au plus 60 s, puis arrêt), `key_store` ; elles arrêtent le travail. Le message d'erreur du serveur, la clé effacée, va au dossier des envois avec le numéro de la requête et ses jetons.
+  - **Le schéma envoyé** (A2, `schemas.wire_schema`) : sans `maxLength`, `minLength`, `maxItems`, bornes numériques ni `title` ; `minItems` au plus 1 ; `prefixItems` en `anyOf`. Trouvé au premier contact réel (A5) : la grammaire du schéma strict de la conseillère est « trop grande » pour Anthropic, qui en reçoit une forme plate (`advice_schema(…, flat=True)`) ; ce que la grammaire ne garantit plus est refusé ou signalé sur le poste.
+  - **La clé** (A3, D-137, `ddict.llm.keys`) : le gestionnaire d'identifiants de Windows, appelé par le moteur Windows de `keyring` (une configuration de `keyring` ne peut pas l'envoyer ailleurs) ; une entrée par adresse, `ddict:<adresse>`, l'ancienne effacée avant d'écrire la nouvelle. Lue à chaque requête, jamais écrite ailleurs ni affichée.
+  - **Les réglages de l'ordinateur** (A3, `ddict.ai_settings`) : `%APPDATA%\ddict\ia.json` (protocole, adresse, modèle, effort ; jamais la clé).
+  - **La permission par projet** (A4, D-138, `ddict.project.permission`) : `settings.ai = {"allowed", "since"}`, format 0.8.0 ; `ddict.llm.connect.client_for`, seul endroit où un client est fait pour un projet, refuse un projet qui ne le permet pas ; `client_from` sert le test de connexion et le banc, qui n'envoient rien d'un projet.
+  - **Le premier contact réel** (A5, D-139) : le marqueur `externe`, les quatre schémas acceptés par Haiku 5.5 et Sonnet 5.5, une fausse clé refusée, le réseau limité à `api.anthropic.com`.
+- **Partie B, le niveau 1** (D-136). Libellés : consigne `variables-v4`, sans codes observés, proportions, manquants, minimum, maximum, moyenne ni années ; la description calculée d'un groupe perd son étendue de codes observés (`wording.group_description(…, observed=False)`). Rattachement et radicaux : leurs consignes, déjà de niveau 1, restent. Conseillère : `advise-v3` pour Anthropic (libellés entiers, items avec leurs libellés, une seule borne de 100 000 caractères) ; `advise-v2`, compacte (D-080), pour un serveur compatible OpenAI. Le type, le niveau de mesure et la note de confidentialité restent : ils décrivent la colonne, pas une réponse. Test à chaînes témoins sur les quatre usages.
+- **Partie C, l'interface, la ligne de commande, l'installation.** La page « IA » (réglages, clé masquée, « Tester la connexion », « Ce qui part ») et la case de la barre latérale, enregistrée par `c.save` (C1) ; la ligne de commande par les réglages, `--protocole`, `--ia` pour `rattacher` et `renommer`, `ddict ia cle | oublier | tester | autoriser | interdire` (C2) ; l'installateur sans Ollama, le désinstalleur qui efface la clé par `cmdkey` après une question (C2) ; les guides et ce document (C3).

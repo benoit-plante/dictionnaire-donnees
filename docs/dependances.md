@@ -33,13 +33,13 @@ Toute nouvelle dépendance est ajoutée à ce tableau après vérification de sa
 | fonttools, pyparsing | Polices et analyse de texte (requis par matplotlib) | MIT | Oui | v0.10, 3 |
 | packaging | Numéros de version (requis par matplotlib et statsmodels) | Apache-2.0 ou BSD-2-Clause | Oui | v0.10, 3 |
 
-### Option « ia » : enrichissement par un modèle local
+### Option « ia » : enrichissement par l'IA (une clé d'API, depuis la v0.18)
 
 Installée seulement sur demande (`pip install "ddict[ia]"`, ou `uv sync --extra ia`). Sans elle, l'outil profile et exporte normalement.
 
 | Paquet | Rôle | Licence | Compatible Apache-2.0 | Ajouté à l'étape |
 |---|---|---|---|---|
-| httpx | Appels au serveur local compatible OpenAI | BSD-3-Clause | Oui | 10 |
+| httpx | Appels au service d'IA (Anthropic, ou un serveur compatible OpenAI ; un serveur sur le poste jusqu'à la v0.17) | BSD-3-Clause | Oui | 10 |
 | httpcore | Transport HTTP (requis par httpx) | BSD-3-Clause | Oui | 10 |
 | h11 | Protocole HTTP/1.1 (requis par httpcore) | MIT | Oui | 10 |
 | anyio | Entrées-sorties (requis par httpx) | MIT | Oui | 10 |
