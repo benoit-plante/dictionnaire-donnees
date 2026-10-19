@@ -73,7 +73,7 @@ def test_a_designed_project_opens_on_its_questionnaire(design_file):
     assert app.session_state["mode"] == "design"
     assert [h.value for h in app.header] == ["Questionnaire"]
     lines = [m.value for m in app.markdown]
-    assert any(line.startswith("1. Quel est votre genre ?") for line in lines)
+    assert any(line.startswith("**1.** Quel est votre genre ?") for line in lines)
     assert any("`Q4_SQ001`" in line for line in lines)
     # The questionnaire page of a database's project is not in its menu.
     assert _open(design_file, "questionnaire").session_state["mode"] == "design"

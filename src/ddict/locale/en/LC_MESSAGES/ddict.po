@@ -291,6 +291,10 @@ msgid ", ligne {row}, colonne {column}"
 msgstr ", row {row}, column {column}"
 
 #, python-brace-format
+msgid ", p. {n}"
+msgstr ", p. {n}"
+
+#, python-brace-format
 msgid "- Variables ajoutées (sans équivalent) : {n}"
 msgstr "- Variables added (without a match): {n}"
 
@@ -445,6 +449,9 @@ msgstr "Add the hypothesis"
 msgid "Ajouter la règle"
 msgstr "Add the rule"
 
+msgid "Ajouter la section"
+msgstr "Add the section"
+
 msgid "Ajouter le questionnaire"
 msgstr "Add the questionnaire"
 
@@ -469,6 +476,9 @@ msgstr "Add a hypothesis"
 
 msgid "Ajouter une hypothèse à la fin du plan."
 msgstr "Add a hypothesis at the end of the plan."
+
+msgid "Ajouter une question ici"
+msgstr "Add a question here"
 
 msgid "Ajouter une règle"
 msgstr "Add a rule"
@@ -1217,6 +1227,9 @@ msgstr "Choose a question, or “No question of the questionnaire”."
 msgid "Choisissez une variable."
 msgstr "Choose a variable."
 
+msgid "Choix de réponse (code, texte ; cochez « Autre » pour l'option à préciser)"
+msgstr "Answer choices (code, text; tick “Other” for the option to specify)"
+
 msgid "Choix justes du calcul défaits"
 msgstr "Right choices of the computation undone"
 
@@ -1344,6 +1357,9 @@ msgstr "Standardized coefficient (β)"
 #, python-brace-format
 msgid "Coefficients standardisés de la régression de {outcome}"
 msgstr "Standardized coefficients of the regression of {outcome}"
+
+msgid "Colonnes de la grille : les choix de réponse (code, texte)"
+msgstr "Columns of the grid: the answer choices (code, text)"
 
 #, python-brace-format
 msgid ""
@@ -1486,6 +1502,18 @@ msgid ""
 "Conseil : validez d'abord le glossaire et révisez les rattachements proposés ; le modèle s'en "
 "sert pour les libellés."
 msgstr "Tip: first accept the glossary and review the proposed links; the model uses them for the labels."
+
+msgid "Consigne"
+msgstr "Instruction"
+
+msgid "Consigne (facultative)"
+msgstr "Instruction (optional)"
+
+msgid "Consigne de la section"
+msgstr "Instruction of the section"
+
+msgid "Consigne de la section (facultative)"
+msgstr "Instruction of the section (optional)"
 
 msgid "Consigne donnée au modèle"
 msgstr "Instructions given to the model"
@@ -2113,6 +2141,9 @@ msgstr "Save the scoring"
 
 msgid "Enregistrer la description"
 msgstr "Save the description"
+
+msgid "Enregistrer la section"
+msgstr "Save the section"
 
 msgid "Enregistrer le recodage"
 msgstr "Save the recoding"
@@ -2999,6 +3030,9 @@ msgstr "The slope of {x} at each value of {w}, with its 95% CI."
 
 msgid "La première, dans l'ordre des codes"
 msgstr "The first, in the order of the codes"
+
+msgid "La question et ses variables quittent le projet ; son numéro ne reviendra pas."
+msgstr "The question and its variables leave the project; its number will not come back."
 
 msgid "La raison, en clair, telle que publiée."
 msgstr "The reason, in plain words, as published."
@@ -4129,6 +4163,9 @@ msgstr "Levels compared"
 msgid "Modifier"
 msgstr "Change"
 
+msgid "Modifier la question"
+msgstr "Modify the question"
+
 msgid "Modifier une hypothèse ; après le gel, c'est un amendement, avec sa raison."
 msgstr "Change a hypothesis; after freezing, it is an amendment, with its reason."
 
@@ -4229,6 +4266,9 @@ msgstr "Method: {method}"
 msgid "N'en garder aucune."
 msgstr "Keep none."
 
+msgid "Nature"
+msgstr "Kind"
+
 msgid "Nature de question inconnue."
 msgstr "Unknown kind of question."
 
@@ -4317,6 +4357,9 @@ msgstr "Name refused: {why}."
 #, python-brace-format
 msgid "Nombre de variables par message (défaut : {n})."
 msgstr "Number of variables per message (default: {n})."
+
+msgid "Nommez la source du texte (« Manuel, p. 4 »)."
+msgstr "Name the source of the text (“Manual, p. 4”)."
 
 msgid "Nommez les variables, ou ajoutez --tout."
 msgstr "Name the variables, or add --all."
@@ -4431,6 +4474,9 @@ msgstr "New API key"
 msgid "Nouvelle modalité"
 msgstr "New category"
 
+msgid "Nouvelle question"
+msgstr "New question"
+
 msgid "Numéro"
 msgstr "Number"
 
@@ -4461,6 +4507,9 @@ msgstr "OSF Prereg, for primary data"
 
 msgid "Objectif de l'analyse"
 msgstr "Objective of the analysis"
+
+msgid "Obligatoire"
+msgstr "Required"
 
 msgid "Observations retenues"
 msgstr "Observations used"
@@ -4931,6 +4980,9 @@ msgstr "Protocol: {name}"
 msgid "Provenance"
 msgstr "Provenance"
 
+msgid "Provenance du texte"
+msgstr "Provenance of the text"
+
 msgid "Précédente"
 msgstr "Previous"
 
@@ -5001,6 +5053,9 @@ msgstr ""
 msgid "Préparé par dictionnaire-donnees {version} le {date}."
 msgstr "Prepared by dictionnaire-donnees {version} on {date}."
 
+msgid "Présentation"
+msgstr "Display"
+
 msgid "Prévu par le questionnaire"
 msgstr "Planned by the questionnaire"
 
@@ -5039,6 +5094,9 @@ msgstr "Unknown question: {id}."
 
 msgid "Question rattachée"
 msgstr "Linked question"
+
+msgid "Question retirée."
+msgstr "Question removed."
 
 msgid ""
 "Question à cocher (groupe « réponses multiples ») : une case vide est une option non cochée, sauf"
@@ -5369,6 +5427,12 @@ msgstr "Remove the range"
 msgid "Retirer la cotation"
 msgstr "Remove the scoring"
 
+msgid "Retirer la question"
+msgstr "Remove the question"
+
+msgid "Retirer la section"
+msgstr "Remove the section"
+
 msgid "Retirer le plan entier"
 msgstr "Remove the whole plan"
 
@@ -5562,6 +5626,9 @@ msgstr ""
 msgid "Répartition aléatoire"
 msgstr "Randomization"
 
+msgid "Réponse attendue"
+msgstr "Expected answer"
+
 msgid "Réponses reçues"
 msgstr "Answers received"
 
@@ -5654,6 +5721,12 @@ msgstr "Second measure"
 msgid "Seconde mesure (test t apparié)."
 msgstr "Second measure (paired t test)."
 
+msgid "Section"
+msgstr "Section"
+
+msgid "Section ajoutée."
+msgstr "Section added."
+
 #, python-brace-format
 msgid "Section inconnue : {id}."
 msgstr "Unknown section: {id}."
@@ -5713,6 +5786,9 @@ msgstr "Cuts, increasing (a class goes from its cut included to the next one exc
 
 msgid "Seule une grille a des énoncés."
 msgstr "Only a grid has items."
+
+msgid "Seule une section sans question se retire."
+msgstr "Only a section without questions can be removed."
 
 msgid ""
 "Seulement des métadonnées : ce que disent le questionnaire et le codebook.\n"
@@ -6142,6 +6218,12 @@ msgstr "Title"
 msgid "Titre de l'étude"
 msgstr "Working title"
 
+msgid "Titre de la nouvelle section"
+msgstr "Title of the new section"
+
+msgid "Titre de la section"
+msgstr "Title of the section"
+
 #, python-brace-format
 msgid "Titres ou notes changés : {n}"
 msgstr "Titles or notes changed: {n}"
@@ -6173,6 +6255,9 @@ msgstr "All"
 
 msgid "Toutes les propositions."
 msgstr "All the proposals."
+
+msgid "Toutes les sections"
+msgstr "All sections"
 
 msgid "Toutes les variables."
 msgstr "All the variables."
@@ -6884,6 +6969,9 @@ msgstr "lower bound of the CI"
 msgid "borne haute de l'IC"
 msgstr "upper bound of the CI"
 
+msgid "boutons"
+msgstr "buttons"
+
 msgid "calcul"
 msgstr "computed"
 
@@ -7277,6 +7365,9 @@ msgstr "registry and identifier of the preregistration, if any"
 msgid "limites"
 msgstr "limitations"
 
+msgid "liste déroulante"
+msgstr "drop-down list"
+
 msgid "longitudinale, format large (une colonne par temps)"
 msgstr "longitudinal, wide format (one column per time)"
 
@@ -7425,6 +7516,9 @@ msgstr "name and source of the instrument of group {group}"
 msgid "nom ou étiquette d'identifiant"
 msgstr "identifier name or label"
 
+msgid "nombre"
+msgstr "number"
+
 msgid "nominal"
 msgstr "nominal"
 
@@ -7448,6 +7542,9 @@ msgstr "not recomputed"
 
 msgid "non reconnue"
 msgstr "not recognised"
+
+msgid "nouvelle question"
+msgstr "new question"
 
 msgid "novembre"
 msgstr "November"
@@ -7723,6 +7820,10 @@ msgid "source"
 msgstr "source"
 
 #, python-brace-format
+msgid "source : {source}{page}"
+msgstr "source: {source}{page}"
+
+#, python-brace-format
 msgid "sous-groupe : {condition}"
 msgstr "subgroup: {condition}"
 
@@ -7749,6 +7850,9 @@ msgstr "sample size"
 msgid "taille d'échantillon reformulée"
 msgstr "sample size reworded"
 
+msgid "tapé par l'équipe"
+msgstr "typed by the team"
+
 msgid "test bilatéral"
 msgstr "two-sided test"
 
@@ -7774,11 +7878,17 @@ msgstr ""
 msgid "texte"
 msgstr "text"
 
+msgid "texte court"
+msgstr "short text"
+
 msgid "texte d'affichage"
 msgstr "displayed text"
 
 msgid "texte libre"
 msgstr "free text"
+
+msgid "texte long"
+msgstr "long text"
 
 msgid "texte omis : instrument protégé par le droit d'auteur (D-014)"
 msgstr "text left out: instrument protected by copyright (D-014)"
@@ -7791,6 +7901,9 @@ msgstr "long texts"
 
 msgid "textes tous différents"
 msgstr "texts all different"
+
+msgid "tiré d'une source"
+msgstr "taken from a source"
 
 #, python-brace-format
 msgid "tirée de {source} : {parts}. Raison : {reason}"
@@ -9117,6 +9230,9 @@ msgstr "Elements decided by the team, out of those that apply; the rest is not d
 
 msgid "Éléments décidés par l'équipe, sur ceux qui s'appliquent."
 msgstr "Elements decided by the team, out of those that apply."
+
+msgid "Énoncés de la grille (code, texte)"
+msgstr "Items of the grid (code, text)"
 
 msgid "Équipe"
 msgstr "Team"

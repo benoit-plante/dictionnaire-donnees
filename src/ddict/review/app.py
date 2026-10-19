@@ -179,6 +179,10 @@ def _place(project, mode: str, chosen: str | None) -> c.Place:
         return c.Place(mode, chosen, f"{page}, {chosen}", tuple(c.variable_fields(chosen).items()))
     if mode == "groups" and chosen is not None:
         return c.Place(mode, chosen, f"{page}, {chosen}", (("group", chosen),))
+    opened = design_view.opened_question() if mode == "design" else None
+    if opened is not None:  # v0.20: the question open in the editor
+        shown = _("nouvelle question") if opened == design_view.NEW else opened
+        return c.Place(mode, opened, f"{page}, {shown}", ((design_view.OPEN, opened),))
     return c.Place(mode, None, page)
 
 
