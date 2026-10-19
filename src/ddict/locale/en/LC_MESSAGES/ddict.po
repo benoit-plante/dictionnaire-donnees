@@ -6746,6 +6746,9 @@ msgstr "authors and affiliations"
 msgid "autre"
 msgstr "other"
 
+msgid "autres mots que dans la base, au même code"
+msgstr "other words than in the database, at the same code"
+
 msgid "autres renseignements"
 msgstr "other information"
 

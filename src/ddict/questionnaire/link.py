@@ -544,6 +544,54 @@ def _structure_targets(
     return chosen
 
 
+def by_code(project: Project) -> bool:
+    """Whether the questions of the export are matched by their codes (v0.20, D-148): a
+    LimeSurvey structure file as the questionnaire, and an export whose questions have codes.
+    The codes are the questions' identity, given by LimeSurvey itself: no text decides."""
+    questionnaire = project.questionnaire
+    return (
+        questionnaire is not None
+        and questionnaire.format == "lss"
+        and any(isinstance(q.key, str) for q in project_questions(project))
+    )
+
+
+def _code_targets(found: platforms.PlatformQuestion, question: Question, place) -> dict[str, str]:
+    """The target of each variable of a question matched by its code: the item or option
+    of the same code, the "other" option; the question itself for a whole one."""
+    chosen: dict[str, str] = {}
+    if found.single:
+        chosen[found.single] = question.question_id
+    items = {r.code: r.row_id for r in question.rows if r.code}
+    items |= {o.code: o.option_id for o in question.options if o.code and not o.other}
+    for name in found.items:
+        target = items.get(place(name).item)
+        if target is not None:
+            chosen[name] = target
+    other = next((o for o in question.options if o.other), None)
+    if found.other and other is not None:
+        chosen[found.other] = other.option_id
+    return chosen
+
+
+def code_text_differs(
+    project: Project, found: platforms.PlatformQuestion, question: Question
+) -> bool:
+    """Whether the labels of the export say other words than the questionnaire matched by
+    its code (changed in LimeSurvey after one of the two files): a point to check, never a
+    reason to match otherwise. Labels absent (a CSV export) say nothing."""
+    platform = platforms.of(project)
+    for name in found.variables:
+        label = project.variable(name).file.label
+        if not label or name == found.other:
+            continue
+        asked = platform.label_question(label) if platform and name != found.single else None
+        text = asked if asked is not None else label
+        if not texts_agree(text, question.text):
+            return True
+    return False
+
+
 def platform_choices(project: Project) -> dict[str, str]:
     """The targets given by the structure of a platform export (v0.7): each question of the
     export is matched, in order, with the next question of the questionnaire whose text
@@ -555,8 +603,12 @@ def platform_choices(project: Project) -> dict[str, str]:
     if questionnaire is None or platform is None:
         return {}
     chosen = {e.name: NO_QUESTION for e in project.variables if platform.platform_variable(e.name)}
+    coded = by_code(project)
     for found, question in matched_questions(project):
-        chosen |= _structure_targets(project, found, question)
+        if coded:
+            chosen |= _code_targets(found, question, platform.place)
+        else:
+            chosen |= _structure_targets(project, found, question)
     return chosen
 
 
@@ -568,6 +620,9 @@ def matched_questions(
     if project.questionnaire is None:
         return []
     questions = project.questionnaire.questions
+    if by_code(project):
+        codes = {q.code: q for q in questions if q.code}
+        return [(f, codes[f.key]) for f in project_questions(project) if f.key in codes]
     pairs = []
     start = 0
     for found in project_questions(project):
@@ -581,6 +636,7 @@ def matched_questions(
 
 # What the structure of the export says about the questionnaire as read (v0.7).
 PLATFORM_CHECKS = (
+    "platform_text_differs",  # v0.20: matched by its code, other words
     "platform_rows_differ",
     "platform_options_differ",
     "kind_from_platform",
@@ -678,13 +734,17 @@ def check_against_platform(project: Project) -> None:
         return
     for question in questionnaire.questions:
         question.to_check = [c for c in question.to_check if c not in PLATFORM_CHECKS]
-    repair_from_platform(project)
+    coded = by_code(project)
+    if not coded:  # a structure file has no paragraph to read again
+        repair_from_platform(project)
     pairs = matched_questions(project)
     for found, question in pairs:
         if found.kind == "grid" and len(question.rows) != len(found.items):
             question.to_check = [*question.to_check, "platform_rows_differ"]
+        if coded and code_text_differs(project, found, question):
+            question.to_check = [*question.to_check, "platform_text_differs"]
         if found.kind == "checkbox":
-            if question.kind == "single":
+            if question.kind == "single" and not coded:
                 question.kind = "checkbox"
                 question.to_check = [*question.to_check, "kind_from_platform"]
             # The "other" option may be a checkbox of its own as well as a text (seen in a
@@ -703,11 +763,13 @@ def platform_coverage(project: Project) -> tuple[int, int]:
     if project.questionnaire is None or platforms.of(project) is None:
         return 0, 0
     pairs = matched_questions(project)
-    # The export's questions, but a column it adds as a question ("id", an identifier).
+    # The export's questions, but a column it adds as a question ("id", an identifier);
+    # matched by their codes (v0.20), every question of the export is one.
+    coded = by_code(project)
     asked = {
         q.rank
         for q in project_questions(project)
-        if q.items or not no_question_reason(project.variable(q.single or q.other))
+        if coded or q.items or not no_question_reason(project.variable(q.single or q.other))
     }
     return len(asked), len(asked - {found.rank for found, _q in pairs})
 

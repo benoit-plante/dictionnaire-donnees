@@ -136,6 +136,7 @@ TO_CHECK = Texts(
         "not_in_platform_structure": N_("aucune question correspondante dans la base"),
         "found_by_platform": N_("lue comme un paragraphe, retrouvée par la structure de la base"),
         # v0.20 (D-148): a LimeSurvey structure file.
+        "platform_text_differs": N_("autres mots que dans la base, au même code"),
         "lss_type_unsupported": N_("type de question LimeSurvey que l'outil ne lit pas encore"),
         "lss_expression": N_("contient une expression LimeSurvey entre accolades"),
     }
