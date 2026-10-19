@@ -87,9 +87,11 @@ def test_consent_page_never_sent(project, generator):
         assert canary not in sent
 
 
-def test_prompt_v3():
-    prompt = system_prompt()
-    assert PROMPT_VERSION == "variables-v3"
+@pytest.mark.parametrize("version", ["variables-v3", "variables-v4"])
+def test_prompt_v3(version):
+    """v4 (v0.18) keeps every rule of v3; it only drops the statistics."""
+    prompt = system_prompt(version)
+    assert PROMPT_VERSION == "variables-v4"
     assert "n'en devine jamais le sens" in prompt
     assert "N'invente jamais le sens des codes" in prompt
     assert "N'invente jamais de seuil clinique" in prompt

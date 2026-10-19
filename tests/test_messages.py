@@ -1,4 +1,6 @@
-"""Step 9: messages for the model — only aggregates, never a canary, always the same."""
+"""Step 9: messages for the model — never a canary, always the same. Since v0.18 (D-136),
+level 1 only: metadata, nothing drawn from the answers; the aggregates of level 2 stay in
+the earlier prompts, for the bench."""
 
 import json
 
@@ -24,14 +26,24 @@ def project(request, fictional_files):
     return build_project(read_sav(path) if path.suffix == ".sav" else read_csv(path))
 
 
-@pytest.fixture(scope="module")
-def payloads(project):
+def _payloads(project, **options):
     found = {}
-    for block in build_blocks(project):
+    for block in build_blocks(project, **options):
         content = json.loads(block.messages[1]["content"])
         for variable in content["variables"]:
             found[variable["name"]] = variable
     return found
+
+
+@pytest.fixture(scope="module")
+def payloads(project):
+    return _payloads(project)
+
+
+@pytest.fixture(scope="module")
+def level2(project):
+    """The aggregates of the local model's prompt, kept for the bench (level 2)."""
+    return _payloads(project, version="variables-v3")
 
 
 def _all_text(project):
@@ -74,7 +86,20 @@ def test_sensitive_variables_send_only_their_description(payloads):
         assert "aucune valeur transmise" in payloads[name]["note"]
 
 
-def test_counts_become_proportions_and_masked_stay_masked(payloads):
+def test_level_1_sends_nothing_drawn_from_the_answers(payloads):
+    for payload in payloads.values():
+        for statistic in ("observed", "pct_missing", "min", "max", "mean", "years"):
+            assert statistic not in payload
+    # The codebook stays: types, levels, value labels and declared missing codes (the .sav).
+    assert payloads["age"]["type"] == "integer"
+    if "value_labels" in payloads["genre"]:
+        assert payloads["genre"]["declared_missing"] == ["9"]
+    description = payloads["anx5"]["group"]["description"]
+    assert "items" in description and "codes de" not in description
+
+
+def test_counts_become_proportions_and_masked_stay_masked(level2):
+    payloads = level2
     genre = payloads["genre"]["observed"]
     assert genre["3"] == "masqué"
     # Never a single masked count (D-008): in the .sav, 2 is masked with 3; in the CSV,
@@ -86,16 +111,17 @@ def test_counts_become_proportions_and_masked_stay_masked(payloads):
             assert value == "masqué" or (isinstance(value, float) and 0 <= value <= 1)
 
 
-def test_dates_are_years_only(payloads):
-    assert payloads["date_passation"]["years"] == "2026-2026"
-    assert "date_min" not in payloads["date_passation"]
+def test_dates_are_years_only(level2):
+    assert level2["date_passation"]["years"] == "2026-2026"
+    assert "date_min" not in level2["date_passation"]
 
 
-def test_groups_are_sent_but_not_anomalies(payloads):
+def test_groups_are_sent_but_not_anomalies(payloads, level2):
     """The model is not asked for inconsistencies (D-009): computed ones are not sent."""
     assert payloads["anx5"]["group"]["id"] == "G2"
     assert not any("anomalies" in payload for payload in payloads.values())
-    assert payloads["age"]["max"] == 999.0
+    assert level2["age"]["max"] == 999.0
+    assert "codes de" in level2["anx5"]["group"]["description"]
 
 
 def test_neighbors(payloads):
@@ -105,7 +131,9 @@ def test_neighbors(payloads):
 
 def test_system_prompt_forbids_invention():
     prompt = system_prompt()
-    assert PROMPT_VERSION == "variables-v3"
+    assert PROMPT_VERSION == "variables-v4"
+    assert "jamais une réponse des participants" in prompt
+    assert "statistiques agrégées" not in prompt and "masqué" not in prompt
     assert "N'invente jamais de seuil clinique" in prompt
     assert "nom d'instrument" in prompt
     assert "ne reprends pas le libellé d'une variable voisine" in prompt

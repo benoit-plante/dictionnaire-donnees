@@ -107,7 +107,7 @@ def test_link_then_enrich_then_resume(server, project_path):
     app.button(key="ai-enrich").click().run()
     project = load_project(project_path)
     assert project.variable("age").label.status == "proposed"
-    assert any(r.prompt_version == "variables-v3" for r in project.ai_runs)
+    assert any(r.prompt_version == "variables-v4" for r in project.ai_runs)
 
 
 @pytest.mark.allow_hosts(["127.0.0.1"])

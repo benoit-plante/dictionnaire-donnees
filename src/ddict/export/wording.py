@@ -370,21 +370,27 @@ def _part_pattern(template: str) -> re.Pattern:
     return re.compile(pattern + "$")
 
 
-def group_description(group: Group, kind: ExportKind) -> str:
+def group_description(group: Group, kind: ExportKind, *, observed: bool = True) -> str:
     """The description of a group; a computed one, stored in French, in the language of the
-    moment. Any other text (a person's) is shown as written."""
+    moment. Any other text (a person's) is shown as written.
+
+    `observed=False` (what the AI receives, v0.18, D-136): without the range of codes, which
+    is the smallest and largest answer observed in the items."""
     stored = text(group.descriptive_label, kind)
     if group.descriptive_label.origin != "computed" or not stored:
         return stored
+    pieces = stored.split(", ")
+    if not observed:
+        pieces = [p for p in pieces if not _part_pattern(GROUP_PARTS[2]).match(p)]
     parts = []
-    for part in stored.split(", "):
+    for part in pieces:
         for template in GROUP_PARTS:
             found = _part_pattern(template).match(part)
             if found:
                 parts.append(_(template).format(**found.groupdict()))
                 break
         else:
-            return stored  # not written by this version of the tool: as is
+            return ", ".join(pieces)  # not written by this version of the tool: as is
     return ", ".join(parts)
 
 

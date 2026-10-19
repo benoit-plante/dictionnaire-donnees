@@ -129,19 +129,19 @@ def test_the_model_reads_english_for_an_english_study(english_files, fictional_f
     add_questionnaire(project, english_files["questionnaire-sleep.pdf"])
     blocks = build_blocks(project)
     assert blocks[0].messages[0]["content"].startswith("You help a research team")
-    assert blocks[0].prompt_version == "variables-v3.en"
+    assert blocks[0].prompt_version == "variables-v4.en"
     sent = [v for b in blocks for v in json.loads(b.messages[1]["content"])["variables"]]
     notes = {v["name"]: v.get("note") for v in sent}
     assert notes["email"] == "likely identifier: no value sent"
     assert "masqué" not in json.dumps(sent, ensure_ascii=False)
     groups = [v["group"]["description"] for v in sent if "group" in v]
-    assert '8 items, codes from 1 to 5, prefix "sleep_q"' in groups
+    assert '8 items, prefix "sleep_q"' in groups  # without the observed codes (D-136)
     links = build_link_blocks(project, size=6)
     assert links[0].messages[0]["content"].startswith("You help a research team link")
     assert links[0].prompt_version == "link-v2.en"
     # A French study is sent exactly as before v0.5.
     french = build_project(read_database(fictional_files["etude-sommeil.csv"]))
-    assert build_blocks(french)[0].prompt_version == "variables-v3"
+    assert build_blocks(french)[0].prompt_version == "variables-v4"
     assert build_blocks(french)[0].messages[0]["content"].startswith("Tu aides une équipe")
 
 

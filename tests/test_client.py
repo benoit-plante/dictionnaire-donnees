@@ -149,7 +149,7 @@ def test_trace_of_a_successful_run(block):
     assert run.endpoint == "http://127.0.0.1:11434/v1"
     assert run.model == "modele-test"
     assert run.parameters == {"temperature": 0, "seed": 42}
-    assert run.prompt_version == "variables-v3"
+    assert run.prompt_version == "variables-v4"
     assert run.message_sha256 == block.sha256
     assert (run.attempts, run.outcome, run.detail) == (1, "succeeded", None)
 

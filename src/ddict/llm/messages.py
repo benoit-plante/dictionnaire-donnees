@@ -13,6 +13,13 @@ Prompt `variables-v3` (v0.2) adds two documented sources:
   (a proposed link is not used: it may be wrong);
 - the accepted glossary entries for the acronyms of the block (D-015), so that the model
   reads "OCF" as the team defined it instead of guessing.
+
+Prompt `variables-v4` (v0.18, D-136) sends level 1 only: what the questionnaire and the
+codebook say, nothing drawn from the answers. No observed codes nor proportions, no share
+of missing values, no minimum, maximum or mean, no years of a date, and a group's computed
+description without its range of observed codes. The type of the column, its measure level
+and the note of a sensitive variable stay: they describe the column, not an answer.
+Earlier prompts keep their statistics (level 2), for the bench only.
 """
 
 from __future__ import annotations
@@ -31,11 +38,15 @@ from ddict.project.model import Group, Project, VariableEntry
 from ddict.questionnaire import link
 from ddict.questionnaire.labels import accepted_labels
 
-PROMPT_VERSION = "variables-v3"
-PROMPTS_WITH_QUESTIONNAIRE = ("variables-v3",)
+PROMPT_VERSION = "variables-v4"
+PROMPTS_WITH_QUESTIONNAIRE = ("variables-v3", "variables-v4")
+# Level 2, aggregate statistics: the prompts of the local model, kept for the bench.
+PROMPTS_WITH_STATISTICS = ("variables-v1", "variables-v2", "variables-v3")
 MAX_QUESTION_CHARS = 300
 # With v3, 12 variables left too little room for the answer in Ollama's 4,096 tokens.
 DEFAULT_BLOCK_SIZE = 8
+# Through an API key (v0.18): no context to fit in, fewer and larger blocks.
+API_BLOCK_SIZE = 25
 # What the model reads besides the data, in the language of the study (v0.5, D-032).
 MASKED = {"fr": "masqué", "en": "masked"}
 SENSITIVE_NOTES = {
@@ -137,7 +148,9 @@ def variable_payload(
     groups: dict[str, Group],
     question: dict | None = None,
     language: str = "fr",
+    statistics: bool = False,
 ) -> dict:
+    """What the model reads of a variable: level 1, or level 2 with `statistics` (bench)."""
     p = entry.profile
     payload: dict = {"name": entry.name}
     if neighbors:
@@ -158,7 +171,7 @@ def variable_payload(
     labels = accepted_labels(entry)  # the file's, or those a person accepted (D-016)
     if labels:
         payload["value_labels"] = {code_text(v.code): v.label for v in labels}
-    if p.observed_values is not None:
+    if statistics and p.observed_values is not None:
         present = p.n_rows - p.n_system_missing
         payload["observed"] = {
             code_text(o.code): MASKED.get(language, MASKED["fr"])
@@ -166,9 +179,10 @@ def variable_payload(
             else _round(o.count / present)
             for o in p.observed_values
         }
-    payload["pct_missing"] = _round(
-        100 * (p.n_system_missing + p.n_declared_missing) / p.n_rows if p.n_rows else 0.0, 1
-    )
+    if statistics:
+        payload["pct_missing"] = _round(
+            100 * (p.n_system_missing + p.n_declared_missing) / p.n_rows if p.n_rows else 0.0, 1
+        )
     declared = [
         code_text(m.low) if m.low == m.high else f"{code_text(m.low)}..{code_text(m.high)}"
         for m in entry.file.declared_missing
@@ -176,19 +190,19 @@ def variable_payload(
     declared += [code_text(c) for c in confirmed_missing(entry)]  # by the team (D-028)
     if declared:
         payload["declared_missing"] = declared
-    if p.min is not None:
+    if statistics and p.min is not None:
         payload["min"] = _round(p.min)
         payload["max"] = _round(p.max)
-    if p.mean is not None:
+    if statistics and p.mean is not None:
         payload["mean"] = _round(p.mean)
-    if p.date_min:
+    if statistics and p.date_min:
         payload["years"] = f"{p.date_min[:4]}-{p.date_max[:4]}"
     group_id = entry.group_id.value
     if group_id and group_id in groups:
         group = groups[group_id]
         payload["group"] = {"id": group_id}
         with i18n.using(language):  # a computed description, in the study's language
-            description = group_description(group, "work")
+            description = group_description(group, "work", observed=statistics)
         if description:
             payload["group"]["description"] = description
     return payload
@@ -208,6 +222,7 @@ def build_blocks(
     language = project.settings.language
     system = system_prompt(version, language)
     sources = version in PROMPTS_WITH_QUESTIONNAIRE
+    statistics = version in PROMPTS_WITH_STATISTICS
     blocks = []
     for start in range(0, len(variables), size):
         block_id = f"b-{start // size + 1:03d}"
@@ -219,7 +234,9 @@ def build_blocks(
                 variables[i].name for i in (index - 1, index + 1) if 0 <= i < len(variables)
             ]
             question = question_payload(project, entry) if sources else None
-            payloads.append(variable_payload(entry, neighbors, groups, question, language))
+            payloads.append(
+                variable_payload(entry, neighbors, groups, question, language, statistics)
+            )
         content: dict = {"block": block_id}
         terms = block_glossary(project, chunk) if sources else {}
         if terms:
