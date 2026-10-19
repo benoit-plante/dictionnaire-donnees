@@ -1,6 +1,6 @@
 """Command line: `ddict profiler`, `exporter`, `documenter`, `questionnaire`, `enrichir`,
 `rattacher`, `evaluer`, `analyser`, `carnet`, `plan`, `article` (or `resultats`),
-`exclusions`, `conseiller`,
+`exclusions`, `conseiller`, `projets`,
 `reviser`."""
 
 from __future__ import annotations
@@ -20,6 +20,7 @@ from pathlib import Path
 from ddict import __version__, settings, tracked
 from ddict.cli_decisions import add_decisions_parsers
 from ddict.cli_plan import add_plan_parser
+from ddict.cli_projects import add_projects_parser
 from ddict.cli_recode import add_recode_parser
 from ddict.cli_verify import add_deposit_parser, add_verify_parser
 from ddict.export.documented import CopyError
@@ -1412,6 +1413,7 @@ def build_parser() -> argparse.ArgumentParser:
     notebook_command.set_defaults(handler=cmd_notebook)
 
     add_plan_parser(commands)
+    add_projects_parser(commands)
     add_decisions_parsers(commands)
     add_recode_parser(commands)
     add_verify_parser(commands)

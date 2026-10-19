@@ -19,6 +19,9 @@ msgstr ""
 msgid "   Moins de {threshold} : {count} personnes."
 msgstr "   Under {threshold}: {count} people."
 
+msgid " (déjà suivi)"
+msgstr " (already followed)"
+
 #, python-brace-format
 msgid " ({n} pages)"
 msgstr " ({n} pages)"
@@ -431,6 +434,9 @@ msgstr "Add the threshold"
 msgid "Ajouter les statistiques (effectifs de moins de {n} masqués)"
 msgstr "Add the statistics (counts below {n} masked)"
 
+msgid "Ajouter un fichier projet à la liste."
+msgstr "Add a project file to the list."
+
 msgid "Ajouter un sigle"
 msgstr "Add an acronym"
 
@@ -621,6 +627,9 @@ msgstr "No measure level proposed."
 
 msgid "Aucun projet dans ce dossier ni dans ses sous-dossiers (4 niveaux)."
 msgstr "No project in this folder or its subfolders (4 levels)."
+
+msgid "Aucun projet suivi. Suivez-en un avec « ddict projets suivre <projet> »."
+msgstr "No project followed. Follow one with “ddict projects follow <project>”."
 
 msgid ""
 "Aucun projet suivi. Un projet créé ici est suivi d'office ; un projet récent peut l'être avec « "
@@ -911,6 +920,10 @@ msgid "Ce projet est maintenant suivi."
 msgstr "This project is now followed."
 
 #, python-brace-format
+msgid "Ce projet n'était pas suivi : {path}"
+msgstr "This project was not followed: {path}"
+
+#, python-brace-format
 msgid "Ce sigle n'attend plus de décision : {term}."
 msgstr "This acronym no longer waits for a decision: {term}."
 
@@ -978,6 +991,9 @@ msgid ""
 msgstr ""
 "Each acronym will be accepted with the meaning shown here, the one in its field, corrected or "
 "not. Untick those that do not fit."
+
+msgid "Chercher les fichiers projet d'un dossier et de ses sous-dossiers (4 niveaux), sans les ouvrir."
+msgstr "Look for the project files of a folder and its subfolders (4 levels), without opening them."
 
 msgid "Chercher les projets dans un dossier…"
 msgstr "Look for projects in a folder…"
@@ -1683,6 +1699,9 @@ msgstr "Existing data"
 msgid "Données manquantes"
 msgstr "Missing data"
 
+msgid "Dossier"
+msgstr "Folder"
+
 #, python-brace-format
 msgid "Dossier introuvable : {path}"
 msgstr "Folder not found: {path}"
@@ -1793,6 +1812,10 @@ msgstr "Already in the notebook: {id}"
 #, python-brace-format
 msgid "Déjà dans le carnet au gel : {ids}."
 msgstr "Already in the notebook when frozen: {ids}."
+
+#, python-brace-format
+msgid "Déjà suivi : {path}"
+msgstr "Already followed: {path}"
 
 msgid "ET"
 msgstr "SE"
@@ -2881,6 +2904,9 @@ msgstr ""
 "The folder and its subfolders, 4 levels down. Only the files' names are looked at: no file is "
 "opened."
 
+msgid "Le dossier où chercher."
+msgstr "The folder to look in."
+
 msgid "Le début et la fin sont la même variable."
 msgstr "The start and the end are the same variable."
 
@@ -3206,6 +3232,9 @@ msgstr ""
 msgid "Le sigle est vide."
 msgstr "The acronym is empty."
 
+msgid "Le tableau des projets suivis : phase, codebook, en attente, plan, carnet…"
+msgstr "The table of the followed projects: phase, codebook, waiting, plan, notebook…"
+
 #, python-brace-format
 msgid "Le test de {id} était unilatéral, dans le sens attendu."
 msgstr "The test of {id} was one-sided, in the expected direction."
@@ -3426,6 +3455,13 @@ msgstr ""
 "The numbers the first table and the first figure of the draft take. For example, 3 if the "
 "article's introduction already has two tables: the tool's first table will be Table 3, and the "
 "next ones will follow from there."
+
+msgid ""
+"Les projets suivis sur cet ordinateur, comme le tableau « Mes projets » de l'accueil : lister, "
+"suivre, retirer, chercher dans un dossier."
+msgstr ""
+"The projects followed on this computer, as the home page's table “My projects”: list, follow, "
+"remove, look for them in a folder."
 
 msgid "Les propositions sont à réviser dans « Variables »."
 msgstr "The proposals are to be reviewed in \"Variables\"."
@@ -4147,6 +4183,10 @@ msgstr "Not in the group: {names}"
 msgid "Pas de tableau ni de figure APA pour cette analyse."
 msgstr "No APA table nor figure for this analysis."
 
+#, python-brace-format
+msgid "Pas un fichier projet (.dd.json) existant : {path}"
+msgstr "Not an existing project file (.dd.json): {path}"
+
 msgid "Pearson"
 msgstr "Pearson"
 
@@ -4389,6 +4429,10 @@ msgid ""
 msgstr ""
 "Project found again: {name}, made from the database {base}. If it is not the right one, take it "
 "off with “Stop following” in the “⋮” menu of its row."
+
+#, python-brace-format
+msgid "Projet suivi : {path}"
+msgstr "Project followed: {path}"
 
 msgid "Projet, copie documentée ou table de noms"
 msgstr "Project, documented copy or table of names"
@@ -4888,6 +4932,9 @@ msgstr ""
 msgid "Retirer le plan entier, son gel et ses amendements."
 msgstr "Remove the whole plan, its freezing and its amendments."
 
+msgid "Retirer un projet de la liste, trouvé ou non ; son fichier n'est pas touché."
+msgstr "Take a project off the list, found or not; its file is not touched."
+
 msgid "Retirer un recodage."
 msgstr "Remove a recoding."
 
@@ -4903,6 +4950,10 @@ msgstr "Remove a rule."
 #, python-brace-format
 msgid "Retirer {id}"
 msgstr "Remove {id}"
+
+#, python-brace-format
+msgid "Retiré de la liste, son fichier n'est pas touché : {path}"
+msgstr "Taken off the list, its file is not touched: {path}"
 
 #, python-brace-format
 msgid "Retirée du carnet : {id}"
@@ -5395,6 +5446,9 @@ msgstr "Follow this project"
 #, python-brace-format
 msgid "Suivre ces {n} projets"
 msgstr "Follow these {n} projects"
+
+msgid "Suivre tous les projets trouvés ; sans cette option, rien n'est ajouté."
+msgstr "Follow all the projects found; without this option, nothing is added."
 
 msgid ""
 "Sur l'export SurveyMonkey fictif : le nom de base de chaque question, comparé à celui du corrigé "
@@ -7916,6 +7970,14 @@ msgstr "{n} people without {group} excluded."
 #, python-brace-format
 msgid "{n} projets suivis."
 msgstr "{n} projects followed."
+
+#, python-brace-format
+msgid ""
+"{n} projets trouvés, {k} non suivis. Rien n'est ajouté : relancez avec --suivre pour les suivre "
+"tous, ou suivez-en un avec « ddict projets suivre »."
+msgstr ""
+"{n} projects found, {k} not followed. Nothing is added: run again with --follow to follow them "
+"all, or follow one with “ddict projects follow”."
 
 #, python-brace-format
 msgid "{n} questions : {counts}{grids}."
