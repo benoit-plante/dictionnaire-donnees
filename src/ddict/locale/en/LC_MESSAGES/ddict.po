@@ -188,8 +188,23 @@ msgstr "(correlation with the rest: {r})"
 msgid "(corrélation avec le reste du groupe : {r})"
 msgstr "(correlation with the rest of the group: {r})"
 
+msgid "(date : aaaa-mm-jj)"
+msgstr "(date: yyyy-mm-dd)"
+
 msgid "(décisions acceptées)"
 msgstr "(accepted decisions)"
+
+msgid "(gardé tel quel)"
+msgstr "(kept as is)"
+
+msgid "(inversé)"
+msgstr "(reversed)"
+
+msgid "(liste déroulante)"
+msgstr "(drop-down list)"
+
+msgid "(nombre)"
+msgstr "(number)"
 
 msgid "(non précisé)"
 msgstr "(not said)"
@@ -212,6 +227,9 @@ msgstr "* Items reversed according to the team: not recoded. Suggestion, to do y
 
 msgid "* Nouveaux noms acceptés, en premier : la suite porte sur ces noms."
 msgstr "* Accepted new names, first: what follows uses these names."
+
+msgid "* Réponse obligatoire."
+msgstr "* Required answer."
 
 #, python-brace-format
 msgid "* Score de {group}."
@@ -564,6 +582,9 @@ msgstr "Cancel"
 msgid "Anthropic (par défaut)"
 msgstr "Anthropic (default)"
 
+msgid "Aperçu"
+msgstr "Preview"
+
 #, python-brace-format
 msgid "Aperçu : {n} blocs de messages, rien n'a été envoyé."
 msgstr "Preview: {n} message blocks, nothing was sent."
@@ -673,6 +694,9 @@ msgstr "No model chosen: add --model, or save it on the \"AI\" page of the inter
 
 msgid "Aucun niveau de mesure proposé."
 msgstr "No measure level proposed."
+
+msgid "Aucun point de relecture."
+msgstr "No review point."
 
 msgid "Aucun point à voir."
 msgstr "Nothing to look at."
@@ -819,6 +843,13 @@ msgstr ""
 
 msgid "Avec le modèle"
 msgstr "With the model"
+
+msgid ""
+"Avec les codes, la nature et le type LimeSurvey de chaque question, la provenance, les groupes et"
+" les points de relecture."
+msgstr ""
+"With each question's codes, kind and LimeSurvey type, the provenance, the groups and the review "
+"points."
 
 #, python-brace-format
 msgid "Avec les items probables inversés : {a}"
@@ -1297,6 +1328,10 @@ msgstr ""
 
 msgid "Code"
 msgstr "Code"
+
+#, python-brace-format
+msgid "Code : {code}"
+msgstr "Code: {code}"
 
 msgid "Code de la question"
 msgstr "Code of the question"
@@ -2337,6 +2372,10 @@ msgstr "No window ({error}): opening in the browser."
 msgid "Fermer"
 msgstr "Close"
 
+#, python-brace-format
+msgid "Fermez {name} dans Word, puis recommencez. Rien n'a été écrit."
+msgstr "Close {name} in Word, then try again. Nothing was written."
+
 msgid "Fichier"
 msgstr "File"
 
@@ -2352,10 +2391,11 @@ msgstr "File of the earlier wave"
 
 msgid ""
 "Fichier projet (.dd.json) ; ou « creer », pour un questionnaire à concevoir dans l'outil, dans le"
-" dossier donné ensuite."
+" dossier donné ensuite ; ou « word », pour écrire en Word le questionnaire conçu du projet donné "
+"ensuite."
 msgstr ""
 "Project file (.dd.json); or “creer”, for a questionnaire to design in the tool, in the folder "
-"given next."
+"given next; or “word”, to write in Word the designed questionnaire of the project given next."
 
 msgid "Fichier projet (.dd.json)."
 msgstr "Project file (.dd.json)."
@@ -2479,6 +2519,10 @@ msgstr "Grids without a name prefix: {n}"
 
 msgid "Groupe"
 msgstr "Group"
+
+#, python-brace-format
+msgid "Groupe : {label}"
+msgstr "Group: {label}"
 
 #, python-brace-format
 msgid "Groupe inconnu : {groups}. Groupes du projet : {known}."
@@ -3545,6 +3589,23 @@ msgstr ""
 "gives the text of the questions, items and options. Only the questions linked to variables go "
 "into the codebook, never the consent page."
 
+msgid "Le questionnaire en Word"
+msgstr "The questionnaire in Word"
+
+msgid ""
+"Le questionnaire pour le comité d'éthique et pour l'équipe, produit par le calcul depuis le "
+"questionnaire de l'outil, jamais par l'IA."
+msgstr ""
+"The questionnaire for the ethics committee and for the team, produced by computation from the "
+"tool's questionnaire, never by the AI."
+
+msgid ""
+"Le questionnaire à peu près comme le verra une personne qui répond, les champs désactivés : une "
+"approximation. Seul LimeSurvey fait foi."
+msgstr ""
+"The questionnaire roughly as a person answering will see it, its fields disabled: an "
+"approximation. Only LimeSurvey is authoritative."
+
 #, python-brace-format
 msgid "Le rapport de cotes observé de {x} était inférieur à 1."
 msgstr "The observed odds ratio of {x} was below 1."
@@ -4296,6 +4357,9 @@ msgstr "Under {threshold}: **{count}** people."
 msgid "Monter"
 msgstr "Move up"
 
+msgid "Montrer les noms"
+msgstr "Show the names"
+
 msgid "Montrez où est maintenant ce fichier projet."
 msgstr "Show where this project file is now."
 
@@ -4801,6 +4865,9 @@ msgstr "Several means were compared with a one-way analysis of variance; the eff
 msgid "Point fermé : il reviendra si la question change."
 msgstr "Point closed: it will come back if the question changes."
 
+msgid "Points de relecture"
+msgstr "Review points"
+
 #, python-brace-format
 msgid "Points de relecture : {n}"
 msgstr "Review points: {n}"
@@ -5063,6 +5130,10 @@ msgstr "Protocol: {name}"
 msgid "Provenance"
 msgstr "Provenance"
 
+#, python-brace-format
+msgid "Provenance : {text}"
+msgstr "Provenance: {text}"
+
 msgid "Provenance du texte"
 msgstr "Provenance of the text"
 
@@ -5142,6 +5213,9 @@ msgstr "Display"
 msgid "Prévu par le questionnaire"
 msgstr "Planned by the questionnaire"
 
+msgid "Publier"
+msgstr "Publish"
+
 msgid "Puissance statistique"
 msgstr "Statistical power"
 
@@ -5203,10 +5277,10 @@ msgstr "Questionnaire"
 
 msgid ""
 "Questionnaire (.pdf, .txt, export .xlsx d'une plateforme, structure LimeSurvey .lss ou .txt) ; "
-"ou, avec « creer », le dossier du projet."
+"ou, avec « creer », le dossier du projet ; avec « word », le fichier projet."
 msgstr ""
 "Questionnaire (.pdf, .txt, a platform's .xlsx export, a LimeSurvey structure .lss or .txt); or, "
-"with “creer”, the project's folder."
+"with “creer”, the project's folder; with “word”, the project file."
 
 msgid "Questionnaire de l'étude"
 msgstr "Study questionnaire"
@@ -5217,6 +5291,10 @@ msgstr "Questionnaire read: {name}{pages}"
 
 msgid "Questionnaire lu."
 msgstr "Questionnaire read."
+
+#, python-brace-format
+msgid "Questionnaire « {title} », version {n} du {date} — empreinte {fingerprint}"
+msgstr "Questionnaire \"{title}\", version {n} of {date} — fingerprint {fingerprint}"
 
 msgid "Questionnaires"
 msgstr "Questionnaires"
@@ -5790,6 +5868,9 @@ msgstr "Without them, the context holds metadata only, no data."
 
 msgid "Sans la base, la comparaison se fait aux valeurs gardées dans le carnet."
 msgstr "Without the database, the comparison is with the values kept in the notebook."
+
+msgid "Sans nom, sans code, sans provenance : ce que lira une personne qui répond."
+msgstr "No name, no code, no provenance: what a person answering will read."
 
 msgid "Sans origine : aucune analyse du carnet ni la Méthode ne donne cette valeur."
 msgstr "No origin: no analysis of the notebook nor the Method gives this value."
@@ -6862,6 +6943,13 @@ msgstr "Spelling variants of the same answer: {spellings}"
 msgid "Version"
 msgstr "Version"
 
+msgid ""
+"Version de travail : avec les codes, la provenance et les points de relecture. Pour le comité "
+"d'éthique, produisez l'autre version."
+msgstr ""
+"Working version: with the codes, the provenance and the review points. For the ethics committee, "
+"produce the other version."
+
 msgid "Versions"
 msgstr "Versions"
 
@@ -6930,6 +7018,14 @@ msgstr "Word"
 
 msgid "Word (tableaux et figures APA)"
 msgstr "Word (APA tables and figures)"
+
+#, python-brace-format
+msgid "Word {version}"
+msgstr "Word ({version})"
+
+#, python-brace-format
+msgid "Word {version} : {path}"
+msgstr "Word ({version}): {path}"
 
 #, python-brace-format
 msgid "[{low} ; {high}]"
@@ -7123,6 +7219,9 @@ msgstr "missing code"
 msgid "codes de {low} à {high}"
 msgstr "codes from {low} to {high}"
 
+msgid "comité"
+msgstr "committee"
+
 msgid "comment obtenir les données"
 msgstr "how the data can be accessed"
 
@@ -7171,6 +7270,9 @@ msgstr "date and time"
 
 msgid "dates étalées sur de nombreuses années"
 msgstr "dates spread over many years"
+
+msgid "de travail"
+msgstr "working"
 
 msgid "de travail (propositions de l'IA en attente incluses)"
 msgstr "working (pending AI proposals included)"
@@ -7341,6 +7443,10 @@ msgstr "incomplete"
 
 msgid "inconnue"
 msgstr "unknown"
+
+#, python-brace-format
+msgid "instrument : {name} ({source})"
+msgstr "instrument: {name} ({source})"
 
 msgid "insu"
 msgstr "blinding"
@@ -7646,6 +7752,9 @@ msgstr "new question"
 msgid "novembre"
 msgstr "November"
 
+msgid "obligatoire"
+msgstr "required"
+
 msgid "octobre"
 msgstr "October"
 
@@ -7733,6 +7842,9 @@ msgstr "administration shorter than {seconds} s, from {start} to {end}"
 msgid "pondération"
 msgstr "weight"
 
+msgid "pour le comité d'éthique"
+msgstr "for the ethics committee"
+
 msgid "primaires ou secondaires."
 msgstr "primary or secondary."
 
@@ -7777,6 +7889,10 @@ msgstr "quasi-identifier"
 
 msgid "quatre"
 msgstr "four"
+
+#, python-brace-format
+msgid "question {n}"
+msgstr "question {n}"
 
 msgid "questionnaire"
 msgstr "questionnaire"
@@ -8028,6 +8144,9 @@ msgstr "handling of missing values changed"
 msgid "transversale"
 msgstr "cross-sectional"
 
+msgid "travail"
+msgstr "working"
+
 msgid "travaux antérieurs sur ces données"
 msgstr "prior work based on the dataset"
 
@@ -8042,6 +8161,10 @@ msgstr "found"
 
 msgid "très élevé"
 msgstr "very high"
+
+#, python-brace-format
+msgid "type LimeSurvey {type}"
+msgstr "LimeSurvey type {type}"
 
 msgid "type d'étude : expérience, observation, méta-analyse ou autre"
 msgstr "study type: experiment, observational study, meta-analysis or other"

@@ -44,6 +44,7 @@ SECTIONS: dict[str, tuple[PageInfo, ...]] = {
 DESIGN: tuple[PageInfo, ...] = (
     PageInfo("design", N_("Questionnaire"), ":material/edit_document:"),
     PageInfo("design_review", N_("Relecture"), ":material/rate_review:"),
+    PageInfo("publish", N_("Publier"), ":material/publish:"),
 )
 PAGES = {page.mode: page for pages in (DESIGN, *SECTIONS.values()) for page in pages}
 FIRST = "base"  # a project opens on its database (v0.3)

@@ -32,6 +32,7 @@ from ddict.review.ui import (
     names_view,
     notebook_view,
     plan_view,
+    publish_view,
     questionnaire_view,
     variables_view,
     verify_view,
@@ -315,6 +316,8 @@ def main() -> None:
         design_view.page(project)
     elif mode == "design_review":
         design_view.review_page(project)
+    elif mode == "publish":
+        publish_view.page(project)
     elif mode == "base":
         base_view.page(project)
     elif mode == "questionnaire":

@@ -15,6 +15,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field
+from datetime import date
 
 from ddict import naming
 from ddict.i18n import N_, _
@@ -117,7 +118,7 @@ def new_project(title: str, language: str, today: str) -> Project:
         ),
         design=Design(created=today, counters={"S": 1}),
     )
-    _seal(project)
+    _seal(project, today)
     return project
 
 
@@ -149,9 +150,13 @@ def _next(project: Project, kind: str) -> int:
     return counters[kind]
 
 
-def _seal(project: Project) -> None:
+def _seal(project: Project, today: str | None = None) -> None:
+    """The questionnaire's fingerprint, and the day its content changed (D-152)."""
     found = questionnaire(project)
-    found.sha256 = content_fingerprint(found)
+    sealed = content_fingerprint(found)
+    if sealed != found.sha256:
+        found.sha256 = sealed
+        project.design.changed = today or date.today().isoformat()
 
 
 def _change(project: Project, change) -> Changes:
@@ -467,6 +472,19 @@ def code(project: Project, question: Question) -> str:
     if found is not None and is_accepted(found.stem) and found.stem.value:
         return found.stem.value.replace("_", "")
     return question.question_id
+
+
+# The LimeSurvey type of each kind of question (D-148), as LimeSurvey 7.6 names them.
+LIMESURVEY_TYPES = {"checkbox": "M", "grid": "F", "display": "X"}
+LIMESURVEY_ANSWERS = {"short": "S", "long": "T", "number": "N", "date": "D"}
+
+
+def limesurvey_type(question: Question) -> str:
+    if question.kind == "single":
+        return "!" if question.layout == "dropdown" else "L"
+    if question.kind == "open":
+        return LIMESURVEY_ANSWERS[question.answer or "short"]
+    return LIMESURVEY_TYPES[question.kind]
 
 
 def _coded(options) -> list[tuple[str, str]]:

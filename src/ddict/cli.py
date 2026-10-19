@@ -829,9 +829,42 @@ def _create_design(args: argparse.Namespace) -> int:
     return 0
 
 
+def _design_word(args: argparse.Namespace) -> int:
+    """`ddict questionnaire word <projet>` (v0.20, D-152): the designed questionnaire in
+    Word, both versions, next to the project."""
+    from ddict import design_word
+    from ddict.design import DesignError
+
+    path = Path(args.fichier)
+    project = load_project(path)
+    for which in design_word.VERSIONS:
+        try:
+            written = design_word.write(project, which, path.parent)
+        except DesignError as error:
+            print(" ".join(error.reasons), file=sys.stderr)
+            return EXIT_ERROR
+        except design_word.WordOpen as error:
+            print(
+                _("Fermez {name} dans Word, puis recommencez. Rien n'a été écrit.").format(
+                    name=error.path.name
+                ),
+                file=sys.stderr,
+            )
+            return EXIT_ERROR
+        print(
+            _("Word {version} : {path}").format(
+                version=_(design_word.VERSION_NAMES[which]), path=written
+            )
+        )
+    print(design_word.footer_text(project))
+    return 0
+
+
 def cmd_questionnaire(args: argparse.Namespace) -> int:
     if args.projet in ("creer", "create"):  # v0.20: no file to read, a questionnaire to design
         return _create_design(args)
+    if args.projet == "word":  # v0.20: the designed questionnaire in Word
+        return _design_word(args)
     project_path = Path(args.projet)
     project = load_project(project_path)
     try:
@@ -1607,14 +1640,16 @@ def build_parser() -> argparse.ArgumentParser:
         "projet",
         help=_(
             "Fichier projet (.dd.json) ; ou « creer », pour un questionnaire à concevoir dans "
-            "l'outil, dans le dossier donné ensuite."
+            "l'outil, dans le dossier donné ensuite ; ou « word », pour écrire en Word le "
+            "questionnaire conçu du projet donné ensuite."
         ),
     )
     questionnaire.add_argument(
         "fichier",
         help=_(
             "Questionnaire (.pdf, .txt, export .xlsx d'une plateforme, structure LimeSurvey "
-            ".lss ou .txt) ; ou, avec « creer », le dossier du projet."
+            ".lss ou .txt) ; ou, avec « creer », le dossier du projet ; avec « word », le "
+            "fichier projet."
         ),
     )
     questionnaire.add_argument(

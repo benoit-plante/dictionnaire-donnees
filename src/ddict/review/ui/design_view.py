@@ -12,7 +12,7 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
-from ddict import design, design_points, naming
+from ddict import design, design_points, design_word, naming
 from ddict.design import DesignError, Draft, Item
 from ddict.i18n import N_, Texts, _
 from ddict.project.decisions import is_accepted
@@ -38,7 +38,7 @@ ANSWERS = Texts(
     }
 )
 LAYOUTS = Texts({"radio": N_("boutons"), "dropdown": N_("liste déroulante")})
-PROVENANCES = Texts({"team": N_("tapé par l'équipe"), "source": N_("tiré d'une source")})
+PROVENANCES = design_word.PROVENANCES
 
 
 def _excerpt(text: str) -> str:
@@ -47,15 +47,6 @@ def _excerpt(text: str) -> str:
 
 def _of(entry) -> str | None:
     return (entry.question.value or "").partition(".")[0] or None
-
-
-def _provenance_text(provenance: Provenance | None) -> str:
-    if provenance is None:
-        return ""
-    if provenance.kind == "source":
-        page = _(", p. {n}").format(n=provenance.page) if provenance.page else ""
-        return _("source : {source}{page}").format(source=provenance.source, page=page)
-    return _(PROVENANCES.get(provenance.kind, provenance.kind))
 
 
 # --- Acting: change, save, say so. ---
@@ -422,7 +413,7 @@ def _question_line(
             if len(names) > 3:
                 shown += " " + _("et {n} autres").format(n=len(names) - 3)
             parts.append(shown)
-        provenance = _provenance_text(question.provenance)
+        provenance = design_word.provenance_text(question.provenance)
         if provenance:
             parts.append(provenance)
         st.markdown(" — ".join(parts))

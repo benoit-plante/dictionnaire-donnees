@@ -927,6 +927,9 @@ class Design(Strict):
     once its database has arrived."""
 
     created: str
+    # The day its content last changed (v0.20, D-152): the date the Word gives, never the
+    # day of its production.
+    changed: str | None = None
     # The last number given to each kind of id ("Q", "S", "Q7.r", "Q7.o"): an id is never
     # given again. Keys in sorted order.
     counters: dict[str, int] = {}
