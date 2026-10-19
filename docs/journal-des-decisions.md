@@ -1906,3 +1906,16 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
 - **Justification :** Aucun paquet nouveau ; une dépendance qu'on importe se déclare, pour ne pas dépendre de ce que python-docx tire. lxml lit aussi le HTML des textes de LimeSurvey.
 - **Conséquences :** La ligne de `docs/dependances.md` est mise à jour à l'étape A1, avec le changement de `pyproject.toml`.
 - **Références :** `docs/plan-v0.20.md`, § 5.1.
+
+### D-156 — Le code LimeSurvey d'une question : le radical sans ses « _ »
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** D-146 (en partie : le code d'une question n'est plus le radical lui-même)
+- **Décision :** Le code d'une question dans LimeSurvey est son radical décidé (D-146), sans ses « _ » : `aides_sommeil` donne `aidessommeil` ; tant que le radical n'est pas décidé, l'identifiant de la question (`Q7`). Le radical garde ses « _ » pour les noms finaux (D-048). Un questionnaire lu d'un fichier LimeSurvey garde le code qu'il porte.
+- **Options considérées :**
+  1. Le radical sans ses « _ » (ce choix).
+  2. Un code distinct, décidé à part pour chaque question.
+- **Justification :** Sur LimeSurvey Cloud 7.6, un code de question n'accepte que des lettres et des chiffres : `aides_sommeil` a été changé en `aidessommeil` à l'importation (`docs/essais/2026-10-19-limesurvey-fictif.md`). Le calcul donne le code sans une décision de plus.
+- **Conséquences :** Deux radicaux qui ne diffèrent que par leurs « _ » (`aide_s`, `aides`) donneraient le même code : c'est un point de relecture. Les colonnes de la base portent ce code (`aidessommeil_SQ001` dans le `.sav`).
+- **Références :** `docs/essais/2026-10-19-limesurvey-fictif.md` ; `docs/plan-v0.20.md`, § 7.

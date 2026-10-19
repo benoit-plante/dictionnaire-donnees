@@ -611,6 +611,7 @@ name = "ddict"
 version = "0.18.0"
 source = { editable = "." }
 dependencies = [
+    { name = "lxml" },
     { name = "matplotlib" },
     { name = "openpyxl" },
     { name = "pandas" },
@@ -650,6 +651,7 @@ dev = [
 requires-dist = [
     { name = "httpx", marker = "extra == 'ia'", specifier = ">=0.28.1" },
     { name = "keyring", marker = "extra == 'ia'", specifier = ">=25.7.0" },
+    { name = "lxml", specifier = ">=6.1" },
     { name = "matplotlib", specifier = ">=3.11.2" },
     { name = "openpyxl", specifier = ">=3.1.5" },
     { name = "pandas", specifier = ">=3.0.6" },

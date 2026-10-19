@@ -6856,6 +6856,9 @@ msgstr "contact"
 msgid "contexte, revue des travaux et justification de l'étude"
 msgstr "background, literature review and rationale"
 
+msgid "contient une expression LimeSurvey entre accolades"
+msgstr "holds a LimeSurvey expression between braces"
+
 #, python-brace-format
 msgid "correction : {new} au lieu de {old}"
 msgstr "correction: {new} instead of {old}"
@@ -7723,6 +7726,9 @@ msgstr "very high"
 
 msgid "type d'étude : expérience, observation, méta-analyse ou autre"
 msgstr "study type: experiment, observational study, meta-analysis or other"
+
+msgid "type de question LimeSurvey que l'outil ne lit pas encore"
+msgstr "a LimeSurvey question type the tool does not read yet"
 
 msgid "un coefficient négatif"
 msgstr "a negative coefficient"

@@ -135,6 +135,9 @@ TO_CHECK = Texts(
         "kind_from_platform": N_("cases à cocher d'après la base"),
         "not_in_platform_structure": N_("aucune question correspondante dans la base"),
         "found_by_platform": N_("lue comme un paragraphe, retrouvée par la structure de la base"),
+        # v0.20 (D-148): a LimeSurvey structure file.
+        "lss_type_unsupported": N_("type de question LimeSurvey que l'outil ne lit pas encore"),
+        "lss_expression": N_("contient une expression LimeSurvey entre accolades"),
     }
 )
 KINDS = Texts(
@@ -160,7 +163,7 @@ def add_questionnaire(project: Project, path: Path | str, *, replace: bool = Fal
         raise QuestionnaireExists(project.questionnaire.file_name)
     # The kind of each question of a platform's export header, from the database (v0.7).
     kinds = {q.rank: q.kind for q in project_questions(project) if q.kind != "single"}
-    questionnaire = load_questionnaire(path, kinds)
+    questionnaire = load_questionnaire(path, kinds, project.settings.language)
     previous = project.questionnaire
     project.questionnaire = questionnaire
     check_against_platform(project)  # v0.7: the structure of a platform export

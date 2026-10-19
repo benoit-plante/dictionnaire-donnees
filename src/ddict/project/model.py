@@ -458,6 +458,7 @@ class Question(Strict):
     rows: list[GridRow] = []
     to_check: list[str] = []  # codes: "grid_header_unclear", "grid_without_header"
     # v0.20 (D-146), in a designed or LimeSurvey questionnaire.
+    code: str | None = None  # as read in a platform's file (D-156); designed: from its stem
     section: str | None = None  # "S2"
     instruction: str | None = None
     required: bool = False
