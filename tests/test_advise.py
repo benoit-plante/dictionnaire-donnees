@@ -434,6 +434,8 @@ def test_the_bench_scores_the_key_as_right(follow_up):
         "first_right": total,
         "any_right": total,
         "refused_conditions": 0,
+        "input_tokens": 0,  # the fake server gives no usage
+        "output_tokens": 0,
     }
     if not follow_up:
         assert next(s for s in scores if s.objective == "o09").method_right is True

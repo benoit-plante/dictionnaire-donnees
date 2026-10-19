@@ -3,6 +3,7 @@
 import importlib.util
 import json
 import shutil
+from collections import Counter
 from itertools import count
 from pathlib import Path
 
@@ -243,3 +244,41 @@ def test_the_report_says_why():
     assert "Bonne question absente des candidates" in report
     sleep = results[0]
     assert sum(len(v) for v in sleep.missed.values()) == len(sleep.model_wrong)
+
+
+class CountingServer(Server):
+    """The same answers, with the tokens a service reports (v0.18)."""
+
+    def __call__(self, request):
+        response = super().__call__(request)
+        data = response.json()
+        data["usage"] = {"prompt_tokens": 1000, "completion_tokens": 100}
+        return httpx.Response(response.status_code, json=data)
+
+
+def test_tokens_cost_and_level_2():
+    """v0.18: the blocks of an API key, the tokens and cost of each pass, and the labels at
+    level 2 (with statistics) next to level 1, for the bench only (D-136)."""
+    server = CountingServer()
+    client = institution(MODEL, server)
+    items = list(bench.run_bench(client, now=lambda: NOW, clock=_clock(), level2=True))
+    results = [i for i in items if not isinstance(i, str)]
+    bases = [r for r in results if isinstance(r, bench.BaseResult)]
+    assert all(r.level2 is not None and r.level2.n_enriched == r.n_enriched for r in bases)
+    assert all(r.link_tokens["input"] and r.enrich_tokens["output"] for r in bases)
+    level2 = [m for m in server.sent if '"pct_missing"' in m]
+    assert level2 and len(level2) < len(server.sent)  # level 1 sends no statistic
+    report = bench.render_report(
+        results, model="claude-haiku-5-5", endpoint="https://api.anthropic.com", date="2026-10-19"
+    )
+    assert "## Libellés : niveau 1 et niveau 2" in report
+    assert "## Jetons et coût" in report and " $ |" in report
+    calls = len(server.sent)
+    assert f"**{1000 * calls}** | **{100 * calls}**" in report
+
+
+def test_cost_at_the_published_prices():
+    million = Counter(input=1_000_000, output=1_000_000)
+    assert bench.cost("claude-haiku-5-5", million) == pytest.approx(0.60)
+    assert bench.cost("claude-sonnet-5-5", million) == pytest.approx(12.00)
+    assert bench.cost("modele-inconnu", million) is None

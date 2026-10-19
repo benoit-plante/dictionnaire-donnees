@@ -981,7 +981,8 @@ def cmd_bench(args: argparse.Namespace) -> int:
 
     results = []
     with client:
-        for item in run_bench(client, now=lambda: datetime.now().isoformat(timespec="seconds")):
+        now = lambda: datetime.now().isoformat(timespec="seconds")  # noqa: E731
+        for item in run_bench(client, now=now, level2=args.niveau_2):
             if isinstance(item, str):
                 print(item, flush=True)
             else:
@@ -1629,6 +1630,15 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     add_service_arguments(bench)
+    bench.add_argument(
+        "--niveau-2",
+        "--level-2",
+        action="store_true",
+        help=_(
+            "Mesurer aussi les libellés au niveau 2 (avec les statistiques des bases "
+            "fictives), pour savoir ce que le niveau 1 perd ; le banc seulement."
+        ),
+    )
     bench.add_argument(
         "--dossier",
         "--folder",

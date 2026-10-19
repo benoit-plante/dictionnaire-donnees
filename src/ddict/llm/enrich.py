@@ -17,7 +17,7 @@ from pathlib import Path
 
 from ddict import glossary
 from ddict.llm.client import ModelClient
-from ddict.llm.messages import Block, build_blocks
+from ddict.llm.messages import PROMPT_VERSION, Block, build_blocks
 from ddict.llm.run import BlockResult, run_block
 from ddict.llm.schemas import VariableProposal
 from ddict.llm.validate import (
@@ -131,12 +131,14 @@ def enrich(
     redo: bool = False,
     save: Callable[[Project], None] | None = None,
     log_dir: Path | None = None,
+    version: str = PROMPT_VERSION,
 ) -> Iterator[BlockEvent]:
-    """Enrich block by block, yielding after each one; the project is saved each time."""
+    """Enrich block by block, yielding after each one; the project is saved each time.
+    `version`: the prompt; an earlier one (level 2) for the bench only (v0.18)."""
     yield from run_blocks(
         project,
         client,
-        build_blocks(project, size=block_size),
+        build_blocks(project, size=block_size, version=version),
         apply=apply_proposals,
         schema=None,
         parse=parse_block_response,

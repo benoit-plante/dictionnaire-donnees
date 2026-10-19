@@ -120,6 +120,12 @@ msgstr "## Groups"
 msgid "## Groupes de variables"
 msgstr "## Groups of variables"
 
+msgid "## Jetons et coût"
+msgstr "## Tokens and cost"
+
+msgid "## Libellés : niveau 1 et niveau 2"
+msgstr "## Labels: level 1 and level 2"
+
 msgid "## Libellés et descriptions"
 msgstr "## Labels and descriptions"
 
@@ -1538,6 +1544,9 @@ msgstr "Covariates"
 msgid "Covariables (corrélation partielle, modération)."
 msgstr "Covariates (partial correlation, moderation)."
 
+msgid "Coût"
+msgstr "Cost"
+
 msgid "Critères d'inférence"
 msgstr "Inference criteria"
 
@@ -2050,6 +2059,9 @@ msgstr "Saved."
 #, python-brace-format
 msgid "Ensemble ({n})"
 msgstr "All ({n})"
+
+msgid "Entrée"
+msgstr "Input"
 
 #, python-brace-format
 msgid "Erreur de fichier : {detail}"
@@ -3208,6 +3220,15 @@ msgstr ""
 "The browser saves them in your downloads folder. A codebook is often shared with the data: it "
 "holds only metadata and counts of at least {n}."
 
+msgid ""
+"Le niveau 2 ajoute au message les statistiques agrégées (codes observés et proportions, "
+"manquants, minimum, maximum, moyenne, années) ; il n'existe que dans le banc, pour mesurer ce que"
+" le niveau 1 perd (D-136)."
+msgstr ""
+"Level 2 adds the aggregate statistics to the message (observed codes and proportions, missing "
+"values, minimum, maximum, mean, years); it exists in the bench only, to measure what level 1 "
+"loses (D-136)."
+
 msgid "Le nom d'une famille compte de 1 à 30 caractères."
 msgstr "The name of a family has 1 to 30 characters."
 
@@ -3840,6 +3861,13 @@ msgstr "List the rules and the hypotheses, with their conditions and deviations.
 msgid "Longueur maximale des noms"
 msgstr "Maximum length of the names"
 
+msgid ""
+"Lus dans les réponses du service ; la réflexion du modèle compte dans les jetons de sortie. Coût "
+"aux prix publiés (lus le 2026-10-19), en dollars américains."
+msgstr ""
+"Read in the service's answers; the model's thinking counts in the output tokens. Cost at the "
+"published prices (read on 2026-10-19), in US dollars."
+
 msgid "M (ÉT)"
 msgstr "M (SD)"
 
@@ -3909,6 +3937,13 @@ msgstr "Measures the strength of the relation between two continuous variables o
 
 msgid "Mesure le lien entre deux variables continues quand des covariables sont tenues constantes."
 msgstr "Measures the relation between two continuous variables when covariates are held constant."
+
+msgid ""
+"Mesurer aussi les libellés au niveau 2 (avec les statistiques des bases fictives), pour savoir ce"
+" que le niveau 1 perd ; le banc seulement."
+msgstr ""
+"Also measure the labels at level 2 (with the statistics of the fictional bases), to know what "
+"level 1 loses; the bench only."
 
 msgid "Mesurer ce modèle"
 msgstr "Measure this model"
@@ -4376,6 +4411,9 @@ msgstr "No APA table nor figure for this analysis."
 #, python-brace-format
 msgid "Pas un fichier projet (.dd.json) existant : {path}"
 msgstr "Not an existing project file (.dd.json): {path}"
+
+msgid "Passage"
+msgstr "Pass"
 
 msgid "Pearson"
 msgstr "Pearson"
@@ -5434,9 +5472,6 @@ msgstr "Sensitive ({n})"
 msgid "Serveur compatible OpenAI"
 msgstr "OpenAI-compatible server"
 
-msgid "Serveur local"
-msgstr "Local server"
-
 msgid "Service d'IA"
 msgstr "AI service"
 
@@ -5603,6 +5638,9 @@ msgstr "Its number, e.g. R1."
 
 msgid "Sorte de règle"
 msgstr "Kind of rule"
+
+msgid "Sortie"
+msgstr "Output"
 
 msgid "Source"
 msgstr "Source"
@@ -6604,6 +6642,10 @@ msgstr "April"
 msgid "binaire"
 msgstr "binary"
 
+#, python-brace-format
+msgid "blocs de {n} et {m} variables"
+msgstr "blocks of {n} and {m} variables"
+
 msgid "borne basse de l'IC"
 msgstr "lower bound of the CI"
 
@@ -6975,6 +7017,12 @@ msgstr "on {date}, for {target} ({summary}): {reason}"
 msgid "les règles générales"
 msgstr "the general rules"
 
+msgid "libellés"
+msgstr "labels"
+
+msgid "libellés, niveau 2"
+msgstr "labels, level 2"
+
 msgid "licence"
 msgstr "licence"
 
@@ -7094,6 +7142,9 @@ msgstr "no missing-value codes and no levels of measurement"
 msgid "ni étiquettes des valeurs, ni codes de valeurs manquantes, ni niveaux de mesure"
 msgstr "no value labels, no missing-value codes and no levels of measurement"
 
+msgid "niveau 1"
+msgstr "level 1"
+
 msgid "niveau de mesure non décidé"
 msgstr "measure level not decided"
 
@@ -7137,6 +7188,9 @@ msgstr "nominal (by default) or ordinal."
 
 msgid "nominal, ordinal ou echelle."
 msgstr "nominal, ordinal or scale."
+
+msgid "noms de base"
+msgstr "base names"
 
 msgid "non"
 msgstr "no"
@@ -7294,6 +7348,9 @@ msgstr "reminder of the study's aim"
 
 msgid "rattachement proposé"
 msgstr "proposed link"
+
+msgid "rattachements"
+msgstr "links"
 
 msgid "recalculée, sans changement"
 msgstr "recomputed, unchanged"
@@ -7739,6 +7796,10 @@ msgstr "{a}: median of {m1}; {b}: median of {m2}; V = {v}, {p}, r = {r} (n = {n}
 #, python-brace-format
 msgid "{a} et {b}"
 msgstr "{a} and {b}"
+
+#, python-brace-format
+msgid "{base} : libellés et descriptions, niveau 2…"
+msgstr "{base}: labels and descriptions, level 2…"
 
 #, python-brace-format
 msgid "{base} : libellés et descriptions…"

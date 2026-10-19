@@ -1,12 +1,17 @@
-"""The model bench (v0.4, step 6): how an installed model does on the fictional bases (two
-in French, and one in English since v0.5).
+"""The model bench (v0.4, step 6; through an API key since v0.18): how a model does on the
+fictional bases (two in French, and one in English since v0.5).
 
 For each base, built as a team would build it (CSV, then its questionnaire), the bench
 measures the links the model proposes against the answer key, the computed links alone
 for comparison, then, with the right links, what the labels and descriptions invent:
 the signals of the tool (citation, threshold, instrument, acronym, observed range) and
 code meanings stated for codes that have no label. Only fictional data is sent; the
-projects stay in memory; nothing is downloaded (D-023).
+projects stay in memory.
+
+Since v0.18: the blocks of the API key (20 variables for links, 25 for labels), the tokens
+of each pass and their cost at the published prices, and, on request, the labels at level
+2 too (the earlier prompt, with aggregate statistics; it exists in the bench only, D-136),
+to measure what level 1 loses.
 """
 
 from __future__ import annotations
@@ -22,8 +27,8 @@ from pathlib import Path
 from ddict import __version__, naming
 from ddict.i18n import N_, Texts, _, colon, field_label, semicolon
 from ddict.io import read_database
-from ddict.llm.link import DEFAULT_LINK_BLOCK_SIZE, LINK_PROMPT_VERSION, NEIGHBOUR_PROMPT_VERSION
-from ddict.llm.messages import DEFAULT_BLOCK_SIZE, PROMPT_VERSION
+from ddict.llm.link import API_LINK_BLOCK_SIZE, LINK_PROMPT_VERSION, NEIGHBOUR_PROMPT_VERSION
+from ddict.llm.messages import API_BLOCK_SIZE, PROMPT_VERSION
 from ddict.project import build_project
 from ddict.project.model import Project
 from ddict.questionnaire import link
@@ -42,8 +47,43 @@ SIGNAL_NAMES = Texts(
         "observed_range": N_("étendue observée"),
     }
 )
+LEVEL_2_PROMPT = "variables-v3"  # with aggregate statistics: the bench only (D-136)
+# Published prices, in US dollars per million tokens (input, output), read on 2026-10-19
+# (Haiku 5.5: up to 100,000 tokens per request, which a block never reaches).
+PRICES = {"claude-haiku-5-5": (0.10, 0.50), "claude-sonnet-5-5": (2.00, 10.00)}
 # "1 = Oui", "0 : jamais", "2 pour Homme": the meaning of a code.
 CODE_MEANING = re.compile(r"(?<![\w.,])-?\d+\s*(?:=|:|pour|for)\s*[«\"]?[A-Za-zÀ-ÿ]", re.IGNORECASE)
+
+
+def tokens(events) -> Counter:
+    """The tokens of the answers of a run (input, output), from the calls of its blocks."""
+    found: Counter = Counter()
+    for event in events:
+        for call in event.result.calls if event.result else ():
+            usage = call.get("usage") or {}
+            found["input"] += usage.get("input_tokens", 0) + usage.get("prompt_tokens", 0)
+            found["output"] += usage.get("output_tokens", 0) + usage.get("completion_tokens", 0)
+    return found
+
+
+def cost(model: str, counted: Counter) -> float | None:
+    """In US dollars at the published prices; None for a model without a known price."""
+    if model not in PRICES:
+        return None
+    price_in, price_out = PRICES[model]
+    return (counted["input"] * price_in + counted["output"] * price_out) / 1_000_000
+
+
+@dataclass
+class LabelResult:
+    """The labels and descriptions of one base, at one level."""
+
+    n_enriched: int = 0
+    signals: dict[str, list[str]] = field(default_factory=dict)
+    invented_codes: list[str] = field(default_factory=list)
+    failures: int = 0
+    seconds: float = 0.0
+    tokens: Counter = field(default_factory=Counter)
 
 
 @dataclass
@@ -66,6 +106,9 @@ class BaseResult:
     missed: dict[str, list[str]] = field(default_factory=dict)
     # Right first choices of the computation that the model did not keep.
     computed_undone: list[str] = field(default_factory=list)
+    link_tokens: Counter = field(default_factory=Counter)
+    enrich_tokens: Counter = field(default_factory=Counter)
+    level2: LabelResult | None = None  # the labels with statistics, when asked (v0.18)
 
 
 MISS_CAUSES = Texts(
@@ -152,9 +195,10 @@ def run_base(
     *,
     now: Callable[[], str],
     clock: Callable[[], float] = time.monotonic,
+    level2: bool = False,
 ) -> Iterator[str | BaseResult]:
-    """Measure one base; yields progress texts, then its result."""
-    from ddict.llm.enrich import enrich
+    """Measure one base; yields progress texts, then its result. `level2`: the labels at
+    level 2 too, on a copy of the project made with the same links and acronyms."""
     from ddict.llm.link import propose_links
 
     key: dict[str, str] = base["links"]
@@ -167,9 +211,10 @@ def run_base(
 
     yield _("{base} : rattachements proposés par le modèle…").format(base=base["name"])
     start = clock()
-    events = list(propose_links(project, client, now=now, block_size=DEFAULT_LINK_BLOCK_SIZE))
+    events = list(propose_links(project, client, now=now, block_size=API_LINK_BLOCK_SIZE))
     result.link_seconds = clock() - start
     result.link_failures = _failures(events, result)
+    result.link_tokens = tokens(events)
     proposed = {name: project.variable(name).question.value for name in key}
     for name, target in key.items():
         if proposed[name] == target:
@@ -185,23 +230,36 @@ def run_base(
     for entry in project.glossary:
         if entry.status == "proposed":
             logic.glossary_decide(project, entry.term, "accept", now=now())
+    copy = project.model_copy(deep=True) if level2 else None
     yield _("{base} : libellés et descriptions…").format(base=base["name"])
+    labels = _labels(project, client, PROMPT_VERSION, result, now=now, clock=clock)
+    result.n_enriched, result.signals = labels.n_enriched, labels.signals
+    result.invented_codes, result.enrich_failures = labels.invented_codes, labels.failures
+    result.enrich_seconds, result.enrich_tokens = labels.seconds, labels.tokens
+    if copy is not None:
+        yield _("{base} : libellés et descriptions, niveau 2…").format(base=base["name"])
+        result.level2 = _labels(copy, client, LEVEL_2_PROMPT, result, now=now, clock=clock)
+    yield result
+
+
+def _labels(project, client, version, result, *, now, clock) -> LabelResult:
+    from ddict.llm.enrich import enrich
+
     start = clock()
-    events = list(enrich(project, client, now=now, block_size=DEFAULT_BLOCK_SIZE))
-    result.enrich_seconds = clock() - start
-    result.enrich_failures = _failures(events, result)
-    found: dict[str, list[str]] = {}
+    events = list(enrich(project, client, now=now, block_size=API_BLOCK_SIZE, version=version))
+    found = LabelResult(seconds=clock() - start, tokens=tokens(events))
+    found.failures = _failures(events, result)
     for entry in project.variables:
         if entry.label.origin == "ai" or entry.description.origin == "ai":
-            result.n_enriched += 1
+            found.n_enriched += 1
         for signal in entry.ai_signals:
             code = signal.partition(":")[2]
-            if code in SIGNAL_CODES and entry.name not in found.setdefault(code, []):
-                found[code].append(entry.name)
+            if code in SIGNAL_CODES and entry.name not in found.signals.setdefault(code, []):
+                found.signals[code].append(entry.name)
         if invents_code_meaning(project, entry.name):
-            result.invented_codes.append(entry.name)
-    result.signals = found
-    yield result
+            found.invented_codes.append(entry.name)
+    found.signals = {code: names for code, names in found.signals.items() if names}
+    return found
 
 
 # --- Stems of names (v0.7, D-051): the model against the rules alone. ---
@@ -223,6 +281,7 @@ class NamingResult:
     failures: int = 0
     seconds: float = 0.0
     failure_detail: str | None = None
+    tokens: Counter = field(default_factory=Counter)
 
     def valid(self, found: dict[str, str | None]) -> int:
         return sum(1 for k in self.expected if found.get(k) and naming.valid_stem(found[k]))
@@ -263,6 +322,7 @@ def run_naming(
     events = list(propose_stems(with_model, client, now=now))
     result.seconds = clock() - start
     result.failures = _failures(events, result)
+    result.tokens = tokens(events)
     result.model = _stems(with_model, result.expected)
     for key in result.expected:
         found = naming.stem(with_model, key)
@@ -279,10 +339,11 @@ def run_bench(
     now: Callable[[], str],
     clock: Callable[[], float] = time.monotonic,
     folder: Path | None = None,
+    level2: bool = False,
 ) -> Iterator[str | BaseResult | NamingResult]:
     folder = folder or data_dir()
     for base in load_key(folder)["bases"]:
-        yield from run_base(folder, base, client, now=now, clock=clock)
+        yield from run_base(folder, base, client, now=now, clock=clock, level2=level2)
     if (folder / NAMING_KEY_FILE).is_file():
         yield from run_naming(folder, client, now=now, clock=clock)
 
@@ -335,9 +396,11 @@ def render_report(
         _("# Banc d'essai : {model}").format(model=model),
         "",
         f"- {field_label('Date')}{date}",
-        f"- {field_label('Serveur local')}{endpoint}",
+        f"- {field_label('Adresse')}{endpoint}",
         f"- {field_label('Outil')}dictionnaire-donnees {__version__} ; prompts "
-        f"{LINK_PROMPT_VERSION}, {NEIGHBOUR_PROMPT_VERSION} {_('et')} {PROMPT_VERSION}",
+        f"{LINK_PROMPT_VERSION}, {NEIGHBOUR_PROMPT_VERSION} {_('et')} {PROMPT_VERSION} "
+        f"({_('niveau 1')}) ; "
+        + _("blocs de {n} et {m} variables").format(n=API_LINK_BLOCK_SIZE, m=API_BLOCK_SIZE),
         "- "
         + _(
             "Bases fictives seulement : rien de réel n'a été envoyé au modèle. Les durées "
@@ -424,9 +487,88 @@ def render_report(
             )
         if details:
             lines.append(f"- {r.name}{colon()}" + semicolon().join(details))
+    if any(r.level2 for r in results):
+        lines += _level2_section(results)
     if naming_result is not None:
         lines += _naming_section(naming_result)
+    lines += _cost_section(results, naming_result, model)
     return "\n".join(lines).rstrip("\n") + "\n"
+
+
+def _signal_counts(labels: LabelResult) -> str:
+    return " | ".join(str(len(labels.signals.get(c, []))) for c in SIGNAL_CODES)
+
+
+def _level2_section(results: list[BaseResult]) -> list[str]:
+    lines = [
+        "",
+        _("## Libellés : niveau 1 et niveau 2"),
+        "",
+        _(
+            "Le niveau 2 ajoute au message les statistiques agrégées (codes observés et "
+            "proportions, manquants, minimum, maximum, moyenne, années) ; il n'existe que dans "
+            "le banc, pour mesurer ce que le niveau 1 perd (D-136)."
+        ),
+        "",
+        f"| {_('Base')} | {_('Niveau')} | {_('Variables enrichies')} | "
+        + " | ".join(SIGNAL_NAMES[c] for c in SIGNAL_CODES)
+        + f" | {_('sens de codes sans étiquette')} | {_('Blocs en échec')} |",
+        "|---|---|---|" + "---|" * len(SIGNAL_CODES) + "---|---|",
+    ]
+    for r in results:
+        if r.level2 is None:
+            continue
+        lines.append(
+            f"| {r.name} | 1 | {r.n_enriched} / {r.n_variables} | "
+            + " | ".join(str(len(r.signals.get(c, []))) for c in SIGNAL_CODES)
+            + f" | {len(r.invented_codes)} | {r.enrich_failures} |"
+        )
+        two = r.level2
+        lines.append(
+            f"| {r.name} | 2 | {two.n_enriched} / {r.n_variables} | {_signal_counts(two)} | "
+            f"{len(two.invented_codes)} | {two.failures} |"
+        )
+    return lines
+
+
+def _cost_section(results, naming_result, model: str) -> list[str]:
+    passes: list[tuple[str, Counter]] = []
+    for r in results:
+        passes.append((f"{r.name} : {_('rattachements')}", r.link_tokens))
+        passes.append((f"{r.name} : {_('libellés')}", r.enrich_tokens))
+        if r.level2 is not None:
+            passes.append((f"{r.name} : {_('libellés, niveau 2')}", r.level2.tokens))
+    if naming_result is not None:
+        passes.append((f"{naming_result.name} : {_('noms de base')}", naming_result.tokens))
+    total: Counter = Counter()
+    for _name, counted in passes:
+        total.update(counted)
+    if not total:
+        return []
+
+    def dollars(counted: Counter) -> str:
+        found = cost(model, counted)
+        return "—" if found is None else f"{found:.4f} $"
+
+    lines = [
+        "",
+        _("## Jetons et coût"),
+        "",
+        _(
+            "Lus dans les réponses du service ; la réflexion du modèle compte dans les jetons "
+            "de sortie. Coût aux prix publiés (lus le 2026-10-19), en dollars américains."
+        ),
+        "",
+        f"| {_('Passage')} | {_('Entrée')} | {_('Sortie')} | {_('Coût')} |",
+        "|---|---|---|---|",
+    ]
+    for name, counted in passes:
+        lines.append(f"| {name} | {counted['input']} | {counted['output']} | {dollars(counted)} |")
+    lines.append(
+        f"| **{_('Total')}** | **{total['input']}** | **{total['output']}** | "
+        f"**{dollars(total)}** |"
+    )
+    return lines
 
 
 def report_name(model: str, date: str) -> str:

@@ -18,10 +18,12 @@ from __future__ import annotations
 import sys
 import tempfile
 import time
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
 from ddict import ai_settings
+from ddict.bench import cost
 from ddict.llm import connect
 from ddict.llm.advice_bench import (
     FOLLOW_UP_FILE,
@@ -64,7 +66,10 @@ def main(models: list[str]) -> int:
             )
             print(f"{s.objective} {s.outcome:<17} {marks} conditions {s.refused_conditions}"
                   f"{method} {s.seconds:.0f} s")  # fmt: skip
-        print(summary(scores), flush=True)
+        found = summary(scores)
+        counted = Counter(input=found["input_tokens"], output=found["output_tokens"])
+        price = cost(model, counted)
+        print(found, "" if price is None else f"coût : {price:.4f} $", flush=True)
     print(f"Échanges : {log_dir}")
     return 0
 
