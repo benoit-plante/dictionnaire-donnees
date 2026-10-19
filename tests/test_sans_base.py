@@ -16,7 +16,7 @@ from ddict.analysis import data as analysis_data
 from ddict.analysis import notebook as nb
 from ddict.export import documented
 from ddict.export import wording as w
-from ddict.export.context import context_package, render_context
+from ddict.export.context import context_package
 from ddict.export.markdown import render_markdown
 from ddict.export.preparation import render_preparation
 from ddict.export.syntax import render_syntax
@@ -154,7 +154,6 @@ def test_what_needs_the_database_says_so(tmp_path):
         lambda: render_syntax(project, "spss"),
         lambda: render_syntax(project, "r"),
         lambda: render_preparation(project, "spss"),
-        lambda: render_context(project),
         lambda: context_package(project),
     ):
         with pytest.raises(NoDatabase):

@@ -220,24 +220,29 @@ def _values_text(labels: list) -> str:
     return semicolon().join(f"{_code(lab.code)} {lab.label}" for lab in labels)
 
 
+def _base_line(project: Project) -> str:
+    source = project.source
+    if source is None:  # v0.20 (D-145): designed before its collection
+        return _("Base : {planned} ; {n} variables prévues.").format(
+            planned=_(w.PLANNED_DICTIONARY), n=len(project.variables)
+        )
+    return _(
+        "Base : `{name}` ({format}), {rows} lignes, {n} variables. Empreinte du fichier : `{sha}`."
+    ).format(
+        name=source.name,
+        format=FORMATS.get(source.format, source.format),
+        rows=source.n_rows,
+        n=len(project.variables),
+        sha=source.sha256[: fingerprint.SHORT],
+    )
+
+
 def _header(project: Project) -> list[str]:
     source = project.source
-    if source is None:
-        raise NoDatabase("context")
     lines = [
-        _("# Contexte d'analyse : {name}").format(name=source.name),
+        _("# Contexte d'analyse : {name}").format(name=w.dataset_title(project)),
         "",
-        "- "
-        + _(
-            "Base : `{name}` ({format}), {rows} lignes, {n} variables. Empreinte du fichier : "
-            "`{sha}`."
-        ).format(
-            name=source.name,
-            format=FORMATS.get(source.format, source.format),
-            rows=source.n_rows,
-            n=len(project.variables),
-            sha=source.sha256[: fingerprint.SHORT],
-        ),
+        "- " + _base_line(project),
         "- "
         + _(
             "Codebook : empreinte `{fingerprint}`, dictionnaire-donnees {version}. Seules les "
@@ -245,7 +250,7 @@ def _header(project: Project) -> list[str]:
         ).format(fingerprint=fingerprint.short(project), version=__version__),
     ]
     lines += [f"- {name}{colon()}{value}" for name, value in w.dataset_facts(project)]
-    if _renamed(project):
+    if _renamed(project) and source is not None:
         lines.append(
             "- "
             + _(
@@ -489,7 +494,7 @@ def render_context(
     lines = _header(project) + _rules(project) + _completeness(project)
     lines += _groups(project, omitted) + _recodes(project) + _variables(project)
     lines += _attention_lines(project)
-    if statistics:
+    if statistics and project.source is not None:
         lines += _statistics(project)
     lines += _question_texts(project, omitted)
     return "\n".join(lines).rstrip("\n") + "\n"
@@ -720,6 +725,8 @@ def write_context(
     )
     with Path(markdown).open("w", encoding="utf-8", newline="\n") as stream:
         stream.write(text)
+    if project.source is None:  # a Data Package describes a file: none yet (v0.20)
+        return
     data = context_package(project, statistics=statistics, language=language)
     with Path(package).open("w", encoding="utf-8", newline="\n") as stream:
         stream.write(package_text(data))

@@ -228,7 +228,7 @@ def _follow(project, project_path, prepared, today) -> None:
     from ddict.analysis import notebook as nb
     from ddict.analysis import plan_notebook as pn
 
-    if project.plan.frozen is None:
+    if project.plan.frozen is None or project.source is None:  # no notebook before the base
         return
     notebook = nb.open_notebook(project, project_path)
     for line in pn.sync(notebook, project, prepared, today):
@@ -250,13 +250,17 @@ def cmd_plan(args: argparse.Namespace) -> int:
         for path in prereg.write_preregistration(project, project_path, language=args.langue):
             print(_("Fichier écrit : {path}").format(path=path))
         return 0
-    try:
-        notebook = nb.open_notebook(project, project_path)
-    except nb.NotebookError as error:
-        print(nb.reason_text(error), file=sys.stderr)
-        return EXIT_ERROR
+    notebook = None  # before the database of a designed questionnaire (v0.20, D-153)
+    if project.source is not None:
+        try:
+            notebook = nb.open_notebook(project, project_path)
+        except nb.NotebookError as error:
+            print(nb.reason_text(error), file=sys.stderr)
+            return EXIT_ERROR
     prepared = None
-    if action in ("list", "add", "modify", "remove", "rules", "freeze"):
+    if project.source is not None and action in (
+        "list", "add", "modify", "remove", "rules", "freeze"
+    ):  # fmt: skip
         prepared, reason = _database(project, project_path, getattr(args, "base", None))
         if prepared is None and action == "freeze":
             print(reason, file=sys.stderr)
@@ -308,6 +312,13 @@ def cmd_plan(args: argparse.Namespace) -> int:
                     date=prereg.long_date(today), fingerprint=project.plan.frozen.fingerprint[:12]
                 )
             )
+            if project.source is None:
+                print(
+                    _(
+                        "Pas encore de base : chaque hypothèse deviendra une analyse du carnet à "
+                        "l'arrivée de la base."
+                    )
+                )
             if prior:
                 print(
                     _("Déjà dans le carnet au gel : {ids}.").format(
@@ -324,7 +335,10 @@ def cmd_plan(args: argparse.Namespace) -> int:
                     file=sys.stderr,
                 )
                 return EXIT_ERROR
-            pn.clear(notebook, project)
+            if notebook is None:
+                planning.clear(project)
+            else:
+                pn.clear(notebook, project)
             print(_("Plan retiré."))
     except planning.PlanRefused as error:
         return _refused(error.reasons)
@@ -332,7 +346,8 @@ def cmd_plan(args: argparse.Namespace) -> int:
         return _refused([str(error)])
     save_project(project, project_path)
     if action == "freeze" or (action == "clear" and nb.notebook_path(project_path).is_file()):
-        nb.save_notebook(notebook, nb.notebook_path(project_path))
+        if notebook is not None:
+            nb.save_notebook(notebook, nb.notebook_path(project_path))
     elif action in ("add", "modify", "remove", "rules"):
         _follow(project, project_path, prepared, today)
         if prepared is None and action in ("add", "modify"):

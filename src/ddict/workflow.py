@@ -572,8 +572,9 @@ def export_context(
     statistics: bool = False,
     omit_groups: tuple[str, ...] = (),
     language: str | None = None,
-) -> tuple[Path, Path]:
-    """Write the analysis context: accepted values only; statistics only on request (D-059)."""
+) -> tuple[Path, ...]:
+    """Write the analysis context: accepted values only; statistics only on request (D-059).
+    Returns the files written: without a database yet (v0.20), the Markdown only."""
     check_groups(project, omit_groups)
     markdown, package = context_paths(project_path)
     write_context(
@@ -584,7 +585,7 @@ def export_context(
         omit_groups=omit_groups,
         language=language,
     )
-    return markdown, package
+    return (markdown, package) if project.source is not None else (markdown,)
 
 
 def syntax_paths(project_path: Path) -> dict[str, Path]:

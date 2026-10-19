@@ -202,9 +202,12 @@ def _write_context(omit: tuple[str, ...], language: str) -> None:
             key,
         )
         return
-    text = _("Fichiers écrits à côté du projet : {md} et {json}.").format(
-        md=paths[0].name, json=paths[1].name
-    )
+    if len(paths) == 1:  # no database yet: no datapackage.json
+        text = _("Fichier écrit à côté du projet : {md}.").format(md=paths[0].name)
+    else:
+        text = _("Fichiers écrits à côté du projet : {md} et {json}.").format(
+            md=paths[0].name, json=paths[1].name
+        )
     st.session_state.message = ("success", text, key)
 
 
@@ -246,15 +249,18 @@ def _context_section(project: Project, omit: tuple[str, ...], language: str) -> 
         mime="text/markdown",
         key="context-download-md",
     )
-    third.download_button(
-        _("datapackage.json"),
-        data=package_text(
-            context_package(project, statistics=statistics, language=language)
-        ).encode("utf-8"),
-        file_name=package_path.name,
-        mime="application/json",
-        key="context-download-json",
-    )
+    if project.source is None:  # the standard needs the file it describes (D-058)
+        third.caption(_("Le datapackage.json décrit le fichier de la base : il attend la base."))
+    else:
+        third.download_button(
+            _("datapackage.json"),
+            data=package_text(
+                context_package(project, statistics=statistics, language=language)
+            ).encode("utf-8"),
+            file_name=package_path.name,
+            mime="application/json",
+            key="context-download-json",
+        )
     c.show_message("context-write")
 
 
@@ -349,6 +355,16 @@ def page(project: Project) -> None:
     )
 
     st.subheader(_("Fichiers de commandes"))
+    if project.source is None:  # v0.20 (D-145): designed before its collection
+        st.info(
+            _(
+                "Pas encore de base : les fichiers de commandes, le script de préparation et la "
+                "copie documentée s'appliquent à la base ; ils s'écriront quand elle sera "
+                "arrivée."
+            )
+        )
+        _context_section(project, omit, language)
+        return
     st.caption(
         _(
             "Pour appliquer vos décisions à vos données dans SPSS ou R : libellés, "

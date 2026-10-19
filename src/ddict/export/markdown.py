@@ -46,12 +46,15 @@ def _overview(project: Project, kind: w.ExportKind) -> list[str]:
         f"- {field_label('Version')}{kind_text}",
         f"- {field_label('Empreinte du codebook')}`{fingerprint.short(project)}` "
         + _("(décisions acceptées)"),
-        "- "
-        + _(
-            "Effectifs inférieurs à {n} masqués, ainsi qu'un second effectif quand le "
-            "premier pourrait être recalculé par soustraction."
-        ).format(n=project.settings.min_cell_count),
     ]
+    if source is not None:  # no counts before the database (v0.20)
+        lines.append(
+            "- "
+            + _(
+                "Effectifs inférieurs à {n} masqués, ainsi qu'un second effectif quand le "
+                "premier pourrait être recalculé par soustraction."
+            ).format(n=project.settings.min_cell_count)
+        )
     lines += [
         f"- {name}{colon()}{_inline(value)}" for name, value in w.questionnaire_facts(project)
     ]
@@ -195,7 +198,13 @@ def _values(project: Project, entry: VariableEntry, kind: w.ExportKind) -> list[
         lines += [f"*{source}*{colon()}{proposed}", ""]
     elif source and rows:
         lines += [f"*{field_label('Étiquettes de valeurs')}{source}.*", ""]
-    if rows:
+    if rows and entry.profile is None:  # planned (v0.20): codes, no counts yet
+        lines += [f"| {_('Code')} | {_('Étiquette')} | {_('Manquant déclaré')} |", "|---|---|---|"]
+        for code, value_label, _count, is_missing in rows:
+            missing = _("oui") if is_missing else ""
+            lines.append(f"| {_cell(code)} | {_cell(value_label)} | {missing} |")
+        lines.append("")
+    elif rows:
         lines += [
             f"| {_('Code')} | {_('Étiquette')} | {_('Effectif')} | {_('Manquant déclaré')} |",
             "|---|---|---|---|",

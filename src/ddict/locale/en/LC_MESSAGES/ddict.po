@@ -816,6 +816,10 @@ msgstr "Database"
 msgid "Base : `{name}` ({format}), {rows} lignes, {n} variables. Empreinte du fichier : `{sha}`."
 msgstr "Database: `{name}` ({format}), {rows} rows, {n} variables. File fingerprint: `{sha}`."
 
+#, python-brace-format
+msgid "Base : {planned} ; {n} variables prévues."
+msgstr "Database: {planned}; {n} planned variables."
+
 msgid ""
 "Base de données : SPSS (.sav, .zsav), CSV, Stata (.dta), SAS (.sas7bdat) ou Excel (.xlsx, "
 "première feuille)."
@@ -1044,6 +1048,9 @@ msgstr "Each correlation is computed on the people who have both values ({n} fro
 
 msgid "Chaque hypothèse calculable sur la base"
 msgstr "Each hypothesis computable on the database"
+
+msgid "Chaque hypothèse conforme au codebook prévu"
+msgstr "Each hypothesis consistent with the planned codebook"
 
 msgid ""
 "Chaque sigle sera accepté avec la définition affichée ici, celle de son champ, corrigée ou non. "
@@ -2248,6 +2255,10 @@ msgstr "Project file to create (default: next to the database, as .dd.json)."
 msgid "Fichier écrit : {path}"
 msgstr "File written: {path}"
 
+#, python-brace-format
+msgid "Fichier écrit à côté du projet : {md}."
+msgstr "File written next to the project: {md}."
+
 msgid "Fichiers"
 msgstr "Files"
 
@@ -3106,6 +3117,9 @@ msgstr "The observed coefficient of {x} was negative."
 msgid "Le coefficient observé de {x} était positif."
 msgstr "The observed coefficient of {x} was positive."
 
+msgid "Le datapackage.json décrit le fichier de la base : il attend la base."
+msgstr "The datapackage.json describes the database file: it waits for the database."
+
 #, python-brace-format
 msgid "Le dictionnaire de données joint ({file}) décrit chaque variable."
 msgstr "The attached data dictionary ({file}) describes each variable."
@@ -3307,6 +3321,15 @@ msgid ""
 msgstr ""
 "The frozen plan receives its date and fingerprint; each hypothesis becomes an analysis of the "
 "notebook. Afterwards, every change needs a reason and becomes an amendment, kept forever."
+
+msgid ""
+"Le plan figé reçoit sa date et son empreinte, avant la collecte ; chaque hypothèse deviendra une "
+"analyse du carnet à l'arrivée de la base. Ensuite, toute modification exige une raison et devient"
+" un amendement, gardé pour toujours."
+msgstr ""
+"The frozen plan receives its date and fingerprint, before the collection; each hypothesis will "
+"become an analysis of the notebook when the database arrives. Afterwards, every change needs a "
+"reason and becomes an amendment, kept forever."
 
 msgid "Le plan n'a aucune hypothèse."
 msgstr "The plan has no hypothesis."
@@ -4462,6 +4485,21 @@ msgstr "Not in the group: {names}"
 
 msgid "Pas de tableau ni de figure APA pour cette analyse."
 msgstr "No APA table nor figure for this analysis."
+
+msgid "Pas encore de base : chaque hypothèse deviendra une analyse du carnet à l'arrivée de la base."
+msgstr ""
+"No database yet: each hypothesis will become an analysis of the notebook when the database "
+"arrives."
+
+msgid "Pas encore de base : les fichiers de commandes s'écriront quand elle sera arrivée."
+msgstr "No database yet: the command files will be written once it has arrived."
+
+msgid ""
+"Pas encore de base : les fichiers de commandes, le script de préparation et la copie documentée "
+"s'appliquent à la base ; ils s'écriront quand elle sera arrivée."
+msgstr ""
+"No database yet: the command files, the preparation script and the documented copy apply to the "
+"database; they will be written once it has arrived."
 
 #, python-brace-format
 msgid "Pas un fichier projet (.dd.json) existant : {path}"

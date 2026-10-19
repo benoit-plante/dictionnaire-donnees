@@ -94,12 +94,19 @@ def _create(notebook, project, prepared, hypothesis: Hypothesis, today: str) -> 
 
 
 def freeze(
-    notebook: nb.Notebook, project: Project, prepared: PreparedData | None, today: str
+    notebook: nb.Notebook | None, project: Project, prepared: PreparedData | None, today: str
 ) -> list[PriorAnalysis]:
     """Freeze the plan and tie each hypothesis to its entry (D-102); the database must be
     open, since a new entry is computed. Returns the planned analyses the notebook already
-    held. Raises PlanRefused."""
-    if prepared is None or not nb.belongs(notebook, project):
+    held. Raises PlanRefused.
+
+    Before the database of a designed questionnaire exists (v0.20, D-153), the plan alone is
+    frozen, with no notebook: each hypothesis gets its entry when the database arrives
+    (`sync`)."""
+    if project.source is None:
+        planning.freeze(project, None, today)
+        return []
+    if notebook is None or prepared is None or not nb.belongs(notebook, project):
         raise planning.PlanRefused(
             [
                 _(

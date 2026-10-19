@@ -69,7 +69,7 @@ def _saved(project: Project, key: str, before: c.Refusal) -> bool:
     """Save the project; a frozen plan's notebook follows it (§ 6 of the sheet)."""
     if not c.save(key, before):
         return False
-    if project.plan.frozen is None:
+    if project.plan.frozen is None or project.source is None:  # no notebook before the base
         return True
     notebook = nb.open_notebook(project, c.project_path())
     waiting = pn.sync(notebook, project, _prepared(), _today())
@@ -607,6 +607,9 @@ def _form(project: Project, prepared: PreparedData | None) -> None:
 
 
 def _freeze(project: Project) -> None:
+    if project.source is None:  # v0.20 (D-153): the plan alone, before the database
+        pn.freeze(None, project, None, _today())
+        return
     notebook = nb.open_notebook(project, c.project_path())
     pn.freeze(notebook, project, _prepared(), _today())
     if not c.save_notebook(notebook, "plan-freeze", action=_("Figer le plan")):
@@ -614,6 +617,10 @@ def _freeze(project: Project) -> None:
 
 
 def _clear(project: Project) -> None:
+    if project.source is None:  # no notebook before the database
+        planning.clear(project)
+        st.session_state.pop(CLEARING, None)
+        return
     notebook = nb.open_notebook(project, c.project_path())
     pn.clear(notebook, project)
     is_file = nb.notebook_path(c.project_path()).is_file()
@@ -640,12 +647,25 @@ def _ready(project: Project, prepared: PreparedData | None) -> None:
             _("L'origine des données et leur état quand le plan a été écrit"),
             plan.data_origin is not None and plan.data_status is not None,
         ),
-        (
-            _("La base ouverte : chaque hypothèse devient une analyse du carnet"),
-            prepared is not None,
-        ),
-        (_("Chaque hypothèse calculable sur la base"), bool(plan.hypotheses) and not computable),
     ]
+    if project.source is None:  # v0.20 (D-153): frozen before the database exists
+        lines.append(
+            (
+                _("Chaque hypothèse conforme au codebook prévu"),
+                bool(plan.hypotheses) and not computable,
+            )
+        )
+    else:
+        lines += [
+            (
+                _("La base ouverte : chaque hypothèse devient une analyse du carnet"),
+                prepared is not None,
+            ),
+            (
+                _("Chaque hypothèse calculable sur la base"),
+                bool(plan.hypotheses) and not computable,
+            ),
+        ]
     st.write(field_label("Pour figer le plan"))
     for text, done in lines:  # read-only boxes, in normal text: a disabled box is faded
         box = ":material/check_box:" if done else ":material/check_box_outline_blank:"
@@ -658,13 +678,23 @@ def _frozen(project: Project, prepared: PreparedData | None) -> None:
     st.subheader(_("Figer le plan"))
     plan = project.plan
     if plan.frozen is None:
-        st.write(
-            _(
-                "Le plan figé reçoit sa date et son empreinte ; chaque hypothèse devient une "
-                "analyse du carnet. Ensuite, toute modification exige une raison et devient un "
-                "amendement, gardé pour toujours."
+        if project.source is None:
+            st.write(
+                _(
+                    "Le plan figé reçoit sa date et son empreinte, avant la collecte ; chaque "
+                    "hypothèse deviendra une analyse du carnet à l'arrivée de la base. Ensuite, "
+                    "toute modification exige une raison et devient un amendement, gardé pour "
+                    "toujours."
+                )
             )
-        )
+        else:
+            st.write(
+                _(
+                    "Le plan figé reçoit sa date et son empreinte ; chaque hypothèse devient une "
+                    "analyse du carnet. Ensuite, toute modification exige une raison et devient "
+                    "un amendement, gardé pour toujours."
+                )
+            )
         refusals = planning.freeze_refusals(project, prepared)
         _ready(project, prepared)
         st.button(
@@ -672,7 +702,7 @@ def _frozen(project: Project, prepared: PreparedData | None) -> None:
             key="plan-freeze",
             type="primary",
             icon=":material/lock:",
-            disabled=bool(refusals) or prepared is None,
+            disabled=bool(refusals) or (prepared is None and project.source is not None),
             on_click=_act,
             args=(lambda p: _freeze(p),),
             kwargs={"key": "plan-freeze", "done": _("Plan figé.")},
@@ -780,7 +810,8 @@ def page(project: Project) -> None:
             "ordinateur."
         )
     )
-    prepared = analyses_view.prepared_data(project, "plan")
+    # Before the database of a designed questionnaire, nothing to look for (v0.20).
+    prepared = analyses_view.prepared_data(project, "plan") if project.source else None
     if project.plan.frozen is not None:
         st.text_input(
             _("Raison des modifications (le plan est figé : chaque modification est un "

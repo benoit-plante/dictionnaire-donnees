@@ -128,7 +128,14 @@ def cmd_export(args: argparse.Namespace) -> int:
     table = export_name_table(project, project_path)
     if table is not None:
         print(_("Table de correspondance des noms : {path}").format(path=table))
-    if args.syntaxe:
+    refused = False
+    if args.syntaxe and project.source is None:  # v0.20 (D-145): they apply to the base
+        print(
+            _("Pas encore de base : les fichiers de commandes s'écriront quand elle sera arrivée."),
+            file=sys.stderr,
+        )
+        refused = True
+    elif args.syntaxe:
         for path in export_syntax(project, project_path, language=args.langue).values():
             print(_("Fichier de commandes : {path}").format(path=path))
     if args.contexte:
@@ -140,7 +147,7 @@ def cmd_export(args: argparse.Namespace) -> int:
             language=args.langue,
         ):
             print(_("Contexte d'analyse : {path}").format(path=path))
-    return 0
+    return EXIT_ERROR if refused else 0
 
 
 def cmd_copy(args: argparse.Namespace) -> int:
