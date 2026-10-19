@@ -1,7 +1,9 @@
 """`ddict ia` (v0.18, plan § 5.3 and § 7): the API key and the connection, from the command
 line. `cle` records the key in Windows' credential manager, typed without echo, never as an
 argument (PowerShell keeps the history of commands); `oublier` erases it; `tester` asks the
-server for its models, which sends nothing of a project and costs nothing.
+server for its models, which sends nothing of a project and costs nothing. `autoriser` and
+`interdire` decide whether a project may send its metadata (D-138), saved under the check of
+D-129.
 
 The address and the protocol come from the AI settings of this computer (`ai_settings`)
 unless given. Nothing here ever prints the key: only whether one is recorded (D-137).
@@ -12,10 +14,13 @@ from __future__ import annotations
 import argparse
 import getpass
 import sys
+from datetime import date
+from pathlib import Path
 
 from ddict import ai_settings
 from ddict.i18n import N_, _
 from ddict.llm.defaults import PROTOCOLS, EndpointRefused, check_endpoint
+from ddict.project import load_project, permission, save_project
 
 EXIT_ERROR = 2
 AI_ACTIONS = {
@@ -25,6 +30,10 @@ AI_ACTIONS = {
     "forget": "forget",
     "tester": "test",
     "test": "test",
+    "autoriser": "allow",
+    "allow": "allow",
+    "interdire": "forbid",
+    "deny": "forbid",
 }
 PROTOCOL_NAMES = {"anthropic": "Anthropic", "openai": N_("serveur compatible OpenAI")}
 
@@ -167,8 +176,46 @@ def _test(protocol: str, endpoint: str, model: str) -> int:
     return 0
 
 
+def what_leaves() -> str:
+    """Level 1 in one sentence (D-136), said when a project is allowed."""
+    return _(
+        "Seules les métadonnées partiront : noms et étiquettes des variables et des valeurs, "
+        "codes manquants déclarés, textes des questions acceptées, sigles du glossaire, type "
+        "et niveau de mesure. Jamais une réponse, une statistique ni un effectif."
+    )
+
+
+def _allow(path: Path, today: str) -> int:
+    project = load_project(path)
+    if not permission.allow(project, today):
+        print(
+            _("L'envoi à l'IA est déjà permis pour ce projet (depuis le {day}).").format(
+                day=project.settings.ai.since
+            )
+        )
+        return 0
+    save_project(project, path)
+    print(_("L'envoi des métadonnées de ce projet à l'IA est maintenant permis."))
+    print(what_leaves())
+    return 0
+
+
+def _forbid(path: Path) -> int:
+    project = load_project(path)
+    if not permission.forbid(project):
+        print(_("L'envoi à l'IA n'était pas permis pour ce projet : rien ne change."))
+        return 0
+    save_project(project, path)
+    print(_("L'envoi à l'IA n'est plus permis pour ce projet ; l'aperçu des messages le reste."))
+    return 0
+
+
 def cmd_ai(args: argparse.Namespace) -> int:
     action = AI_ACTIONS[args.action]
+    if action == "allow":
+        return _allow(Path(args.projet), date.today().isoformat())
+    if action == "forbid":
+        return _forbid(Path(args.projet))
     where = _where(args)
     if where is None:
         return EXIT_ERROR
@@ -205,8 +252,8 @@ def add_ai_parser(commands) -> None:
         "ia",
         aliases=["ai"],
         help=_(
-            "La clé d'API et la connexion à l'IA : enregistrer la clé, l'oublier, tester. "
-            "La clé ne se donne jamais en argument."
+            "La clé d'API et la connexion à l'IA : enregistrer la clé, l'oublier, tester ; "
+            "permettre ou non l'envoi d'un projet. La clé ne se donne jamais en argument."
         ),
     )
     actions = command.add_subparsers(dest="action", required=True)
@@ -233,4 +280,19 @@ def add_ai_parser(commands) -> None:
     )
     _add_where(test)
     test.add_argument("--modele", "--model", help=_("Vérifier aussi que ce modèle est offert."))
+    allowed = actions.add_parser(
+        "autoriser",
+        aliases=["allow"],
+        help=_(
+            "Permettre l'envoi des métadonnées de ce projet à l'IA (jamais une réponse ni une "
+            "statistique) ; non permis par défaut."
+        ),
+    )
+    allowed.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    forbidden = actions.add_parser(
+        "interdire",
+        aliases=["deny"],
+        help=_("Ne plus permettre l'envoi de ce projet à l'IA ; l'aperçu reste permis."),
+    )
+    forbidden.add_argument("projet", help=_("Fichier projet (.dd.json)."))
     command.set_defaults(handler=cmd_ai)

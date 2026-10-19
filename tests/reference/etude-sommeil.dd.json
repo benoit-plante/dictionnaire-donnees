@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.7.0",
+  "schema_version": "0.8.0",
   "source": {
     "name": "etude-sommeil.sav",
     "format": "sav",
@@ -20,6 +20,10 @@
       "max_length": 32,
       "wave": null,
       "position": "suffix"
+    },
+    "ai": {
+      "allowed": false,
+      "since": null
     }
   },
   "variables": [

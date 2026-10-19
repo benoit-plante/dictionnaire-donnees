@@ -2512,6 +2512,19 @@ msgstr ""
 msgid "L'association entre deux variables catégorielles a été testée par le test exact de Fisher."
 msgstr "The association between two categorical variables was tested with Fisher's exact test."
 
+msgid "L'envoi des métadonnées de ce projet à l'IA est maintenant permis."
+msgstr "Sending the metadata of this project to the AI is now allowed."
+
+#, python-brace-format
+msgid "L'envoi à l'IA est déjà permis pour ce projet (depuis le {day})."
+msgstr "Sending to the AI is already allowed for this project (since {day})."
+
+msgid "L'envoi à l'IA n'est plus permis pour ce projet ; l'aperçu des messages le reste."
+msgstr "Sending to the AI is no longer allowed for this project; previewing the messages still is."
+
+msgid "L'envoi à l'IA n'était pas permis pour ce projet : rien ne change."
+msgstr "Sending to the AI was not allowed for this project: nothing changes."
+
 msgid "L'hypothèse, telle que l'équipe l'écrit."
 msgstr "The hypothesis, as the team writes it."
 
@@ -2666,11 +2679,11 @@ msgid "La base, si elle n'est pas à côté du projet."
 msgstr "The database, if it is not next to the project."
 
 msgid ""
-"La clé d'API et la connexion à l'IA : enregistrer la clé, l'oublier, tester. La clé ne se donne "
-"jamais en argument."
+"La clé d'API et la connexion à l'IA : enregistrer la clé, l'oublier, tester ; permettre ou non "
+"l'envoi d'un projet. La clé ne se donne jamais en argument."
 msgstr ""
-"The API key and the connection to the AI: record the key, forget it, test. The key is never given"
-" as an argument."
+"The API key and the connection to the AI: record the key, forget it, test; allow a project to be "
+"sent or not. The key is never given as an argument."
 
 msgid "La clé est refusée (ou absente). Enregistrez-la de nouveau : ddict ia cle."
 msgstr "The key is refused (or missing). Record it again: ddict ai key."
@@ -3989,6 +4002,9 @@ msgstr ""
 "Do not reproduce the text of the questions of these groups (e.g. G3), for an instrument protected"
 " by copyright (D-014)."
 
+msgid "Ne plus permettre l'envoi de ce projet à l'IA ; l'aperçu reste permis."
+msgstr "No longer allow this project to be sent to the AI; the preview stays allowed."
+
 msgid "Ne plus suivre"
 msgstr "Stop following"
 
@@ -4293,6 +4309,13 @@ msgstr "Simple slopes of {x}"
 #, python-brace-format
 msgid "Pentes simples de {x} selon {w}"
 msgstr "Simple slopes of {x} by {w}"
+
+msgid ""
+"Permettre l'envoi des métadonnées de ce projet à l'IA (jamais une réponse ni une statistique) ; "
+"non permis par défaut."
+msgstr ""
+"Allow the metadata of this project to be sent to the AI (never an answer nor a statistic); not "
+"allowed by default."
 
 msgid "Personne n'est dans le sous-groupe."
 msgstr "Nobody is in the subgroup."
@@ -5352,6 +5375,15 @@ msgid ""
 msgstr ""
 "Only for a sum that allows missing items: the rule of the instrument's manual, with the same "
 "source."
+
+msgid ""
+"Seules les métadonnées partiront : noms et étiquettes des variables et des valeurs, codes "
+"manquants déclarés, textes des questions acceptées, sigles du glossaire, type et niveau de "
+"mesure. Jamais une réponse, une statistique ni un effectif."
+msgstr ""
+"Only metadata will be sent: names and labels of variables and values, declared missing codes, "
+"texts of accepted questions, glossary acronyms, type and level of measurement. Never an answer, a"
+" statistic or a count."
 
 msgid ""
 "Seules leurs métadonnées sont utilisées : aucune statistique sur leurs valeurs, et rien d'elles "

@@ -25,7 +25,9 @@ from pydantic import (
 # opening (the rules propose their levels), and a 0.3.0 file no longer opens in v0.7.
 # 0.4.0 (v0.12, D-093): the exclusion rules, with a default; a 0.3.0 file reads as it is.
 # 0.5.0 (v0.13, D-101): the analysis plan, with a default; a 0.4.0 file reads as it is.
-SCHEMA_VERSION = "0.7.0"
+# 0.8.0 (v0.18, D-138): whether the project may send its metadata to the AI, not by
+# default; a 0.7.0 file reads as it is, not allowed.
+SCHEMA_VERSION = "0.8.0"
 
 Code = int | float | str
 # "questionnaire": computed from the questionnaire under a strict rule, and like an AI value
@@ -344,12 +346,22 @@ class NamingSettings(Strict):
     position: Literal["suffix", "prefix"] = "suffix"
 
 
+class AiPermission(Strict):
+    """Whether the metadata of this project may be sent to the AI (v0.18, D-138): not by
+    default. A decision of the team, kept in the project so that colleagues see it, with
+    the day it was given; never a person's name. Previews are always allowed."""
+
+    allowed: bool = False
+    since: str | None = None  # "2026-10-19"
+
+
 class Settings(Strict):
     min_cell_count: int = Field(default=5, ge=1)
     max_observed_values: int = Field(default=20, ge=1)
     # The language of the study: its questionnaire and labels (v0.5, D-032).
     language: Literal["fr", "en"] = "fr"
     naming: NamingSettings = NamingSettings()
+    ai: AiPermission = AiPermission()
 
 
 class QuestionOption(Strict):
