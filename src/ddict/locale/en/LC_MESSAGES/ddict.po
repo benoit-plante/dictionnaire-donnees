@@ -4398,6 +4398,9 @@ msgstr "Package written next to the project: {name} ({files}). The database is n
 msgid "Par exemple : comparer le bien-être entre les deux groupes de l'étude."
 msgstr "For example: compare well-being between the two groups of the study."
 
+msgid "Paramètres"
+msgstr "Parameters"
+
 msgid "Participants"
 msgstr "Participants"
 

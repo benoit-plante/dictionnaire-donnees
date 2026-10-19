@@ -60,6 +60,15 @@ def test_settings_not_understood_fall_back_to_defaults(text):
     assert ai_settings.load() == ai_settings.AiSettings()
 
 
+def test_settings_with_a_signature_are_read():
+    """Saved by Notepad or PowerShell 5.1, the file may start with a UTF-8 signature."""
+    path = Path(os.environ["DDICT_CONFIG_DIR"]) / "ia.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    signature = "﻿".encode()
+    path.write_bytes(signature + b'{"format": 1, "modele": "m", "effort": "medium"}')
+    assert ai_settings.load() == ai_settings.AiSettings(model="m", effort="medium")
+
+
 def test_settings_refuse_an_unknown_protocol():
     with pytest.raises(ValueError):
         ai_settings.save(ai_settings.AiSettings(protocol="ollama"))

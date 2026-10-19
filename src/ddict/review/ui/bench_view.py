@@ -49,9 +49,11 @@ def _run(settings: ai_settings.AiSettings) -> None:
                 done += 1
             else:
                 results.append(item)
-        endpoint = client.endpoint
+        endpoint, parameters = client.endpoint, client.parameters
     today = date.today().isoformat()
-    text = render_report(results, model=settings.model, endpoint=endpoint, date=today)
+    text = render_report(
+        results, model=settings.model, endpoint=endpoint, date=today, parameters=parameters
+    )
     try:
         path = write_report(text, c.project_path().resolve().parent, settings.model, today)
     except OSError as error:

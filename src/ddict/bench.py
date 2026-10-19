@@ -387,7 +387,12 @@ def _naming_section(result: NamingResult) -> list[str]:
 
 
 def render_report(
-    results: list[BaseResult | NamingResult], *, model: str, endpoint: str, date: str
+    results: list[BaseResult | NamingResult],
+    *,
+    model: str,
+    endpoint: str,
+    date: str,
+    parameters: dict | None = None,
 ) -> str:
     naming_result = next((r for r in results if isinstance(r, NamingResult)), None)
     results = [r for r in results if isinstance(r, BaseResult)]
@@ -397,6 +402,14 @@ def render_report(
         "",
         f"- {field_label('Date')}{date}",
         f"- {field_label('Adresse')}{endpoint}",
+        *(
+            [
+                f"- {field_label('Paramètres')}"
+                + ", ".join(f"{k} = {v}" for k, v in parameters.items())
+            ]
+            if parameters
+            else []
+        ),
         f"- {field_label('Outil')}dictionnaire-donnees {__version__} ; prompts "
         f"{LINK_PROMPT_VERSION}, {NEIGHBOUR_PROMPT_VERSION} {_('et')} {PROMPT_VERSION} "
         f"({_('niveau 1')}) ; "

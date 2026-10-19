@@ -34,7 +34,8 @@ def default_endpoint(protocol: str) -> str:
 def load() -> AiSettings:
     """The settings of this computer; the defaults for what is missing or not understood."""
     try:
-        found = json.loads((config_dir() / FILE_NAME).read_text(encoding="utf-8"))
+        # utf-8-sig: a file saved by Notepad or PowerShell 5.1 may start with a signature.
+        found = json.loads((config_dir() / FILE_NAME).read_text(encoding="utf-8-sig"))
     except (OSError, ValueError):
         return AiSettings()
     if not isinstance(found, dict):

@@ -269,8 +269,13 @@ def test_tokens_cost_and_level_2():
     level2 = [m for m in server.sent if '"pct_missing"' in m]
     assert level2 and len(level2) < len(server.sent)  # level 1 sends no statistic
     report = bench.render_report(
-        results, model="claude-haiku-5-5", endpoint="https://api.anthropic.com", date="2026-10-19"
+        results,
+        model="claude-haiku-5-5",
+        endpoint="https://api.anthropic.com",
+        date="2026-10-19",
+        parameters={"effort": "medium", "max_tokens": 16000},
     )
+    assert "- Paramètres : effort = medium, max_tokens = 16000" in report
     assert "## Libellés : niveau 1 et niveau 2" in report
     assert "## Jetons et coût" in report and " $ |" in report
     calls = len(server.sent)

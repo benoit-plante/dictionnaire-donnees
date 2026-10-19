@@ -992,7 +992,13 @@ def cmd_bench(args: argparse.Namespace) -> int:
     if advice:
         print(advice, file=sys.stderr)
     today = datetime.now().date().isoformat()
-    text = render_report(results, model=client.model, endpoint=client.endpoint, date=today)
+    text = render_report(
+        results,
+        model=client.model,
+        endpoint=client.endpoint,
+        date=today,
+        parameters=client.parameters,
+    )
     path = write_report(text, folder, client.model, today)
     print(_("Rapport : {path}").format(path=path))
     return 0
