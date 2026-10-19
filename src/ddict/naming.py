@@ -184,7 +184,7 @@ def stem_questions(project: Project) -> list[StemQuestion]:
     which take a prefix; a grid of fields, a ranking, takes a stem), else from the accepted
     links to the questionnaire."""
     found: list[StemQuestion] = []
-    if platforms.by_name(project.source.platform) is not None:
+    if platforms.of(project) is not None:
         scales = {m for g in project.groups if g.kind == "scale" for m in g.members.value or []}
         for question in link.project_questions(project):
             if question.kind == "grid" and set(question.items) & scales:
@@ -282,7 +282,7 @@ def _undecided(tracked: TrackedValue[str]) -> bool:
 def _rule_names(project: Project) -> dict[str, str]:
     """What the rules would name each variable, before the wave mark and the checks."""
     language = project.settings.language
-    platform = platforms.by_name(project.source.platform)
+    platform = platforms.of(project)
     found: dict[str, str] = {}
     if platform is not None:
         for entry in project.variables:

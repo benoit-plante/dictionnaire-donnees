@@ -27,7 +27,7 @@ from difflib import SequenceMatcher
 from pathlib import Path
 
 from ddict import naming, platforms
-from ddict.export.wording import code_text
+from ddict.export.wording import code_text, dataset_title
 from ddict.i18n import N_, Texts, _, colon, quoted
 from ddict.io.csv_reader import decode
 from ddict.io.model import Code
@@ -162,7 +162,7 @@ def _from_name(name: str, mark: str | None, position: str) -> tuple[str | None, 
 
 
 def _from_project(project: Project, file_name: str) -> EarlierWave:
-    platform = platforms.by_name(project.source.platform)
+    platform = platforms.of(project)
     groups = {m: g for g in project.groups for m in (g.members.value or [])}
     variables = []
     for entry in project.variables:
@@ -417,7 +417,7 @@ def _with_questions(project: Project, wave: EarlierWave, scored: dict[str, list[
     """A variable of a question whose other variables match those of one earlier question
     (the text of "other", sharing its label with every "other"): the variable of that
     earlier question in the same place gains the reason "same_question"."""
-    platform = platforms.by_name(project.source.platform)
+    platform = platforms.of(project)
     if platform is None or wave.source == "table":
         return
     by_name = {v.name: v for v in wave.variables}
@@ -456,7 +456,7 @@ def _same_shapes_only(project: Project, wave: EarlierWave, scored: dict[str, lis
     only up to the first one whose earlier question of the same number has another shape
     (other items, an "other" or not): a question added there shifts the numbering of all
     those after it."""
-    platform = platforms.by_name(project.source.platform)
+    platform = platforms.of(project)
     if platform is None or wave.source != "table":
         return
     earlier: dict[int, set] = {}
@@ -570,7 +570,7 @@ def report_markdown(project: Project, report: WaveReport) -> str:
         _("# Écarts entre les vagues"),
         "",
         _("Vague précédente : {name} ; base : {base}.").format(
-            name=report.file_name, base=project.source.name
+            name=report.file_name, base=dataset_title(project)
         ),
         "",
         _("- Variables appariées : {n}").format(n=len(report.matches)),

@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 import streamlit as st
 
 from ddict import settings, tracked
+from ddict.export.wording import dataset_title
 from ddict.i18n import N_, _
 from ddict.project import permission
 from ddict.review import logic, navigation, shutdown
@@ -247,7 +248,7 @@ def main() -> None:
     mode = _navigation(project, waiting)
     with st.sidebar:
         st.button(_("Accueil"), key="home", on_click=c.close_project, icon=":material/home:")
-        st.title(project.source.name)
+        st.title(dataset_title(project))
         _follow_button()
         _ai_permission(project)
         share = logic.codebook_progress(project)  # v0.16: never full on a new project

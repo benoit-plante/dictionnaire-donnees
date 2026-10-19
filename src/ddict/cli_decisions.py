@@ -113,7 +113,7 @@ def cmd_levels(args: argparse.Namespace) -> int:
 
 def _code(entry: VariableEntry, typed: str):
     """The suspect code of the variable that the team typed ("-1", "999")."""
-    for code in entry.profile.suspect_missing_codes:
+    for code in entry.suspect_codes:
         if w.code_text(code) == typed.strip():
             return code
         try:
@@ -128,7 +128,7 @@ def code_lines(project: Project) -> list[str]:
     lines = []
     for entry in project.variables:
         decided = {d.code: d.missing for d in entry.sentinel_decisions}
-        for code in entry.profile.suspect_missing_codes:
+        for code in entry.suspect_codes:
             if code not in decided:
                 state = _("à décider")
             elif decided[code]:

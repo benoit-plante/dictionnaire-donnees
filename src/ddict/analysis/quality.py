@@ -14,10 +14,10 @@ from dataclasses import dataclass
 
 import pandas as pd
 
+from ddict import platforms
 from ddict.analysis.data import PreparedData
 from ddict.analysis.exclusions import blank, seconds
 from ddict.export import wording as w
-from ddict.platforms import by_name
 from ddict.profile.compute import text_datetime_format
 from ddict.project.exclusions import MIN_GRID, NAMING, members
 from ddict.project.model import Project
@@ -53,12 +53,12 @@ class Duplicates:
 
 def date_variables(project: Project) -> list[str]:
     """The variables that hold a date and a time (original names)."""
-    return [e.name for e in project.variables if e.profile.inferred_type == "datetime"]
+    return [e.name for e in project.variables if e.data_type == "datetime"]
 
 
 def _roles(project: Project) -> dict[str, str]:
     """Role of a platform's variable -> its original name."""
-    platform = by_name(project.source.platform)
+    platform = platforms.of(project)
     if platform is None:
         return {}
     found = {}

@@ -155,7 +155,7 @@ def cmd_copy(args: argparse.Namespace) -> int:
             replace=args.remplacer,
         )
     except CopyError as error:
-        text = copy_error_text(error, project.source.name)
+        text = copy_error_text(error, project)
         if error.reason == "exists":
             text += " " + _("Utilisez --remplacer.")
         print(text, file=sys.stderr)
@@ -341,7 +341,7 @@ def cmd_analyse(args: argparse.Namespace) -> int:
     try:
         prepared = prepare(project, project_path, Path(args.base) if args.base else None)
     except DataError as error:
-        print(copy_error_text(error, project.source.name), file=sys.stderr)
+        print(copy_error_text(error, project), file=sys.stderr)
         return EXIT_ERROR
     try:
         subset = subset_from_args(project, args.sous_groupe)
@@ -374,7 +374,7 @@ def _database(project, project_path: Path, base: str | None):
     try:
         return prepare(project, project_path, Path(base) if base else None), ""
     except DataError as error:
-        return None, copy_error_text(error, project.source.name)
+        return None, copy_error_text(error, project)
 
 
 def notebook_lines(project, notebook, statuses) -> list[str]:

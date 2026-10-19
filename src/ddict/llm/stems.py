@@ -93,7 +93,7 @@ def _payload(project: Project, question: naming.StemQuestion, sure: dict[str, st
         privacy = entry.privacy.privacy_class.value or "ordinary"
         if privacy != "ordinary":
             payload["note"] = sensitive_note(privacy, language)
-        payload["type"] = entry.profile.inferred_type
+        payload["type"] = entry.data_type
         labels = [v.label[:120] for v in entry.file.value_labels]
         if labels:
             payload["options"] = labels[:MAX_OPTIONS]

@@ -153,6 +153,8 @@ def variable_payload(
 ) -> dict:
     """What the model reads of a variable: level 1, or level 2 with `statistics` (bench)."""
     p = entry.profile
+    # A planned variable has no statistics, not even at level 2 (v0.20).
+    statistics = statistics and p is not None
     payload: dict = {"name": entry.name}
     if neighbors:
         payload["neighbors"] = neighbors
@@ -160,7 +162,7 @@ def variable_payload(
         payload["file_label"] = entry.file.label
     if question:
         payload["question"] = question
-    payload["type"] = p.inferred_type
+    payload["type"] = entry.data_type
 
     privacy_class = entry.privacy.privacy_class.value or "ordinary"
     if privacy_class != "ordinary":

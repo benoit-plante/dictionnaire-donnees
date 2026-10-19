@@ -8,7 +8,7 @@ from pathlib import Path
 from ddict.export import wording as w
 from ddict.i18n import _, colon, field_label, in_language, semicolon
 from ddict.project import fingerprint
-from ddict.project.model import Project, VariableEntry
+from ddict.project.model import Profile, Project, VariableEntry
 
 
 def _cell(value: object) -> str:
@@ -22,20 +22,27 @@ def _inline(value: object) -> str:
 
 def _overview(project: Project, kind: w.ExportKind) -> list[str]:
     source = project.source
-    types = Counter(w.TYPES.get(e.profile.inferred_type, "") for e in project.variables)
+    types = Counter(w.TYPES.get(e.data_type, "") for e in project.variables)
     sensitive = [
         e for e in project.variables if (e.privacy.privacy_class.value or "ordinary") != "ordinary"
     ]
     flagged = [e for e in project.variables if w.issues(e, kind)]
     kind_text = _("finale") if kind == "final" else _("de travail (propositions de l'IA incluses)")
     lines = [
-        _("# Dictionnaire de données : {name}").format(name=_inline(source.name)),
+        _("# Dictionnaire de données : {name}").format(name=_inline(w.dataset_title(project))),
         "",
-        f"- {field_label('Fichier')}`{_inline(source.name)}`"
-        + (f" ({_inline(source.label)})" if source.label else ""),
-        f"- {field_label('Empreinte SHA-256')}`{source.sha256}`",
-        f"- {field_label('Lignes')}{source.n_rows}{semicolon()}"
-        f"{field_label('variables')}{source.n_columns}",
+    ]
+    if source is None:
+        lines.append(f"- {field_label('Fichier')}{_(w.PLANNED_DICTIONARY)}")
+    else:
+        lines += [
+            f"- {field_label('Fichier')}`{_inline(source.name)}`"
+            + (f" ({_inline(source.label)})" if source.label else ""),
+            f"- {field_label('Empreinte SHA-256')}`{source.sha256}`",
+            f"- {field_label('Lignes')}{source.n_rows}{semicolon()}"
+            f"{field_label('variables')}{source.n_columns}",
+        ]
+    lines += [
         f"- {field_label('Version')}{kind_text}",
         f"- {field_label('Empreinte du codebook')}`{fingerprint.short(project)}` "
         + _("(décisions acceptées)"),
@@ -105,7 +112,7 @@ def _variable(
         lines += [f"> {question}{colon()}{_inline(text)}" if text else f"> {question}", ""]
 
     facts = [
-        f"{field_label('Type')}{w.TYPES.get(p.inferred_type, p.inferred_type)}",
+        f"{field_label('Type')}{w.TYPES.get(entry.data_type, entry.data_type)}",
     ]
     level = w.level_text(entry, kind)
     if level:
@@ -113,6 +120,42 @@ def _variable(
     unit = w.text(entry.unit, kind)
     if unit:
         facts.append(f"{field_label('Unité')}{_inline(unit)}")
+    if p is not None:
+        facts += _statistics(entry, p)
+    elif w.missing_codes(entry):
+        facts.append(f"{field_label('Codes manquants déclarés')}{w.missing_codes(entry)}")
+    group = w.text(entry.group_id, kind)
+    if group:
+        fact = f"{field_label('Groupe')}{_inline(group)}"
+        if p is not None and p.item_rest_r is not None:
+            fact += " " + _("(corrélation avec le reste du groupe : {r})").format(
+                r=w.number(p.item_rest_r)
+            )
+        facts.append(fact)
+    privacy_class = entry.privacy.privacy_class.value or "ordinary"
+    facts.append(f"{field_label('Confidentialité')}{w.privacy_text(entry)}")
+    if privacy_class != "ordinary":
+        facts.append(_("Variable sensible : aucune statistique sur ses valeurs."))
+    if entry.theoretical_range:
+        r = entry.theoretical_range
+        facts.append(
+            f"{field_label('Étendue théorique')}{w.number(r.min)} – {w.number(r.max)} "
+            f"({field_label('source')}{_inline(r.source)})"
+        )
+    for t in entry.thresholds:
+        facts.append(
+            f"{_('Seuil')} {w.number(t.value)}{colon()}{_inline(t.meaning)} "
+            f"({field_label('source')}{_inline(t.source)})"
+        )
+    for reference in entry.references:
+        facts.append(f"{field_label('Référence')}{_inline(reference)}")
+    lines += [f"- {fact}" for fact in facts] + [""]
+    return lines + _values(project, entry, kind)
+
+
+def _statistics(entry: VariableEntry, p: Profile) -> list[str]:
+    """What the database says of a variable: counts, missing codes, observed range."""
+    facts = []
     facts.append(
         _(
             "Valides : {valid} ; cases vides : {empty} ; manquants déclarés : {declared} ({pct} %)"
@@ -137,33 +180,12 @@ def _variable(
         facts.append(f"{field_label('Dates')}{p.date_min} – {p.date_max}")
     if p.n_distinct is not None:
         facts.append(f"{field_label('Valeurs distinctes')}{p.n_distinct}")
-    group = w.text(entry.group_id, kind)
-    if group:
-        fact = f"{field_label('Groupe')}{_inline(group)}"
-        if p.item_rest_r is not None:
-            fact += " " + _("(corrélation avec le reste du groupe : {r})").format(
-                r=w.number(p.item_rest_r)
-            )
-        facts.append(fact)
-    privacy_class = entry.privacy.privacy_class.value or "ordinary"
-    facts.append(f"{field_label('Confidentialité')}{w.privacy_text(entry)}")
-    if privacy_class != "ordinary":
-        facts.append(_("Variable sensible : aucune statistique sur ses valeurs."))
-    if entry.theoretical_range:
-        r = entry.theoretical_range
-        facts.append(
-            f"{field_label('Étendue théorique')}{w.number(r.min)} – {w.number(r.max)} "
-            f"({field_label('source')}{_inline(r.source)})"
-        )
-    for t in entry.thresholds:
-        facts.append(
-            f"{_('Seuil')} {w.number(t.value)}{colon()}{_inline(t.meaning)} "
-            f"({field_label('source')}{_inline(t.source)})"
-        )
-    for reference in entry.references:
-        facts.append(f"{field_label('Référence')}{_inline(reference)}")
-    lines += [f"- {fact}" for fact in facts] + [""]
+    return facts
 
+
+def _values(project: Project, entry: VariableEntry, kind: w.ExportKind) -> list[str]:
+    """The value labels, their counts, the issues and the notes."""
+    lines = []
     rows = w.value_rows(entry)
     source = w.value_labels_source(entry, kind)
     if source == _(w.LABELS_PROPOSED):
@@ -219,7 +241,10 @@ def _groups(project: Project, kind: w.ExportKind) -> list[str]:
         suspects = [
             e.name
             for e in project.variables
-            if e.profile.reverse_suspect and members and e.name in members.value
+            if e.profile is not None
+            and e.profile.reverse_suspect
+            and members
+            and e.name in members.value
         ]
         if suspects:
             facts.append(

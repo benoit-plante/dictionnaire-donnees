@@ -59,7 +59,7 @@ def levels(project: Project) -> dict[str, str | None]:
 
 def texts(project: Project) -> set[str]:
     """The variables whose codes are texts ("oui", "non"), by final name (v0.13)."""
-    return {w.final_name(e) for e in project.variables if e.profile.inferred_type == "text"}
+    return {w.final_name(e) for e in project.variables if e.data_type == "text"}
 
 
 def _sensitive(project: Project) -> set[str]:
@@ -67,9 +67,9 @@ def _sensitive(project: Project) -> set[str]:
         w.final_name(e)
         for e in project.variables
         if (e.privacy.privacy_class.value or "ordinary") in SENSITIVE
-        or e.profile.inferred_type in ("empty", "mixed", "date", "datetime")
+        or e.data_type in ("empty", "mixed", "date", "datetime")
         # Categories written as text enter once nominal; free text is a privacy class.
-        or (e.profile.inferred_type == "text" and measure.level(e) != "nominal")
+        or (e.data_type == "text" and measure.level(e) != "nominal")
     }
 
 

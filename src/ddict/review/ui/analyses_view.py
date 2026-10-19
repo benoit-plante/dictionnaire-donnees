@@ -68,7 +68,7 @@ def prepared_data(project: Project, where: str = "analysis") -> PreparedData | N
     try:
         return load_prepared(project)
     except DataError as error:
-        st.info(copy_error_text(error, project.source.name))
+        st.info(copy_error_text(error, project))
         st.button(_("Choisir la base…"), key=f"{where}-choose", on_click=_choose_database)
         return None
 

@@ -82,7 +82,7 @@ def refusals(project: Project, rule: Recode) -> list[str]:
         return found
     if ref.variable is not None:
         entry = project.variable(ref.variable)
-        if (entry.privacy.privacy_class.value in NAMING) or entry.profile.inferred_type in (
+        if (entry.privacy.privacy_class.value in NAMING) or entry.data_type in (
             "empty",
             "mixed",
             "date",

@@ -25,7 +25,7 @@ UNCLEAR_OPTIONS = {"grid_header_unclear", "grid_without_header"}
 
 def _codes(entry: VariableEntry) -> list[int] | None:
     """Observed codes, declared missing ones aside, if they are 1..n or 0..n-1."""
-    observed = entry.profile.observed_values
+    observed = entry.profile.observed_values if entry.profile is not None else None
     if not observed:
         return None
     codes = []

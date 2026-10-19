@@ -23,7 +23,7 @@ from ddict.i18n import N_, Texts, _, colon, in_language, semicolon
 from ddict.profile.variants import spelling_variants
 from ddict.project import completeness, fingerprint, measure, scoring
 from ddict.project.decisions import is_accepted
-from ddict.project.model import Group, Project, VariableEntry
+from ddict.project.model import Group, NoDatabase, Project, VariableEntry
 from ddict.questionnaire import link
 from ddict.questionnaire.labels import accepted_labels
 
@@ -121,7 +121,7 @@ def _reversed(project: Project) -> set[str]:
 def _level(entry: VariableEntry) -> str | None:
     """The level in force, where a level means something: not for a date, an empty or
     mixed variable, or a sensitive one."""
-    if _sensitive(entry) or entry.profile.inferred_type in measure.NO_LEVEL_TYPES:
+    if _sensitive(entry) or entry.data_type in measure.NO_LEVEL_TYPES:
         return None
     return measure.level(entry)
 
@@ -169,6 +169,8 @@ def _findings(entry: VariableEntry, names: dict[str, str]) -> list[str]:
     elsewhere (probable reversed items, doubtful level), the privacy note, and any observed
     value (a spelling variant is said, not quoted)."""
     profile = entry.profile
+    if profile is None:
+        return []
     settled = {d.code for d in entry.sentinel_decisions}
     plain = profile.model_copy(
         update={
@@ -220,6 +222,8 @@ def _values_text(labels: list) -> str:
 
 def _header(project: Project) -> list[str]:
     source = project.source
+    if source is None:
+        raise NoDatabase("context")
     lines = [
         _("# Contexte d'analyse : {name}").format(name=source.name),
         "",
@@ -355,13 +359,13 @@ def _variables(project: Project) -> list[str]:
             notes.append(_("sensible ({kind})").format(kind=SENSITIVE[_sensitive(entry)]))
         if entry.name in reverse:
             notes.append("inv")
-        if entry.profile.sum_of_group:
+        if entry.profile is not None and entry.profile.sum_of_group:
             notes.append(_("score de {group}").format(group=entry.profile.sum_of_group))
         level = _level(entry)
         cells = [
             shown,
             label,
-            w.TYPES.get(entry.profile.inferred_type, entry.profile.inferred_type),
+            w.TYPES.get(entry.data_type, entry.data_type),
             w.MEASURES[level] if level else "",
             values,
             missing,
@@ -502,7 +506,7 @@ def _field(project: Project, entry: VariableEntry, groups: dict, statistics: boo
     description = w.text(entry.description, "final")
     if description:
         field["description"] = description
-    field["type"] = FIELD_TYPES.get(entry.profile.inferred_type, "any")
+    field["type"] = FIELD_TYPES.get(entry.data_type, "any")
     level = _level(entry)
     categories = _categories(entry)
     if categories:
@@ -623,6 +627,8 @@ def _dataset(project: Project) -> dict:
 def context_package(project: Project, *, statistics: bool = False) -> dict:
     """The Frictionless Data Package v2 of the analysis context."""
     source = project.source
+    if source is None:
+        raise NoDatabase("context")
     stem = Path(source.name).stem
     renamed = _renamed(project)
     groups = _groups_of(project)

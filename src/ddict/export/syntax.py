@@ -22,7 +22,7 @@ from ddict.export import wording as w
 from ddict.i18n import _, in_language
 from ddict.io.csv_reader import MISSING_TOKENS
 from ddict.project import fingerprint, measure
-from ddict.project.model import Code, Project, VariableEntry
+from ddict.project.model import Code, NoDatabase, Project, VariableEntry
 from ddict.questionnaire.labels import accepted_labels
 
 SUFFIXES = {"spss": ".sps", "r": ".R"}
@@ -82,6 +82,8 @@ def _reversed(project: Project) -> list[tuple[str, VariableEntry]]:
 
 
 def _header(project: Project, comment: str, today: str) -> list[str]:
+    if project.source is None:
+        raise NoDatabase("syntax")
     lines = [
         _("Métadonnées de {name}, produites par dictionnaire-donnees {version} le {date}.").format(
             name=project.source.name, version=__version__, date=today

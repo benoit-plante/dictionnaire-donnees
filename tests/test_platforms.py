@@ -162,7 +162,7 @@ def _contains(new, old) -> bool:
 def test_a_project_of_a_more_recent_version_is_refused_clearly(tmp_path):
     text = (REFERENCE / "etude-sommeil.dd.json").read_text(encoding="utf-8")
     path = tmp_path / "futur.dd.json"
-    path.write_text(text.replace(f'"{SCHEMA_VERSION}"', '"0.9.0"', 1), encoding="utf-8")
+    path.write_text(text.replace(f'"{SCHEMA_VERSION}"', '"0.10.0"', 1), encoding="utf-8")
     with pytest.raises(ProjectError, match="more recent version"):
         load_project(path)
 

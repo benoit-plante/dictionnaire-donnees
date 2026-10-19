@@ -14,7 +14,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 from ddict.export import wording as w
 from ddict.i18n import N_, TextList, _, colon, in_language, semicolon
 from ddict.project import fingerprint
-from ddict.project.model import Project, TrackedValue
+from ddict.project.model import Profile, Project, TrackedValue
 
 MAX_WIDTH = 60
 
@@ -53,12 +53,18 @@ def _about(project: Project, kind: w.ExportKind, omit_groups: tuple[str, ...]) -
         if kind == "final"
         else _("de travail (propositions de l'IA en attente incluses)")
     )
+    if source is None:
+        data = [[_("Fichier de données"), _(w.PLANNED_DICTIONARY)]]
+    else:
+        data = [
+            [_("Fichier de données"), source.name],
+            [_("Empreinte SHA-256"), source.sha256],
+            [_("Lignes"), source.n_rows],
+            [_("Variables"), source.n_columns],
+            [_("Étiquette du fichier"), source.label],
+        ]
     return [
-        [_("Fichier de données"), source.name],
-        [_("Empreinte SHA-256"), source.sha256],
-        [_("Lignes"), source.n_rows],
-        [_("Variables"), source.n_columns],
-        [_("Étiquette du fichier"), source.label],
+        *data,
         [_("Version"), kind_text],
         [
             _("Confidentialité"),
@@ -102,6 +108,26 @@ def _questionnaire_rows(project: Project, omit_groups: tuple[str, ...]) -> list[
     return rows
 
 
+def _statistics(p: Profile | None) -> list:
+    """The statistics columns; blank for a variable planned before the database (v0.20)."""
+    if p is None:
+        return [None] * 12
+    return [
+        p.n_valid,
+        p.n_system_missing,
+        p.n_declared_missing,
+        w.pct_missing(p),
+        p.n_distinct,
+        p.min,
+        p.max,
+        p.mean,
+        p.sd,
+        p.median,
+        p.date_min,
+        p.date_max,
+    ]
+
+
 def _variables(project: Project, kind: w.ExportKind, omitted: set[str]) -> list[list]:
     rows = []
     renamed = w.renamed(project, kind)
@@ -126,26 +152,15 @@ def _variables(project: Project, kind: w.ExportKind, omitted: set[str]) -> list[
                 if reference is None
                 else reference.value + (f" [{_('proposé')}]" if reference.pending else ""),
                 w.question_text(project, e, kind, omitted),
-                w.TYPES.get(p.inferred_type, p.inferred_type),
+                w.TYPES.get(e.data_type, e.data_type),
                 w.level_text(e, kind),
                 e.file.display_format,
                 w.text(e.unit, kind),
-                p.n_valid,
-                p.n_system_missing,
-                p.n_declared_missing,
-                w.pct_missing(p),
-                p.n_distinct,
-                p.min,
-                p.max,
-                p.mean,
-                p.sd,
-                p.median,
-                p.date_min,
-                p.date_max,
+                *_statistics(p),
                 w.missing_codes(e),
                 w.privacy_text(e),
                 w.text(e.group_id, kind),
-                p.item_rest_r,
+                None if p is None else p.item_rest_r,
                 sourced_range,
                 thresholds,
                 "\n".join(e.references),
@@ -222,7 +237,10 @@ def _groups(project: Project, kind: w.ExportKind) -> list[list]:
         suspects = [
             e.name
             for e in project.variables
-            if e.profile.reverse_suspect and members and e.name in members.value
+            if e.profile is not None
+            and e.profile.reverse_suspect
+            and members
+            and e.name in members.value
         ]
         rows.append(
             [

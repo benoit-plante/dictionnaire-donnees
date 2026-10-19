@@ -262,6 +262,9 @@ def _edits(edits: dict[str, Edit] | None) -> dict[str, ItemEdit]:
 
 
 def new_notebook(project: Project, project_path: Path) -> Notebook:
+    """A notebook needs the database: none before it arrives (v0.20, D-145)."""
+    if project.source is None:
+        raise NotebookError("no_base")
     return Notebook(
         project=ProjectLink(file=project_path.name, source_sha256=project.source.sha256)
     )
@@ -269,7 +272,7 @@ def new_notebook(project: Project, project_path: Path) -> Notebook:
 
 def belongs(notebook: Notebook, project: Project) -> bool:
     """Whether the notebook was made with this project's database."""
-    return notebook.project.source_sha256 == project.source.sha256
+    return project.source is not None and notebook.project.source_sha256 == project.source.sha256
 
 
 def find(notebook: Notebook, entry_id: str) -> Entry:

@@ -15,6 +15,10 @@ import re
 import unicodedata
 from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ddict.project.model import Project
 
 # A database is an export of the platform with at least this many of its own variables...
 MIN_PLATFORM_VARIABLES = 3
@@ -290,6 +294,12 @@ def survey_questions(
 
 def by_name(name: str | None) -> Platform | None:
     return next((p for p in PLATFORMS if p.name == name), None)
+
+
+def of(project: Project) -> Platform | None:
+    """The platform whose export the project's database is; None without a database yet
+    (v0.20, D-145)."""
+    return None if project.source is None else by_name(project.source.platform)
 
 
 def recognize(names: Sequence[str]) -> Platform | None:

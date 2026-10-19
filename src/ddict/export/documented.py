@@ -66,6 +66,8 @@ def default_copy_path(database: Path) -> Path:
 def find_database(project: Project, project_path: Path, given: Path | None = None) -> Path:
     """The database the project was made from: the given file, or the file of the same
     name next to the project. Its fingerprint must be the project's."""
+    if project.source is None:
+        raise CopyError("no_base")
     path = Path(given) if given else project_path.with_name(project.source.name)
     if not path.is_file():
         raise CopyError("not_found", str(path))

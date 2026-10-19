@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.8.0",
+  "schema_version": "0.9.0",
   "source": {
     "name": "etude-sommeil.sav",
     "format": "sav",
@@ -151,7 +151,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "courriel",
@@ -278,7 +279,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "date_passation",
@@ -402,7 +404,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "date_naissance",
@@ -529,7 +532,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "age",
@@ -655,7 +659,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "genre",
@@ -822,7 +827,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "vague",
@@ -959,7 +965,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "sommeil_q1",
@@ -1130,7 +1137,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "sommeil_q2",
@@ -1301,7 +1309,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "sommeil_q3",
@@ -1481,7 +1490,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "sommeil_q4",
@@ -1652,7 +1662,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "sommeil_q5",
@@ -1823,7 +1834,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "sommeil_q6",
@@ -1994,7 +2006,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "sommeil_q7",
@@ -2165,7 +2178,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "sommeil_q8",
@@ -2336,7 +2350,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "anx1",
@@ -2512,7 +2527,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "anx2",
@@ -2688,7 +2704,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "anx3",
@@ -2864,7 +2881,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "anx4",
@@ -3040,7 +3058,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "heures_sommeil",
@@ -3164,7 +3183,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "heures_sommeil_2",
@@ -3290,7 +3310,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "nb_reveils",
@@ -3452,7 +3473,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "aide_medicament",
@@ -3584,7 +3606,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "aide_naturel",
@@ -3716,7 +3739,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "aide_tcc",
@@ -3848,7 +3872,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "aide_aucune",
@@ -3980,7 +4005,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "anx5",
@@ -4156,7 +4182,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "anx6",
@@ -4332,7 +4359,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "anx7",
@@ -4508,7 +4536,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "satisfaction_globale",
@@ -4703,7 +4732,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "taille_cm",
@@ -4829,7 +4859,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "q_retiree",
@@ -4955,7 +4986,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "langue_maison",
@@ -5110,7 +5142,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     },
     {
       "name": "commentaire",
@@ -5237,7 +5270,8 @@
       "thresholds": [],
       "references": [],
       "notes": null,
-      "ai_signals": []
+      "ai_signals": [],
+      "planned": null
     }
   ],
   "groups": [
@@ -5405,5 +5439,6 @@
   "recodes": {
     "next_id": 1,
     "rules": []
-  }
+  },
+  "design": null
 }

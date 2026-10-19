@@ -79,7 +79,9 @@ def _items(project: Project, group_id: str) -> None:
             )
         )
     suspects = [
-        e.name for e in project.variables if e.profile.reverse_suspect and e.name in members
+        e.name
+        for e in project.variables
+        if e.profile is not None and e.profile.reverse_suspect and e.name in members
     ]
     if suspects:
         st.warning(_("Items probablement inversés : {s}").format(s=", ".join(suspects)))

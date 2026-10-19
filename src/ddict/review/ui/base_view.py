@@ -347,9 +347,7 @@ def _summary(project: Project, sensitive: list) -> None:
         width="stretch",
         column_config={missing: st.column_config.TextColumn(missing, width="large")},
     )
-    types = Counter(
-        w.TYPES.get(e.profile.inferred_type, e.profile.inferred_type) for e in project.variables
-    )
+    types = Counter(w.TYPES.get(e.data_type, e.data_type) for e in project.variables)
     st.subheader(_("Types de variables"))
     st.dataframe(
         pd.DataFrame(sorted(types.items()), columns=[_("Type"), _("Variables")]),

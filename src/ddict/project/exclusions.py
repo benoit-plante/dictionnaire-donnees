@@ -105,7 +105,7 @@ def _date(project: Project, name: str, text_format: str | None, found: list[str]
     if not _variable(project, name, found):
         return
     entry = project.variable(name)
-    if entry.profile.inferred_type != "datetime":
+    if entry.data_type != "datetime":
         found.append(
             _(
                 "{name} : ce n'est pas une date avec l'heure ; la durée ne se calcule qu'entre "

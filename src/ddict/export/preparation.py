@@ -31,6 +31,7 @@ from ddict.project.model import (
     DuplicateRule,
     DurationRule,
     Group,
+    NoDatabase,
     Project,
     Recode,
     StraightliningRule,
@@ -103,7 +104,7 @@ def plan(project: Project) -> tuple[list[Reversal], list[Score], list[str]]:
                 continue
             reversals[original] = Reversal(name, new, bounds[0], bounds[1])
     existing = {e.profile.sum_of_group: names[e.name] for e in project.variables
-                if e.profile.sum_of_group}  # fmt: skip
+                if e.profile is not None and e.profile.sum_of_group}  # fmt: skip
     scores = []
     for group in project.groups:
         found = group.scoring
@@ -151,6 +152,8 @@ def needed(project: Project) -> bool:
 
 
 def _header(project: Project, comment: str, today: str) -> list[str]:
+    if project.source is None:
+        raise NoDatabase("preparation")
     lines = [
         _("Préparation de {name}, produite par dictionnaire-donnees {version} le {date}.").format(
             name=project.source.name, version=__version__, date=today

@@ -38,12 +38,12 @@ def rule_level(entry: VariableEntry, group_kind: str | None) -> str | None:
     """What the rules would say of this variable, from its type, labels and group."""
     if (entry.privacy.privacy_class.value or "ordinary") in SENSITIVE:
         return None
-    kind = entry.profile.inferred_type
+    kind = entry.data_type
     if kind in NO_LEVEL_TYPES:
         return None
     if kind == "text":
         return "nominal"
-    distinct = entry.profile.n_distinct
+    distinct = entry.profile.n_distinct if entry.profile is not None else None
     few = kind == "integer" and distinct is not None and distinct <= FEW_CODES
     if group_kind == "scale" and (_labelled(entry) or few):
         return "ordinal"
@@ -59,7 +59,7 @@ def rule_level(entry: VariableEntry, group_kind: str | None) -> str | None:
 
 
 def _doubtful(entry: VariableEntry) -> bool:
-    return "measure_level_doubtful" in entry.profile.flags
+    return entry.profile is not None and "measure_level_doubtful" in entry.profile.flags
 
 
 def proposal(entry: VariableEntry, group_kind: str | None) -> str | None:
@@ -70,7 +70,7 @@ def proposal(entry: VariableEntry, group_kind: str | None) -> str | None:
         return "ordinal"
     if (
         entry.file.measure_level == "scale"
-        and entry.profile.inferred_type == "text"
+        and entry.data_type == "text"
         and rule_level(entry, group_kind) == "nominal"
     ):
         return "nominal"  # categories written as text, declared "scale" (SPSS's default)

@@ -124,6 +124,8 @@ def source_differences(project: Project, data: LoadedData) -> list[str]:
     "content", "rows", "columns", "variables".
     """
     source = data.source
+    if project.source is None:  # a designed project, before its database (v0.20)
+        return ["content"]
     if source.sha256 == project.source.sha256:
         return []
     differences = ["content"]

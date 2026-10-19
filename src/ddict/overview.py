@@ -147,7 +147,7 @@ def _read(path: Path, stats: list) -> ProjectRow:
         hypotheses=len(plan.hypotheses),
         frozen=plan.frozen.date[:10] if plan.frozen else None,
         amendments=len(plan.amendments) if plan.frozen else 0,
-        source=project.source.name,
+        source=project.source.name if project.source is not None else None,
         **row,
     )
 

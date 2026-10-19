@@ -34,6 +34,7 @@ KIND_NAMES = Texts(
         "single": N_("choix unique"),
         "checkbox": N_("à cocher"),
         "grid": N_("grille"),
+        "display": N_("texte d'affichage"),
     }
 )
 

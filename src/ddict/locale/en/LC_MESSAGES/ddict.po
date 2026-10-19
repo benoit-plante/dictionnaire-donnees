@@ -962,6 +962,9 @@ msgstr ""
 msgid "Ce projet est maintenant suivi."
 msgstr "This project is now followed."
 
+msgid "Ce projet n'a pas encore de base : elle s'ouvrira quand les réponses seront arrivées."
+msgstr "This project has no database yet: it will open once the responses have arrived."
+
 #, python-brace-format
 msgid "Ce projet n'était pas suivi : {path}"
 msgstr "This project was not followed: {path}"
@@ -4703,6 +4706,14 @@ msgstr ""
 "off with “Stop following” in the “⋮” menu of its row."
 
 #, python-brace-format
+msgid ""
+"Projet retrouvé : {name}, un questionnaire conçu dans l'outil, sans base encore. Si ce n'est pas "
+"le bon, retirez-le avec « Ne plus suivre » dans le menu « ⋮ » de sa ligne."
+msgstr ""
+"Project found again: {name}, a questionnaire designed in the tool, with no database yet. If it is"
+" not the right one, take it off with “Stop following” in the “⋮” menu of its row."
+
+#, python-brace-format
 msgid "Projet suivi : {path}"
 msgstr "Project followed: {path}"
 
@@ -7297,6 +7308,9 @@ msgstr "among"
 msgid "parmi (valeurs séparées par des virgules)"
 msgstr "among (values separated by commas)"
 
+msgid "pas encore de base (dictionnaire prévu, avant la collecte)"
+msgstr "no database yet (planned dictionary, before the collection)"
+
 msgid "pas le même nombre d'options que dans la base"
 msgstr "not the same number of options as in the database"
 
@@ -7542,11 +7556,17 @@ msgstr ""
 msgid "texte"
 msgstr "text"
 
+msgid "texte d'affichage"
+msgstr "displayed text"
+
 msgid "texte libre"
 msgstr "free text"
 
 msgid "texte omis : instrument protégé par le droit d'auteur (D-014)"
 msgstr "text left out: instrument protected by copyright (D-014)"
+
+msgid "textes d'affichage"
+msgstr "displayed texts"
 
 msgid "textes longs"
 msgstr "long texts"
@@ -8441,6 +8461,10 @@ msgstr "{n} variables still have proposals without a decision: they are not in t
 #, python-brace-format
 msgid "{n} variables ont un nom en conflit avec un autre."
 msgstr "{n} variables have a name in conflict with another."
+
+#, python-brace-format
+msgid "{n} variables prévues ; pas encore de base."
+msgstr "{n} planned variables; no database yet."
 
 #, python-brace-format
 msgid "{n} variables sur {total} ont des questions candidates."

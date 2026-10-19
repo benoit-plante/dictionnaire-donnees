@@ -93,7 +93,7 @@ def is_flagged(entry: VariableEntry) -> bool:
 def has_undecided_suspects(entry: VariableEntry) -> bool:
     """A suspect missing code the team has not settled yet (D-028)."""
     decided = {d.code for d in entry.sentinel_decisions}
-    return any(code not in decided for code in entry.profile.suspect_missing_codes)
+    return any(code not in decided for code in entry.suspect_codes)
 
 
 def select(project: Project, which: Filter) -> list[VariableEntry]:
@@ -233,14 +233,14 @@ def decide_sentinel(project: Project, name: str, code, missing: bool | None, *, 
     """A suspect missing code is a missing code (True) or a real value (False); None takes
     the decision back (D-028)."""
     entry = project.variable(name)
-    if code not in entry.profile.suspect_missing_codes:
+    if code not in entry.suspect_codes:
         raise ReviewError(
             _("{code} n'est pas un code suspect de cette variable.").format(code=code)
         )
     kept = [d for d in entry.sentinel_decisions if d.code != code]
     if missing is not None:
         kept.append(SentinelDecision(code=code, missing=missing, updated_at=now))
-    order = list(entry.profile.suspect_missing_codes)
+    order = list(entry.suspect_codes)
     entry.sentinel_decisions = sorted(kept, key=lambda d: order.index(d.code))
 
 

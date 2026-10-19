@@ -46,7 +46,7 @@ def rows(project: Project, which: LevelFilter = "proposed") -> list[LevelRow]:
             LevelRow(
                 name=w.final_name(entry),
                 label=w.label_text(entry, "final"),
-                kind=w.TYPES.get(entry.profile.inferred_type, entry.profile.inferred_type),
+                kind=w.TYPES.get(entry.data_type, entry.data_type),
                 file_level=w.MEASURES.get(entry.file.measure_level or "", ""),
                 level=shown or "",
                 status=w.status_text(tracked) if tracked.value else _("du fichier"),

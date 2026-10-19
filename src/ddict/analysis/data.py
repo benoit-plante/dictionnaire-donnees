@@ -27,7 +27,7 @@ from ddict.project.model import Project, VariableEntry
 
 
 class DataError(Exception):
-    """The database cannot be prepared; `reason`: "not_found", "other_file"."""
+    """The database cannot be prepared; `reason`: "not_found", "other_file", "no_base"."""
 
     def __init__(self, reason: str, detail: str = "") -> None:
         super().__init__(reason, detail)
@@ -108,7 +108,10 @@ def apply_subset(prepared: PreparedData, subset) -> PreparedData:
 
 def find_database(project: Project, project_path: Path, given: Path | None = None) -> Path:
     """The database the project was made from: the given file, or the one of the same name
-    next to the project; its fingerprint must be the project's."""
+    next to the project; its fingerprint must be the project's. A project without a database
+    yet (v0.20) has none to find."""
+    if project.source is None:
+        raise DataError("no_base")
     path = Path(given) if given else project_path.with_name(project.source.name)
     if not path.is_file():
         raise DataError("not_found", str(path))

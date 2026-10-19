@@ -313,8 +313,10 @@ def confirmed_missing(entry: VariableEntry) -> list[Code]:
 
 def entry_anomalies(entry: VariableEntry) -> list[str]:
     """The anomalies of a variable, without the suspect codes the team settled, nor a
-    doubtful measure level the team decided (v0.8)."""
+    doubtful measure level the team decided (v0.8). None for a planned variable (v0.20)."""
     profile = entry.profile
+    if profile is None:
+        return []
     if entry.measure_level.status != "proposed" and entry.measure_level.value:
         flags = [f for f in profile.flags if f != "measure_level_doubtful"]
         profile = profile.model_copy(update={"flags": flags})
@@ -348,7 +350,8 @@ def sentinel_notes(entry: VariableEntry) -> list[str]:
 def issues(entry: VariableEntry, kind: ExportKind) -> list[str]:
     """Anomalies and notes computed, then accepted (or, in a work export, pending) AI
     findings."""
-    found = entry_anomalies(entry) + notes(entry.profile) + sentinel_notes(entry)
+    computed = [] if entry.profile is None else notes(entry.profile)
+    found = entry_anomalies(entry) + computed + sentinel_notes(entry)
     found.extend(t for t in (text(issue, kind) for issue in entry.issues) if t)
     return found
 
@@ -429,7 +432,8 @@ def pct_missing(profile: Profile) -> float:
 def value_rows(entry: VariableEntry) -> list[tuple[str, str, str, bool]]:
     """Code, label, count ("masqué" when masked, "" when not observed or not listed), missing."""
     labels = {lab.code: lab.label for lab in accepted_labels(entry)}
-    observed = {o.code: o for o in entry.profile.observed_values or []}
+    profile = entry.profile
+    observed = {o.code: o for o in (profile.observed_values if profile else None) or []}
     declared = {m.low for m in entry.file.declared_missing if m.low == m.high}
     declared |= set(confirmed_missing(entry))
     rows = []
@@ -437,7 +441,7 @@ def value_rows(entry: VariableEntry) -> list[tuple[str, str, str, bool]]:
         count = ""
         if code in observed:
             count = _(MASKED) if observed[code].count is None else str(observed[code].count)
-        elif entry.profile.observed_values is not None:
+        elif profile is not None and profile.observed_values is not None:
             count = "0"
         is_missing = code in declared or (code in observed and observed[code].declared_missing)
         rows.append((code_text(code), labels.get(code, ""), count, is_missing))
@@ -524,6 +528,17 @@ def glossary_rows(project: Project, kind: ExportKind) -> list[tuple[str, str, st
             )
         )
     return rows
+
+
+# A project designed before its collection (v0.20, D-145).
+PLANNED_DICTIONARY = N_("pas encore de base (dictionnaire prévu, avant la collecte)")
+
+
+def dataset_title(project: Project) -> str:
+    """What the dictionary is of: the database, else the designed questionnaire."""
+    if project.source is not None:
+        return project.source.name
+    return project.questionnaire.file_name if project.questionnaire is not None else ""
 
 
 def questionnaire_facts(project: Project) -> list[tuple[str, str]]:

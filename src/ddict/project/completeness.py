@@ -49,7 +49,7 @@ def _coded(entry: VariableEntry) -> bool:
 
 def _levelled(entry: VariableEntry) -> bool:
     """A variable that a measure level applies to."""
-    return not _sensitive(entry) and entry.profile.inferred_type not in measure.NO_LEVEL_TYPES
+    return not _sensitive(entry) and entry.data_type not in measure.NO_LEVEL_TYPES
 
 
 def _part(key: str, entries: list[VariableEntry], decided) -> Part:

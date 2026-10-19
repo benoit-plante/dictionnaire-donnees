@@ -66,6 +66,8 @@ def profile_summary(project: Project) -> str:
     )
     # The same count as the "Avec signalements" filter of the review (notes excluded).
     flagged = sum(1 for e in project.variables if entry_anomalies(e))
+    if project.source is None:
+        return _("{n} variables prévues ; pas encore de base.").format(n=len(project.variables))
     return _(
         "{n} variables, {rows} lignes ; {sensitive} variables sensibles ; "
         "{flagged} avec signalements."
@@ -80,7 +82,7 @@ def profile_summary(project: Project) -> str:
 def platform_notes(project: Project) -> list[str]:
     """What to know about a survey platform export (v0.7): which platform, and that its .sav
     file is better than its Excel or CSV export, which has neither codes nor labels."""
-    platform = platforms.by_name(project.source.platform)
+    platform = platforms.of(project)
     if platform is None:
         return []
     notes = [_("Export {platform} reconnu.").format(platform=platform.title)]
@@ -110,6 +112,8 @@ def format_note(project: Project) -> str | None:
     """Below a database that is not a .sav file (D-054): what was guessed, to check. None
     for a .sav, or when the platform note already advises its .sav export."""
     source = project.source
+    if source is None:
+        return None
     lacks = FORMAT_LACKS.get(source.format)
     if lacks is None or (platforms.by_name(source.platform) and source.format in ("xlsx", "csv")):
         return None
@@ -139,6 +143,7 @@ KINDS = Texts(
         "single": N_("à choix unique"),
         "checkbox": N_("à cocher"),
         "grid": N_("grilles"),
+        "display": N_("textes d'affichage"),
     }
 )
 
@@ -194,7 +199,7 @@ def questionnaire_summary(questionnaire: Questionnaire) -> list[str]:
 
 def platform_summary(project: Project) -> list[str]:
     """How the questionnaire covers the questions of a platform export (v0.7)."""
-    platform = platforms.by_name(project.source.platform)
+    platform = platforms.of(project)
     asked, unmatched = platform_coverage(project)
     if platform is None or not asked:
         return []
@@ -374,7 +379,7 @@ def tasks(
     sentinels = sum(
         1
         for e in project.variables
-        for code in e.profile.suspect_missing_codes
+        for code in e.suspect_codes
         if all(d.code != code for d in e.sentinel_decisions)
     )
     if sentinels:
@@ -642,8 +647,13 @@ def documented_copy(
     return write_documented_copy(project, found, target, replace=replace)
 
 
-def copy_error_text(error: CopyError, source_name: str) -> str:
-    """Why the documented copy was not written, in plain French."""
+def copy_error_text(error: CopyError, project: Project) -> str:
+    """Why the documented copy was not written, or the database not found, in plain French."""
+    if error.reason == "no_base":
+        return _(
+            "Ce projet n'a pas encore de base : elle s'ouvrira quand les réponses seront arrivées."
+        )
+    source_name = project.source.name if project.source is not None else ""
     if error.reason == "exists":
         return _("{name} existe déjà. Rien n'a été écrit ; confirmez pour le remplacer.").format(
             name=Path(error.detail).name

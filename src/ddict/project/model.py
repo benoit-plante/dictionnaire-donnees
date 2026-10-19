@@ -27,7 +27,10 @@ from pydantic import (
 # 0.5.0 (v0.13, D-101): the analysis plan, with a default; a 0.4.0 file reads as it is.
 # 0.8.0 (v0.18, D-138): whether the project may send its metadata to the AI, not by
 # default; a 0.7.0 file reads as it is, not allowed.
-SCHEMA_VERSION = "0.8.0"
+# 0.9.0 (v0.20, D-145, D-146): a project may have no database yet (no `source`; planned
+# variables without a profile) and a questionnaire designed in the tool (`design`, new
+# question fields), all with a default; a 0.8.0 file reads as it is.
+SCHEMA_VERSION = "0.9.0"
 
 Code = int | float | str
 # "questionnaire": computed from the questionnaire under a strict rule, and like an AI value
@@ -218,11 +221,25 @@ class Privacy(Strict):
     reasons: list[str] = []
 
 
+# The types a designed questionnaire plans for a variable: those of `Profile.inferred_type`
+# that a question can give (v0.20, D-145).
+PlannedType = Literal["boolean", "integer", "decimal", "date", "datetime", "text"]
+
+
+class Planned(Strict):
+    """A variable the designed questionnaire plans, before the database exists (v0.20,
+    D-145): never "empty", since nothing was observed."""
+
+    type: PlannedType
+
+
 class VariableEntry(Strict):
     name: str
     position: int
+    # For a planned variable: what the questionnaire plans that the file will say.
     file: FileMetadata
-    profile: Profile
+    # None for a variable planned by a designed questionnaire, before the database arrives.
+    profile: Profile | None = None
     privacy: Privacy
     # The question it comes from (D-013): "Q8", "Q7.r3", "Q10.o2", or "none"; the text is
     # looked up in the questionnaire, never stored here.
@@ -250,6 +267,28 @@ class VariableEntry(Strict):
     notes: str | None = None
     # What in the AI proposals looks like an invention, e.g. "description:threshold".
     ai_signals: list[str] = []
+    # What the designed questionnaire planned (v0.20, D-145), kept once the database is there.
+    planned: Planned | None = None
+
+    @model_validator(mode="after")
+    def _known(self) -> VariableEntry:
+        if self.profile is None and self.planned is None:
+            raise ValueError("a variable is profiled from the database, or planned")
+        return self
+
+    @property
+    def data_type(self) -> str:
+        """The type of the column: computed from the database, else planned."""
+        if self.profile is not None:
+            return self.profile.inferred_type
+        assert self.planned is not None
+        return self.planned.type
+
+    @property
+    def suspect_codes(self) -> list[Code]:
+        """The probable undeclared missing codes found in the data; none for a planned
+        variable."""
+        return [] if self.profile is None else self.profile.suspect_missing_codes
 
 
 class Group(Strict):
@@ -364,27 +403,83 @@ class Settings(Strict):
     ai: AiPermission = AiPermission()
 
 
+class Provenance(Strict):
+    """Where a text of a designed questionnaire comes from (v0.20, D-146): typed by the team,
+    taken from a source, or written by the AI (v0.21)."""
+
+    kind: Literal["team", "source", "ai"]
+    # A source as the team writes it ("Manuel, p. 4"); a deposited source in v0.21.
+    source: str | None = None
+    page: int | None = Field(default=None, ge=1)
+
+    @model_validator(mode="after")
+    def _sourced(self) -> Provenance:
+        if self.kind == "source" and not (self.source or "").strip():
+            raise ValueError("a text taken from a source names it")
+        if self.kind != "source" and (self.source is not None or self.page is not None):
+            raise ValueError("only a text taken from a source has one")
+        return self
+
+
 class QuestionOption(Strict):
     option_id: str  # "Q10.o3"
     text: str
+    # v0.20 (D-146), in a designed or LimeSurvey questionnaire: the answer code, decided
+    # before the collection; whether it is the "other" option.
+    code: str | None = None
+    other: bool = False
+    provenance: Provenance | None = None
 
 
 class GridRow(Strict):
     row_id: str  # "Q7.r3"
     number: int | None = None  # as printed ("3."), when printed
     text: str
+    code: str | None = None  # the subquestion's code (v0.20)
+    provenance: Provenance | None = None
+
+
+# "display": a text shown to the participant, with no answer and no variable; only in a
+# designed or LimeSurvey questionnaire (v0.20, D-146).
+QuestionKind = Literal["open", "single", "checkbox", "grid", "display"]
 
 
 class Question(Strict):
-    """A question as read in the questionnaire (D-012): its words, never rewritten."""
+    """A question as read in the questionnaire (D-012): its words, never rewritten; or as
+    designed in the tool (v0.20, D-146), where an id is never given again."""
 
-    question_id: str  # "Q7", in reading order
+    question_id: str  # "Q7", in reading order (designed: in order of creation)
     page: int | None = None  # None for a text file without page breaks
     text: str
-    kind: Literal["open", "single", "checkbox", "grid"]
+    kind: QuestionKind
     options: list[QuestionOption] = []  # for a grid: its columns
     rows: list[GridRow] = []
     to_check: list[str] = []  # codes: "grid_header_unclear", "grid_without_header"
+    # v0.20 (D-146), in a designed or LimeSurvey questionnaire.
+    section: str | None = None  # "S2"
+    instruction: str | None = None
+    required: bool = False
+    answer: Literal["short", "long", "number", "date"] | None = None  # an open question's
+    layout: Literal["radio", "dropdown"] | None = None  # a single choice's
+    provenance: Provenance | None = None
+
+    @model_validator(mode="after")
+    def _shaped(self) -> Question:
+        if self.answer is not None and self.kind != "open":
+            raise ValueError("only an open question has an answer type")
+        if self.layout is not None and self.kind != "single":
+            raise ValueError("only a single choice is shown as a list or buttons")
+        if self.kind == "display" and (self.options or self.rows or self.required):
+            raise ValueError("a displayed text has no answer")
+        return self
+
+
+class Section(Strict):
+    """A section of a designed questionnaire (v0.20): its id is never given again."""
+
+    section_id: str  # "S2"
+    title: str = ""
+    instruction: str | None = None
 
 
 class QuestionnaireText(Strict):
@@ -399,10 +494,13 @@ class Questionnaire(Strict):
 
     file_name: str
     sha256: str
-    format: Literal["pdf", "txt", "xlsx"]  # xlsx: a platform export's header (v0.7, D-045)
+    # xlsx: a platform export's header (v0.7, D-045); lss: a LimeSurvey structure, .lss or
+    # .txt (v0.20, D-148); designed: built in the tool, `sha256` that of its content (D-146).
+    format: Literal["pdf", "txt", "xlsx", "lss", "designed"]
     n_pages: int | None = None
     questions: list[Question] = []
     texts: list[QuestionnaireText] = []
+    sections: list[Section] = []  # v0.20, in the order shown
 
 
 class GlossaryEntry(Strict):
@@ -800,9 +898,52 @@ class Plan(Strict):
     amendments: list[Amendment] = []
 
 
+class Publication(Strict):
+    """A version of the designed questionnaire sent to the ethics committee or published in
+    LimeSurvey (v0.20, D-150): a copy of it at that moment, and its fingerprint."""
+
+    kind: Literal["ethics", "limesurvey"]
+    date: str
+    fingerprint: str
+    questionnaire: Questionnaire
+    note: str | None = None  # a reason, never required
+
+
+class KeptPoint(Strict):
+    """A review point closed by "Garder tel quel" (v0.20): it comes back when the text it
+    was about changes."""
+
+    code: str
+    target: str  # "Q7", "Q7.r3", "Q10.o2"
+    fingerprint: str  # of the texts the point looked at
+    date: str
+
+
+class Design(Strict):
+    """What a project created by "Concevoir un questionnaire" keeps (v0.20, D-145), even
+    once its database has arrived."""
+
+    created: str
+    # The last number given to each kind of id ("Q", "S", "Q7.r", "Q7.o"): an id is never
+    # given again. Keys in sorted order.
+    counters: dict[str, int] = {}
+    publications: list[Publication] = []
+    kept: list[KeptPoint] = []
+
+
+class NoDatabase(ValueError):
+    """Asked of a project whose database has not arrived yet (v0.20, D-145): `what` names
+    what needs it ("context", "syntax", "preparation")."""
+
+    def __init__(self, what: str) -> None:
+        super().__init__(what)
+        self.what = what
+
+
 class Project(Strict):
     schema_version: str = SCHEMA_VERSION
-    source: SourceInfo
+    # None until the database of a designed questionnaire arrives (v0.20, D-145).
+    source: SourceInfo | None = None
     settings: Settings = Settings()
     variables: list[VariableEntry]
     groups: list[Group] = []
@@ -814,8 +955,15 @@ class Project(Strict):
     exclusions: Exclusions = Exclusions()  # v0.12 (D-093)
     plan: Plan = Plan()  # v0.13 (D-101)
     recodes: Recodes = Recodes()  # v0.15 (D-120)
+    design: Design | None = None  # v0.20 (D-145)
     # v0.17 (D-129): what the file held when read, in memory only (`ondisk`).
     _disk: object = PrivateAttr(default=None)
+
+    @model_validator(mode="after")
+    def _profiled_from_its_database(self) -> Project:
+        if self.source is None and any(e.profile is not None for e in self.variables):
+            raise ValueError("without a database, no variable has a profile")
+        return self
 
     def variable(self, name: str) -> VariableEntry:
         for entry in self.variables:

@@ -136,7 +136,7 @@ def _payload(
     payload: dict = {"name": entry.name}
     if entry.file.label:
         payload["file_label"] = entry.file.label
-    payload["type"] = entry.profile.inferred_type
+    payload["type"] = entry.data_type
     privacy_class = entry.privacy.privacy_class.value or "ordinary"
     if privacy_class != "ordinary":
         payload["note"] = sensitive_note(privacy_class, language)

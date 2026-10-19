@@ -90,6 +90,7 @@ def _apply(
             if (
                 not accepted_labels(entry)
                 and entry.theoretical_range is None
+                and entry.profile is not None
                 and presents_observed_range(new.value, entry.profile.min, entry.profile.max)
             ):
                 signals.append(f"{field}:observed_range")

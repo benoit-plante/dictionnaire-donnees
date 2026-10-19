@@ -136,7 +136,7 @@ def panel(project: Project, entry: VariableEntry) -> None:
     name = entry.name
     level = recodes.source_level(project, recodes.reference(project, name))
     sensitive = entry.privacy.privacy_class.value in recodes.NAMING or (
-        entry.profile.inferred_type in ("empty", "mixed", "date", "datetime")
+        entry.data_type in ("empty", "mixed", "date", "datetime")
     )
     if sensitive or level is None:
         return

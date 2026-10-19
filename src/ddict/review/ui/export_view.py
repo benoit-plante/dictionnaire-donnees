@@ -127,7 +127,7 @@ def _write_copy() -> None:
     except CopyError as error:
         st.session_state.message = (
             "error",
-            copy_error_text(error, project.source.name),
+            copy_error_text(error, project),
             "export-copy-write",
         )
         st.session_state[CONFLICTS] = error.reason == "name_conflict"
@@ -160,7 +160,7 @@ def _copy_section(project: Project) -> None:
     try:
         database = find_database(project, c.project_path(), Path(chosen) if chosen else None)
     except CopyError as error:
-        st.info(copy_error_text(error, project.source.name))
+        st.info(copy_error_text(error, project))
         st.button(_("Choisir la base…"), key="export-copy-choose", on_click=_choose_database)
         return
     target = default_copy_path(database)

@@ -245,14 +245,18 @@ def _find_again(old: Path) -> None:
     if not tracked.replace(old, chosen):
         _message("error", tracked.not_written(), key)
         return
-    _message(
-        "success",
-        _(
+    if project.source is None:  # designed before its collection (v0.20)
+        text = _(
+            "Projet retrouvé : {name}, un questionnaire conçu dans l'outil, sans base encore. "
+            "Si ce n'est pas le bon, retirez-le avec « Ne plus suivre » dans le menu « ⋮ » de "
+            "sa ligne."
+        ).format(name=Path(chosen).name)
+    else:
+        text = _(
             "Projet retrouvé : {name}, fait à partir de la base {base}. Si ce n'est pas le "
             "bon, retirez-le avec « Ne plus suivre » dans le menu « ⋮ » de sa ligne."
-        ).format(name=Path(chosen).name, base=project.source.name),
-        key,
-    )
+        ).format(name=Path(chosen).name, base=project.source.name)
+    _message("success", text, key)
 
 
 SEARCH = "home-search-result"

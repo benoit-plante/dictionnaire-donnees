@@ -121,6 +121,8 @@ def targets(questionnaire: Questionnaire) -> list[Target]:
     """Every question, then its rows (grid) or options, in reading order."""
     found: list[Target] = []
     for question in questionnaire.questions:
+        if question.kind == "display":  # a text shown, with no variable (v0.20)
+            continue
         found.append(Target(question.question_id, question, None, None, len(found)))
         if question.kind == "grid":
             for rank, row in enumerate(question.rows, start=1):
@@ -231,7 +233,7 @@ def _series(project: Project) -> dict[str, tuple[int, int]]:
     """Variables numbered under a same stem: name -> (its number, size of the series). Not
     the names of a platform export (`q0006`): their number is a rank in the survey, which
     the structure of the platform reads (v0.7)."""
-    platform = platforms.by_name(project.source.platform)
+    platform = platforms.of(project)
     stems: dict[str, list[tuple[str, int]]] = {}
     for entry in project.variables:
         if platform is not None and platform.place(entry.name) is not None:
@@ -380,6 +382,8 @@ def no_question_reason(entry: VariableEntry) -> str | None:
     if "identifier_name" in reasons and not reasons & CONTACT_VALUES:
         return "identifier"
     profile = entry.profile
+    if profile is None:  # planned (v0.20): its question is known
+        return None
     if (
         profile.inferred_type in ("date", "datetime")
         and (entry.privacy.privacy_class.value or "ordinary") == "ordinary"
@@ -469,13 +473,13 @@ def texts_agree(first: str | None, second: str | None) -> bool:
 
 def project_questions(project: Project) -> list[platforms.PlatformQuestion]:
     """The questions of a platform export, from the project's variables; empty otherwise."""
-    platform = platforms.by_name(project.source.platform)
+    platform = platforms.of(project)
     if platform is None:
         return []
     ticked = {
         e.name
         for e in project.variables
-        if len(e.file.value_labels) <= 1 and (e.profile.n_distinct or 0) <= 1
+        if len(e.file.value_labels) <= 1 and e.profile and (e.profile.n_distinct or 0) <= 1
     }
     return platforms.survey_questions(platform, [e.name for e in project.variables], ticked)
 
@@ -486,7 +490,7 @@ def _option_texts(entry: VariableEntry) -> list[str]:
     it holds."""
     if len(entry.file.value_labels) == 1:
         return [entry.file.value_labels[0].label]
-    observed = entry.profile.observed_values or []
+    observed = (entry.profile.observed_values if entry.profile else None) or []
     texts = [o.code for o in observed if isinstance(o.code, str)]
     return [t for t in (entry.file.label, *texts[:1]) if t]
 
@@ -512,7 +516,7 @@ def _structure_targets(
     project: Project, found: platforms.PlatformQuestion, question: Question
 ) -> dict[str, str]:
     """The target of each variable of a question, where its own text agrees."""
-    platform = platforms.by_name(project.source.platform)
+    platform = platforms.of(project)
     chosen: dict[str, str] = {}
     # A column the platform adds as a question ("id") stays an identifier (D-039).
     if found.single:
@@ -548,7 +552,7 @@ def platform_choices(project: Project) -> dict[str, str]:
     own. The rank alone never decides: a questionnaire may count otherwise. The platform's
     own variables come from no question."""
     questionnaire = project.questionnaire
-    platform = platforms.by_name(project.source.platform)
+    platform = platforms.of(project)
     if questionnaire is None or platform is None:
         return {}
     chosen = {e.name: NO_QUESTION for e in project.variables if platform.platform_variable(e.name)}
@@ -671,7 +675,7 @@ def check_against_platform(project: Project) -> None:
     words are not changed).
     """
     questionnaire = project.questionnaire
-    if questionnaire is None or platforms.by_name(project.source.platform) is None:
+    if questionnaire is None or platforms.of(project) is None:
         return
     for question in questionnaire.questions:
         question.to_check = [c for c in question.to_check if c not in PLATFORM_CHECKS]
@@ -697,7 +701,7 @@ def check_against_platform(project: Project) -> None:
 
 def platform_coverage(project: Project) -> tuple[int, int]:
     """(questions of a platform export, those without a question in the questionnaire)."""
-    if project.questionnaire is None or platforms.by_name(project.source.platform) is None:
+    if project.questionnaire is None or platforms.of(project) is None:
         return 0, 0
     pairs = matched_questions(project)
     # The export's questions, but a column it adds as a question ("id", an identifier).
@@ -731,8 +735,8 @@ def neighbours(project: Project, found: dict[str, list[str]] | None = None) -> d
         entry = project.variables[index]
         if (
             found.get(name)
-            or entry.profile.inferred_type == "empty"
-            or ("constant" in entry.profile.flags)
+            or entry.data_type == "empty"
+            or (entry.profile is not None and "constant" in entry.profile.flags)
         ):
             continue
         before = [i for i in anchors if i < index]
