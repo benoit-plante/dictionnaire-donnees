@@ -18,6 +18,15 @@ class ProjectError(Exception):
     """The project file cannot be read."""
 
 
+class ProjectNewer(ProjectError):
+    """Written by a more recent version of the tool: `version` is its format (v0.17, said on
+    the home page's table)."""
+
+    def __init__(self, message: str, version: str) -> None:
+        super().__init__(message)
+        self.version = version
+
+
 class ProjectChanged(ondisk.FileChanged):
     """The project file changed on the disk since it was read: nothing was written (v0.17,
     D-129)."""
@@ -69,9 +78,10 @@ def load_project(path: Path | str) -> Project:
     if not isinstance(version, str) or version.split(".")[0] != SCHEMA_VERSION.split(".")[0]:
         raise ProjectError(f"{path.name}: unsupported schema version {version!r}")
     if _version(version) > _version(SCHEMA_VERSION):
-        raise ProjectError(
+        raise ProjectNewer(
             f"{path.name} was written by a more recent version of the tool "
-            f"(format {version}, this version reads up to {SCHEMA_VERSION}): update the tool"
+            f"(format {version}, this version reads up to {SCHEMA_VERSION}): update the tool",
+            version,
         )
     _scoring_as_note(data)
     try:

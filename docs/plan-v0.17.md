@@ -156,7 +156,7 @@ La phase dit **jusqu'où le projet est allé**, d'après les fichiers que l'outi
 
 La phase n'avance qu'avec ce que la personne a fait, et ne recule pas quand une nouvelle proposition attend : un projet en Analyser dont un libellé reste à valider reste en Analyser, et la colonne « En attente » dit la tâche. L'autre règle possible, la section de la première tâche (comme la barre latérale), ferait sauter un projet presque fini en « Documenter » pour un sigle oublié.
 
-**Carnet** : « retenues » compte les analyses retenues pour l'article et non remplacées par un amendement ; « à confirmer », celles (et la Méthode) qui ont un calcul en attente (`pending`) ; « à recalculer », celles dont `computed.fingerprint` diffère de `fingerprint.fingerprint(project)` et qui n'ont pas de calcul en attente. Un carnet illisible ou d'un autre projet (`nb.belongs`) dit « carnet illisible » ou « carnet d'un autre projet », sans erreur.
+**Carnet** : « retenues » compte les analyses retenues pour l'article et non remplacées par un amendement ; « à confirmer », celles (et la Méthode) qui ont un calcul en attente (`pending`) ; « à recalculer », celles dont `computed.fingerprint` diffère de `fingerprint.fingerprint(project)` et qui n'ont pas de calcul en attente. Un carnet illisible ou d'un autre projet (`nb.belongs`) dit « carnet illisible » ou « carnet d'un autre projet », sans erreur. *Précision de l'étape B1* : « retenues », « à confirmer » et « à recalculer » ne comptent que les analyses retenues non remplacées, et la Méthode, pour que les trois chiffres se lisent ensemble. Un carnet illisible ou d'un autre projet compte pour la phase comme un carnet avec une analyse : l'outil ne l'écrit qu'à la première analyse ajoutée.
 
 ### 7.3 Lecture et cache
 

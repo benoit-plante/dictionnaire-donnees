@@ -293,6 +293,9 @@ msgstr "- Value labels changed: {n}"
 msgid "0 : le score exige tous les items."
 msgstr "0: the score requires every item."
 
+msgid "1 retenue"
+msgstr "1 retained"
+
 msgid ""
 "1. Installez Ollama depuis [ollama.com](https://ollama.com) (bouton « Download for Windows »), "
 "puis lancez-le : son icône apparaît près de l'horloge.\n"
@@ -2022,6 +2025,9 @@ msgstr "Project file (.dd.json)."
 msgid "Fichier projet : {path}"
 msgstr "Project file: {path}"
 
+msgid "Fichier projet illisible."
+msgstr "Unreadable project file."
+
 msgid "Fichier projet à créer (par défaut : à côté de la base, en .dd.json)."
 msgstr "Project file to create (default: next to the database, as .dd.json)."
 
@@ -2300,6 +2306,9 @@ msgstr "Interface at {url} (this computer only)."
 
 msgid "Interrompu. Les blocs terminés sont enregistrés ; relancez pour continuer."
 msgstr "Interrupted. The finished blocks are saved; run again to continue."
+
+msgid "Introuvable : le fichier n'est plus à cet endroit."
+msgstr "Not found: the file is no longer at this place."
 
 msgid "Inverser les items marqués « inv » avant tout score, selon la cotation de leur groupe."
 msgstr "Reverse the items marked \"inv\" before any score, as their group's scoring says."
@@ -6142,6 +6151,12 @@ msgstr "upper bound of the CI"
 msgid "calcul"
 msgstr "computed"
 
+msgid "carnet d'un autre projet"
+msgstr "notebook of another project"
+
+msgid "carnet illisible"
+msgstr "unreadable notebook"
+
 msgid "cases à cocher d'après la base"
 msgstr "checkboxes, according to the database"
 
@@ -6293,6 +6308,13 @@ msgstr "tested effect: {effect}"
 msgid "effet testé modifié"
 msgstr "tested effect changed"
 
+msgid "en cours (1 hypothèse)"
+msgstr "in progress (1 hypothesis)"
+
+#, python-brace-format
+msgid "en cours ({n} hypothèses)"
+msgstr "in progress ({n} hypotheses)"
+
 msgid "entier"
 msgstr "integer"
 
@@ -6318,6 +6340,17 @@ msgstr "file"
 
 msgid "fidélité, trop peu de réponses complètes"
 msgstr "reliability, too few complete answers"
+
+#, python-brace-format
+msgid "figé le {date}"
+msgstr "frozen on {date}"
+
+msgid "figé, 1 amendement"
+msgstr "frozen, 1 amendment"
+
+#, python-brace-format
+msgid "figé, {n} amendements"
+msgstr "frozen, {n} amendments"
 
 msgid "finale"
 msgstr "final"
@@ -6385,6 +6418,9 @@ msgstr "interpretation of {id}"
 
 msgid "interprétation des analyses exploratoires"
 msgstr "interpretation of the exploratory analyses"
+
+msgid "introuvable"
+msgstr "not found"
 
 msgid "items manquants : somme des items répondus"
 msgstr "missing items: sum of the items answered"
@@ -6984,6 +7020,9 @@ msgstr "three"
 
 msgid "trop long"
 msgstr "too long"
+
+msgid "trouvée"
+msgstr "found"
 
 msgid "type d'étude : expérience, observation, méta-analyse ou autre"
 msgstr "study type: experiment, observational study, meta-analysis or other"
@@ -7778,6 +7817,10 @@ msgid "{n} rattachements retirés : ils renvoyaient à l'ancien questionnaire. R
 msgstr "{n} links removed: they pointed to the former questionnaire. Run ddict link again."
 
 #, python-brace-format
+msgid "{n} retenues"
+msgstr "{n} retained"
+
+#, python-brace-format
 msgid "{n} sigles acceptés."
 msgstr "{n} acronyms accepted."
 
@@ -7814,6 +7857,14 @@ msgstr "{n} variables to send, in {b} blocks."
 #, python-brace-format
 msgid "{n} variables, {rows} lignes ; {sensitive} variables sensibles ; {flagged} avec signalements."
 msgstr "{n} variables, {rows} rows; {sensitive} sensitive variables; {flagged} with flags."
+
+#, python-brace-format
+msgid "{n} à confirmer"
+msgstr "{n} to confirm"
+
+#, python-brace-format
+msgid "{n} à recalculer"
+msgstr "{n} to recompute"
 
 #, python-brace-format
 msgid "{old} n'est plus dans ce filtre ; voici la variable suivante : {new}."
@@ -8159,6 +8210,10 @@ msgstr "Write next to the project"
 
 msgid "Écrit"
 msgstr "Written"
+
+#, python-brace-format
+msgid "Écrit par une version plus récente de l'outil (format {version}) : mettez l'outil à jour."
+msgstr "Written by a more recent version of the tool (format {version}): update the tool."
 
 #, python-brace-format
 msgid ""
