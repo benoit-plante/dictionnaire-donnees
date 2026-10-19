@@ -4,9 +4,11 @@ fictional survey (`docs/essais/2026-10-19-limesurvey-fictif.md`). The files of t
 from `scripts/generer_limesurvey_fictif.py`; the author's own exports, kept off the
 repository, are compared to them by the tests marked `limesurvey`."""
 
+import hashlib
 import importlib.util
 import os
 import sys
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -39,8 +41,7 @@ def generator():
 @pytest.fixture(scope="module")
 def files(generator, tmp_path_factory):
     folder = tmp_path_factory.mktemp("LimeSurvey fictif é")
-    lss, txt = generator.write_all(folder)
-    return {"lss": lss, "txt": txt}
+    return {path.suffix[1:]: path for path in generator.write_all(folder)}
 
 
 def _content(questionnaire):
@@ -49,11 +50,24 @@ def _content(questionnaire):
     return data
 
 
+def digest(path: Path):
+    """The bytes of a file; for a workbook, each part decompressed: the zip compression may
+    differ from one computer to another."""
+    if path.suffix != ".xlsx":
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+    with zipfile.ZipFile(path) as archive:
+        return {
+            i.filename: hashlib.sha256(archive.read(i.filename)).hexdigest()
+            for i in archive.infolist()
+        }
+
+
 def test_two_runs_write_the_same_bytes_and_the_committed_examples(generator, files, tmp_path):
     again = generator.write_all(tmp_path)
+    assert sorted(p.suffix for p in again) == [".csv", ".lss", ".sav", ".txt", ".xlsx"]
     for path in again:
-        assert path.read_bytes() == files[path.suffix[1:]].read_bytes()
-        assert path.read_bytes() == (EXAMPLES / path.name).read_bytes(), path.name
+        assert digest(path) == digest(files[path.suffix[1:]])
+        assert digest(path) == digest(EXAMPLES / path.name), path.name
 
 
 def test_the_two_forms_give_the_same_questionnaire(files):

@@ -41,12 +41,16 @@ from ddict.project.model import (
     VariableEntry,
 )
 
-# How LimeSurvey names the columns of a question's items, as supposed until its export is
-# checked on the author's (step A2, D-148): the question's code, then the item's.
+# How LimeSurvey 7.6 names the columns of a question's items in its .sav export, as seen on
+# the author's (docs/essais/2026-10-19-limesurvey-fictif.md): the question's code, then the
+# item's ("sommeil_SQ001", "genre_other"); its CSV and Excel exports, read by the tool, are
+# named the same way (`platforms.LIMESURVEY.column_name`).
 SEPARATOR = "_"
 OTHER_CODE = "other"
-# What a ticked box holds in the export, as supposed until step A2: a text ("Y").
+# A ticked box holds "Y", a text; the "other" answer of a single choice is coded "-oth-",
+# which makes the whole question a text in the .sav.
 CHECKBOX_TYPE = "text"
+OTHER_ANSWER = "-oth-"
 BASIS = "designed_questionnaire"
 
 
@@ -457,22 +461,34 @@ class _Wanted:
 
 
 def code(project: Project, question: Question) -> str:
-    """The question's code: its accepted stem (D-146), else its id until one is decided."""
+    """The question's LimeSurvey code (D-156): its accepted stem (D-146) without its "_",
+    since LimeSurvey takes letters and digits only; else its id until one is decided."""
     found = naming.stem(project, question.question_id)
     if found is not None and is_accepted(found.stem) and found.stem.value:
-        return found.stem.value
+        return found.stem.value.replace("_", "")
     return question.question_id
 
 
+def _coded(options) -> list[tuple[str, str]]:
+    """The codes of the choices and their texts; a single choice's "other" answer is coded
+    "-oth-", as LimeSurvey exports it."""
+    found = [(o.code, o.text) for o in options if o.code and not o.other]
+    found += [(OTHER_ANSWER, o.text) for o in options if o.other]
+    return found
+
+
+def _numeric(coded) -> bool:
+    return bool(coded) and all(c.lstrip("-").isdigit() for c, _t in coded)
+
+
 def _labels(options) -> tuple[tuple[int | str, str], ...]:
-    coded = [(o.code, o.text) for o in options if o.code and not o.other]
-    numeric = all(c.lstrip("-").isdigit() for c, _t in coded)
+    coded = _coded(options)
+    numeric = _numeric(coded)
     return tuple((int(c) if numeric else c, t) for c, t in coded)
 
 
 def _type(options) -> str:
-    coded = [o.code for o in options if o.code and not o.other]
-    return "integer" if coded and all(c.lstrip("-").isdigit() for c in coded) else "text"
+    return "integer" if _numeric(_coded(options)) else "text"
 
 
 def _wanted(project: Project) -> list[_Wanted]:
@@ -480,7 +496,9 @@ def _wanted(project: Project) -> list[_Wanted]:
     for question in questionnaire(project).questions:
         base = code(project, question)
         other = next((o for o in question.options if o.other), None)
-        if question.kind == "open":
+        if question.kind == "display":  # an empty column in every export of LimeSurvey 7.6
+            found.append(_Wanted(question.question_id, base, question.text, "text"))
+        elif question.kind == "open":
             kind = {"number": "decimal", "date": "date"}.get(question.answer or "", "text")
             found.append(
                 _Wanted(

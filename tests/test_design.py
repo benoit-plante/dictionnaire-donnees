@@ -96,19 +96,25 @@ def test_a_new_project_has_no_database_and_one_section():
 
 def test_each_kind_plans_its_variables(project):
     assert _names(project) == [
-        "Q1", "Q1_other", "Q2", "Q4_SQ001", "Q4_SQ002", "Q4_SQ003", "Q5_1", "Q5_2", "Q5_other",
+        "Q1", "Q1_other", "Q2", "Q3", "Q4_SQ001", "Q4_SQ002", "Q4_SQ003", "Q5_1", "Q5_2",
+        "Q5_other",
     ]  # fmt: skip
-    assert [e.position for e in project.variables] == list(range(1, 10))
+    assert [e.position for e in project.variables] == list(range(1, 11))
+    # With its "other" answer, coded "-oth-" as LimeSurvey 7.6 exports it, the question is a
+    # text in the .sav (docs/essais/2026-10-19-limesurvey-fictif.md).
     genre = project.variable("Q1")
-    assert genre.data_type == "integer" and genre.question.value == "Q1"
+    assert genre.data_type == "text" and genre.question.value == "Q1"
     assert [(v.code, v.label) for v in genre.file.value_labels] == [
-        (1, "Femme"), (2, "Homme"), (9, "Préfère ne pas répondre"),
+        ("1", "Femme"), ("2", "Homme"), ("9", "Préfère ne pas répondre"),
+        ("-oth-", "Autre, précisez"),
     ]  # fmt: skip
     assert genre.label.value == "Quel est votre genre ?" and genre.profile is None
     assert project.variable("Q1_other").question.value == "Q1.o4"
     assert project.variable("Q2").data_type == "decimal"
     assert project.variable("Q4_SQ002").file.label == "avez-vous bien dormi ?"
-    assert all(t.target_id != "Q3" for t in link.targets(project.questionnaire))
+    # A displayed text has an empty column in every export of LimeSurvey 7.6.
+    shown = project.variable("Q3")
+    assert shown.data_type == "text" and shown.question.value == "Q3"
 
 
 def test_grids_and_boxes_become_groups(project):
@@ -236,7 +242,7 @@ def test_two_items_with_the_same_code_keep_two_names(project):
     design.modify_question(
         project, "Q4", _sleep(rows=(Item(ROWS[0].text, "SQ001", item_id="Q4.r1"), *twice[1:]))
     )
-    assert _names(project)[3:6] == ["Q4_SQ001", "Q4_r2", "Q4_SQ003"]
+    assert _names(project)[4:7] == ["Q4_SQ001", "Q4_r2", "Q4_SQ003"]
 
 
 def test_moving_sections_and_questions(project):
@@ -256,7 +262,7 @@ def test_moving_sections_and_questions(project):
         "Q2",
         "Q1",
     ]
-    assert _names(project)[0] == "Q4_SQ001" and project.variable("Q2").position == 7
+    assert _names(project)[0] == "Q3" and project.variable("Q2").position == 8
     moved = _genre(section="S2")
     kept = tuple(replace(o, item_id=f"Q1.o{n}") for n, o in enumerate(moved.options, start=1))
     design.modify_question(project, "Q1", replace(moved, options=kept))

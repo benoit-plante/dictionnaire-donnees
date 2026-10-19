@@ -266,14 +266,14 @@ def _platform_sets(
     ticked = {
         v.name
         for v in data.variables
-        if len(v.value_labels) <= 1 and (profiles[v.name].n_distinct or 0) <= 1
+        if platform.ticked(list(v.value_labels), profiles[v.name].n_distinct)
     }
     names = [v.name for v in data.variables]
     found: list[tuple] = []
     covered: set[str] = set()
     for question in platforms.survey_questions(platform, names, ticked):
         covered.update(question.variables)
-        prefix = platform.item_format.format(question=question.rank, item=0)[:-4]
+        prefix = platform.item_prefix(question.key)
         if (
             question.kind == "grid"
             and len(question.items) >= MIN_ITEMS

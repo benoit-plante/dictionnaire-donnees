@@ -121,8 +121,6 @@ def targets(questionnaire: Questionnaire) -> list[Target]:
     """Every question, then its rows (grid) or options, in reading order."""
     found: list[Target] = []
     for question in questionnaire.questions:
-        if question.kind == "display":  # a text shown, with no variable (v0.20)
-            continue
         found.append(Target(question.question_id, question, None, None, len(found)))
         if question.kind == "grid":
             for rank, row in enumerate(question.rows, start=1):
@@ -479,7 +477,8 @@ def project_questions(project: Project) -> list[platforms.PlatformQuestion]:
     ticked = {
         e.name
         for e in project.variables
-        if len(e.file.value_labels) <= 1 and e.profile and (e.profile.n_distinct or 0) <= 1
+        if e.profile is not None
+        and platform.ticked([v.code for v in e.file.value_labels], e.profile.n_distinct)
     }
     return platforms.survey_questions(platform, [e.name for e in project.variables], ticked)
 

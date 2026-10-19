@@ -184,13 +184,14 @@ def stem_questions(project: Project) -> list[StemQuestion]:
     which take a prefix; a grid of fields, a ranking, takes a stem), else from the accepted
     links to the questionnaire."""
     found: list[StemQuestion] = []
-    if platforms.of(project) is not None:
+    platform = platforms.of(project)
+    if platform is not None:
         scales = {m for g in project.groups if g.kind == "scale" for m in g.members.value or []}
         for question in link.project_questions(project):
             if question.kind == "grid" and set(question.items) & scales:
                 continue
             options = tuple((name, k) for k, name in enumerate(question.items, start=1))
-            key = f"q{question.rank:04d}"
+            key = platform.question_key(question.key)
             found.append(StemQuestion(key, question.single, options, question.other))
         return found
     by_key: dict[str, dict] = {}
@@ -244,6 +245,11 @@ def question_text(
     labels = {project.variable(name).file.label for name in names}
     if len(labels) == 1:
         return labels.pop() or None
+    # A platform that writes the item and the question in each label (LimeSurvey, v0.20).
+    platform = platforms.of(project)
+    asked = {platform.label_question(label) for label in labels} if platform else {None}
+    if len(asked) == 1 and None not in asked:
+        return asked.pop()
     return None
 
 
@@ -305,7 +311,9 @@ def _rule_names(project: Project) -> dict[str, str]:
             continue
         for rank, member in enumerate(group.members.value or [], start=1):
             place = platform.place(member) if platform else None
-            found.setdefault(member, f"{prefix}_{place.item if place and place.item else rank}")
+            # The item's rank in the platform's structure; a LimeSurvey code is no rank.
+            ranked = place is not None and isinstance(place.item, int) and place.item
+            found.setdefault(member, f"{prefix}_{place.item if ranked else rank}")
     for question in stem_questions(project):
         base = usable_stem(project, question.key)
         if not base:

@@ -62,14 +62,14 @@ def test_the_planned_dictionary_has_codes_and_no_counts():
     assert "| Code | Étiquette | Manquant déclaré |" in text
     assert "| Effectif |" not in text and "masqués" not in text
     assert "| 9 | Préfère ne pas répondre |  |" in text
-    assert "| Niveau de mesure | 0 / 7 |" in text  # proposed by the rules, to decide
+    assert "| Niveau de mesure | 0 / 8 |" in text  # proposed by the rules, to decide
 
 
 def test_the_analysis_context_before_the_collection(tmp_path):
     project = designed()
     text = render_context(project, statistics=True)
     assert text.startswith("# Contexte d'analyse : Étude du sommeil (conception)")
-    assert w.PLANNED_DICTIONARY in text and "8 variables prévues" in text
+    assert w.PLANNED_DICTIONARY in text and "9 variables prévues" in text
     assert "## Statistiques" not in text
     path = tmp_path / "Étude conçue.dd.json"
     save_project(project, path)

@@ -77,7 +77,7 @@ def test_a_designed_project_round_trips_byte_for_byte(tmp_path):
 
 def test_the_type_of_a_planned_variable_is_its_planned_type():
     project = designed()
-    assert [e.data_type for e in project.variables][:3] == ["integer", "decimal", "integer"]
+    assert [e.data_type for e in project.variables][:3] == ["integer", "decimal", "text"]
     assert project.variable("Q5_1").data_type == "text"
     assert project.variable("Q1").suspect_codes == []
 
@@ -117,12 +117,12 @@ def test_what_reads_the_database_works_without_one():
     assert len(fingerprint.fingerprint(project)) == 64
     assert parts(project) and 0 <= codebook_progress(project) <= 1
     workflow.tasks(project)
-    assert workflow.profile_summary(project) == "8 variables prévues ; pas encore de base."
+    assert workflow.profile_summary(project) == "9 variables prévues ; pas encore de base."
     assert workflow.format_note(project) is None and workflow.platform_notes(project) == []
     assert platforms.of(project) is None
     propose_from_questionnaire(project)
-    # A displayed text has no variable: it is never a target to link to.
-    assert "Q3" not in {t.target_id for t in link.targets(project.questionnaire)}
+    # A displayed text has its column, as in LimeSurvey's exports.
+    assert "Q3" in {t.target_id for t in link.targets(project.questionnaire)}
     assert link.no_question_reason(project.variable("Q2")) is None
     payload = variable_payload(project.variable("Q1"), [], {}, statistics=True)
     assert payload["type"] == "integer" and "observed" not in payload

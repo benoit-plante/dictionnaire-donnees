@@ -1,5 +1,6 @@
 """Write the fictional LimeSurvey survey of the tests (v0.20, D-148): its structure as
-LimeSurvey Cloud 7.6 exports it, in its two forms, `.lss` (XML) and the tab-separated `.txt`.
+LimeSurvey Cloud 7.6 exports it, in its two forms, `.lss` (XML) and the tab-separated `.txt`,
+and five invented responses as it exports them, in CSV (codes), Excel and SPSS (`.sav`).
 
 The forms are those seen on 2026-10-19, when this very survey was imported into LimeSurvey 7.6,
 exported again and filled with invented responses (`docs/essais/2026-10-19-limesurvey-fictif.md`).
@@ -13,8 +14,14 @@ Run: uv run python scripts/generer_limesurvey_fictif.py [folder]
 
 from __future__ import annotations
 
+import datetime as dt
 import sys
 from pathlib import Path
+
+import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import generer_bases_fictives as common
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "exemples" / "bases-fictives"
@@ -264,6 +271,157 @@ def tsv_text() -> str:
     return "\n".join(lines) + "\n"
 
 
+# --- The responses (A2). ---
+
+RESPONSES_STEM = "reponses-limesurvey"
+# The columns of the exports, as LimeSurvey names them in a CSV or Excel file.
+COLUMNS = [
+    "id", "submitdate", "lastpage", "startlanguage", "seed", "startdate", "datestamp",
+    "quota_exit", "genre", "genre[other]", "age", "region", "journal", "profession", "intro",
+    "sommeil[SQ001]", "sommeil[SQ002]", "sommeil[SQ003]", "aides[SQ001]", "aides[SQ002]",
+    "aides[other]", "nuit",
+]  # fmt: skip
+# Five invented responses; the last stopped after the first page. None: a cell LimeSurvey
+# leaves empty (a question not seen, a number not given); "": an empty answer it writes.
+ROWS = [
+    ["1", "2026-10-19 19:27:53", "2", "fr", "184453967", "2026-10-19 19:27:07",
+     "2026-10-19 19:27:53", None, "1", "", "34", "1", "2026-10-01 00:00:00", "Infirmière", "",
+     "3", "2", "3", "Y", "", "", "Réveillée trois fois."],
+    ["2", "2026-10-19 19:28:27", "2", "fr", "983672855", "2026-10-19 19:28:02",
+     "2026-10-19 19:28:27", None, "2", "", "51", "2", "2026-10-02 00:00:00", "Enseignant", "",
+     "1", "4", "1", "", "Y", "", ""],
+    ["3", "2026-10-19 19:28:48", "2", "fr", "19063807", "2026-10-19 19:28:43",
+     "2026-10-19 19:28:48", None, "-oth-", "Non binaire", "27", "3", "2026-10-03 00:00:00",
+     "Étudiant", "", "2", "3", "2", "Y", "Y", "Le bruit blanc", "Difficile."],
+    ["4", "2026-10-19 19:29:16", "2", "fr", "1110833683", "2026-10-19 19:29:11",
+     "2026-10-19 19:29:16", None, "9", "", None, "", "2026-10-04 00:00:00", "", "", "4", "1",
+     "4", "", "", "", ""],
+    ["5", None, "1", "fr", "1658836068", "2026-10-19 19:29:25", "2026-10-19 19:29:28", None,
+     "1", "", "42", "1", "2026-10-05 00:00:00", "Comptable", None, None, None, None, None, None,
+     None, None],
+]  # fmt: skip
+DATETIMES = {"submitdate", "startdate", "datestamp", "journal"}
+# The .sav: a label, a format and a measure for each variable, as LimeSurvey 7.6 wrote them.
+SAV_LABELS = {
+    "id": "ID de la réponse", "submitdate": "Date de soumission", "lastpage": "Dernière page",
+    "startlanguage": "Langue de départ", "seed": "Tête de série",
+    "startdate": "Date de lancement", "datestamp": "Date de la dernière action",
+    "quota_exit": "Sortie de quota", "genre": "Quel est votre genre ?",
+    "genre_other": "[Autre] Quel est votre genre ?", "age": "Quel âge avez-vous ?",
+    "region": "Dans quelle région habitez-vous ?",
+    "journal": "À quelle date avez-vous rempli le journal du sommeil ?",
+    "profession": "Quelle est votre profession ?",
+    "intro": "Les questions suivantes portent sur votre sommeil.",
+    "sommeil_SQ001": "[vous êtes-vous réveillé·e la nuit ?] Au cours du dernier mois, à quelle "
+                     "fréquence…",
+    "sommeil_SQ002": "[avez-vous bien dormi ?] Au cours du dernier mois, à quelle fréquence…",
+    "sommeil_SQ003": "[avez-vous eu du mal à vous endormir ?] Au cours du dernier mois, à "
+                     "quelle fréquence…",
+    "aides_SQ001": "[La lecture] Qu'est-ce qui vous aide à dormir ?",
+    "aides_SQ002": "[La musique] Qu'est-ce qui vous aide à dormir ?",
+    "aides_other": "[Autre] Qu'est-ce qui vous aide à dormir ?",
+    "nuit": "Décrivez une nuit difficile.",
+}  # fmt: skip
+SAV_FORMATS = {
+    "id": "F1.0", "submitdate": "DATETIME20", "lastpage": "F1.0", "startlanguage": "A2",
+    "seed": "F10.0", "startdate": "DATETIME20", "datestamp": "DATETIME20", "quota_exit": "A1",
+    "genre": "A5", "genre_other": "A11", "age": "F2.0", "region": "F1.0",
+    "journal": "DATETIME20", "profession": "A11", "intro": "A1", "sommeil_SQ001": "F1.0",
+    "sommeil_SQ002": "F1.0", "sommeil_SQ003": "F1.0", "aides_SQ001": "A28",
+    "aides_SQ002": "A28", "aides_other": "A14", "nuit": "A23",
+}  # fmt: skip
+FREQUENCY = {1.0: "Jamais", 2.0: "Parfois", 3.0: "Souvent", 4.0: "Toujours"}
+TICKED = {"Y": "Oui", "0": "Non sélectionné"}
+SAV_VALUE_LABELS = {
+    "genre": {"1": "Femme", "2": "Homme", "9": "Préfère ne pas répondre", "-oth-": "Other"},
+    "region": {1.0: "Estrie", 2.0: "Mauricie", 3.0: "Outaouais"},
+    "sommeil_SQ001": FREQUENCY, "sommeil_SQ002": FREQUENCY, "sommeil_SQ003": FREQUENCY,
+    "aides_SQ001": TICKED, "aides_SQ002": TICKED,
+}  # fmt: skip
+# SPSS counts dates in seconds from 1582-10-14, which LimeSurvey writes for an empty date.
+SPSS_ZERO = dt.datetime(1582, 10, 14)
+
+
+def sav_name(column: str) -> str:
+    return column.replace("[", "_").replace("]", "")
+
+
+def responses_csv() -> str:
+    def cell(value):
+        return "" if value is None else '"' + value.replace('"', '""') + '"'
+
+    lines = [",".join(f'"{c}"' for c in COLUMNS)]
+    lines += [",".join(cell(v) for v in row) for row in ROWS]
+    return "\ufeff" + "\r\n".join(lines) + "\r\n"
+
+
+def write_responses_xlsx(path: Path) -> None:
+    from openpyxl import Workbook
+
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "ddict - questionnaire fictif (t"  # the survey's title, cut at 31
+    sheet.append(COLUMNS)
+    for row in ROWS:
+        sheet.append([
+            None if v in (None, "") else (int(v) if v.isdigit() else v)  # as LimeSurvey does
+            for v in row
+        ])  # fmt: skip
+    workbook.properties.created = common.XLSX_FIXED_TIME
+    workbook.properties.modified = common.XLSX_FIXED_TIME
+    workbook.save(path)
+    _fix_zip_times(path)
+
+
+def _fix_zip_times(path: Path) -> None:
+    """Fixed times in the zip entries and in the workbook's properties: the same bytes."""
+    import re
+    import zipfile
+
+    with zipfile.ZipFile(path) as archive:
+        entries = [(info, archive.read(info.filename)) for info in archive.infolist()]
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as archive:
+        for info, data in entries:
+            if info.filename == "docProps/core.xml":
+                data = re.sub(
+                    rb"(<dcterms:modified[^>]*>)[^<]*", rb"\g<1>2026-01-01T00:00:00Z", data
+                )
+            fixed = zipfile.ZipInfo(info.filename, date_time=common.XLSX_FIXED_TIME.timetuple()[:6])
+            fixed.compress_type = zipfile.ZIP_DEFLATED
+            fixed.create_system = 0
+            archive.writestr(fixed, data)
+
+
+def _seconds(value: str | None) -> float:
+    """A date and time in SPSS's seconds; LimeSurvey writes 0 (1582-10-14) for an empty one."""
+    if value is None:
+        return 0.0
+    return (dt.datetime.fromisoformat(value) - SPSS_ZERO).total_seconds()
+
+
+def write_responses_sav(path: Path) -> None:
+    data = {}
+    for index, column in enumerate(COLUMNS):
+        values = [row[index] for row in ROWS]
+        name = sav_name(column)
+        if column in DATETIMES:
+            data[name] = [_seconds(v) for v in values]
+        elif SAV_FORMATS[name].startswith("F"):
+            data[name] = [float(v) if v not in (None, "") else float("nan") for v in values]
+        else:
+            data[name] = ["" if v is None else v for v in values]
+    meta = {
+        "column_labels": SAV_LABELS,
+        "variable_value_labels": SAV_VALUE_LABELS,
+        "variable_format": SAV_FORMATS,
+        "variable_measure": {
+            n: "unknown" if n in SAV_VALUE_LABELS or n.endswith("_other") else "nominal"
+            for n in SAV_FORMATS
+        },
+    }
+    common.write_sav(pd.DataFrame(data), meta, path)
+
+
 def write_all(folder: Path) -> list[Path]:
     folder.mkdir(parents=True, exist_ok=True)
     written = []
@@ -271,7 +429,12 @@ def write_all(folder: Path) -> list[Path]:
         path = folder / f"{STEM}{suffix}"
         path.write_text(text, encoding="utf-8", newline="\n")
         written.append(path)
-    return written
+    csv_path = folder / f"{RESPONSES_STEM}.csv"
+    csv_path.write_bytes(responses_csv().encode("utf-8"))
+    xlsx_path, sav_path = folder / f"{RESPONSES_STEM}.xlsx", folder / f"{RESPONSES_STEM}.sav"
+    write_responses_xlsx(xlsx_path)
+    write_responses_sav(sav_path)
+    return [*written, csv_path, xlsx_path, sav_path]
 
 
 if __name__ == "__main__":

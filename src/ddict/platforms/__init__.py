@@ -42,8 +42,10 @@ class PlatformVariable:
 class Place:
     """Where a variable sits in the structure of the survey."""
 
-    question: int  # rank of the question in the survey
-    item: int | None = None  # rank of the grid item or checkbox option
+    # The question: its rank in the survey (SurveyMonkey), or its code (LimeSurvey, v0.20).
+    question: int | str
+    # The grid item or checkbox option: its rank, or its code ("SQ001").
+    item: int | str | None = None
     other: bool = False  # the text of the "other" option
 
 
@@ -61,6 +63,50 @@ class Platform:
     # in a single column, and the forms of the "other" option.
     response_cells: tuple[str, ...]
     other_cells: tuple[str, ...]
+    # The start of the names of a question's items: the prefix of its group.
+    prefix_format: str = "{question}_"
+    # The codes of a ticked box's value labels, beyond the one label of SurveyMonkey's:
+    # LimeSurvey's .sav labels "Y" and "0" (v0.20).
+    checkbox_codes: tuple[str, ...] = ()
+    # Its exports name an item "question[item]" in a CSV or Excel file, "question_item" in its
+    # .sav file: the readers name the columns as the .sav does (LimeSurvey, v0.20).
+    bracket_names: bool = False
+    # The date its .sav file writes for an empty date and time (the zero of SPSS's dates):
+    # read as an empty cell (LimeSurvey, v0.20).
+    empty_datetime: str | None = None
+    # The label its .sav file gives an item: "[La lecture] Qu'est-ce qui vous aide à dormir ?"
+    # (LimeSurvey, v0.20), groups "item" and "question".
+    item_label: re.Pattern | None = None
+
+    def label_question(self, label: str | None) -> str | None:
+        """The question's text in an item's label, when the platform writes both there."""
+        if not label or self.item_label is None:
+            return None
+        found = self.item_label.fullmatch(label)
+        return found.group("question") if found else None
+
+    def question_key(self, question: int | str) -> str:
+        """The key of a question's stem (D-048): "q0005", or a LimeSurvey code."""
+        return self.question_format.format(question=question)
+
+    def item_prefix(self, question: int | str) -> str:
+        return self.prefix_format.format(question=question)
+
+    def ticked(self, label_codes, n_distinct: int | None) -> bool:
+        """Whether a variable looks like a ticked box: a single value label (or the
+        platform's own pair of labels), and a single value observed at most."""
+        if (n_distinct or 0) > 1:
+            return False
+        if len(label_codes) <= 1:
+            return True
+        codes = {str(c) for c in label_codes}
+        return bool(self.checkbox_codes) and codes <= set(self.checkbox_codes)
+
+    def column_name(self, header: str) -> str:
+        """The name the .sav file gives a column of a CSV or Excel export."""
+        if not self.bracket_names:
+            return header
+        return _BRACKET.sub(r"_\1", header)
 
     def platform_variable(self, name: str) -> PlatformVariable | None:
         lowered = name.lower()
@@ -75,9 +121,10 @@ class Platform:
         if match is None:
             return None
         item = match.group("item")
+        question = match.group("question")
         return Place(
-            question=int(match.group("question")),
-            item=int(item) if item else None,
+            question=int(question) if question.isdigit() else question,
+            item=(int(item) if item.isdigit() else item) if item else None,
             other=match.group("other") is not None,
         )
 
@@ -242,20 +289,72 @@ SURVEYMONKEY = Platform(
     other_format="q{question:04d}_other",
     response_cells=("Response", "Open-Ended Response"),
     other_cells=("Other (please specify)", "Autre (veuillez préciser)"),
+    prefix_format="q{question:04d}_",
 )
 
-PLATFORMS = (SURVEYMONKEY,)
+# LimeSurvey (v0.20, D-148): its conventions as LimeSurvey Cloud 7.6 exported a fictional
+# survey on 2026-10-19 (docs/essais/2026-10-19-limesurvey-fictif.md), and only those: the
+# variables it added to the CSV, Excel and .sav exports of that survey. A question's code has
+# letters and digits only (D-156), so the first "_" ends it.
+LIMESURVEY = Platform(
+    name="limesurvey",
+    title="LimeSurvey",
+    variables=(
+        PlatformVariable("response_id", ("id",), None, {"fr": "id_reponse", "en": "response_id"}),
+        PlatformVariable(
+            "submit_date", ("submitdate",), None, {"fr": "date_soumission", "en": "submit_date"}
+        ),
+        PlatformVariable(
+            "last_page", ("lastpage",), None, {"fr": "derniere_page", "en": "last_page"}
+        ),
+        PlatformVariable(
+            "start_language",
+            ("startlanguage",),
+            None,
+            {"fr": "langue_depart", "en": "start_language"},
+        ),
+        PlatformVariable("seed", ("seed",), None, {"fr": "graine", "en": "seed"}),
+        PlatformVariable(
+            "start_date", ("startdate",), None, {"fr": "date_debut", "en": "start_date"}
+        ),
+        PlatformVariable(
+            "last_action_date",
+            ("datestamp",),
+            None,
+            {"fr": "date_derniere_action", "en": "last_action_date"},
+        ),
+        PlatformVariable(
+            "quota_exit", ("quota_exit",), None, {"fr": "sortie_quota", "en": "quota_exit"}
+        ),
+    ),
+    item_name=re.compile(
+        r"(?P<question>[A-Za-z][A-Za-z0-9]*)(?:_(?P<other>other)|_(?P<item>[A-Za-z0-9]+))?"
+    ),
+    question_format="{question}",
+    item_format="{question}_{item}",
+    other_format="{question}_other",
+    response_cells=(),
+    other_cells=(),
+    checkbox_codes=("Y", "0"),
+    bracket_names=True,
+    empty_datetime="1582-10-14",
+    item_label=re.compile(r"\[(?P<item>[^\]]*)\] (?P<question>.+)"),
+)
+
+PLATFORMS = (SURVEYMONKEY, LIMESURVEY)
+_BRACKET = re.compile(r"\[([A-Za-z0-9]+)\]")
 
 
 @dataclass(frozen=True)
 class PlatformQuestion:
     """A question of the survey, as its variables show it (v0.7, step 4)."""
 
-    rank: int
+    rank: int  # its rank in the survey
     kind: str  # "grid", "checkbox", or "single" (one variable: a choice or an open answer)
     items: tuple[str, ...]  # the variables of its items or options, by rank
     other: str | None = None  # the variable of its "other" text
     single: str | None = None  # the variable of a whole question
+    key: int | str | None = None  # its place's question: the rank, or a code (v0.20)
 
     @property
     def variables(self) -> tuple[str, ...]:
@@ -271,15 +370,21 @@ def survey_questions(
     `ticked`: the variables that look like a checkbox (a single value label, or a single
     value observed): a question whose items all do is a set of checkboxes, otherwise a grid.
     """
-    by_rank: dict[int, list[tuple[str, Place]]] = {}
+    by_key: dict[int | str, list[tuple[str, Place]]] = {}
     for name in names:
+        if platform.platform_variable(name) is not None:
+            continue
         place = platform.place(name)
         if place is not None:
-            by_rank.setdefault(place.question, []).append((name, place))
+            by_key.setdefault(place.question, []).append((name, place))
+    # Ranks in their order; codes (LimeSurvey) in the order of the export's columns.
+    keys = sorted(by_key) if all(isinstance(k, int) for k in by_key) else list(by_key)
     found = []
-    for rank in sorted(by_rank):
-        members = by_rank[rank]
-        items = tuple(n for n, p in sorted(members, key=lambda m: m[1].item or 0) if p.item)
+    for rank, key in enumerate(keys, start=1):
+        members = by_key[key]
+        ranked = all(isinstance(p.item, int) for _n, p in members if p.item)
+        ordered = sorted(members, key=lambda m: m[1].item or 0) if ranked else members
+        items = tuple(n for n, p in ordered if p.item)
         other = next((n for n, p in members if p.other), None)
         single = next((n for n, p in members if p.item is None and not p.other), None)
         if not items:
@@ -288,7 +393,8 @@ def survey_questions(
             kind = "checkbox"
         else:
             kind = "grid"
-        found.append(PlatformQuestion(rank, kind, items, other, single))
+        number = key if isinstance(key, int) else rank
+        found.append(PlatformQuestion(number, kind, items, other, single, key))
     return found
 
 

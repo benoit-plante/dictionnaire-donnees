@@ -170,7 +170,7 @@ def _from_project(project: Project, file_name: str) -> EarlierWave:
         group = groups.get(entry.name)
         prefix = group.name_prefix.value if group and is_accepted(group.name_prefix) else None
         if place is not None:
-            key, rank, other = f"q{place.question:04d}", place.item, place.other
+            key, rank, other = platform.question_key(place.question), place.item, place.other
         else:
             rank = (group.members.value.index(entry.name) + 1) if group else None
             key, other = (group.group_id if group else None), False
@@ -459,7 +459,7 @@ def _same_shapes_only(project: Project, wave: EarlierWave, scored: dict[str, lis
     platform = platforms.of(project)
     if platform is None or wave.source != "table":
         return
-    earlier: dict[int, set] = {}
+    earlier: dict[int | str, set] = {}
     for variable in wave.variables:
         place = platform.place(variable.original or "")
         if place is not None:
@@ -469,7 +469,7 @@ def _same_shapes_only(project: Project, wave: EarlierWave, scored: dict[str, lis
     moved = False
     for question in sorted(link.project_questions(project), key=lambda q: q.rank):
         shape = {(p.item, p.other) for n in question.variables if (p := platform.place(n))}
-        moved = moved or earlier.get(question.rank) != shape
+        moved = moved or earlier.get(question.key) != shape
         if moved:
             for name in question.variables:
                 scored[name] = []
