@@ -70,9 +70,9 @@ foreach ($folder in $folders) {
 
 $recents = Join-Path $env:APPDATA "ddict"
 if (Test-Path $recents) {
-    if (Ask "Effacer aussi la liste des projets récents (les chemins de vos fichiers projet) ?") {
+    if (Ask "Effacer aussi les listes des projets récents et des projets suivis (les chemins de vos fichiers projet) ?") {
         Remove-Item -Recurse $recents
-        Say "Liste effacée."
+        Say "Listes effacées."
     }
 }
 

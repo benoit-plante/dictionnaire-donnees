@@ -1,5 +1,18 @@
 # Changements
 
+## 0.17.0 — 2026-10-19
+
+Plusieurs projets, et aucune décision perdue (plan : `docs/plan-v0.17.md`, D-129 à D-133). Ni le calcul, ni les exports, ni le format du fichier projet, ni les règles de confidentialité ne changent ; aucune IA ajoutée.
+
+- **Jamais écraser sans prévenir** (D-129, D-130) : l'outil retient l'empreinte (SHA-256) du projet et du carnet tels qu'il les a lus, et refuse d'enregistrer si le fichier a changé depuis : autre onglet, autre personne sur un dossier partagé, ligne de commande. Dans l'interface, un bandeau le dit dès l'affichage suivant ; une décision refusée est rappelée (la page, le bouton, ce qui était tapé) ; **Recharger le projet** lit le projet tel qu'il est, et la décision reste affichée, « Décision à refaire ». Rien n'est jamais fusionné à la place de la personne. En ligne de commande, un message et le code de sortie 2. Une date de fichier qui bouge sans changement de contenu ne dit rien. Le fichier écrit est le même, octet pour octet.
+- **Un enregistrement interrompu** laisse un fichier `.tmp` : il est signalé à l'ouverture du projet (interface et ligne de commande), jamais supprimé par l'outil. **Un fichier tenu un instant** par OneDrive ou un antivirus : trois essais, puis « Le fichier est occupé… : rien n'est enregistré », le projet intact.
+- **Mes projets** (D-131, D-133) : l'accueil commence par un tableau des projets suivis, le plus récent en haut : phase (Documenter, Analyser, Rédiger, d'après les fichiers du projet), codebook documenté, ce qui attend, plan, carnet (retenues, à confirmer, à recalculer), base trouvée ou non, date. Lu dans les projets et les carnets, jamais dans les bases ; 30 projets en une demi-seconde. Un clic sur le nom ouvre le projet là où quelque chose attend.
+- **Suivre un projet** (D-131) : d'office à la création (accueil et `ddict profiler`), sauf l'essai sur la base fictive ; « Suivre ce projet » à côté d'un projet récent et dans la barre latérale ; « Ne plus suivre », qui ne touche aucun fichier. La liste est gardée sur l'ordinateur (`%APPDATA%\ddict\projets-suivis.json`), chemins seulement, sans limite ; un projet déplacé reste, « Introuvable », et **Le retrouver…** donne son nouveau chemin.
+- **Chercher les projets dans un dossier** (D-132) : sur 4 niveaux, sans ouvrir aucun fichier (un fichier OneDrive en ligne seulement n'est pas téléchargé) ; dossiers cachés, système et de programmes passés, jonctions jamais suivies ; rien de coché au départ.
+- **`ddict projets`** (`ddict projects`) : `lister`, `suivre`, `retirer`, `chercher` (`--suivre`) ; en anglais `list`, `follow`, `remove`, `search` (`--follow`).
+- Le désinstalleur demande avant d'effacer les listes des projets récents et suivis.
+- Guides : « Suivre plusieurs projets », en français et en anglais ; le scénario manuel gagne les étapes 76 à 82.
+
 ## 0.16.0 — 2026-10-18
 
 L'interface guide la personne de la base à l'article (plan : `docs/plan-v0.16.md`, D-121 à D-128). Ni le calcul, ni les formats de fichier, ni les règles de confidentialité ne changent ; aucune IA ajoutée. Trois lots : des corrections locales, la navigation et la progression, un seul geste pour décider et enregistrer.

@@ -51,7 +51,7 @@ Your first codebook is done, without AI: everything in it was computed exactly f
 
 **The menu of the sidebar** (since 0.16) arranges the pages in three jobs: **Document** (Database, Questionnaire, Glossary, Variables, Groups, Names, Export), **Analyse** (Plan, Analyses, Notebook) and **Write** (Method, Verify), then **Settings** (Local AI). Each page shows what waits there ("Glossary (2)"), or ✓ when nothing waits. The **Codebook N% documented** bar measures what your team has decided, part by part (the detail is in the Summary tab of the Database page). The long pages are in **tabs**: Database (Summary, Description, Measure levels, Sensitive), a group (Items, Scoring, Instrument, Recodings), the result of an analysis (Result, Tables and figures, Files).
 
-Under the menu, the **to-do list** says what is waiting, in the recommended order ("Add the study questionnaire", "Acronyms to accept: 3"…), up to the article: the plan to freeze, the numbers to confirm in the notebook, the gaps of the Method, the draft to check. Each line is a button that leads to the right page. The **Home** button takes you back to the home page, where your **Recent projects** come first, with their folder and the date of their last change, and open again in one click.
+Under the menu, the **to-do list** says what is waiting, in the recommended order ("Add the study questionnaire", "Acronyms to accept: 3"…), up to the article: the plan to freeze, the numbers to confirm in the notebook, the gaps of the Method, the draft to check. Each line is a button that leads to the right page. The **Home** button takes you back to the home page, where the table **My projects** comes first (section 19), then your **Recent projects**, with their folder and the date of their last change; each opens again in one click.
 
 When a message points to another page ("The measure level is decided on the Database page", "acronyms… without a definition: anx"), a button comes with it and leads there, already filled in: **Define anx** opens the glossary with the acronym in its field.
 
@@ -151,7 +151,7 @@ It works the same with your file: SPSS (`.sav`), CSV (including those of Excel i
 - The tool never changes your data file.
 - Variables that look like identifiers, free text or dates of birth are found automatically: only their metadata is used, and counts below 5 are masked.
 - On a large database, the links proposed by the AI are often right, but not always: questions repeated word for word ("How often does this person support you?", once per person) are the hardest case. Check them before the labels.
-- The list of recent projects is kept on your computer (folder `%APPDATA%\ddict`) and holds only file paths; **Clear the list**, on the home page, empties it.
+- The lists of recent and followed projects are kept on your computer (folder `%APPDATA%\ddict`) and hold only file paths; **Clear the list**, on the home page, empties the recent ones, and **Stop following** takes a followed project off its list.
 
 **A raw SurveyMonkey export** (variables named `q0003_0004`, as `.sav`, `.xlsx` or `.csv`) is recognized: the **Database** page shows "SurveyMonkey export recognized.". The tool then reads the structure of the survey in the names: `q0003_0004` is the 4th item of the 3rd question. Each grid becomes a group, each check-all-that-apply question a "multiple response" group with its "other" variable, and a variable is linked to its question in the questionnaire when their texts agree. In an `.xlsx` or `.csv`, the second header row is never read as a participant. Codes whose label says "Don't know" or "Prefer not to answer" are proposed as missing codes, for the team to confirm.
 
@@ -334,10 +334,35 @@ It gives a report (Markdown and Excel) and a copy `-verifie.docx` with a Word co
 
 A trial on the open AMATUS database and its published article is described (in French) in [`../essais/2026-10-18-essai-v015-amatus.md`](../essais/2026-10-18-essai-v015-amatus.md).
 
+## 19. Follow several projects
+
+Since 0.17, the home page begins with the table **My projects**: one row per followed project, the latest changed at the top. Nothing is sent outside your computer; the table reads the project files and the notebooks, never the databases.
+
+| Column | What it says |
+|---|---|
+| Project | The project file's name, and its folder in small print |
+| Phase | **Document** while nothing is analysed; **Analyse** as soon as the plan has a hypothesis or the notebook an analysis; **Write** as soon as the article's draft exists |
+| Codebook | The same percentage as the open project's bar |
+| Waiting | The number of tasks, and the first one ("4 · Acronyms to accept: 3"); "—" when nothing waits |
+| Plan | "in progress (2 hypotheses)", "frozen on 2026-10-18", "frozen, 1 amendment" |
+| Notebook | The analyses retained, those **to confirm** (a new calculation waits for your agreement) and those **to recompute** (a decision changed since they were computed: open the notebook to find out whether their figures change) |
+| Database | "found" when a file of that name is next to the project; the tool checks it is the right one when the project is opened |
+| Changed | The last change of the project or of its notebook |
+
+**Open a project**: a click on its name opens it where something waits ("Acronyms to accept" opens the glossary), otherwise on the first page of its phase.
+
+**Which projects are followed.** A project created from the home page, or by `ddict profile`, is followed at once; the trial project on the fictional database is not. To follow another one: **Follow this project** next to a recent project, or in the sidebar of the open project. To find several at once: **Look for projects in a folder…**, under the table, then choose the folder. The tool looks in that folder and its subfolders, 4 levels down, without opening any file (a OneDrive file "available online only" is not downloaded); it passes over hidden and system folders. Nothing is checked at first: check those you want to follow, then **Follow these N projects**.
+
+**The ⋮ menu** at the end of a row: **Stop following** takes the project off the table; its file is never touched, nor its notebook. A project moved or renamed stays in the table, greyed, "Not found": **Find it again…** opens the "Open" window, where you show where it is now. The old file being gone, the tool cannot check it is the same project: it says which database the chosen project was made from, for you to judge.
+
+**The same project open twice**: in two tabs, by two people on a shared folder, or by the interface and the command line. The tool never overwrites a decision taken elsewhere. If the project changed since you opened it, a banner says so, and your last decision is not saved; it is recalled (the page, the button, what you had typed). **Reload the project** reads the project as it is now; your decision stays shown, "Decision to make again", for you to make again if it still holds. Nothing is merged for you. The notebook is protected the same way.
+
+On the command line: `ddict projects list` prints the table; `ddict projects follow study.dd.json` and `ddict projects remove study.dd.json`; `ddict projects search "C:\Users\you\Documents\Studies"` lists the projects found, and `--follow` adds them all.
+
 ## Update or uninstall
 
 - **Update**: download and extract the new archive, then double-click its `installer.bat`. If the tool is open, the installer offers to close it (answer `y`): it cannot replace it while it runs. Your project files are kept. A project opened with version 0.8 no longer opens with an older version (its format changed); the reverse works.
-- **Uninstall**: double-click `desinstaller.bat`, in the tool's folder. It removes the tool and its icons, without touching your projects, codebooks or data; it asks before clearing the list of recent projects. uv and Ollama stay installed.
+- **Uninstall**: double-click `desinstaller.bat`, in the tool's folder. It removes the tool and its icons, without touching your projects, codebooks or data; it asks before clearing the lists of recent and followed projects. uv and Ollama stay installed.
 
 ## For those who prefer the command line
 
@@ -369,6 +394,8 @@ ddict paper sleep-study.dd.json              # the article draft and the R maste
 ddict recode cut sleep-study.dd.json age --name age_class --cuts 30 45 --reason "…"
 ddict verify sleep-study.dd.json manuscript.docx   # the figures of a Word manuscript
 ddict deposit sleep-study.dd.json            # the reproduction package, without the database
+ddict projects list                          # the followed projects, as the home page's table
+ddict projects search "C:\Users\you\Documents\Studies" --follow   # follow those of a folder
 ddict advise sleep-study.dd.json "Compare the sleep of women and men." --model qwen2.5:7b-instruct-q4_K_M
 ddict evaluate --model qwen2.5:7b-instruct-q4_K_M       # model bench
 ```
@@ -394,6 +421,10 @@ ddict evaluate --model qwen2.5:7b-instruct-q4_K_M       # model bench
 | Documented copy: "… is no longer the file the project comes from" | The database changed since the project was created (new export, corrected data). Create a new project from the current database. |
 | "The plan is finalised: give the reason for this change." | After the freezing, each change is an amendment: type its reason at the top of the **Plan** page (or `--reason "…"`), then try again. |
 | R: "there is no package called 'haven'" | In R, once: `install.packages("haven")`. |
+| "This project was changed elsewhere since you opened it" | Another tab, another person or a command saved the project meanwhile. **Reload the project**, then make your decision again if it still holds (section 19). On the command line: run the command again. |
+| "The file is busy, perhaps being synced by OneDrive" | Nothing is saved and the project is intact: wait a moment, then click again. |
+| "A save was interrupted… the file ….tmp was left" | The open project is the last one saved in full; the `.tmp` file can be deleted. The tool never deletes it itself. |
+| A project of the table is "Not found" | It was moved or renamed: **⋮** menu of its row, **Find it again…** (section 19). |
 | The tool seems frozen | Close its window, then double-click the icon again. The decisions already taken are saved. |
 
 For any other difficulty, write down what you did and the message you got, and pass them on to the person who gave you the tool.

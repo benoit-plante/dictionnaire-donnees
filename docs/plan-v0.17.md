@@ -1,6 +1,6 @@
 # Plan de la v0.17
 
-> Statut : **validé par l'auteur le 2026-10-18**, avec les recommandations du § 9 : décisions D-129 à D-133 adoptées. Même cap que les v0.11 à v0.16 : **aucune IA ajoutée** ; ni le calcul, ni les exports, ni la confidentialité, ni le format du fichier projet ou du carnet ne changent.
+> Statut : **validé par l'auteur le 2026-10-18 ; réalisé en version 0.17.0** (les trois parties), avec les recommandations du § 9 : décisions D-129 à D-133 adoptées ; le tableau en lignes à boutons (choix de l'auteur à l'étape B2, § 7.1). Même cap que les v0.11 à v0.16 : **aucune IA ajoutée** ; ni le calcul, ni les exports, ni la confidentialité, ni le format du fichier projet ou du carnet ne changent.
 
 ## 1. Pourquoi cette version
 

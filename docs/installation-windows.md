@@ -51,7 +51,7 @@ Votre premier codebook est fait, sans IA : tout ce qu'il contient a été calcul
 
 **Le menu de la barre latérale** (depuis la 0.16) range les pages en trois métiers : **Documenter** (Base, Questionnaire, Glossaire, Variables, Groupes, Noms, Export), **Analyser** (Plan, Analyses, Carnet) et **Rédiger** (Méthode, Vérifier), puis **Réglages** (IA locale). Chaque page dit ce qui y attend (« Glossaire (2) ») ou ✓ quand rien n'y attend. La barre **Codebook documenté à N %** mesure ce que votre équipe a décidé, partie par partie (le détail est dans l'onglet Résumé de la page Base). Les pages longues sont en **onglets** : Base (Résumé, Description, Niveaux de mesure, Sensibles), un groupe (Items, Cotation, Instrument, Recodages), le résultat d'une analyse (Résultat, Tableaux et figures, Fichiers).
 
-Sous le menu, le **tableau de bord** dit ce qui attend, dans l'ordre recommandé (« Ajouter le questionnaire de l'étude », « Sigles à valider : 3 »…), jusqu'à l'article : le plan à figer, les chiffres à confirmer au carnet, les trous de la Méthode, l'ébauche à vérifier. Chaque ligne est un bouton qui mène à la bonne page. Le bouton **Accueil** ramène à l'accueil, où vos **projets récents** viennent en tête, avec leur dossier et la date de leur dernière modification, et se rouvrent en un clic.
+Sous le menu, le **tableau de bord** dit ce qui attend, dans l'ordre recommandé (« Ajouter le questionnaire de l'étude », « Sigles à valider : 3 »…), jusqu'à l'article : le plan à figer, les chiffres à confirmer au carnet, les trous de la Méthode, l'ébauche à vérifier. Chaque ligne est un bouton qui mène à la bonne page. Le bouton **Accueil** ramène à l'accueil, où le tableau **Mes projets** vient en tête (section 19), puis vos **projets récents**, avec leur dossier et la date de leur dernière modification ; chacun se rouvre en un clic.
 
 Quand un message renvoie à une autre page (« Le niveau de mesure se décide sur la page Base », « Sigles… sans définition : anx »), un bouton l'accompagne et y mène, déjà rempli : **Définir anx** ouvre le glossaire avec le sigle dans son champ.
 
@@ -151,7 +151,7 @@ La démarche est la même avec votre fichier : SPSS (`.sav`), CSV (y compris ceu
 - L'outil ne modifie jamais votre fichier de données.
 - Les variables qui ressemblent à des identifiants, à du texte libre ou à des dates de naissance sont repérées automatiquement : seules leurs métadonnées sont utilisées, et les effectifs de moins de 5 sont masqués.
 - Sur une grande base, les rattachements proposés par l'IA sont souvent justes, mais pas toujours : les questions répétées à l'identique (« À quelle fréquence cette personne vous apporte du soutien ? », une fois par personne) sont le cas le plus difficile. Vérifiez-les avant les libellés.
-- La liste des projets récents est gardée sur votre ordinateur (dossier `%APPDATA%\ddict`) et ne contient que des chemins de fichiers ; **Effacer la liste**, sur l'accueil, la vide.
+- Les listes des projets récents et des projets suivis sont gardées sur votre ordinateur (dossier `%APPDATA%\ddict`) et ne contiennent que des chemins de fichiers ; **Effacer la liste**, sur l'accueil, vide celle des récents, et **Ne plus suivre** retire un projet suivi.
 
 **Un export brut de SurveyMonkey** (variables nommées `q0003_0004`, en `.sav`, `.xlsx` ou `.csv`) est reconnu : la page **Base** affiche « Export SurveyMonkey reconnu. ». L'outil lit alors la structure du sondage dans les noms : `q0003_0004` est le 4ᵉ énoncé de la 3ᵉ question. Chaque grille devient un groupe, chaque question à cocher un groupe « réponses multiples » avec sa variable « autre », et une variable est rattachée à sa question du questionnaire quand leurs textes concordent. Dans un `.xlsx` ou un `.csv`, la deuxième ligne d'en-tête n'est jamais lue comme un participant. Les codes dont l'étiquette dit « Ne sais pas » ou « Préfère ne pas répondre » sont proposés comme codes manquants, à confirmer par l'équipe.
 
@@ -334,10 +334,35 @@ Il donne un rapport (Markdown et Excel) et une copie `-verifie.docx` avec un com
 
 Un essai sur la base ouverte AMATUS et son article publié est décrit dans [`essais/2026-10-18-essai-v015-amatus.md`](essais/2026-10-18-essai-v015-amatus.md).
 
+## 19. Suivre plusieurs projets
+
+Depuis la 0.17, l'accueil commence par le tableau **Mes projets** : une ligne par projet suivi, le plus récemment modifié en haut. Rien n'y est envoyé hors de votre ordinateur ; le tableau lit les fichiers projet et les carnets, jamais les bases.
+
+| Colonne | Ce qu'elle dit |
+|---|---|
+| Projet | Le nom du fichier projet, et son dossier en petit |
+| Phase | **Documenter** tant que rien n'est analysé ; **Analyser** dès qu'une hypothèse est au plan ou une analyse au carnet ; **Rédiger** dès que l'ébauche d'article existe |
+| Codebook | Le même pourcentage que la barre du projet ouvert |
+| En attente | Le nombre de tâches, et la première (« 4 · Sigles à valider : 3 ») ; « — » si rien n'attend |
+| Plan | « en cours (2 hypothèses) », « figé le 2026-10-18 », « figé, 1 amendement » |
+| Carnet | Les analyses retenues, celles **à confirmer** (un nouveau calcul attend votre accord) et celles **à recalculer** (une décision a changé depuis leur calcul : ouvrez le carnet pour savoir si leurs chiffres changent) |
+| Base | « trouvée » si un fichier de ce nom est à côté du projet ; l'outil vérifie que c'est la bonne à l'ouverture |
+| Modifié | La dernière modification du projet ou de son carnet |
+
+**Ouvrir un projet** : un clic sur son nom l'ouvre là où quelque chose attend (« Sigles à valider » ouvre le glossaire), sinon sur la première page de sa phase.
+
+**Quels projets sont suivis.** Un projet créé depuis l'accueil, ou par `ddict profiler`, est suivi d'office ; le projet d'essai de la base fictive ne l'est pas. Pour en suivre un autre : **Suivre ce projet** à côté d'un projet récent, ou dans la barre latérale du projet ouvert. Pour en retrouver plusieurs d'un coup : **Chercher les projets dans un dossier…**, sous le tableau, puis choisir le dossier. L'outil cherche dans ce dossier et ses sous-dossiers, sur 4 niveaux, sans ouvrir aucun fichier (un fichier OneDrive « disponible en ligne seulement » n'est pas téléchargé) ; il passe les dossiers cachés ou système. Rien n'est coché au départ : cochez ceux que vous voulez suivre, puis **Suivre ces N projets**.
+
+**Le menu ⋮** au bout d'une ligne : **Ne plus suivre** retire le projet du tableau ; son fichier n'est jamais touché, ni son carnet. Un projet déplacé ou renommé reste dans le tableau, grisé, « Introuvable » : **Le retrouver…** ouvre la fenêtre « Ouvrir », où vous montrez où il est maintenant. L'ancien fichier n'existant plus, l'outil ne peut pas vérifier que c'est le même projet : il dit sur quelle base le projet choisi a été fait, pour que vous jugiez.
+
+**Le même projet ouvert deux fois** : dans deux onglets, par deux personnes sur un dossier partagé, ou par l'interface et la ligne de commande. L'outil n'écrase jamais une décision prise ailleurs. Si le projet a changé depuis que vous l'avez ouvert, un bandeau le dit, et votre dernière décision n'est pas enregistrée ; elle est rappelée (la page, le bouton, ce que vous aviez tapé). **Recharger le projet** lit le projet tel qu'il est maintenant ; votre décision reste affichée, « Décision à refaire », pour que vous la refassiez si elle tient toujours. Rien n'est fusionné à votre place. Le carnet est protégé de la même façon.
+
+En ligne de commande : `ddict projets lister` imprime le tableau ; `ddict projets suivre etude.dd.json` et `ddict projets retirer etude.dd.json` ; `ddict projets chercher "C:\Users\vous\Documents\Études"` liste les projets trouvés, et `--suivre` les ajoute tous.
+
 ## Mettre à jour ou désinstaller
 
 - **Mettre à jour** : téléchargez et décompressez la nouvelle archive, puis double-cliquez sur son `installer.bat`. Si l'outil est ouvert, l'installateur propose de le fermer (répondez `o`) : il ne peut pas le remplacer pendant qu'il tourne. Vos fichiers projet sont conservés. Un projet ouvert avec la version 0.8 ne s'ouvre plus avec une version plus ancienne (son format a changé) ; l'inverse fonctionne.
-- **Désinstaller** : double-cliquez sur `desinstaller.bat`, dans le dossier de l'outil. Il retire l'outil et ses icônes, sans toucher à vos projets, codebooks ou données ; il demande avant d'effacer la liste des projets récents. uv et Ollama restent installés.
+- **Désinstaller** : double-cliquez sur `desinstaller.bat`, dans le dossier de l'outil. Il retire l'outil et ses icônes, sans toucher à vos projets, codebooks ou données ; il demande avant d'effacer les listes des projets récents et des projets suivis. uv et Ollama restent installés.
 
 ## Pour qui préfère la ligne de commande
 
@@ -370,6 +395,8 @@ ddict article etude-sommeil.dd.json           # l'ébauche d'article et le scrip
 ddict recoder decouper etude-sommeil.dd.json age --nom age_classe --seuils 30 45 --raison "…"
 ddict verifier etude-sommeil.dd.json manuscrit.docx   # les chiffres d'un manuscrit Word
 ddict deposer etude-sommeil.dd.json          # le paquet de reproduction, sans la base
+ddict projets lister                          # les projets suivis, comme le tableau de l'accueil
+ddict projets chercher "C:\Users\vous\Documents\Études" --suivre   # suivre ceux d'un dossier
 ddict conseiller etude-sommeil.dd.json "Comparer le sommeil des femmes et des hommes." --modele qwen2.5:7b-instruct-q4_K_M
 ddict evaluer --modele qwen2.5:7b-instruct-q4_K_M   # banc d'essai d'un modèle
 ```
@@ -394,6 +421,10 @@ Les commandes et leurs options ont aussi des noms anglais (`ddict export --work`
 | Copie documentée : « n'est plus le fichier d'où vient le projet » | La base a changé depuis la création du projet (nouvelle exportation, données corrigées). Créez un nouveau projet à partir de la base actuelle. |
 | « Le plan est arrêté : donnez la raison de cette modification » | Après le gel, chaque changement est un amendement : tapez sa raison en tête de la page **Plan** (ou `--raison "…"`), puis recommencez. |
 | R : « there is no package called 'haven' » | Dans R, une seule fois : `install.packages("haven")`. |
+| « Ce projet a été modifié ailleurs depuis que vous l'avez ouvert » | Un autre onglet, une autre personne ou une commande a enregistré le projet entre-temps. **Recharger le projet**, puis refaites votre décision si elle tient toujours (section 19). En ligne de commande : relancez la commande. |
+| « Le fichier est occupé, peut-être par la synchronisation de OneDrive » | Rien n'est enregistré et le projet est intact : attendez un instant, puis recliquez. |
+| « Un enregistrement a été interrompu… le fichier ….tmp est resté » | Le projet ouvert est le dernier enregistré en entier ; le fichier `.tmp` peut être supprimé. L'outil ne le supprime jamais lui-même. |
+| Un projet du tableau est « Introuvable » | Il a été déplacé ou renommé : menu **⋮** de sa ligne, **Le retrouver…** (section 19). |
 | L'outil semble figé | Fermez sa fenêtre, puis double-cliquez de nouveau sur l'icône. Les décisions déjà prises sont enregistrées. |
 
 Pour toute autre difficulté, notez ce que vous avez fait et le message obtenu, et transmettez-les à la personne qui vous a fourni l'outil.
