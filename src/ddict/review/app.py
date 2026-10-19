@@ -49,15 +49,6 @@ def _messages_end(top) -> None:
         (top.error if message[0] == "error" else top.success)(message[1])
 
 
-def _go(mode: str, which: str | None) -> None:
-    if which is not None and mode == "names":
-        c.go_to(mode, **{names_view.FILTER: which})
-    elif which is not None:
-        c.go_to(mode, filter=which)
-    else:
-        c.go_to(mode)
-
-
 def _dashboard(waiting) -> None:
     """What waits for the team, in the recommended order; each line leads to its page."""
     st.caption(_("À faire") if waiting else _("Rien en attente."))
@@ -65,7 +56,7 @@ def _dashboard(waiting) -> None:
         st.button(
             task.text.format(n=task.count),
             key=f"task-{index}",
-            on_click=_go,
+            on_click=c.go_to_task,
             args=(task.mode, task.filter),
             width="stretch",
         )

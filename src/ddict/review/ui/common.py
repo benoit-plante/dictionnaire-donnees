@@ -435,6 +435,19 @@ def go_to(mode: str, **filled) -> None:
     st.session_state.update(filled)
 
 
+NAMES_FILTER = "names-filter"  # the page Names has its own filter
+
+
+def go_to_task(mode: str, which: str | None) -> None:
+    """The page of a task, with its filter (the dashboard; v0.17, the home page's table)."""
+    if which is not None and mode == "names":
+        go_to(mode, **{NAMES_FILTER: which})
+    elif which is not None:
+        go_to(mode, filter=which)
+    else:
+        go_to(mode)
+
+
 def go_button(label: str, key: str, mode: str, **filled) -> None:
     """The button of a message that points to another page (v0.16, finding 11)."""
     st.button(

@@ -1,4 +1,5 @@
-"""The home page (v0.3): a new project from a database, a project to open, recent projects.
+"""The home page (v0.3): the projects followed (v0.17), recent projects, a new project from a
+database, a project to open.
 
 Files are chosen with the system's "Open" window (D-020), or by pasting their path. The
 database is read here, on this computer, exactly as `ddict profiler` does: the project
@@ -12,7 +13,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from ddict import i18n, recents, settings, tracked
+from ddict import i18n, overview, recents, settings, tracked
 from ddict.i18n import _
 from ddict.io import ReadError
 from ddict.project import ProjectError, load_project, ondisk
@@ -134,7 +135,8 @@ def page() -> None:
         )
     )
 
-    _recent()  # v0.16 (finding 16): taking up one's work first
+    _projects()  # v0.17: taking up one's work first
+    _recent()
     _trial()
     st.header(_("Nouveau projet"))
     st.write(
@@ -200,13 +202,116 @@ def _modified(path: Path) -> str:
     return moment.strftime("%Y-%m-%d %H:%M")
 
 
+def _take_up(row: overview.ProjectRow) -> None:
+    """Open a followed project on its first task, else on the first page of its phase."""
+    mode, which = row.first_page()
+    c.open_project(row.path)
+    c.go_to_task(mode, which)
+
+
+def _unfollow(path: Path) -> None:
+    if tracked.unfollow(path):
+        _message(
+            "success",
+            _("« {name} » n'est plus suivi ; son fichier n'est pas touché.").format(
+                name=overview.ProjectRow(path, None).name
+            ),
+            "home-unfollow",
+        )
+    else:
+        _message("error", tracked.not_written(), "home-unfollow")
+
+
+WIDTHS = [2.2, 1, 0.9, 2.4, 1.6, 2, 0.9, 1.3, 0.5]
+
+
+def _headers() -> None:
+    headers = [
+        (_("Projet"), _("Un clic sur le nom ouvre le projet là où quelque chose attend.")),
+        (
+            _("Phase"),
+            _(
+                "Documenter tant que rien n'est analysé ; Analyser dès qu'une hypothèse est au "
+                "plan ou une analyse au carnet ; Rédiger dès que l'ébauche d'article existe."
+            ),
+        ),
+        (_("Codebook"), _("Le même chiffre que la barre de la barre latérale du projet.")),
+        (_("En attente"), _("Le nombre de tâches, et la première.")),
+        (_("Plan"), None),
+        (
+            _("Carnet"),
+            _(
+                "À recalculer : l'empreinte du codebook a changé depuis le dernier calcul de ces "
+                "analyses. Leurs chiffres ont peut-être changé, peut-être pas : ouvrez le carnet "
+                "pour le savoir. À confirmer : un nouveau calcul attend votre confirmation."
+            ),
+        ),
+        (
+            _("Base"),
+            _(
+                "Trouvée : un fichier de ce nom est à côté du projet. Le tableau ne lit pas la "
+                "base ; l'outil vérifie que c'est la bonne à l'ouverture."
+            ),
+        ),
+        (_("Modifié"), _("La dernière modification du projet ou de son carnet.")),
+    ]
+    for column, (title, help_text) in zip(st.columns(WIDTHS), headers, strict=False):
+        column.caption(f"**{title}**", help=help_text)
+
+
+def _projects() -> None:
+    """The projects followed (v0.17, § 7 of plan-v0.17): where each is, read from its files
+    without its database, the latest changed first; a click on its name takes it up."""
+    st.header(_("Mes projets"))
+    followed = tracked.load()
+    if not followed:
+        st.write(
+            _(
+                "Aucun projet suivi. Un projet créé ici est suivi d'office ; un projet récent "
+                "peut l'être avec « Suivre ce projet »."
+            )
+        )
+        return
+    _headers()
+    for index, row in enumerate(overview.rows(followed)):
+        cells = st.columns(WIDTHS, vertical_alignment="center")
+        with cells[0]:
+            st.button(
+                row.name,
+                key=f"home-project-{index}",
+                on_click=_take_up,
+                args=(row,),
+                disabled=row.problem is not None,
+                icon=":material/folder_open:",
+            )
+            st.caption(row.folder)
+        texts = (
+            overview.phase_text, overview.codebook_text, overview.waiting_text,
+            overview.plan_text, overview.notebook_text, overview.base_text,
+            overview.modified_text,
+        )  # fmt: skip
+        for cell, text in zip(cells[1:8], texts, strict=True):
+            cell.write(text(row))
+        with cells[8].popover("", icon=":material/more_vert:"):
+            st.button(
+                _("Ne plus suivre"),
+                key=f"home-unfollow-{index}",
+                on_click=_unfollow,
+                args=(row.path,),
+                icon=":material/bookmark_remove:",
+                help=_("Le projet quitte ce tableau ; son fichier n'est pas touché."),
+            )
+    c.show_message("home-unfollow")
+
+
 def _recent() -> None:
-    """The recent projects, latest first: name, folder, last change of the project file."""
-    found = recents.load()
+    """The recent projects not followed, latest first: name, folder, last change of the
+    project file."""
+    followed = {ondisk.key(p) for p in tracked.load()}
+    found = [p for p in recents.load() if ondisk.key(p) not in followed]  # v0.17: once
     if not found:
         return
     st.header(_("Projets récents"))
-    followed = {ondisk.key(p) for p in tracked.load()}
     for index, path in enumerate(found):
         name, where, when, follow = st.columns([2, 4, 1.4, 1.6], vertical_alignment="center")
         with name:
@@ -219,16 +324,13 @@ def _recent() -> None:
             )
         where.write(str(path.parent))
         when.write(_modified(path))
-        if ondisk.key(path) in followed:  # v0.17 (D-131)
-            follow.caption(_("Suivi"))
-        else:
-            follow.button(
-                _("Suivre ce projet"),
-                key=f"home-follow-{index}",
-                on_click=_follow,
-                args=(path, f"home-follow-{index}"),
-                icon=":material/bookmark_add:",
-            )
+        follow.button(  # v0.17 (D-131)
+            _("Suivre ce projet"),
+            key=f"home-follow-{index}",
+            on_click=_follow,
+            args=(path, f"home-follow-{index}"),
+            icon=":material/bookmark_add:",
+        )
         c.show_message(f"home-recent-{index}")
         c.show_message(f"home-follow-{index}")
     with st.container(horizontal=True, vertical_alignment="center"):

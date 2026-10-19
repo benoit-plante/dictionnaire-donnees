@@ -610,6 +610,13 @@ msgstr "No reversed item"
 msgid "Aucun niveau de mesure proposé."
 msgstr "No measure level proposed."
 
+msgid ""
+"Aucun projet suivi. Un projet créé ici est suivi d'office ; un projet récent peut l'être avec « "
+"Suivre ce projet »."
+msgstr ""
+"No project followed. A project created here is followed at once; a recent project can be, with "
+"“Follow this project”."
+
 msgid "Aucun préfixe proposé pour ce groupe."
 msgstr "No prefix proposed for this group."
 
@@ -1622,6 +1629,13 @@ msgstr "Give the origin of the data and their state when the plan was written."
 msgid "Documenter"
 msgstr "Document"
 
+msgid ""
+"Documenter tant que rien n'est analysé ; Analyser dès qu'une hypothèse est au plan ou une analyse"
+" au carnet ; Rédiger dès que l'ébauche d'article existe."
+msgstr ""
+"Document while nothing is analysed; Analyse as soon as the plan has a hypothesis or the notebook "
+"an analysis; Write as soon as the article's draft exists."
+
 msgid "Documents Word"
 msgstr "Word documents"
 
@@ -1823,6 +1837,9 @@ msgstr "Codebook fingerprint"
 #, python-brace-format
 msgid "Empreinte du codebook : {fingerprint}."
 msgstr "Codebook fingerprint: {fingerprint}."
+
+msgid "En attente"
+msgstr "Waiting"
 
 msgid "En conflit"
 msgstr "In conflict"
@@ -2593,6 +2610,9 @@ msgstr "The scoring requires a documented source (manual, article)."
 msgid "La cotation suit {source}."
 msgstr "Scoring follows {source}."
 
+msgid "La dernière modification du projet ou de son carnet."
+msgstr "The last change of the project or of its notebook."
+
 msgid "La définition est vide ; utilisez « Rejeter »."
 msgstr "The definition is empty; use \"Reject\"."
 
@@ -2956,6 +2976,9 @@ msgstr ""
 "The model \"{model}\" cannot be found on the server. With Ollama, download it first: ollama pull "
 "{model}"
 
+msgid "Le même chiffre que la barre de la barre latérale du projet."
+msgstr "The same figure as the bar in the project's sidebar."
+
 #, python-brace-format
 msgid ""
 "Le navigateur les enregistre dans votre dossier de téléchargements. Un codebook se partage "
@@ -2969,6 +2992,9 @@ msgstr "The name of a family has 1 to 30 characters."
 
 msgid "Le nom de la nouvelle variable."
 msgstr "The name of the new variable."
+
+msgid "Le nombre de tâches, et la première."
+msgstr "The number of tasks, and the first one."
 
 #, python-brace-format
 msgid "Le nombre minimal d'items répondus dépasse le nombre d'items ({n})."
@@ -3033,6 +3059,9 @@ msgstr "The project no longer appears in “My projects”, on the home page. Th
 
 msgid "Le projet ouvert"
 msgstr "The open project"
+
+msgid "Le projet quitte ce tableau ; son fichier n'est pas touché."
+msgstr "The project leaves this table; its file is not touched."
 
 #, python-brace-format
 msgid "Le projet {name} a été modifié ailleurs pendant la commande (l'interface est-elle ouverte ?)."
@@ -3616,6 +3645,9 @@ msgstr "Max"
 msgid "Maximum de l'échelle"
 msgstr "Scale maximum"
 
+msgid "Mes projets"
+msgstr "My projects"
+
 #, python-brace-format
 msgid "Message du bloc {block}"
 msgstr "Message of block {block}"
@@ -3686,6 +3718,9 @@ msgstr "Change a hypothesis; after freezing, it is an amendment, with its reason
 #, python-brace-format
 msgid "Modifier {id}"
 msgstr "Change {id}"
+
+msgid "Modifié"
+msgstr "Changed"
 
 msgid "Modèle"
 msgstr "Model"
@@ -4091,6 +4126,9 @@ msgstr "Simple slopes of {x} by {w}"
 msgid "Personne n'est dans le sous-groupe."
 msgstr "Nobody is in the subgroup."
 
+msgid "Phase"
+msgstr "Phase"
+
 msgid "Place de la marque"
 msgstr "Place of the mark"
 
@@ -4301,6 +4339,9 @@ msgid ""
 msgstr ""
 "Made by dictionnaire-donnees {version} on {date}; codebook fingerprint `{fingerprint}`; "
 "fingerprints of the files in `EMPREINTES.txt`."
+
+msgid "Projet"
+msgstr "Project"
 
 #, python-brace-format
 msgid "Projet créé : {path}"
@@ -5295,9 +5336,6 @@ msgstr "Time suffixes (wide format), separated by commas"
 msgid "Suivante"
 msgstr "Next"
 
-msgid "Suivi"
-msgstr "Followed"
-
 msgid "Suivre ce projet"
 msgstr "Follow this project"
 
@@ -5514,6 +5552,13 @@ msgstr "Prior work based on the dataset"
 msgid "Trous de la Méthode à combler (groupes) : {n}"
 msgstr "Gaps to fill in the Method (groups): {n}"
 
+msgid ""
+"Trouvée : un fichier de ce nom est à côté du projet. Le tableau ne lit pas la base ; l'outil "
+"vérifie que c'est la bonne à l'ouverture."
+msgstr ""
+"Found: a file of this name is next to the project. The table does not read the database; the tool"
+" checks it is the right one when the project is opened."
+
 msgid "Tukey"
 msgstr "Tukey"
 
@@ -5546,6 +5591,9 @@ msgstr ""
 #, python-brace-format
 msgid "Un carnet {name} est apparu pendant la commande."
 msgstr "A notebook {name} appeared while the command ran."
+
+msgid "Un clic sur le nom ouvre le projet là où quelque chose attend."
+msgstr "A click on the name opens the project where something waits."
 
 #, python-brace-format
 msgid ""
@@ -8063,6 +8111,10 @@ msgid "« ddict resultats » s'appelle maintenant « ddict article »."
 msgstr "“ddict results” is now called “ddict article”."
 
 #, python-brace-format
+msgid "« {name} » n'est plus suivi ; son fichier n'est pas touché."
+msgstr "“{name}” is no longer followed; its file is not touched."
+
+#, python-brace-format
 msgid "« {note} »"
 msgstr "“{note}”"
 
@@ -8120,6 +8172,15 @@ msgstr "At the end (k6_1_t2)"
 
 msgid "À nommer"
 msgstr "To name"
+
+msgid ""
+"À recalculer : l'empreinte du codebook a changé depuis le dernier calcul de ces analyses. Leurs "
+"chiffres ont peut-être changé, peut-être pas : ouvrez le carnet pour le savoir. À confirmer : un "
+"nouveau calcul attend votre confirmation."
+msgstr ""
+"To recompute: the codebook's fingerprint changed since these analyses were last computed. Their "
+"figures may have changed, or not: open the notebook to find out. To confirm: a new calculation "
+"waits for your confirmation."
 
 msgid "À réviser"
 msgstr "To review"

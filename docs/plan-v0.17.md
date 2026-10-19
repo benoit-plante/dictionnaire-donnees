@@ -146,6 +146,8 @@ Aide des colonnes (le `help` de `column_config`) :
 
 **Un clic sur une ligne** (`st.dataframe` avec `on_select`, une ligne à la fois) ouvre le projet sur la page de sa première tâche (`Task.mode`, avec son filtre) ; sans tâche, sur la première page de sa phase (Base, Plan ou Méthode). Sous le tableau, pour la ligne choisie : « Ne plus suivre », et pour une ligne introuvable « Le retrouver… ». « Chercher les projets dans un dossier… » vient après le tableau.
 
+*Choix de l'auteur à l'étape B2 (2026-10-19)* : des lignes à boutons plutôt qu'un `st.dataframe`. Un même clic ne pouvait pas à la fois ouvrir le projet et choisir la ligne, et les tests de Streamlit ne savent pas cliquer une ligne de `st.dataframe`. Le nom du projet est un bouton qui l'ouvre sur sa première tâche (un clic) ; « ⋮ » au bout de la ligne ouvre un petit menu avec « Ne plus suivre » (et « Le retrouver… », étape A2). Les en-têtes de colonnes portent l'aide ci-dessus ; un projet introuvable ou illisible a son nom grisé.
+
 ### 7.2 La phase d'un projet (D-133)
 
 La phase dit **jusqu'où le projet est allé**, d'après les fichiers que l'outil a écrits, sans lire la base :

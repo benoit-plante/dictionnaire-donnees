@@ -95,7 +95,8 @@ def test_recent_projects_come_first(where, tmp_path):
     recents.add(output)
     app = _home()
     headers = [h.value for h in app.header]
-    assert headers[:2] == ["Projets récents", "Essayer l'outil"]
+    # v0.17: the projects followed first (none here), then the recent ones.
+    assert headers[:3] == ["Mes projets", "Projets récents", "Essayer l'outil"]
     assert headers.index("Projets récents") < headers.index("Nouveau projet")
     texts = [m.value for m in app.markdown]
     assert str(output.parent) in texts
@@ -107,4 +108,4 @@ def test_recent_projects_come_first(where, tmp_path):
 def test_no_recent_project_no_empty_section(where):
     app = _home()
     assert "Projets récents" not in [h.value for h in app.header]
-    assert app.header[0].value == "Essayer l'outil"
+    assert [h.value for h in app.header][:2] == ["Mes projets", "Essayer l'outil"]

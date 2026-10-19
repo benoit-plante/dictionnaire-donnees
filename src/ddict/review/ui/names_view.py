@@ -22,7 +22,7 @@ from ddict.review.ui import common as c
 from ddict.review.ui import dialog
 from ddict.workflow import naming_summary, wave_summary, write_wave_report
 
-FILTER = "names-filter"
+FILTER = c.NAMES_FILTER
 WAVE = "names-wave"
 POSITION = "names-position"
 LENGTH = "names-max-length"

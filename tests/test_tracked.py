@@ -157,4 +157,4 @@ def test_follow_a_recent_project(base):
     assert not app.exception, app.exception
     assert tracked.load() == [path]
     assert any("maintenant suivi" in s.value for s in app.success)
-    assert not [b for b in app.button if b.key == "home-follow-0"]  # now "Suivi"
+    assert not [b for b in app.button if b.key == "home-follow-0"]  # now in "Mes projets"
