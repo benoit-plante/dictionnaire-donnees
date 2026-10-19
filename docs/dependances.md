@@ -45,6 +45,10 @@ Installée seulement sur demande (`pip install "ddict[ia]"`, ou `uv sync --extra
 | anyio | Entrées-sorties (requis par httpx) | MIT | Oui | 10 |
 | idna | Noms de domaine (requis par httpx) | BSD-3-Clause | Oui | 10 |
 | certifi | Certificats racines (requis par httpx) | MPL-2.0 | Oui, distribué sans modification | 10 |
+| keyring | La clé d'API, gardée dans le gestionnaire d'identifiants de Windows (D-137) | MIT | Oui | v0.18, A3 |
+| pywin32-ctypes | Accès au gestionnaire d'identifiants de Windows (requis par keyring sous Windows) | BSD-3-Clause | Oui | v0.18, A3 |
+| jaraco.classes, jaraco.context, jaraco.functools, more-itertools | Utilitaires (requis par keyring) | MIT | Oui | v0.18, A3 |
+| importlib-metadata, zipp | Découverte des extensions (requis par keyring sous Python 3.11 seulement) | Apache-2.0, MIT | Oui | v0.18, A3 |
 
 ### Option « revision » : interface de révision dans le navigateur
 
@@ -76,6 +80,7 @@ Installée seulement sur demande (`pip install "ddict[revision]"`, ou `uv sync -
 
 | hatchling | Construction du paquet | MIT | 0 |
 | httpx | Faux serveur des tests du client IA (aussi dans l'option « ia ») | BSD-3-Clause | 10 |
+| keyring | Tests de la clé d'API, avec un gestionnaire en mémoire, jamais celui de Windows (aussi dans l'option « ia ») | MIT | v0.18, A3 |
 | streamlit | Tests de l'interface de révision (aussi dans l'option « revision ») | Apache-2.0 | 12 |
 | jsonschema | Validation du `datapackage.json` du contexte d'analyse contre les schémas Frictionless v2 gardés dans `tests/schemas/` (domaine public, Unlicense) | MIT | v0.8, 6 |
 | playwright | Captures d'écran automatiques de l'interface (`scripts/captures.py`, D-127), avec le Microsoft Edge du poste : aucun navigateur téléchargé ; hors de `pytest` | Apache-2.0 | v0.16, B4 |

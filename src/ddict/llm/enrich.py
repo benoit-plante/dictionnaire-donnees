@@ -34,6 +34,7 @@ STOPPING_FAILURES = {
     "timeout",
     "http_404",
     "auth",  # the key is refused or missing (v0.18)
+    "key_store",  # the credential manager did not give the key
     "bad_request",  # the request or its schema is refused: every block would be
     "rate_limit",  # still limited after one wait
     "overloaded",  # still busy after one wait

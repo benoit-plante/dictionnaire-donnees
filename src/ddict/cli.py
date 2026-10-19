@@ -18,6 +18,7 @@ from datetime import datetime
 from pathlib import Path
 
 from ddict import __version__, settings, tracked
+from ddict.cli_ai import add_ai_parser
 from ddict.cli_decisions import add_decisions_parsers
 from ddict.cli_plan import add_plan_parser
 from ddict.cli_projects import add_projects_parser
@@ -1414,6 +1415,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     add_plan_parser(commands)
     add_projects_parser(commands)
+    add_ai_parser(commands)
     add_decisions_parsers(commands)
     add_recode_parser(commands)
     add_verify_parser(commands)

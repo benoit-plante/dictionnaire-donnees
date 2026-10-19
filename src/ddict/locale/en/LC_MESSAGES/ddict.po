@@ -385,6 +385,13 @@ msgstr "Open or publicly available data"
 msgid "Adresse (Ollama par défaut)"
 msgstr "Address (Ollama by default)"
 
+#, python-brace-format
+msgid "Adresse : {endpoint}"
+msgstr "Address: {endpoint}"
+
+msgid "Adresse du serveur (défaut : celle des réglages de l'IA, sinon Anthropic)."
+msgstr "Address of the server (default: the one of the AI settings, else Anthropic)."
+
 msgid "Adresse du serveur local"
 msgstr "Local server address"
 
@@ -398,6 +405,14 @@ msgstr "Address refused: only a server on this computer is allowed ({detail})."
 
 msgid "Adresse refusée : seul un serveur sur cet ordinateur est permis."
 msgstr "Address refused: only a server on this computer is allowed."
+
+#, python-brace-format
+msgid ""
+"Adresse refusée : {endpoint}. Une adresse en https:// est demandée (http:// n'est permis que pour"
+" cet ordinateur), sans identifiant ni paramètre."
+msgstr ""
+"Address refused: {endpoint}. An https:// address is required (http:// is allowed for this "
+"computer only), without credentials or parameters."
 
 msgid "Afficher"
 msgstr "Show"
@@ -664,6 +679,13 @@ msgstr "None"
 msgid "Aucune analyse retenue dans le carnet."
 msgstr "No retained analysis in the notebook."
 
+#, python-brace-format
+msgid "Aucune clé enregistrée pour {endpoint}."
+msgstr "No key recorded for {endpoint}."
+
+msgid "Aucune clé saisie : rien n'est enregistré."
+msgstr "No key typed: nothing is recorded."
+
 msgid "Aucune hypothèse : ajoutez-en une avec « ddict plan ajouter »."
 msgstr "No hypothesis: add one with “ddict plan add”."
 
@@ -899,6 +921,9 @@ msgstr "This file is not a readable project: nothing is changed. ({name})"
 
 msgid "Ce fichier projet est introuvable."
 msgstr "This project file cannot be found."
+
+msgid "Ce n'est pas une clé (espaces ou plusieurs lignes) : rien n'est enregistré."
+msgstr "This is not a key (spaces or several lines): nothing is recorded."
 
 msgid "Ce niveau n'attend plus de décision."
 msgstr "This level no longer waits for a decision."
@@ -1138,6 +1163,30 @@ msgstr "Empty class: {label}."
 msgid "Classes montrées"
 msgstr "Classes shown"
 
+msgid "Clé : "
+msgstr "Key: "
+
+#, python-brace-format
+msgid "Clé : {state}"
+msgstr "Key: {state}"
+
+#, python-brace-format
+msgid ""
+"Clé d'API pour {endpoint}. Collez-la puis appuyez sur Entrée : rien ne s'affiche pendant la "
+"saisie, c'est normal."
+msgstr "API key for {endpoint}. Paste it, then press Enter: nothing shows while you type, that is normal."
+
+#, python-brace-format
+msgid "Clé effacée pour {endpoint}."
+msgstr "Key erased for {endpoint}."
+
+msgid ""
+"Clé enregistrée dans le gestionnaire d'identifiants de Windows. Elle ne s'affichera jamais ; « "
+"ddict ia tester » vérifie que le serveur l'accepte."
+msgstr ""
+"Key recorded in Windows' Credential Manager. It will never be shown; \"ddict ai test\" checks "
+"that the server accepts it."
+
 msgid "Code"
 msgstr "Code"
 
@@ -1337,6 +1386,10 @@ msgstr "Knowledge of data"
 
 msgid "Connaissance préalable des données"
 msgstr "Prior knowledge of the data"
+
+#, python-brace-format
+msgid "Connexion réussie : {n} modèles offerts. Aucun contenu de projet n'a été envoyé."
+msgstr "Connection succeeded: {n} models offered. Nothing of a project was sent."
 
 msgid ""
 "Conseil : validez d'abord le glossaire et révisez les rattachements proposés ; le modèle s'en "
@@ -1820,6 +1873,9 @@ msgstr "Already followed: {path}"
 msgid "ET"
 msgstr "SE"
 
+msgid "Effacer la clé d'API de cet ordinateur."
+msgstr "Erase the API key from this computer."
+
 msgid "Effacer la liste"
 msgstr "Clear the list"
 
@@ -1944,6 +2000,9 @@ msgstr "Save references and notes"
 #, python-brace-format
 msgid "Enregistrer {id}"
 msgstr "Save {id}"
+
+msgid "Enregistrez d'abord la clé : ddict ia cle"
+msgstr "Record the key first: ddict ai key"
 
 #, python-brace-format
 msgid "Enregistré dans {path}."
@@ -2305,6 +2364,10 @@ msgid ""
 msgstr "Cannot write the files: {detail}. The codebook may be open in Excel: close it, then try again."
 
 #, python-brace-format
+msgid "Impossible de joindre {endpoint} : vérifiez la connexion Internet."
+msgstr "Cannot reach {endpoint}: check the Internet connection."
+
+#, python-brace-format
 msgid "Impossible de lire la base : {detail}"
 msgstr "Cannot read the database: {detail}"
 
@@ -2332,6 +2395,9 @@ msgstr "Indices"
 
 msgid "Indices du regroupement"
 msgstr "Grouping clues"
+
+msgid "Indiquez l'adresse du serveur avec --adresse."
+msgstr "Give the address of the server with --address."
 
 msgid "Indiquez le modèle avec --modele, ou utilisez --apercu."
 msgstr "Give the model with --model, or use --preview."
@@ -2598,6 +2664,16 @@ msgstr ""
 
 msgid "La base, si elle n'est pas à côté du projet."
 msgstr "The database, if it is not next to the project."
+
+msgid ""
+"La clé d'API et la connexion à l'IA : enregistrer la clé, l'oublier, tester. La clé ne se donne "
+"jamais en argument."
+msgstr ""
+"The API key and the connection to the AI: record the key, forget it, test. The key is never given"
+" as an argument."
+
+msgid "La clé est refusée (ou absente). Enregistrez-la de nouveau : ddict ia cle."
+msgstr "The key is refused (or missing). Record it again: ddict ai key."
 
 #, python-brace-format
 msgid "La copie n'a pas pu être écrite : {detail}. Rien n'a été gardé."
@@ -2940,6 +3016,15 @@ msgid ""
 "règle."
 msgstr "The “Add a rule” form, above, is filled: give the reason, then add the rule."
 
+msgid "Le gestionnaire d'identifiants de Windows n'a pas donné la clé."
+msgstr "Windows' Credential Manager did not give the key."
+
+msgid "Le gestionnaire d'identifiants de Windows n'a pas effacé la clé."
+msgstr "Windows' Credential Manager did not erase the key."
+
+msgid "Le gestionnaire d'identifiants de Windows n'a pas enregistré la clé."
+msgstr "Windows' Credential Manager did not record the key."
+
 #, python-brace-format
 msgid "Le jour où le plan a été arrêté, le carnet d'analyses contenait déjà l'analyse prévue pour {ids}."
 msgstr ""
@@ -3198,12 +3283,19 @@ msgstr "The expected direction of a correlation or of a coefficient is positive 
 msgid "Le sens attendu était : {direction}."
 msgstr "The expected direction was: {direction}."
 
+#, python-brace-format
+msgid "Le serveur a répondu par une erreur ({code})."
+msgstr "The server answered with an error ({code})."
+
 msgid "Le serveur local ne répond pas comme prévu."
 msgstr "The local server does not answer as expected."
 
 #, python-brace-format
 msgid "Le serveur {endpoint} ne répond pas. Ollama est-il lancé ?"
 msgstr "The server {endpoint} does not answer. Is Ollama running?"
+
+msgid "Le service est surchargé : réessayez plus tard."
+msgstr "The service is overloaded: try again later."
 
 msgid "Le seuil α du plan"
 msgstr "The plan's α level"
@@ -3792,6 +3884,10 @@ msgstr "Changed"
 
 msgid "Modèle"
 msgstr "Model"
+
+#, python-brace-format
+msgid "Modèle choisi : {model} ({found})"
+msgstr "Model chosen: {model} ({found})"
 
 msgid "Modèle local"
 msgstr "Local model"
@@ -4489,6 +4585,10 @@ msgstr ""
 msgid "Proposés par le modèle"
 msgstr "Proposed by the model"
 
+#, python-brace-format
+msgid "Protocole : {name}"
+msgstr "Protocol: {name}"
+
 msgid "Provenance"
 msgstr "Provenance"
 
@@ -4972,6 +5072,10 @@ msgstr "Nothing waiting."
 msgid "Rien n'est enregistré : relancez la commande."
 msgstr "Nothing is saved: run the command again."
 
+#, python-brace-format
+msgid "Rien à cette adresse : vérifiez-la ({endpoint})."
+msgstr "Nothing at this address: check it ({endpoint})."
+
 msgid "Rien à envoyer."
 msgstr "Nothing to send."
 
@@ -5146,6 +5250,11 @@ msgstr "Data dictionary review"
 #, python-brace-format
 msgid "Saisie non enregistrée : {places}."
 msgstr "Typed and not saved: {places}."
+
+msgid ""
+"Saisir la clé d'API, sans qu'elle s'affiche ; elle est gardée dans le gestionnaire d'identifiants"
+" de Windows."
+msgstr "Type the API key, without it showing; it is kept in Windows' Credential Manager."
 
 msgid "Sans elles, le contexte ne contient que des métadonnées, aucune donnée."
 msgstr "Without them, the context holds metadata only, no data."
@@ -5659,6 +5768,9 @@ msgstr "Transformations"
 msgid "Travaux antérieurs sur ces données"
 msgstr "Prior work based on the dataset"
 
+msgid "Trop de demandes pour cette clé : réessayez dans une minute."
+msgstr "Too many requests for this key: try again in a minute."
+
 #, python-brace-format
 msgid "Trous de la Méthode à combler (groupes) : {n}"
 msgstr "Gaps to fill in the Method (groups): {n}"
@@ -6160,8 +6272,18 @@ msgstr "Verification of the figures"
 msgid "Vérifier"
 msgstr "Verify"
 
+msgid "Vérifier aussi que ce modèle est offert."
+msgstr "Also check that this model is offered."
+
 msgid "Vérifier de nouveau"
 msgstr "Check again"
+
+msgid ""
+"Vérifier la clé et la connexion en demandant la liste des modèles ; aucun contenu de projet n'est"
+" envoyé, rien n'est facturé."
+msgstr ""
+"Check the key and the connection by asking for the list of models; nothing of a project is sent, "
+"nothing is billed."
 
 msgid "Vérifier les chiffres"
 msgstr "Verify the figures"
@@ -6233,8 +6355,17 @@ msgid ""
 "maître."
 msgstr "`scripts/`: the command files (SPSS and R), the preparation script and the R master script."
 
+msgid "absent de la liste"
+msgstr "not in the list"
+
+msgid "absente"
+msgstr "missing"
+
 msgid "accès public aux données"
 msgstr "open or public availability of the data"
+
+msgid "anthropic (par défaut) ou openai (un serveur compatible OpenAI, d'une université)."
+msgstr "anthropic (default) or openai (an OpenAI-compatible server, a university's)."
 
 msgid "août"
 msgstr "August"
@@ -6473,6 +6604,9 @@ msgstr "in progress (1 hypothesis)"
 #, python-brace-format
 msgid "en cours ({n} hypothèses)"
 msgstr "in progress ({n} hypotheses)"
+
+msgid "enregistrée"
+msgstr "recorded"
 
 msgid "entier"
 msgstr "integer"
@@ -6838,6 +6972,9 @@ msgstr "November"
 msgid "octobre"
 msgstr "October"
 
+msgid "offert"
+msgstr "offered"
+
 #, python-brace-format
 msgid "omis pour les groupes {groups} (instrument protégé, D-014)"
 msgstr "left out for the groups {groups} (protected instrument, D-014)"
@@ -7061,6 +7198,9 @@ msgstr "seven"
 
 msgid "septembre"
 msgstr "September"
+
+msgid "serveur compatible OpenAI"
+msgstr "OpenAI-compatible server"
 
 msgid "seuil"
 msgstr "threshold"
@@ -7444,6 +7584,10 @@ msgstr "{c} {name} ({group}): theoretical range not given."
 #, python-brace-format
 msgid "{day} {month} {year}"
 msgstr "{day} {month} {year}"
+
+#, python-brace-format
+msgid "{endpoint} n'a pas répondu à temps."
+msgstr "{endpoint} did not answer in time."
 
 #, python-brace-format
 msgid "{field} : choix non permis."

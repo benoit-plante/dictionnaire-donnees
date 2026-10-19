@@ -54,6 +54,39 @@ def isolated_config(tmp_path_factory, monkeypatch):
     i18n.set_language("fr")
 
 
+class MemoryKeyring:
+    """A credential store in memory, with keyring's three methods (v0.18, D-137)."""
+
+    def __init__(self):
+        self.entries = {}
+
+    def get_password(self, service, username):
+        return self.entries.get((service, username))
+
+    def set_password(self, service, username, password):
+        self.entries[(service, username)] = password
+
+    def delete_password(self, service, username):
+        from keyring.errors import PasswordDeleteError
+
+        if self.entries.pop((service, username), None) is None:
+            raise PasswordDeleteError(service)
+
+
+@pytest.fixture(autouse=True)
+def memory_keys():
+    """Never Windows' credential manager in a test: a store in memory, empty each time."""
+    try:
+        from ddict.llm import keys
+    except ImportError:  # the AI option is not installed
+        yield None
+        return
+    store = MemoryKeyring()
+    keys.use_backend(store)
+    yield store
+    keys.use_backend(None)
+
+
 FAMILY_GENERATOR_PATH = ROOT / "scripts" / "generer_enquete_familles.py"
 
 

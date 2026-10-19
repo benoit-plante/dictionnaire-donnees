@@ -42,6 +42,7 @@ ddict-fenetre = "ddict.window:main"
 [project.optional-dependencies]
 ia = [
     "httpx>=0.28.1",
+    "keyring>=25.7.0",
 ]
 revision = [
     "pywebview>=6.2.1; sys_platform == 'win32'",
@@ -53,6 +54,7 @@ dev = [
     "babel>=2.18.0",
     "httpx>=0.28.1",
     "jsonschema>=4.26.0",
+    "keyring>=25.7.0",
     "playwright>=1.64.0",
     "pytest>=8",
     "pytest-socket>=0.7",

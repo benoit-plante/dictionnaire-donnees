@@ -19,25 +19,30 @@ httpx is an optional dependency (`ddict[ia]`): it is imported here only.
 
 from __future__ import annotations
 
-import ipaddress
 import time
 from collections.abc import Callable
 from typing import Protocol
-from urllib.parse import urlsplit
 
 import httpx
 
-from ddict.llm.defaults import DEFAULT_ENDPOINT
+from ddict.llm.defaults import (
+    ANTHROPIC_ENDPOINT,
+    DEFAULT_EFFORT,
+    DEFAULT_ENDPOINT,
+    EFFORTS,
+    check_endpoint,
+    check_local,
+)
+from ddict.llm.defaults import (
+    EndpointRefused as EndpointRefused,  # raised by the clients, re-exported
+)
 from ddict.llm.schemas import wire_schema
 
 DEFAULT_TIMEOUT = 300.0  # seconds: a small model on a processor can be slow
 TEMPERATURE = 0
 SEED = 42
 
-ANTHROPIC_ENDPOINT = "https://api.anthropic.com"
 ANTHROPIC_VERSION = "2023-06-01"
-EFFORTS = ("low", "medium", "high", "xhigh", "max")
-DEFAULT_EFFORT = "low"
 # Thinking counts in max_tokens: room for it and for the answer of a whole block.
 DEFAULT_MAX_TOKENS = 16000
 MAX_MODEL_PAGES = 10
@@ -49,10 +54,6 @@ MAX_WAIT = 60.0
 REFUSED = {400: "bad_request", 401: "auth", 403: "auth"}
 
 KeySource = Callable[[], str | None]
-
-
-class EndpointRefused(ValueError):
-    """The address is not accepted."""
 
 
 class ModelCallError(RuntimeError):
@@ -74,45 +75,6 @@ class ModelClient(Protocol):
     def parameters(self) -> dict[str, float | int | str]: ...
 
     def complete(self, messages: list[dict], schema: dict) -> str: ...
-
-
-def _is_this_computer(host: str) -> bool:
-    if host == "localhost":
-        return True
-    try:
-        return ipaddress.ip_address(host).is_loopback
-    except ValueError:
-        return False
-
-
-def _check_parts(endpoint: str):
-    parts = urlsplit(endpoint)
-    if parts.scheme not in ("http", "https"):
-        raise EndpointRefused(f"Unsupported scheme in {endpoint!r}")
-    if parts.username or parts.password:
-        raise EndpointRefused("Credentials in the address are not accepted")
-    if parts.query or parts.fragment:
-        raise EndpointRefused("A query or a fragment in the address is not accepted")
-    if not parts.hostname:
-        raise EndpointRefused(f"No host in {endpoint!r}")
-    return parts
-
-
-def check_endpoint(endpoint: str) -> str:
-    """Return the endpoint without a trailing slash, or refuse it: HTTPS, or plain HTTP to
-    this computer only."""
-    parts = _check_parts(endpoint)
-    if parts.scheme == "http" and not _is_this_computer(parts.hostname):
-        raise EndpointRefused(f"HTTPS is required for {parts.hostname!r}")
-    return endpoint.rstrip("/")
-
-
-def check_local(endpoint: str) -> str:
-    """The v0.17 rule: this computer only, whatever the scheme."""
-    parts = _check_parts(endpoint)
-    if not _is_this_computer(parts.hostname):
-        raise EndpointRefused(f"{parts.hostname!r} is not this computer")
-    return endpoint.rstrip("/")
 
 
 def _wait(response: httpx.Response) -> float:
@@ -170,7 +132,10 @@ class _Client:
     def _send(
         self, method: str, path: str, *, body: dict | None = None, params: dict | None = None
     ) -> httpx.Response:
-        key = self._key() if self._key else None
+        try:
+            key = self._key() if self._key else None
+        except Exception as error:  # the credential manager did not answer
+            raise ModelCallError("key_store", "The API key could not be read") from error
         headers = self._headers(key)
         url = f"{self.endpoint}{path}"
         for attempt in (1, 2):
