@@ -43,6 +43,7 @@ SECTIONS: dict[str, tuple[PageInfo, ...]] = {
 # un questionnaire"; its questionnaire is this one, not a file read on "Questionnaire".
 DESIGN: tuple[PageInfo, ...] = (
     PageInfo("design", N_("Questionnaire"), ":material/edit_document:"),
+    PageInfo("design_review", N_("Relecture"), ":material/rate_review:"),
 )
 PAGES = {page.mode: page for pages in (DESIGN, *SECTIONS.values()) for page in pages}
 FIRST = "base"  # a project opens on its database (v0.3)

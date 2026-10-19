@@ -500,6 +500,9 @@ msgstr "Added to the notebook: {id}. The notebook is on the Notebook page."
 msgid "Aller au questionnaire"
 msgstr "Go to the questionnaire"
 
+msgid "Aller à la question"
+msgstr "Go to the question"
+
 msgid "Alpha de Cronbach observé"
 msgstr "Observed Cronbach's alpha"
 
@@ -670,6 +673,9 @@ msgstr "No model chosen: add --model, or save it on the \"AI\" page of the inter
 
 msgid "Aucun niveau de mesure proposé."
 msgstr "No measure level proposed."
+
+msgid "Aucun point à voir."
+msgstr "Nothing to look at."
 
 msgid "Aucun projet dans ce dossier ni dans ses sous-dossiers (4 niveaux)."
 msgstr "No project in this folder or its subfolders (4 levels)."
@@ -935,6 +941,14 @@ msgstr "Likely checkbox: only one value observed, empty cells probably mean \"no
 
 msgid "Cases vides"
 msgstr "Empty cells"
+
+#, python-brace-format
+msgid "Catégories qui laissent un trou : {pairs}."
+msgstr "Categories that leave a gap: {pairs}."
+
+#, python-brace-format
+msgid "Catégories qui se chevauchent : {pairs}."
+msgstr "Categories that overlap: {pairs}."
 
 #, python-brace-format
 msgid "Ce carnet (version {name}) a été fait par une version plus récente de l'outil."
@@ -1283,6 +1297,19 @@ msgstr ""
 
 msgid "Code"
 msgstr "Code"
+
+msgid "Code de la question"
+msgstr "Code of the question"
+
+msgid "Code de la question (radical des noms)"
+msgstr "Code of the question (stem of the names)"
+
+#, python-brace-format
+msgid "Code en double : {codes}."
+msgstr "Code used twice: {codes}."
+
+msgid "Code refusé : minuscules, chiffres et « _ », en commençant par une lettre."
+msgstr "Code refused: lower-case letters, digits and “_”, starting with a letter."
 
 #, python-brace-format
 msgid "Code refusé : {why}."
@@ -2411,6 +2438,9 @@ msgstr "Unknown format: {formats}. Formats: {known}."
 msgid "Français"
 msgstr "French"
 
+msgid "Garder tel quel"
+msgstr "Keep as it is"
+
 msgid "Gardée"
 msgstr "Kept"
 
@@ -2429,6 +2459,16 @@ msgstr "Glossary of acronyms"
 
 msgid "Grille en ligne droite"
 msgstr "Grid in a straight line"
+
+msgid "Grille sans consigne."
+msgstr "Grid without an instruction."
+
+msgid ""
+"Grille tirée d'une source sans nom d'instrument : à donner, avec sa source, sur la page « Groupes"
+" »."
+msgstr ""
+"Grid taken from a source without an instrument name: to give, with its source, on the page "
+"“Groups”."
 
 #, python-brace-format
 msgid "Grilles sans préfixe de noms : {n}"
@@ -3179,6 +3219,10 @@ msgid "Le carnet {name} a été modifié ailleurs pendant la commande (l'interfa
 msgstr "The notebook {name} was changed elsewhere while the command ran (is the interface open?)."
 
 #, python-brace-format
+msgid "Le code de la question n'est pas décidé : ses variables portent son numéro ({id})."
+msgstr "The question's code is not decided: its variables carry its number ({id})."
+
+#, python-brace-format
 msgid "Le code {codes} a été traité comme une valeur manquante."
 msgstr "Code {codes} was treated as a missing value."
 
@@ -3822,6 +3866,13 @@ msgstr ""
 "next ones will follow from there."
 
 msgid ""
+"Les points à voir dans le questionnaire, tous calculés. Un point se règle en corrigeant la "
+"question, ou se ferme par « Garder tel quel » : il revient si la question change."
+msgstr ""
+"The points to look at in the questionnaire, all computed. A point is settled by correcting the "
+"question, or closed by “Keep as it is”: it comes back if the question changes."
+
+msgid ""
 "Les projets suivis sur cet ordinateur, comme le tableau « Mes projets » de l'accueil : lister, "
 "suivre, retirer, chercher dans un dossier."
 msgstr ""
@@ -4154,6 +4205,13 @@ msgstr "Min"
 msgid "Minimum de l'échelle"
 msgstr "Scale minimum"
 
+msgid ""
+"Minuscules, chiffres et « _ ». Dans LimeSurvey, le même code sans ses « _ » (« aides_sommeil » "
+"devient « aidessommeil »)."
+msgstr ""
+"Lower-case letters, digits and “_”. In LimeSurvey, the same code without its “_” (“aides_sommeil”"
+" becomes “aidessommeil”)."
+
 msgid "Modalité prédite"
 msgstr "Predicted category"
 
@@ -4263,6 +4321,10 @@ msgstr "Method"
 msgid "Méthode : {method}"
 msgstr "Method: {method}"
 
+#, python-brace-format
+msgid "Même code LimeSurvey qu'une autre question ({other}) : LimeSurvey n'a pas de « _ »."
+msgstr "Same LimeSurvey code as another question ({other}): LimeSurvey has no “_”."
+
 msgid "N'en garder aucune."
 msgstr "Keep none."
 
@@ -4343,6 +4405,10 @@ msgid ""
 msgstr ""
 "Invalid score name: lower case, digits and \"_\", a letter first, different from the names of the"
 " variables."
+
+#, python-brace-format
+msgid "Nom de variable en conflit : {names}."
+msgstr "Variable name in conflict: {names}."
 
 msgid "Nom du questionnaire"
 msgstr "Name of the questionnaire"
@@ -4555,6 +4621,9 @@ msgstr "Open"
 msgid "Ouvrir l'interface de révision dans le navigateur (cet ordinateur seulement)."
 msgstr "Open the review interface in the browser (this computer only)."
 
+msgid "Ouvrir la page"
+msgstr "Open the page"
+
 msgid "Ouvrir la page Analyses"
 msgstr "Open the Analyses page"
 
@@ -4725,6 +4794,13 @@ msgid ""
 "Plusieurs moyennes ont été comparées par une analyse de variance à un facteur ; les tailles "
 "d'effet sont η² et ω²."
 msgstr "Several means were compared with a one-way analysis of variance; the effect sizes are η² and ω²."
+
+msgid "Point fermé : il reviendra si la question change."
+msgstr "Point closed: it will come back if the question changes."
+
+#, python-brace-format
+msgid "Points gardés tels quels ({n})"
+msgstr "Points kept as they are ({n})"
 
 msgid "Pondérations"
 msgstr "Sampling weights"
@@ -5092,6 +5168,13 @@ msgstr "Unknown question: {id}"
 msgid "Question inconnue : {id}."
 msgstr "Unknown question: {id}."
 
+msgid ""
+"Question obligatoire sans choix de non-réponse (« Préfère ne pas répondre ») : une personne doit "
+"pouvoir ne pas répondre."
+msgstr ""
+"Required question without a non-response choice (“Prefer not to answer”): a person must be able "
+"not to answer."
+
 msgid "Question rattachée"
 msgstr "Linked question"
 
@@ -5340,6 +5423,9 @@ msgstr "Reject proposed levels."
 msgid "Rejeter les étiquettes"
 msgstr "Reject the labels"
 
+msgid "Relecture"
+msgstr "Review"
+
 msgid "Remplacer le projet"
 msgstr "Replace the project"
 
@@ -5376,6 +5462,10 @@ msgstr "Resume the trial"
 
 msgid "Reprendre la décision."
 msgstr "Take the decision back."
+
+#, python-brace-format
+msgid "Reprendre la proposition : {code}"
+msgstr "Take the proposal: {code}"
 
 #, python-brace-format
 msgid "Reprendre la proposition du calcul : {choice}"
@@ -8625,6 +8715,10 @@ msgstr "{n} matches rest on the original name alone: to check, the platform's nu
 #, python-brace-format
 msgid "{n} catégories rares retirées (confidentialité)"
 msgstr "{n} rare categories removed (privacy)"
+
+#, python-brace-format
+msgid "{n} choix ou énoncés sans code : les codes se décident avant la collecte."
+msgstr "{n} choices or items without a code: the codes are decided before the collection."
 
 #, python-brace-format
 msgid "{n} différences nulles écartées par le test de Wilcoxon."

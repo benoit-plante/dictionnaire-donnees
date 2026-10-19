@@ -12,9 +12,10 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
-from ddict import design
+from ddict import design, design_points, naming
 from ddict.design import DesignError, Draft, Item
 from ddict.i18n import N_, Texts, _
+from ddict.project.decisions import is_accepted
 from ddict.project.model import Project, Provenance, Question
 from ddict.review import navigation
 from ddict.review.ui import common as c
@@ -64,9 +65,13 @@ def _act(change, *args, key: str = MESSAGE, done: str = "", close: bool = False)
     """Change the questionnaire, then save; on a refusal, say why and keep what was typed."""
     project = c.project()
     before = c.recall()
+    kept = project.model_copy(deep=True)
     try:
         change(project, *args)
     except DesignError as error:
+        # A change made of two (a question, then its code) leaves nothing half done.
+        for name in Project.model_fields:
+            setattr(project, name, getattr(kept, name))
         st.session_state.message = ("error", " ".join(error.reasons), key)
         return
     if not c.save(key, before):
@@ -196,12 +201,14 @@ def _fresh(question: Question | None, project: Project) -> dict:
     section = st.session_state.get(NEW_SECTION) or sections[0].section_id
     if question is None:
         return {
-            "kind": "single", "section": section, "text": "", "instruction": "",
+            "kind": "single", "section": section, "text": "", "instruction": "", "code": "",
             "required": False, "answer": "short", "layout": "radio", "provenance": "team",
             "source": "", "page": None, "options": [], "rows": [],
         }  # fmt: skip
     provenance = question.provenance
+    stem = naming.stem(project, question.question_id)
     return {
+        "code": stem.stem.value if stem and stem.stem.value and is_accepted(stem.stem) else "",
         "kind": question.kind,
         "section": question.section or section,
         "text": question.text,
@@ -264,13 +271,21 @@ def _draft(question_id: str) -> Draft:
 
 
 def _save_question(project: Project, question_id: str) -> None:
+    code_key = _prefix(question_id) + "code"  # read before a new question gets its id
+    typed = (st.session_state.get(code_key) or "").strip()
+    if typed and not naming.valid_stem(typed):  # refused before anything changes
+        raise DesignError(
+            [_("Code refusé : minuscules, chiffres et « _ », en commençant par une lettre.")]
+        )
     draft = _draft(question_id)
     if draft.provenance and draft.provenance.source == "?":
         raise DesignError([_("Nommez la source du texte (« Manuel, p. 4 »).")])
     if question_id == NEW:
-        design.add_question(project, draft)
+        question_id = design.add_question(project, draft)
     else:
         design.modify_question(project, question_id, draft)
+    if typed and typed != _fresh(design.find(project, question_id), project)["code"]:
+        design.decide_code(project, question_id, "write", now=c.now(), value=typed)
 
 
 def _form(project: Project, question_id: str) -> None:
@@ -300,6 +315,24 @@ def _form(project: Project, question_id: str) -> None:
         )
         st.text_area(_("Texte de la question"), key=field("text", _("Texte de la question")))
         st.text_input(_("Consigne (facultative)"), key=field("instruction", _("Consigne")))
+        if st.session_state[prefix + "kind"] != "display":
+            code_key = field("code", _("Code de la question"))
+            st.text_input(
+                _("Code de la question (radical des noms)"),
+                key=code_key,
+                help=_(
+                    "Minuscules, chiffres et « _ ». Dans LimeSurvey, le même code sans ses « _ » "
+                    "(« aides_sommeil » devient « aidessommeil »)."
+                ),
+            )
+            proposed = naming.stem(project, question_id) if question is not None else None
+            if proposed and proposed.stem.value and not st.session_state[code_key]:
+                c.offer(
+                    _("Reprendre la proposition : {code}").format(code=proposed.stem.value),
+                    f"{prefix}code-offer",
+                    code_key,
+                    proposed.stem.value,
+                )
         kind = st.session_state[prefix + "kind"]
         if kind != "display":
             st.checkbox(_("Obligatoire"), key=field("required", _("Obligatoire")))
@@ -378,7 +411,9 @@ def _fresh_now(question_id: str, name: str):
 # --- The list. ---
 
 
-def _question_line(project: Project, number: int, question: Question, rank: int, total: int):
+def _question_line(
+    project: Project, number: int, question: Question, rank: int, total: int, problems
+):
     names = [e.name for e in project.variables if _of(e) == question.question_id]
     with st.container(border=True):
         parts = [f"**{number}.** {_excerpt(question.text)}", f"*{KIND_NAMES.get(question.kind)}*"]
@@ -391,6 +426,8 @@ def _question_line(project: Project, number: int, question: Question, rank: int,
         if provenance:
             parts.append(provenance)
         st.markdown(" — ".join(parts))
+        for point in problems:  # the review's points (D3), settled in the form or kept
+            st.markdown(f":material/warning: {point.text}")
         key = f"design-{question.question_id}"
         up, down, edit, remove, _space = st.columns([1, 1, 1, 1, 2])
         up.button(
@@ -534,6 +571,7 @@ def page(project: Project) -> None:
     c.show_message(MESSAGE)
     opened = st.session_state.get(OPEN)
     chosen = st.session_state[SECTION_FILTER]
+    problems = design_points.by_question(project)
     number = 0
     for rank, section in enumerate(sections, start=1):
         questions = [q for q in questionnaire.questions if q.section == section.section_id]
@@ -548,7 +586,10 @@ def page(project: Project) -> None:
             st.caption(_("Aucune question dans cette section."))
         for position, question in enumerate(questions, start=1):
             number += 1
-            _question_line(project, number, question, position, len(questions))
+            _question_line(
+                project, number, question, position, len(questions),
+                problems.get(question.question_id, []),
+            )  # fmt: skip
             if opened == question.question_id:
                 _form(project, question.question_id)
         if opened == NEW and st.session_state.get(NEW_SECTION, sections[0].section_id) == (
@@ -557,6 +598,73 @@ def page(project: Project) -> None:
             _form(project, NEW)
     st.divider()
     _new_section()
+
+
+# --- The review (D3). ---
+
+
+def _go_to_point(point) -> None:
+    """The place where a point is settled: the question open in its form, the page "Noms",
+    or the group of an instrument."""
+    if point.page == "design":
+        counter = f"design-form-{point.question}"
+        c.go_to("design", **{OPEN: point.question, SECTION_FILTER: ALL,
+                             counter: st.session_state.get(counter, 0) + 1})  # fmt: skip
+    elif point.page == "groups":
+        group = next((g.group_id for g in c.project().groups if g.question == point.question), None)
+        c.go_to("groups", **({"group": group} if group else {}))
+    else:
+        c.go_to("names")
+
+
+def _keep(project: Project, point) -> None:
+    design_points.keep(project, point, c.now())
+
+
+def review_page(project: Project) -> None:
+    st.header(_("Relecture"))
+    st.write(
+        _(
+            "Les points à voir dans le questionnaire, tous calculés. Un point se règle en "
+            "corrigeant la question, ou se ferme par « Garder tel quel » : il revient si la "
+            "question change."
+        )
+    )
+    c.show_message("design-review")
+    found = design_points.points(project)
+    if not found:
+        st.success(_("Aucun point à voir."))
+    numbers = {q.question_id: n for n, q in enumerate(design.questionnaire(project).questions, 1)}
+    for index, point in enumerate(found):
+        question = design.find(project, point.question)
+        with st.container(border=True):
+            st.markdown(f"**{numbers.get(point.question, '?')}.** {_excerpt(question.text)}")
+            st.write(point.text)
+            go, keep, _space = st.columns([1, 1, 2])
+            go.button(
+                _("Aller à la question") if point.page == "design" else _("Ouvrir la page"),
+                key=f"design-review-go-{index}",
+                icon=":material/arrow_forward:",
+                on_click=_go_to_point,
+                args=(point,),
+            )
+            keep.button(
+                _("Garder tel quel"),
+                key=f"design-review-keep-{index}",
+                on_click=_act,
+                args=(_keep, point),
+                kwargs={
+                    "key": "design-review",
+                    "done": _("Point fermé : il reviendra si la question change."),
+                },
+            )
+    closed = [
+        p for p in design_points.points(project, kept=True) if design_points.is_kept(project, p)
+    ]
+    if closed:
+        with st.expander(_("Points gardés tels quels ({n})").format(n=len(closed))):
+            for point in closed:
+                st.write(f"{numbers.get(point.question, '?')}. {point.text}")
 
 
 def opened_question() -> str | None:

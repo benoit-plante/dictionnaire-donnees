@@ -45,7 +45,7 @@ def test_the_phases_of_a_designed_project():
     project = designed()
     phases = navigation.sections(project)
     assert next(iter(phases)) == "Concevoir"
-    assert [p.mode for p in phases["Concevoir"]] == ["design"]
+    assert [p.mode for p in phases["Concevoir"]] == ["design", "design_review"]
     assert "questionnaire" not in [p.mode for p in phases["Documenter"]]
     assert navigation.first(project) == "design"
     assert navigation.waits_for_base(project, "analyses")

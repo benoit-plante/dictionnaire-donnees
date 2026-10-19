@@ -313,6 +313,8 @@ def main() -> None:
         design_view.waiting_for_base(project, mode)
     elif mode == "design":
         design_view.page(project)
+    elif mode == "design_review":
+        design_view.review_page(project)
     elif mode == "base":
         base_view.page(project)
     elif mode == "questionnaire":
