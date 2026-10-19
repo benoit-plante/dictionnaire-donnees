@@ -1,8 +1,8 @@
 # Changements
 
-## Non publiée — v0.16 en cours
+## 0.16.0 — 2026-10-18
 
-L'interface guide la personne de la base à l'article (plan : `docs/plan-v0.16.md`, D-121 à D-128). Ni le calcul, ni les formats de fichier, ni les règles de confidentialité ne changent ; aucune IA ajoutée. Lots A (corrections locales) et B (navigation, progression, onglets) terminés ; le lot C (un seul geste pour décider et enregistrer) suivra avant la version 0.16.0.
+L'interface guide la personne de la base à l'article (plan : `docs/plan-v0.16.md`, D-121 à D-128). Ni le calcul, ni les formats de fichier, ni les règles de confidentialité ne changent ; aucune IA ajoutée. Trois lots : des corrections locales, la navigation et la progression, un seul geste pour décider et enregistrer.
 
 - **Rien de proposé ne s'affiche comme décidé** (D-126) : les items inversés, la cotation (items, calcul, bornes, items répondus au minimum, règle des manquants), l'étendue théorique, les seuils et la question à rattacher partent vides ; un bouton « Reprendre… » nomme ce que l'outil propose et le met dans le champ, sans rien enregistrer.
 - **Le glossaire** (D-121) : « Accepter » prend la définition affichée, corrigée ou non ; « Rejeter » juste à côté ; « Tout accepter (N)… » montre la liste exacte avant d'accepter.
@@ -17,7 +17,10 @@ L'interface guide la personne de la base à l'article (plan : `docs/plan-v0.16.m
 - **Une progression honnête** : « Codebook documenté à N % », partie par partie, jamais pleine sur un projet neuf ; le tableau de bord continue jusqu'à l'article (plan à figer, chiffres à confirmer au carnet, analyses impossibles, trous de la Méthode, ébauche à vérifier).
 - **Les pages longues en onglets** : Base (le résumé d'abord), un groupe, le résultat d'une analyse ; l'onglet ouvert reste après une action, et un bouton d'une autre page ouvre le bon onglet.
 - **Captures d'écran automatiques** pour le développement (D-127) : `scripts/captures.py` photographie chaque page à 1400 × 900 et 900 × 600 avec le Microsoft Edge du poste (Playwright, outil de développement seulement).
-- Guides en français et en anglais ; le scénario manuel gagne les étapes 64 à 72.
+- **Une carte de décision sur toutes les pages** (D-121) : la valeur, son origine et son statut, le champ, puis « Accepter », qui prend la valeur affichée, corrigée ou non, et « Rejeter », côte à côte ; une fois décidée, « Enregistrer ». Pour le libellé, l'unité, la description, la question, les étiquettes de valeurs, la confidentialité, un sigle, et, sur la fiche d'une variable, le niveau de mesure et le nouveau nom proposés.
+- **Un seul « Enregistrer » par section, et rien de perdu** (D-124) : les textes d'une variable, chaque onglet d'un groupe, la description de la base ; « Modifications non enregistrées » à côté du bouton ; ce qui est tapé et laissé sans être enregistré devient un brouillon, signalé sur la page d'arrivée (« Revenir », « Abandonner ») et remis dans ses champs à sa place ; « Quitter l'outil » demande confirmation. Une seule action pour proposer les noms.
+- **Les variables qui conviennent d'abord** : dans chaque liste d'une analyse ou d'une hypothèse, celles qui conviennent au rôle en tête, puis les autres avec leur raison (« 3 modalités : choisir les deux comparées », « niveau ordinal », « niveau échelle ») ; aucune analyse ne devient possible là où elle ne l'était pas.
+- Guides en français et en anglais ; le scénario manuel gagne les étapes 64 à 75.
 
 ## 0.15.0 — 2026-10-18
 

@@ -1,7 +1,7 @@
 # Contexte d'analyse : travail-t2_surveymonkey.sav
 
 - Base : `travail-t2_surveymonkey.sav` (SPSS), 110 lignes, 55 variables. Empreinte du fichier : `777728a6c138`.
-- Codebook : empreinte `3290fc85f45f`, dictionnaire-donnees 0.15.0. Seules les décisions acceptées par l'équipe y figurent.
+- Codebook : empreinte `3290fc85f45f`, dictionnaire-donnees 0.16.0. Seules les décisions acceptées par l'équipe y figurent.
 - Une ligne représente : un participant
 - Structure : longitudinale, une vague par fichier ; vague t2
 - Variables de plan : identifiant de regroupement : id_participant_t2

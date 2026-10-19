@@ -1,6 +1,6 @@
 # Plan de la v0.16
 
-> Statut : **validé par l'auteur le 2026-10-18**, avec les décisions D-121 à D-127 (§ 9) ; D-128 (2026-10-18) précise le thème (§ 5.4). Suit la revue de l'interface faite sur la v0.14.0 (fenêtre de 1400 × 900, `etude-sommeil.sav` avec `questionnaire-sommeil.pdf`, puis `etude-analyses.sav` avec trois analyses au carnet), dont les 24 constats sont repris au § 3. Même cap que les v0.11 à v0.15 : **aucune IA ajoutée** ; la règle « Rien ne quitte le poste » reste entière.
+> Statut : **validé par l'auteur le 2026-10-18 ; réalisé en version 0.16.0** (les trois lots), avec les décisions D-121 à D-127 (§ 9) ; D-128 (2026-10-18) précise le thème (§ 5.4). Suit la revue de l'interface faite sur la v0.14.0 (fenêtre de 1400 × 900, `etude-sommeil.sav` avec `questionnaire-sommeil.pdf`, puis `etude-analyses.sav` avec trois analyses au carnet), dont les 24 constats sont repris au § 3. Même cap que les v0.11 à v0.15 : **aucune IA ajoutée** ; la règle « Rien ne quitte le poste » reste entière.
 
 ## 1. Pourquoi cette version
 
