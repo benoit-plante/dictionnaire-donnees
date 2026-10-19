@@ -417,6 +417,7 @@ def schemas():
         "link": link_schema(),
         "stems": stem_schema(),
         "advice": advice_schema(analyses_project()),
+        "advice, flat": advice_schema(analyses_project(), flat=True),
     }
 
 

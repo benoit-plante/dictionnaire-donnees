@@ -52,6 +52,7 @@ RETRIED = {429: "rate_limit", 500: "overloaded", 503: "overloaded", 529: "overlo
 DEFAULT_WAIT = 5.0
 MAX_WAIT = 60.0
 REFUSED = {400: "bad_request", 401: "auth", 403: "auth"}
+MAX_ERROR_CHARS = 600
 
 KeySource = Callable[[], str | None]
 
@@ -83,6 +84,16 @@ def _wait(response: httpx.Response) -> float:
     except ValueError:  # an HTTP date: not worth parsing
         seconds = DEFAULT_WAIT
     return min(MAX_WAIT, max(0.0, seconds))
+
+
+def _error_text(response: httpx.Response) -> str:
+    """What the server says of an error: the message of an Anthropic or OpenAI error, else
+    the start of the body. It says why a request or a schema is refused (400)."""
+    try:
+        message = response.json()["error"]["message"]
+    except (ValueError, KeyError, TypeError):
+        message = None
+    return str(message)[:MAX_ERROR_CHARS] if message else response.text[:200]
 
 
 def _counts(usage: object) -> dict[str, int]:
@@ -152,7 +163,7 @@ class _Client:
             self._sleep(_wait(response))
         status = response.status_code
         if status != 200:
-            excerpt = response.text[:200]
+            excerpt = _error_text(response)
             if key:
                 excerpt = excerpt.replace(key, "…")
             code = REFUSED.get(status) or RETRIED.get(status) or f"http_{status}"

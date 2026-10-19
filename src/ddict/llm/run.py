@@ -22,6 +22,7 @@ class BlockResult:
     proposals: tuple | None  # None unless the run succeeded
     answers: tuple[str, ...] = ()  # raw answers, for the exchange log only
     calls: tuple[dict, ...] = ()  # request ids and tokens, for the exchange log only
+    error: str | None = None  # what the server said of a failure, for the exchange log only
 
 
 def run_block(
@@ -42,6 +43,7 @@ def run_block(
     attempts = 0
     answers: list[str] = []
     calls: list[dict] = []
+    error_text = None
     while attempts < MAX_ATTEMPTS:
         attempts += 1
         try:
@@ -54,7 +56,7 @@ def run_block(
                 outcome, detail = "invalid_response", error.code
                 continue
             # The server is down or refuses: trying again at once would not help.
-            outcome, detail = "failed", error.code
+            outcome, detail, error_text = "failed", error.code, str(error)
             break
         if client.last_call:
             calls.append(dict(client.last_call))
@@ -83,4 +85,5 @@ def run_block(
         proposals=proposals if outcome == "succeeded" else None,
         answers=tuple(answers),
         calls=tuple(calls),
+        error=error_text,
     )

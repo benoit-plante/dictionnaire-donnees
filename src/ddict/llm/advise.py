@@ -172,11 +172,20 @@ def _proposal_schema(project: Project, analysis: Analysis) -> dict | None:
     }
 
 
-def advice_schema(project: Project) -> dict:
+def advice_schema(project: Project, *, flat: bool = False) -> dict:
     """The schema sent with the message, stricter than the answer's model: each analysis
     with its own roles and methods, each role with the variables whose level fits it. The
-    server's grammar then cannot write a role an analysis lacks, nor an unfit variable."""
+    server's grammar then cannot write a role an analysis lacks, nor an unfit variable.
+
+    `flat` (v0.18, for Anthropic, whose compiled grammar of the strict schema is "too
+    large"): one list of the feasible analyses, of the roles, of the methods and of the
+    usable variables. `parse_advice` then refuses a role or a method the analysis lacks and
+    a variable not offered, and `checked` shows the codebook's conditions (levels, roles
+    missing) before a person confirms."""
     proposals = [p for a in CATALOGUE.values() if (p := _proposal_schema(project, a))]
+    if flat:
+        proposals = [_flat_proposal(project, [p["properties"]["analysis"]["enum"][0]
+                                              for p in proposals])]  # fmt: skip
     return {
         "type": "object",
         "additionalProperties": False,
@@ -187,8 +196,36 @@ def advice_schema(project: Project) -> dict:
             "proposals": {
                 "type": "array",
                 "maxItems": MAX_PROPOSALS,
-                "items": {"anyOf": proposals},
+                "items": proposals[0] if flat else {"anyOf": proposals},
             },
+        },
+    }
+
+
+def _flat_proposal(project: Project, analyses: list[str]) -> dict:
+    role = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["role", "variables"],
+        "properties": {
+            "role": {"type": "string", "enum": list(ROLE_KEYS)},
+            "variables": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": MAX_ROLE_VARIABLES,
+                "items": {"type": "string", "enum": list(usable(project))},
+            },
+        },
+    }
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["analysis", "roles", "method", "reason"],
+        "properties": {
+            "analysis": {"type": "string", "enum": analyses},
+            "roles": {"type": "array", "minItems": 1, "maxItems": MAX_ROLES, "items": role},
+            "method": {"type": "string", "enum": ["", *METHOD_KEYS]},
+            "reason": {"type": "string", "maxLength": MAX_REASON_CHARS},
         },
     }
 
@@ -377,7 +414,8 @@ def advise(
         block,
         run_id=run_id(now),
         now=now,
-        schema=advice_schema(project),
+        # Anthropic refuses the grammar of the strict schema as too large (v0.18, A5).
+        schema=advice_schema(project, flat=getattr(client, "protocol", "") == "anthropic"),
         parse=parse_advice,
     )
     if log_dir is not None:

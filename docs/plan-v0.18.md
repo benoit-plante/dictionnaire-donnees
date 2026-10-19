@@ -94,6 +94,8 @@ Les bornes retirées sont rappelées en une phrase dans la consigne (« libellé
 
 Le client compatible OpenAI continue d'envoyer le schéma complet (les serveurs actuels l'acceptent).
 
+**Fait en A5, écart avec ce qui précède** : avec `prefixItems` changé en `anyOf`, le schéma de la conseillère restait dans les limites documentées (10 paramètres à types multiples), mais Anthropic l'a refusé, avec Haiku 5.5 comme avec Sonnet 5.5 : « The compiled grammar is too large ». La conseillère envoie donc à Anthropic une **forme plate** (`advice_schema(…, flat=True)`) : une seule liste des analyses possibles, des rôles, des méthodes et des variables utilisables, sans `anyOf`. Ce que la grammaire ne garantit plus est vérifié sur le poste : un rôle ou une méthode que l'analyse n'a pas et une variable non offerte refusent la réponse (`parse_advice`) ; un niveau de mesure qui ne convient pas ou un rôle manquant sont montrés par les conditions du codebook (`checked`) avant qu'une personne confirme. Le serveur compatible OpenAI garde le schéma strict. Les trois autres schémas sont acceptés tels que `wire_schema` les envoie. Les erreurs du serveur (son message, la clé effacée) sont maintenant gardées dans le dossier des envois.
+
 Tests : pour chacun des quatre schémas, `wire_schema` ne contient que des mots-clés de la liste permise (vérifiée hors ligne) et au plus 24 paramètres facultatifs et 16 à types multiples ; une réponse qui dépasse une borne retirée est refusée par la validation.
 
 ### 5.3 La clé (D-137)

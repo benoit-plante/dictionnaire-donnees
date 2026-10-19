@@ -201,6 +201,47 @@ def test_a_good_answer(project, tmp_path):
     assert project.ai_runs == []  # D-079: nothing recorded in the project
 
 
+def _anthropic_advise(project, content):
+    def reply(request):
+        body = json.loads(request.content)
+        sent.append(body["output_config"]["format"]["schema"])
+        text = json.dumps(content, ensure_ascii=False)
+        return httpx.Response(
+            200, json={"content": [{"type": "text", "text": text}], "stop_reason": "end_turn"}
+        )
+
+    sent = []
+    with client_module.AnthropicClient(
+        "claude-haiku-5-5", key=lambda: "sk-ant-FAUSSE", transport=httpx.MockTransport(reply)
+    ) as client:
+        found = advise(project, client, GOAL, now=NOW)
+    return found, sent
+
+
+def test_anthropic_gets_the_flat_schema(project):
+    """The strict schema's grammar is "too large" for Anthropic (v0.18, A5): one list of the
+    analyses, the roles, the methods and the variables; the checks stay on this computer."""
+    found, sent = _anthropic_advise(project, answer(T_TEST))
+    assert found.result.run.outcome == "succeeded"
+    assert found.proposals[0].chosen == {"outcome": ["bienetre_total"], "group": ["groupe"]}
+    proposal = sent[0]["properties"]["proposals"]["items"]
+    assert "anyOf" not in json.dumps(sent[0])
+    assert proposal["properties"]["analysis"]["enum"] == list(CATALOGUE)
+    variables = proposal["properties"]["roles"]["items"]["properties"]["variables"]
+    assert variables["items"]["enum"] == list(usable(project))
+    # What the grammar no longer stops is refused here, or shown before a person confirms.
+    for wrong, detail in [
+        ({"roles": [{"role": "rows", "variables": ["groupe"]}]}, "unknown_role"),
+        ({"method": "spearman"}, "unknown_method"),
+    ]:
+        refused, _sent = _anthropic_advise(project, answer(T_TEST | wrong))
+        assert refused.result.run.detail == detail
+    unfit = T_TEST | {"roles": [{"role": "outcome", "variables": ["groupe"]},
+                                {"role": "group", "variables": ["stress"]}]}  # fmt: skip
+    shown, _sent = _anthropic_advise(project, answer(unfit))
+    assert not shown.proposals[0].check.ok
+
+
 @pytest.mark.parametrize(
     ("content", "detail"),
     [

@@ -191,6 +191,8 @@ def _log(folder: Path, block: Block, result: BlockResult) -> None:
     }
     if result.calls:  # request ids and tokens, when the server gives them (v0.18)
         record["calls"] = list(result.calls)
+    if result.error:  # why the server refused (v0.18)
+        record["error"] = result.error
     path = folder / f"{result.run.run_id}-{block.block_id}.json"
     with path.open("w", encoding="utf-8", newline="\n") as stream:
         stream.write(json.dumps(record, ensure_ascii=False, indent=2) + "\n")
