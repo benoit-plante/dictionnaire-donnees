@@ -88,10 +88,12 @@ def test_two_sessions_on_the_same_project(sleep):
     warning = next(w for w in _warnings(second) if CHANGED in w)
     assert NOT_SAVED in warning
     recalled = next(t for t in _texts(second) if t.startswith("Votre décision :"))
-    assert "**Glossaire** — « Accepter »" in recalled
+    assert "**Glossaire** — « Accepter (QFS) »" in recalled
     assert "Définition de QFS : « Questionnaire fictif du sommeil (version B) »" in recalled
     errors = " ".join(e.value for e in second.error)
     assert "Non enregistré : le projet a été modifié ailleurs" in errors
+    # Nothing shown as decided that is not written: the page goes back to the file as read.
+    assert glossary.entry(second.session_state["project"], "QFS").status == "proposed"
     # Another decision of the second session is refused as well, until the reload.
     second.button(key="reject-glossary-EFA").click().run()
     assert _status(sleep, "EFA") == "proposed"
@@ -106,7 +108,7 @@ def test_two_sessions_on_the_same_project(sleep):
     redo = _texts(second)
     assert any("Définition de QFS : « Questionnaire fictif du sommeil (version B) »" in t
                for t in redo)  # fmt: skip
-    assert any("« Rejeter »" in t for t in redo)
+    assert any("« Rejeter (EFA) »" in t for t in redo)
     # Decided again, it is saved; "Fermer" puts the recall away.
     _accept(second, "QFS", "Questionnaire fictif du sommeil (version B)")
     assert _status(sleep, "QFS") == "corrected"

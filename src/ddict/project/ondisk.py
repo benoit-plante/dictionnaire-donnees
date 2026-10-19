@@ -14,7 +14,7 @@ import contextlib
 import hashlib
 import os
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
 
@@ -50,6 +50,9 @@ class DiskState:
     sha256: str
     mtime_ns: int
     size: int
+    # The bytes themselves, to go back to them when a save is refused: the page then shows
+    # what the file held, never a decision that was not written (v0.17, found in the browser).
+    content: bytes = field(default=b"", compare=False, repr=False)
 
 
 def key(path: Path | str) -> str:
@@ -59,7 +62,8 @@ def key(path: Path | str) -> str:
 
 
 def _state(path: Path, content: bytes, stat: os.stat_result) -> DiskState:
-    return DiskState(key(path), hashlib.sha256(content).hexdigest(), stat.st_mtime_ns, len(content))
+    digest = hashlib.sha256(content).hexdigest()
+    return DiskState(key(path), digest, stat.st_mtime_ns, len(content), content)
 
 
 def read(path: Path) -> tuple[bytes, DiskState]:

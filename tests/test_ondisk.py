@@ -13,6 +13,7 @@ from ddict.analysis import notebook as nb
 from ddict.cli import main
 from ddict.io import read_database
 from ddict.project import ProjectChanged, build_project, dumps, load_project, ondisk, save_project
+from ddict.project.store import as_read
 from test_analysis_data import EXAMPLES
 
 
@@ -104,6 +105,19 @@ def test_unchanged_tells_a_real_change(path):
     save_project(other, path)
     assert not ondisk.unchanged(path, ondisk.remembered(project))
     assert ondisk.unchanged(path, ondisk.remembered(other))
+
+
+def test_back_to_the_project_as_read(path):
+    """A refused save: the page shows again what the file held, never the decision that was
+    not written (found in the browser)."""
+    project = load_project(path)
+    project.dataset.description = "Décision jamais écrite"
+    again = as_read(project)
+    assert again.dataset.description is None
+    assert ondisk.remembered(again) == ondisk.remembered(project)
+    save_project(project, path)  # written: the project as read is now this one
+    assert as_read(project).dataset.description == "Décision jamais écrite"
+    assert as_read(build_project(read_database(EXAMPLES / "etude-sommeil.sav"))) is None
 
 
 def test_the_path_is_compared_without_case(path):

@@ -20,6 +20,7 @@ from ddict.export import wording as w
 from ddict.i18n import _
 from ddict.project import ProjectChanged, ProjectError, load_project, ondisk, save_project
 from ddict.project.model import Project, TrackedValue
+from ddict.project.store import as_read
 from ddict.review import logic
 from ddict.workflow import leftover_notes
 
@@ -306,6 +307,10 @@ def save(
         save_project(project(), project_path())
     except ProjectChanged:
         _refused(key, refusal, action, "project")
+        # The decision is undone in memory: the page shows the project as it was read, and
+        # the banner offers to read it as it is now.
+        with contextlib.suppress(ProjectError):
+            st.session_state.project = as_read(project()) or project()
         return False
     except ondisk.FileBusy:
         _busy(key)
@@ -503,6 +508,7 @@ def button(
     submit: bool = False,
     message: bool = True,
     watch: tuple[str, ...] = (),
+    recalled: str | None = None,
 ) -> None:
     """A button that runs a decision; `submit` for the button of a form (st.form), whose
     fields are sent together when it is clicked. Without `message`, its message is shown
@@ -514,7 +520,7 @@ def button(
             key=key,
             on_click=act,
             args=(action, *args),
-            kwargs={"key": key, "timed": timed, "reset": reset, "label": label},
+            kwargs={"key": key, "timed": timed, "reset": reset, "label": recalled or label},
             type="primary" if primary else "secondary",
         )
         # Beside the button, never above it: a note that appears must not move the button
@@ -572,13 +578,14 @@ def decision_card(
         accept_label, reject_label = labels or (_("Accepter"), _("Rejeter"))
         with st.container(horizontal=True):
             button(accept_label, f"accept-{key}", *accept, timed=True, primary=True,
-                   reset=reset, message=False)  # fmt: skip
+                   reset=reset, message=False, recalled=f"{accept_label} ({title})")  # fmt: skip
             if reject is not None:
                 button(reject_label, f"reject-{key}", *reject, timed=True, reset=reset,
-                       message=False)  # fmt: skip
+                       message=False, recalled=f"{reject_label} ({title})")  # fmt: skip
     elif save is not None:
-        button(save_label or _("Enregistrer"), f"save-{key}", *save, timed=True, reset=reset,
-               message=False)  # fmt: skip
+        label = save_label or _("Enregistrer")
+        button(label, f"save-{key}", *save, timed=True, reset=reset, message=False,
+               recalled=f"{label} ({title})")  # fmt: skip
     for kind in ("accept", "reject", "save"):
         show_message(f"{kind}-{key}")
 

@@ -71,8 +71,28 @@ def load_project(path: Path | str) -> Project:
     path = Path(path)
     try:
         content, disk = ondisk.read(path)
+    except OSError as error:
+        raise ProjectError(f"Cannot read {path.name}: {error}") from error
+    project = _parse(content, path)
+    ondisk.remember(project, disk)
+    return project
+
+
+def as_read(project: Project) -> Project | None:
+    """The project as its file held it when last read or saved: what a page shows again
+    when a save is refused (v0.17). None for a project never read from a file."""
+    disk = ondisk.remembered(project)
+    if not isinstance(disk, ondisk.DiskState) or not disk.content:
+        return None
+    found = _parse(disk.content, Path(disk.key))
+    ondisk.remember(found, disk)
+    return found
+
+
+def _parse(content: bytes, path: Path) -> Project:
+    try:
         data = json.loads(content.decode("utf-8"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+    except (UnicodeError, json.JSONDecodeError) as error:
         raise ProjectError(f"Cannot read {path.name}: {error}") from error
     version = data.get("schema_version") if isinstance(data, dict) else None
     if not isinstance(version, str) or version.split(".")[0] != SCHEMA_VERSION.split(".")[0]:
@@ -94,7 +114,6 @@ def load_project(path: Path | str) -> Project:
         measure.propose(project)
         dataset.propose_structure(project)
     project.schema_version = SCHEMA_VERSION
-    ondisk.remember(project, disk)
     return project
 
 

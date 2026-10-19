@@ -343,7 +343,15 @@ def _search_panel() -> None:
         c.show_message("home-follow-found")
 
 
-WIDTHS = [2.2, 1, 0.9, 2.4, 1.6, 2, 0.9, 1.3, 0.5]
+WIDTHS = [1.9, 1.15, 1, 2.3, 1.5, 1.8, 1.15, 1.2, 0.45]
+GAP = "xsmall"  # nine columns: a word as long as "Documenter" holds on one line at 1400 px
+
+
+def short_folder(folder: Path) -> str:
+    """The last two folders of a path, the whole path being in the name's help: a long
+    path would take ten lines of the table."""
+    parts = folder.parts
+    return "…\\" + "\\".join(parts[-2:]) if len(parts) > 3 else str(folder)
 
 
 def _headers() -> None:
@@ -376,7 +384,7 @@ def _headers() -> None:
         ),
         (_("Modifié"), _("La dernière modification du projet ou de son carnet.")),
     ]
-    for column, (title, help_text) in zip(st.columns(WIDTHS), headers, strict=False):
+    for column, (title, help_text) in zip(st.columns(WIDTHS, gap=GAP), headers, strict=False):
         column.caption(f"**{title}**", help=help_text)
 
 
@@ -397,7 +405,7 @@ def _projects() -> None:
         return
     _headers()
     for index, row in enumerate(overview.rows(followed)):
-        cells = st.columns(WIDTHS, vertical_alignment="center")
+        cells = st.columns(WIDTHS, gap=GAP, vertical_alignment="center")
         with cells[0]:
             st.button(
                 row.name,
@@ -406,8 +414,9 @@ def _projects() -> None:
                 args=(row,),
                 disabled=row.problem is not None,
                 icon=":material/folder_open:",
+                help=str(row.path),
             )
-            st.caption(row.folder)
+            st.caption(short_folder(row.path.parent))
         texts = (
             overview.phase_text, overview.codebook_text, overview.waiting_text,
             overview.plan_text, overview.notebook_text, overview.base_text,
