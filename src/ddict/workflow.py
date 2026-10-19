@@ -55,7 +55,7 @@ def profile_database(
         raise ProjectExists(output)
     project = build_project(read_database(database), min_cell_count=min_cell_count)
     study_language.update(project)  # from the file's labels, when they say (v0.5)
-    save_project(project, output)
+    save_project(project, output, overwrite=replace)
     return project, output
 
 

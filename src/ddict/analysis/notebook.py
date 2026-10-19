@@ -30,7 +30,7 @@ from datetime import date
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, PrivateAttr
 
 from ddict.analysis.apa import Edit
 from ddict.analysis.catalogue import CATALOGUE
@@ -38,7 +38,7 @@ from ddict.analysis.results import AnalysisResult
 from ddict.export import wording as w
 from ddict.export.preparation import plan
 from ddict.i18n import _
-from ddict.project import fingerprint
+from ddict.project import fingerprint, ondisk
 from ddict.project.model import Project, Subgroup, VariableRef
 
 NOTEBOOK_VERSION = "1.3.0"
@@ -123,6 +123,8 @@ class Notebook(_Strict):
     first_figure: int = 1
     entries: list[Entry] = []
     method: MethodPart = MethodPart()
+    # v0.17 (D-129): what the file held when read, in memory only (`ondisk`).
+    _disk: object = PrivateAttr(default=None)
 
 
 # --- Variables by their key in the project. ---
@@ -371,12 +373,18 @@ def dumps(notebook: Notebook) -> str:
     return json.dumps(data, indent=2, ensure_ascii=False, allow_nan=False) + "\n"
 
 
+class NotebookChanged(ondisk.FileChanged):
+    """The notebook file changed on the disk since it was read, or appeared since a new one
+    was begun: nothing was written (v0.17, D-129)."""
+
+
 def save_notebook(notebook: Notebook, path: Path) -> None:
-    """Written to a temporary file, then put in place at once (as the project)."""
-    temporary = path.with_name(path.name + ".tmp")
-    with temporary.open("w", encoding="utf-8", newline="\n") as stream:
-        stream.write(dumps(notebook))
-    temporary.replace(path)
+    """Written to a temporary file, then put in place at once (as the project); refused
+    like the project when the file is no longer what it was read from."""
+    try:
+        ondisk.write(notebook, dumps(notebook), path)
+    except ondisk.FileChanged as error:
+        raise NotebookChanged(error.path, error.reason) from error
 
 
 def _version(text: str) -> tuple[int, ...]:
@@ -386,7 +394,8 @@ def _version(text: str) -> tuple[int, ...]:
 def load_notebook(path: Path) -> Notebook:
     """Read a notebook; refused when made by a newer tool or another major version."""
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        content, disk = ondisk.read(path)
+        data = json.loads(content.decode("utf-8"))
     except (OSError, ValueError) as error:
         raise NotebookError("unreadable", str(error)) from error
     version = str(data.get("carnet_version", "0"))
@@ -401,4 +410,5 @@ def load_notebook(path: Path) -> Notebook:
     except ValueError as error:
         raise NotebookError("unreadable", str(error)) from error
     notebook.carnet_version = NOTEBOOK_VERSION
+    ondisk.remember(notebook, disk)
     return notebook

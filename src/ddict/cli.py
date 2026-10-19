@@ -32,10 +32,12 @@ from ddict.llm.stems import DEFAULT_STEM_BLOCK_SIZE, build_stem_blocks
 from ddict.naming import NamingError
 from ddict.privacy import MIN_CELL_COUNT
 from ddict.project import (
+    ProjectChanged,
     ProjectError,
     load_project,
     save_project,
 )
+from ddict.project.ondisk import FileChanged
 from ddict.questionnaire.labels import propose_value_labels
 from ddict.questionnaire.link import candidates
 from ddict.review import theme
@@ -1829,6 +1831,27 @@ def _model_arguments(command: argparse.ArgumentParser, redo_help: str, block_siz
     command.add_argument("--refaire", "--redo", action="store_true", help=redo_help)
 
 
+def changed_text(error: FileChanged) -> str:
+    """Why nothing was saved: the project or the notebook is not what the command read
+    (v0.17, D-129)."""
+    texts = {
+        (True, "changed"): _(
+            "Le projet {name} a été modifié ailleurs pendant la commande (l'interface "
+            "est-elle ouverte ?)."
+        ),
+        (False, "changed"): _(
+            "Le carnet {name} a été modifié ailleurs pendant la commande (l'interface "
+            "est-elle ouverte ?)."
+        ),
+        (True, "missing"): _("Le fichier projet {name} a disparu pendant la commande."),
+        (False, "missing"): _("Le carnet {name} a disparu pendant la commande."),
+        (True, "exists"): _("Un fichier projet {name} est apparu pendant la commande."),
+        (False, "exists"): _("Un carnet {name} est apparu pendant la commande."),
+    }
+    text = texts[isinstance(error, ProjectChanged), error.reason].format(name=error.path.name)
+    return text + " " + _("Rien n'est enregistré : relancez la commande.")
+
+
 def main(argv: list[str] | None = None) -> int:
     settings.apply()  # the language of this computer, or DDICT_LANG (v0.5)
     for stream in (sys.stdout, sys.stderr):
@@ -1842,6 +1865,8 @@ def main(argv: list[str] | None = None) -> int:
         print(_("Impossible de lire la base : {detail}").format(detail=error), file=sys.stderr)
     except ProjectError as error:
         print(_("Impossible de lire le projet : {detail}").format(detail=error), file=sys.stderr)
+    except FileChanged as error:
+        print(changed_text(error), file=sys.stderr)
     except OSError as error:
         print(_("Erreur de fichier : {detail}").format(detail=error), file=sys.stderr)
     return EXIT_ERROR

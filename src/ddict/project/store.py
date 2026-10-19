@@ -8,7 +8,7 @@ from pathlib import Path
 from pydantic import ValidationError
 
 from ddict.io.model import LoadedData
-from ddict.project import dataset, measure
+from ddict.project import dataset, measure, ondisk
 from ddict.project.model import SCHEMA_VERSION, Project
 
 PROJECT_SUFFIX = ".dd.json"
@@ -18,19 +18,28 @@ class ProjectError(Exception):
     """The project file cannot be read."""
 
 
+class ProjectChanged(ondisk.FileChanged):
+    """The project file changed on the disk since it was read: nothing was written (v0.17,
+    D-129)."""
+
+
 def dumps(project: Project) -> str:
     """Keys in model order, indent 2, UTF-8 characters kept, final newline."""
     data = project.model_dump(mode="json")
     return json.dumps(data, indent=2, ensure_ascii=False, allow_nan=False) + "\n"
 
 
-def save_project(project: Project, path: Path | str) -> None:
-    """Write through a temporary file, so that an interrupted save never truncates a project."""
+def save_project(project: Project, path: Path | str, *, overwrite: bool = False) -> None:
+    """Write through a temporary file, so that an interrupted save never truncates a project.
+
+    Refused (ProjectChanged, nothing written) when the file is no longer what this project
+    was read from or last wrote, or, for a project not read from it, when the file exists
+    and `overwrite` is not given (v0.17, D-129)."""
     path = Path(path)
-    temporary = path.with_name(path.name + ".tmp")
-    with temporary.open("w", encoding="utf-8", newline="\n") as stream:
-        stream.write(dumps(project))
-    temporary.replace(path)
+    try:
+        ondisk.write(project, dumps(project), path, overwrite=overwrite)
+    except ondisk.FileChanged as error:
+        raise ProjectChanged(error.path, error.reason) from error
 
 
 def _version(text: str) -> tuple[int, ...]:
@@ -52,7 +61,8 @@ def _scoring_as_note(data: dict) -> None:
 def load_project(path: Path | str) -> Project:
     path = Path(path)
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        content, disk = ondisk.read(path)
+        data = json.loads(content.decode("utf-8"))
     except (OSError, UnicodeError, json.JSONDecodeError) as error:
         raise ProjectError(f"Cannot read {path.name}: {error}") from error
     version = data.get("schema_version") if isinstance(data, dict) else None
@@ -74,6 +84,7 @@ def load_project(path: Path | str) -> Project:
         measure.propose(project)
         dataset.propose_structure(project)
     project.schema_version = SCHEMA_VERSION
+    ondisk.remember(project, disk)
     return project
 
 

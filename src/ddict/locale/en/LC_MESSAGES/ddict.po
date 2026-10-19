@@ -2745,6 +2745,14 @@ msgid "Le carnet ne peut pas être lu : {name}"
 msgstr "The notebook cannot be read: {name}"
 
 #, python-brace-format
+msgid "Le carnet {name} a disparu pendant la commande."
+msgstr "The notebook {name} disappeared while the command ran."
+
+#, python-brace-format
+msgid "Le carnet {name} a été modifié ailleurs pendant la commande (l'interface est-elle ouverte ?)."
+msgstr "The notebook {name} was changed elsewhere while the command ran (is the interface open?)."
+
+#, python-brace-format
 msgid "Le code {codes} a été traité comme une valeur manquante."
 msgstr "Code {codes} was treated as a missing value."
 
@@ -2792,6 +2800,10 @@ msgid ""
 msgstr ""
 "The data file is never changed; the project keeps only what the tool computed and your decisions,"
 " not the participants' answers. Project file: {path}"
+
+#, python-brace-format
+msgid "Le fichier projet {name} a disparu pendant la commande."
+msgstr "The project file {name} disappeared while the command ran."
 
 msgid ""
 "Le formulaire « Ajouter une règle », plus haut, est rempli : donnez la raison, puis ajoutez la "
@@ -2957,6 +2969,10 @@ msgid ""
 "Le projet n'a pas de questionnaire. Lisez-le d'abord : ddict questionnaire {path} "
 "questionnaire.pdf"
 msgstr "The project has no questionnaire. Read it first: ddict questionnaire {path} questionnaire.pdf"
+
+#, python-brace-format
+msgid "Le projet {name} a été modifié ailleurs pendant la commande (l'interface est-elle ouverte ?)."
+msgstr "The project {name} was changed elsewhere while the command ran (is the interface open?)."
 
 #, python-brace-format
 msgid "Le projet {path} existe déjà. Utilisez --remplacer pour l'écraser."
@@ -4721,6 +4737,9 @@ msgstr "Back to {place}"
 msgid "Rien en attente."
 msgstr "Nothing waiting."
 
+msgid "Rien n'est enregistré : relancez la commande."
+msgstr "Nothing is saved: run the command again."
+
 msgid "Rien à envoyer."
 msgstr "Nothing to send."
 
@@ -5430,6 +5449,14 @@ msgid ""
 msgstr ""
 "A .zip for a deposit (OSF, Borealis): codebook, plan, notebook, scripts and a README to complete;"
 " never the database."
+
+#, python-brace-format
+msgid "Un carnet {name} est apparu pendant la commande."
+msgstr "A notebook {name} appeared while the command ran."
+
+#, python-brace-format
+msgid "Un fichier projet {name} est apparu pendant la commande."
+msgstr "A project file {name} appeared while the command ran."
 
 #, python-brace-format
 msgid ""

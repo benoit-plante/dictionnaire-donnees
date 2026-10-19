@@ -14,6 +14,7 @@ from pydantic import (
     ConfigDict,
     Field,
     JsonValue,
+    PrivateAttr,
     StringConstraints,
     model_serializer,
     model_validator,
@@ -801,6 +802,8 @@ class Project(Strict):
     exclusions: Exclusions = Exclusions()  # v0.12 (D-093)
     plan: Plan = Plan()  # v0.13 (D-101)
     recodes: Recodes = Recodes()  # v0.15 (D-120)
+    # v0.17 (D-129): what the file held when read, in memory only (`ondisk`).
+    _disk: object = PrivateAttr(default=None)
 
     def variable(self, name: str) -> VariableEntry:
         for entry in self.variables:

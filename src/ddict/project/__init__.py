@@ -5,6 +5,7 @@ from ddict.project.decisions import DecisionError, correct, enter, is_accepted, 
 from ddict.project.model import SCHEMA_VERSION, Project, TrackedValue
 from ddict.project.store import (
     PROJECT_SUFFIX,
+    ProjectChanged,
     ProjectError,
     dumps,
     load_project,
@@ -17,6 +18,7 @@ __all__ = [
     "SCHEMA_VERSION",
     "DecisionError",
     "Project",
+    "ProjectChanged",
     "ProjectError",
     "TrackedValue",
     "build_project",
