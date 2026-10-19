@@ -194,19 +194,29 @@ def stem_questions(project: Project) -> list[StemQuestion]:
             found.append(StemQuestion(key, question.single, options, question.other))
         return found
     by_key: dict[str, dict] = {}
+    # The "other" option of a designed questionnaire (v0.20): its variable is the text.
+    others = {
+        o.option_id
+        for q in (project.questionnaire.questions if project.questionnaire else [])
+        for o in q.options
+        if o.other
+    }
     for entry in project.variables:
         target = entry.question.value
         if not is_accepted(entry.question) or not target or target == link.NO_QUESTION:
             continue
         key, _dot, part = target.partition(".")
-        question = by_key.setdefault(key, {"single": None, "options": []})
-        if part.startswith("o") and part[1:].isdigit():
+        question = by_key.setdefault(key, {"single": None, "options": [], "other": None})
+        if target in others:
+            question["other"] = entry.name
+        elif part.startswith("o") and part[1:].isdigit():
             question["options"].append((entry.name, int(part[1:])))
         elif not part and question["single"] is None:
             question["single"] = entry.name
     for key, question in by_key.items():
         if question["single"] or question["options"]:
-            found.append(StemQuestion(key, question["single"], tuple(question["options"]), None))
+            options = tuple(question["options"])
+            found.append(StemQuestion(key, question["single"], options, question["other"]))
     return found
 
 

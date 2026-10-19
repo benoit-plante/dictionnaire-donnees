@@ -316,6 +316,8 @@ class Group(Strict):
     n_complete_rows: int | None = None
     cronbach_alpha: float | None = None  # as observed, for information
     cronbach_alpha_reversed: float | None = None  # with the suspect items reversed
+    # v0.20 (D-146): the question of a designed questionnaire whose items it holds.
+    question: str | None = None
 
 
 class AiRun(Strict):

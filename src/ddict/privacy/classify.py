@@ -31,6 +31,7 @@ Reason = Literal[
     "postal_code_name",
     "postal_code_values",
     "wide_date_range",
+    "long_answer_planned",  # v0.20: an open question planned for a long answer
 ]
 
 # Short words must match a whole word of the name; long ones may appear inside it.
@@ -199,6 +200,39 @@ def classify_variable(
         span = int(profile.date_max[:4]) - int(profile.date_min[:4])
         if span > BIRTH_DATE_SPAN_YEARS:
             quasi.append("wide_date_range")
+    if quasi:
+        return result("quasi_identifier", *quasi)
+    return result("ordinary")
+
+
+def classify_planned(
+    name: str, label: str | None, *, text: bool, choice: bool, long: bool
+) -> PrivacyClassification:
+    """A variable planned by a designed questionnaire, before any value exists (v0.20, D-145):
+    the rules of its name and label only, and a long open answer as free text. Confirmed or
+    changed by a person, as for a database; the database's values are looked at when it
+    arrives."""
+    words = _words(name) + _words(label)
+    name_words = _words(name)
+
+    def result(privacy_class: PrivacyClass, *reasons: Reason) -> PrivacyClassification:
+        return PrivacyClassification(name, privacy_class, reasons)
+
+    # A choice among a few codes cannot single anyone out (as IDENTIFIER_NAME_MIN_DISTINCT).
+    if not choice and (
+        _matches(name_words, _IDENTIFIER_WORDS, _IDENTIFIER_PARTS) or _label_names_identifier(label)
+    ):
+        return result("likely_identifier", "identifier_name")
+    if long:
+        return result("free_text", "long_answer_planned")
+    if text and _matches(words, _FREE_TEXT_WORDS, _FREE_TEXT_PARTS):
+        return result("free_text", "free_text_name")
+    quasi: list[Reason] = []
+    if _matches(words, _BIRTH_WORDS, ()) or _starts(words, _BIRTH_PREFIXES):
+        is_place = any(w in _PLACE_WORDS for w in words)
+        quasi.append("birth_place_name" if is_place else "birth_date_name")
+    if _matches(words, _POSTAL_WORDS, _POSTAL_PARTS):
+        quasi.append("postal_code_name")
     if quasi:
         return result("quasi_identifier", *quasi)
     return result("ordinary")

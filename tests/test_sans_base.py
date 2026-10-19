@@ -77,7 +77,7 @@ def test_a_designed_project_round_trips_byte_for_byte(tmp_path):
 
 def test_the_type_of_a_planned_variable_is_its_planned_type():
     project = designed()
-    assert [e.data_type for e in project.variables][:3] == ["integer", "integer", "integer"]
+    assert [e.data_type for e in project.variables][:3] == ["integer", "decimal", "integer"]
     assert project.variable("Q5_1").data_type == "text"
     assert project.variable("Q1").suspect_codes == []
 

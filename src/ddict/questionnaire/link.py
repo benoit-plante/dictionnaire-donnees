@@ -767,9 +767,14 @@ def best_guess(project: Project) -> dict[str, str]:
 def drop_stale_links(project: Project, previous: Questionnaire | None) -> int:
     """After a new reading of the questionnaire, remove the links that may point elsewhere:
     all of them if the file changed, those whose target is gone otherwise. A decision that
-    a variable comes from no question is kept. Returns how many were removed."""
+    a variable comes from no question is kept. Returns how many were removed.
+
+    A questionnaire designed in the tool (v0.20, D-146) changes its fingerprint at each
+    change, but never gives an id again: only the links whose target is gone go."""
     current = project.questionnaire
     changed = previous is None or current is None or previous.sha256 != current.sha256
+    if current is not None and current.format == "designed":
+        changed = False
     ids = {t.target_id for t in targets(current)} if current else set()
     removed = 0
     for entry in project.variables:

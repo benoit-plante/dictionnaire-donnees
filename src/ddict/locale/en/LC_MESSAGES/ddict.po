@@ -962,6 +962,9 @@ msgstr ""
 msgid "Ce projet est maintenant suivi."
 msgstr "This project is now followed."
 
+msgid "Ce projet n'a pas de questionnaire conçu dans l'outil."
+msgstr "This project has no questionnaire designed in the tool."
+
 msgid "Ce projet n'a pas encore de base : elle s'ouvrira quand les réponses seront arrivées."
 msgstr "This project has no database yet: it will open once the responses have arrived."
 
@@ -1031,6 +1034,9 @@ msgstr "Documented fields: theoretical range, thresholds, references, notes"
 
 msgid "Changer ce recodage au lieu d'en créer un."
 msgstr "Change this recoding instead of creating one."
+
+msgid "Changez d'abord ce qui cite ces variables :"
+msgstr "First change what cites these variables:"
 
 #, python-brace-format
 msgid "Chaque corrélation est calculée sur les personnes qui ont les deux valeurs ({n} de {a} à {b})."
@@ -1225,6 +1231,10 @@ msgstr ""
 
 msgid "Code"
 msgstr "Code"
+
+#, python-brace-format
+msgid "Code refusé : {why}."
+msgstr "Code refused: {why}."
 
 #, python-brace-format
 msgid "Code suspect {code}"
@@ -1719,6 +1729,10 @@ msgstr ""
 "Two variables would have the same name in the copy: settle the conflicts of names on the "
 "\"Names\" page. Nothing was written."
 
+#, python-brace-format
+msgid "Deux variables auraient le nom {name}."
+msgstr "Two variables would be named {name}."
+
 msgid "Devis"
 msgstr "Study design"
 
@@ -1769,6 +1783,15 @@ msgstr ""
 msgid "Documents Word"
 msgstr "Word documents"
 
+msgid "Donnez au moins deux choix de réponse (les colonnes de la grille)."
+msgstr "Give at least two answer choices (the columns of the grid)."
+
+msgid "Donnez au moins un choix de réponse."
+msgstr "Give at least one answer choice."
+
+msgid "Donnez au moins un énoncé à la grille."
+msgstr "Give the grid at least one item."
+
 msgid "Donnez la raison de la règle, en clair."
 msgstr "Give the reason of the rule, in plain words."
 
@@ -1777,6 +1800,9 @@ msgstr "Give the reason for the recoding, in plain words."
 
 msgid "Donnez le seuil de durée, en secondes."
 msgstr "Give the duration threshold, in seconds."
+
+msgid "Donnez un nom au questionnaire."
+msgstr "Give the questionnaire a name."
 
 msgid "Donnez un nom au score."
 msgstr "Give the score a name."
@@ -3453,6 +3479,9 @@ msgstr "The test of {id} was one-sided, in the expected direction."
 msgid "Le test exact de Fisher convient mieux."
 msgstr "Fisher's exact test fits better."
 
+msgid "Le texte de la question est vide."
+msgstr "The text of the question is empty."
+
 msgid ""
 "Le travail s'arrête après le bloc en cours si vous cliquez sur « Arrêter » ou changez de page. "
 "Les blocs terminés sont gardés ; une relance reprend là où il s'était arrêté."
@@ -4108,6 +4137,9 @@ msgstr "Method: {method}"
 
 msgid "N'en garder aucune."
 msgstr "Keep none."
+
+msgid "Nature de question inconnue."
+msgstr "Unknown kind of question."
 
 msgid ""
 "Ne pas reproduire le texte des questions de ce groupe dans le codebook (instrument protégé par le"
@@ -4878,6 +4910,10 @@ msgstr "Question in the questionnaire"
 msgid "Question inconnue : {id}"
 msgstr "Unknown question: {id}"
 
+#, python-brace-format
+msgid "Question inconnue : {id}."
+msgstr "Unknown question: {id}."
+
 msgid "Question rattachée"
 msgstr "Linked question"
 
@@ -5241,6 +5277,9 @@ msgstr "Remove a rule."
 msgid "Retirer {id}"
 msgstr "Remove {id}"
 
+msgid "Retirez ou déplacez d'abord les questions de cette section."
+msgstr "First remove or move the questions of this section."
+
 #, python-brace-format
 msgid "Retiré de la liste, son fichier n'est pas touché : {path}"
 msgstr "Taken off the list, its file is not touched: {path}"
@@ -5488,6 +5527,10 @@ msgstr "Second measure"
 msgid "Seconde mesure (test t apparié)."
 msgstr "Second measure (paired t test)."
 
+#, python-brace-format
+msgid "Section inconnue : {id}."
+msgstr "Unknown section: {id}."
+
 msgid "Sens attendu"
 msgstr "Expected direction"
 
@@ -5537,6 +5580,9 @@ msgstr "Rule thresholds, not compared (“p < .05”): {n}."
 
 msgid "Seuils, croissants (une classe va de son seuil inclus au suivant exclu)"
 msgstr "Cuts, increasing (a class goes from its cut included to the next one excluded)"
+
+msgid "Seule une grille a des énoncés."
+msgstr "Only a grid has items."
 
 msgid ""
 "Seulement des métadonnées : ce que disent le questionnaire et le codebook.\n"
@@ -6122,6 +6168,9 @@ msgstr ""
 "A nominal predictor with {k} categories has {c} coefficients; an hypothesis is about one only. "
 "Test the model, or choose a variable with 2 categories."
 
+msgid "Un questionnaire garde au moins une section."
+msgstr "A questionnaire keeps at least one section."
+
 msgid "Un seuil de durée est un choix de l'équipe : donnez sa source."
 msgstr "A duration threshold is the team's choice: give its source."
 
@@ -6225,6 +6274,9 @@ msgstr "A pair joins two different variables."
 msgid "Une passation plus courte que SECONDES ; exige --source."
 msgstr "An administration shorter than SECONDS; requires --source."
 
+msgid "Une question ouverte ou un texte d'affichage n'a pas de choix."
+msgstr "An open question or a displayed text has no choices."
+
 msgid ""
 "Une question « à vérifier » a été lue, mais sa mise en page est douteuse : l'outil ne propose pas"
 " d'étiquettes de valeurs à partir de ses colonnes. Un .txt copié depuis Word évite souvent le "
@@ -6247,6 +6299,9 @@ msgstr "An answer that repeats an earlier answer on all these variables."
 
 msgid "Une saisie n'est pas enregistrée : elle sera perdue."
 msgstr "Something typed is not saved: it will be lost."
+
+msgid "Une seule option « autre », et jamais dans une grille."
+msgstr "Only one “other” option, and never in a grid."
 
 msgid "Une source documentée est obligatoire."
 msgstr "A documented source is required."
@@ -7020,6 +7075,9 @@ msgstr "the partial correlation"
 msgid "la corrélation partielle entre {a} et {b}"
 msgstr "the partial correlation between {a} and {b}"
 
+msgid "la description de la base"
+msgstr "the description of the database"
+
 msgid "la différence entre les deux groupes"
 msgstr "the difference between the two groups"
 
@@ -7033,8 +7091,15 @@ msgstr "the structure"
 msgid "le coefficient de {x}"
 msgstr "the coefficient of {x}"
 
+#, python-brace-format
+msgid "le groupe {id} a une cotation ou un nom d'instrument"
+msgstr "group {id} has a scoring or an instrument name"
+
 msgid "le modèle"
 msgstr "the model"
+
+msgid "le plan"
+msgstr "the plan"
 
 msgid "le premier groupe, dans l'ordre des codes, plus élevé"
 msgstr "the first group, in the order of the codes, higher"
@@ -7372,6 +7437,9 @@ msgstr "four"
 msgid "questionnaire"
 msgstr "questionnaire"
 
+msgid "questionnaire conçu dans l'outil"
+msgstr "questionnaire designed in the tool"
+
 msgid "questions de recherche"
 msgstr "research questions"
 
@@ -7433,6 +7501,9 @@ msgstr "randomization"
 
 msgid "réponse invalide"
 msgstr "invalid answer"
+
+msgid "réponse longue prévue"
+msgstr "long answer planned"
 
 msgid "réponses multiples"
 msgstr "multiple response"
@@ -7636,6 +7707,9 @@ msgstr "an odds ratio below 1"
 msgid "un rapport de cotes supérieur à 1"
 msgstr "an odds ratio above 1"
 
+msgid "un recodage"
+msgstr "a recoding"
+
 msgid "un score calculé"
 msgstr "a computed score"
 
@@ -7677,6 +7751,9 @@ msgstr "a repeated observation"
 
 msgid "une paire de variables"
 msgstr "a pair of variables"
+
+msgid "une règle d'exclusion"
+msgstr "an exclusion rule"
 
 msgid "vague"
 msgstr "wave"
@@ -8523,6 +8600,10 @@ msgstr "{outcome} by {group}: F({df1}, {df2}) = {f}, {p}, η² = {eta}, ω² = {
 #, python-brace-format
 msgid "{outcome} selon {group} : H({df}) = {h}, {p}, ε² = {e} (n = {n})."
 msgstr "{outcome} by {group}: H({df}) = {h}, {p}, ε² = {e} (n = {n})."
+
+#, python-brace-format
+msgid "{place} cite {name}"
+msgstr "{place} cites {name}"
 
 #, python-brace-format
 msgid "{program} : préparation"

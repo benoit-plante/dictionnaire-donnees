@@ -63,6 +63,7 @@ REASONS = Texts(
         "unique_text_values": N_("textes tous différents"),
         "free_text_name": N_("nom de texte libre"),
         "long_text_values": N_("textes longs"),
+        "long_answer_planned": N_("réponse longue prévue"),
         "birth_date_name": N_("nom de date de naissance"),
         "birth_place_name": N_("nom de lieu de naissance"),
         "postal_code_name": N_("nom de code postal"),
@@ -362,6 +363,7 @@ BASIS = Texts(
         "shared_value_labels": N_("mêmes étiquettes de valeurs"),
         "contiguous": N_("variables voisines"),
         "platform_structure": N_("structure de la plateforme"),
+        "designed_questionnaire": N_("questionnaire conçu dans l'outil"),
     }
 )
 
