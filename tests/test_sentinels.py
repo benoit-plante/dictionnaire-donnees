@@ -11,12 +11,12 @@ from streamlit.testing.v1 import AppTest
 from ddict.export import render_markdown, write_xlsx
 from ddict.export import wording as w
 from ddict.io import read_database
-from ddict.llm.client import LocalModelClient
 from ddict.llm.enrich import enrich
 from ddict.llm.messages import build_blocks
 from ddict.project import build_project, load_project, save_project
 from ddict.review import logic
 from ddict.workflow import tasks
+from fake_ai import institution
 
 NOW = "2026-10-14T15:00:00"
 APP = str(Path(__file__).resolve().parent.parent / "src" / "ddict" / "review" / "app.py")
@@ -86,7 +86,7 @@ def test_the_model_is_told_and_never_asked(project):
         return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(answer)}}]})
 
     before = [d.model_dump() for d in project.variable("age").sentinel_decisions]
-    client = LocalModelClient("m", transport=httpx.MockTransport(server))
+    client = institution("m", server)
     list(enrich(project, client, now=lambda: NOW, block_size=40))
     assert [d.model_dump() for d in project.variable("age").sentinel_decisions] == before
     assert project.variable("nb_reveils").sentinel_decisions == []  # nothing proposed

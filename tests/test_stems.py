@@ -6,11 +6,9 @@ from pathlib import Path
 import httpx
 import pytest
 
-import ddict.llm.client as client_module
 from ddict import naming
 from ddict.cli import main
 from ddict.io import read_database
-from ddict.llm.client import LocalModelClient
 from ddict.llm.stems import (
     ACRONYM_SIGNAL,
     build_stem_blocks,
@@ -20,6 +18,7 @@ from ddict.llm.stems import (
 from ddict.llm.validate import InvalidResponse
 from ddict.project import build_project, load_project, save_project
 from ddict.workflow import add_questionnaire
+from fake_ai import allowed, institution, serve_commands
 
 EXAMPLES = Path(__file__).resolve().parent.parent / "exemples" / "bases-fictives"
 KEY = json.loads((EXAMPLES / "corrige-surveymonkey.json").read_text(encoding="utf-8"))
@@ -61,7 +60,7 @@ class Server:
 
 
 def _run(project, server):
-    client = LocalModelClient("qwen-test", transport=httpx.MockTransport(server))
+    client = institution("qwen-test", server)
     with client:
         return list(propose_stems(project, client, now=lambda: NOW))
 
@@ -191,21 +190,16 @@ def test_no_group_prefix_is_ever_proposed(project):
 
 
 @pytest.fixture
-def fake_ollama(monkeypatch):
+def fake_server(monkeypatch):
     server = Server()
-    real = client_module.LocalModelClient.__init__
-
-    def init(self, model, *, endpoint=client_module.DEFAULT_ENDPOINT, **kwargs):
-        real(self, model, endpoint=endpoint, transport=httpx.MockTransport(server))
-
-    monkeypatch.setattr(client_module.LocalModelClient, "__init__", init)
+    serve_commands(monkeypatch, server)
     return server
 
 
-def test_rename_command_with_a_model(project, tmp_path, capsys, fake_ollama):
+def test_rename_command_with_a_model(project, tmp_path, capsys, fake_server):
     path = tmp_path / "travail.dd.json"
-    save_project(project, path)
-    assert main(["renommer", str(path), "--modele", "qwen-test"]) == 0
+    save_project(allowed(project), path)
+    assert main(["renommer", str(path), "--ia"]) == 0
     out = capsys.readouterr().out
     assert "Bloc r-001 (8 variables) : réussi." in out
     assert load_project(path).variable("q0005_0001").new_name.value == "taches_1"

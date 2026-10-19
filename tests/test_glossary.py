@@ -10,13 +10,13 @@ from streamlit.testing.v1 import AppTest
 from ddict import glossary
 from ddict.cli import main
 from ddict.io import read_sav
-from ddict.llm.client import LocalModelClient
 from ddict.llm.enrich import enrich
 from ddict.llm.schemas import VariableProposal
 from ddict.project import build_project, load_project, save_project
 from ddict.project.model import GlossaryEntry
 from ddict.questionnaire import load_questionnaire
 from ddict.review import logic
+from fake_ai import institution
 
 NOW = "2026-10-13T22:00:00"
 APP = str(Path(__file__).resolve().parent.parent / "src" / "ddict" / "review" / "app.py")
@@ -140,7 +140,7 @@ def test_enrichment_leaves_the_glossary_alone(project):
         text = json.dumps(answer, ensure_ascii=False)
         return httpx.Response(200, json={"choices": [{"message": {"content": text}}]})
 
-    client = LocalModelClient("m", transport=httpx.MockTransport(server))
+    client = institution("m", server)
     list(enrich(project, client, now=lambda: NOW, block_size=12))
     assert [e.model_dump() for e in project.glossary] == before
 

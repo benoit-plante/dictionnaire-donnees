@@ -1,4 +1,4 @@
-"""The bench of the local model's advice (v0.9, step 7): objectives written for the fictional
+"""The bench of the AI's advice (v0.9, step 7): objectives written for the fictional
 database of the analyses, each with the analysis and the variables expected
 (`objectifs-analyses.json`), and how many proposals are right.
 

@@ -1,4 +1,5 @@
-"""Step 10: the local model client, tested against a fake server in memory (no network)."""
+"""Step 10: the client of an OpenAI-compatible server (a local one until v0.17, an
+institution's since v0.18), tested against a fake server in memory (no network)."""
 
 import json
 
@@ -7,16 +8,11 @@ import pytest
 
 from ddict.io import read_sav
 from ddict.llm import build_blocks
-from ddict.llm.client import (
-    DEFAULT_ENDPOINT,
-    EndpointRefused,
-    LocalModelClient,
-    ModelCallError,
-    check_local,
-)
+from ddict.llm.client import ModelCallError
 from ddict.llm.run import MAX_ATTEMPTS, run_block
 from ddict.llm.validate import InvalidResponse, invention_signals, parse_block_response
 from ddict.project import build_project
+from fake_ai import ADDRESS, institution
 
 NOW = "2026-10-13T15:00:00"
 
@@ -63,46 +59,7 @@ def good(body):
 
 
 def _client(server):
-    return LocalModelClient(
-        "modele-test", transport=httpx.MockTransport(server), sleep=lambda seconds: None
-    )
-
-
-@pytest.mark.parametrize(
-    "endpoint",
-    [
-        "http://127.0.0.1:11434/v1",
-        "http://localhost:1234/v1/",
-        "http://[::1]:8080/v1",
-        "http://127.0.0.2:8080",
-    ],
-)
-def test_local_addresses_are_accepted(endpoint):
-    assert check_local(endpoint) == endpoint.rstrip("/")
-
-
-@pytest.mark.parametrize(
-    "endpoint",
-    [
-        "http://192.168.1.10:11434/v1",
-        "http://10.0.0.5/v1",
-        "https://api.openai.com/v1",
-        "http://localhost.example.com/v1",
-        "http://127.0.0.1.nip.io/v1",
-        "http://user:secret@localhost/v1",
-        "file:///etc/passwd",
-        "ftp://localhost/v1",
-    ],
-)
-def test_other_addresses_are_refused(endpoint):
-    with pytest.raises(EndpointRefused):
-        check_local(endpoint)
-    with pytest.raises(EndpointRefused):
-        LocalModelClient("m", endpoint=endpoint)
-
-
-def test_default_endpoint_is_ollama_on_this_computer():
-    assert check_local(DEFAULT_ENDPOINT) == "http://127.0.0.1:11434/v1"
+    return institution("modele-test", server)
 
 
 def test_request_sent_to_the_server(block):
@@ -110,7 +67,7 @@ def test_request_sent_to_the_server(block):
     with _client(server) as client:
         result = run_block(client, block, run_id="run-0001", now=NOW)
     request, body = server.requests[0]
-    assert str(request.url) == "http://127.0.0.1:11434/v1/chat/completions"
+    assert str(request.url) == f"{ADDRESS}/chat/completions"
     assert body["model"] == "modele-test"
     assert body["temperature"] == 0 and body["seed"] == 42 and body["stream"] is False
     assert body["messages"] == list(block.messages)
@@ -127,7 +84,7 @@ def test_proxy_settings_are_ignored(block, monkeypatch):
     with _client(server) as client:
         assert client._http._trust_env is False
         run_block(client, block, run_id="run-0001", now=NOW)
-    assert server.requests[0][0].url.host == "127.0.0.1"
+    assert server.requests[0][0].url.host == "ia.universite.example"
 
 
 def test_redirections_are_not_followed(block):
@@ -146,7 +103,7 @@ def test_trace_of_a_successful_run(block):
         run = run_block(client, block, run_id="run-0007", now=NOW).run
     assert run.run_id == "run-0007"
     assert run.block == block.block_id
-    assert run.endpoint == "http://127.0.0.1:11434/v1"
+    assert run.endpoint == ADDRESS
     assert run.model == "modele-test"
     assert run.parameters == {"temperature": 0, "seed": 42}
     assert run.prompt_version == "variables-v4"
@@ -245,7 +202,7 @@ def test_server_not_running(block):
     def refuse(request):
         raise httpx.ConnectError("connection refused", request=request)
 
-    with LocalModelClient("m", transport=httpx.MockTransport(refuse)) as client:
+    with institution("m", refuse) as client:
         with pytest.raises(ModelCallError) as error:
             client.complete(list(block.messages), {})
         result = run_block(client, block, run_id="run-0001", now=NOW)

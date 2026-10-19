@@ -40,10 +40,11 @@ from ddict.questionnaire.labels import accepted_labels
 
 PROMPT_VERSION = "variables-v4"
 PROMPTS_WITH_QUESTIONNAIRE = ("variables-v3", "variables-v4")
-# Level 2, aggregate statistics: the prompts of the local model, kept for the bench.
+# Level 2, aggregate statistics: the prompts before v0.18, kept for the bench.
 PROMPTS_WITH_STATISTICS = ("variables-v1", "variables-v2", "variables-v3")
 MAX_QUESTION_CHARS = 300
-# With v3, 12 variables left too little room for the answer in Ollama's 4,096 tokens.
+# With v3, 12 variables left too little room for the answer in 4,096 tokens (before
+# v0.18).
 DEFAULT_BLOCK_SIZE = 8
 # Through an API key (v0.18): no context to fit in, fewer and larger blocks.
 API_BLOCK_SIZE = 25

@@ -210,6 +210,81 @@ def _forbid(path: Path) -> int:
     return 0
 
 
+def refused_address(endpoint: str) -> str:
+    return _(
+        "Adresse refusée : {endpoint}. Une adresse en https:// est demandée (http:// "
+        "n'est permis que pour cet ordinateur), sans identifiant ni paramètre."
+    ).format(endpoint=endpoint)
+
+
+def settings_for(args: argparse.Namespace) -> ai_settings.AiSettings | None:
+    """The AI settings of this computer, with what the command gives (--protocole,
+    --adresse, --modele). None, with a message, when the address is refused or no model is
+    chosen."""
+    saved = ai_settings.load()
+    protocol = getattr(args, "protocole", None) or saved.protocol
+    endpoint = getattr(args, "adresse", None) or (
+        saved.endpoint if protocol == saved.protocol else ai_settings.default_endpoint(protocol)
+    )
+    model = getattr(args, "modele", None) or saved.model
+    if not endpoint:
+        print(_("Indiquez l'adresse du serveur avec --adresse."), file=sys.stderr)
+        return None
+    try:
+        endpoint = check_endpoint(endpoint)
+    except EndpointRefused:
+        print(refused_address(endpoint), file=sys.stderr)
+        return None
+    if not model:
+        print(
+            _(
+                "Aucun modèle choisi : ajoutez --modele, ou enregistrez-le sur la page « IA » "
+                "de l'interface."
+            ),
+            file=sys.stderr,
+        )
+        return None
+    return ai_settings.AiSettings(protocol, endpoint, model, saved.effort)
+
+
+def client_for_command(args: argparse.Namespace, project=None, project_path=None):
+    """The client of an AI command, or None with a message: the option is not installed,
+    the project does not allow sending (D-138), the address or the model is missing."""
+    if project is not None and not project.settings.ai.allowed:
+        print(
+            _(
+                "L'envoi à l'IA n'est pas permis pour ce projet : rien n'est envoyé. Pour le "
+                "permettre : ddict ia autoriser {path}"
+            ).format(path=project_path),
+            file=sys.stderr,
+        )
+        return None
+    settings = settings_for(args)
+    if settings is None:
+        return None
+    try:
+        from ddict.llm import connect
+    except ImportError:
+        print(not_installed(), file=sys.stderr)
+        return None
+    if project is not None:
+        return connect.client_for(project, settings)
+    return connect.client_from(settings)
+
+
+def add_service_arguments(command: argparse.ArgumentParser) -> None:
+    """--modele, --protocole, --adresse: what the AI settings say unless given."""
+    command.add_argument(
+        "--modele",
+        "--model",
+        help=_(
+            "Le modèle, p. ex. claude-haiku-5-5 (défaut : celui des réglages de l'IA, page "
+            "« IA » de l'interface)."
+        ),
+    )
+    _add_where(command)
+
+
 def cmd_ai(args: argparse.Namespace) -> int:
     action = AI_ACTIONS[args.action]
     if action == "allow":

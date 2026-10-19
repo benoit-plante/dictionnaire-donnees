@@ -25,20 +25,50 @@ def test_powershell_scripts_can_be_read_by_windows_powershell():
         assert "Dictionnaire de données.lnk" in raw.decode("utf-8")
 
 
-def test_installer_needs_no_administrator_and_asks_before_any_model():
+def test_installer_needs_no_administrator_and_no_model():
     text = (ROOT / "windows" / "installer.ps1").read_text(encoding="utf-8-sig")
     assert "RunAs" not in text and "Administrator" not in text
     assert 'tool install --reinstall ("{0}[ia,revision]" -f $Root)' in text
-    # The model is pulled only after a yes; -NoPrompt answers no.
-    pull = text.index("pull $Model")
-    assert text.rfind('Ask "Le télécharger maintenant ?"', 0, pull) != -1
-    assert "if ($NoPrompt) { return $false }" in text
+    # v0.18 (D-135): no local model to install; the key is typed on the AI page.
+    assert "pull" not in text and "4/4" not in text and 'Step "3/3' in text
+    assert "page « IA »" in text
 
 
 def test_uninstaller_keeps_the_projects():
     text = (ROOT / "windows" / "desinstaller.ps1").read_text(encoding="utf-8-sig")
     assert "tool uninstall ddict" in text
     assert ".dd.json" not in text  # never deletes project files
+
+
+def test_uninstaller_asks_before_erasing_the_key():
+    """v0.18 (D-137): the entries "ddict:<address>" of the credential manager, after a yes;
+    -NoPrompt answers no."""
+    text = (ROOT / "windows" / "desinstaller.ps1").read_text(encoding="utf-8-sig")
+    delete = text.index('cmdkey "/delete:$target"')
+    assert text.rfind('Ask "Effacer aussi la clé d', 0, delete) != -1
+    assert r'Select-String -Pattern "target=(\S*ddict:\S+)"' in text
+    assert "if ($NoPrompt) { return $false }" in text
+
+
+# The local model of v0.2 to v0.17 (D-023), gone in v0.18 (D-135); archives aside.
+GONE = ("ollama", "qwen", "11434", "modèle local", "ia locale", "local model")
+ARCHIVES = {"scripts/essai_contexte_modele.py"}  # the trial of D-080, kept as it was
+
+
+def test_no_local_model_left_in_the_code():
+    files = [ROOT / "installer.bat", ROOT / "desinstaller.bat"]
+    for folder in ("src", "windows", "scripts"):
+        files += [
+            f for f in (ROOT / folder).rglob("*") if f.suffix in (".py", ".ps1", ".txt", ".po")
+        ]
+    found = []
+    for path in files:
+        name = path.relative_to(ROOT).as_posix()
+        if name in ARCHIVES or "__pycache__" in name:
+            continue
+        text = path.read_text(encoding="utf-8-sig", errors="replace").casefold()
+        found += [f"{name}: {word}" for word in GONE if word in text]
+    assert not found
 
 
 def test_icon_on_an_open_tool_shows_it(monkeypatch):

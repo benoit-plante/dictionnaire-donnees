@@ -7,7 +7,6 @@ import httpx
 import pytest
 
 from ddict.io import read_database
-from ddict.llm.client import LocalModelClient
 from ddict.llm.enrich import enrich
 from ddict.llm.link import LINK_PROMPT_VERSION, build_link_blocks
 from ddict.llm.validate import presents_observed_range
@@ -15,6 +14,7 @@ from ddict.project import build_project
 from ddict.project.model import TheoreticalRange, ValueLabel
 from ddict.questionnaire import link, load_questionnaire
 from ddict.review import logic
+from fake_ai import institution
 
 # Invented: the same frequency question after each source of support, as in real surveys.
 QUESTIONNAIRE = """Votre conjoint
@@ -124,7 +124,7 @@ def _enrich_with(project, description):
         text = json.dumps(answer, ensure_ascii=False)
         return httpx.Response(200, json={"choices": [{"message": {"content": text}}]})
 
-    client = LocalModelClient("m", transport=httpx.MockTransport(server))
+    client = institution("m", server)
     list(enrich(project, client, now=lambda: "2026-10-14T12:00:00", block_size=20, redo=True))
 
 

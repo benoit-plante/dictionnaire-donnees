@@ -5,14 +5,13 @@ import json
 import httpx
 import pytest
 
-import ddict.llm.client as client_module
 from ddict.cli import main
 from ddict.export import render_markdown
 from ddict.io import read_sav
-from ddict.llm.client import LocalModelClient
 from ddict.llm.enrich import enrich
 from ddict.project import build_project, load_project, validate
 from ddict.project.model import TrackedValue
+from fake_ai import institution, serve_commands
 
 NOW = "2026-10-13T16:00:00"
 
@@ -56,7 +55,7 @@ def project(fictional_files):
 
 
 def _run(project, server, **kwargs):
-    client = LocalModelClient("modele-test", transport=httpx.MockTransport(server))
+    client = institution("modele-test", server)
     return list(enrich(project, client, now=lambda: NOW, block_size=12, **kwargs))
 
 
@@ -122,7 +121,7 @@ def test_resume_skips_blocks_already_done(project):
 
 def test_another_model_is_not_considered_done(project):
     _run(project, Server())
-    other = LocalModelClient("autre-modele", transport=httpx.MockTransport(Server()))
+    other = institution("autre-modele", Server())
     events = list(enrich(project, other, now=lambda: NOW, block_size=12))
     assert all(e.result is not None for e in events)
 
@@ -155,56 +154,74 @@ def test_project_saved_after_each_block_and_exchanges_logged(project, tmp_path, 
 
 
 @pytest.fixture
-def fake_ollama(monkeypatch):
-    """The command line's client, with the fake server as transport."""
+def fake_server(monkeypatch):
+    """The command line goes through the AI settings: here the fake server (v0.18)."""
     server = Server()
-    real = client_module.LocalModelClient.__init__
-
-    def init(self, model, *, endpoint=client_module.DEFAULT_ENDPOINT, **kwargs):
-        real(self, model, endpoint=endpoint, transport=httpx.MockTransport(server))
-
-    monkeypatch.setattr(client_module.LocalModelClient, "__init__", init)
+    serve_commands(monkeypatch, server, model="modele-test")
     return server
 
 
-def test_command(fictional_files, tmp_path, capsys, fake_ollama):
+def _profiled(fictional_files, tmp_path, allow=True):
     project_path = tmp_path / "etude.dd.json"
     main(["profiler", str(fictional_files["etude-sommeil.sav"]), "-o", str(project_path)])
-    assert main(["enrichir", str(project_path), "--modele", "qwen-test"]) == 0
+    if allow:
+        assert main(["ia", "autoriser", str(project_path)]) == 0
+    return project_path
+
+
+def test_command(fictional_files, tmp_path, capsys, fake_server):
+    project_path = _profiled(fictional_files, tmp_path)
+    assert main(["enrichir", str(project_path), "--taille-bloc", "8"]) == 0
     out = capsys.readouterr().out
     assert "Bloc b-001 (8 variables) : réussi." in out
     project = load_project(project_path)
     assert len(project.ai_runs) == 5
+    assert {r.model for r in project.ai_runs} == {"modele-test"}  # from the settings
     assert project.variable("anx1").label.status == "proposed"
     assert len(list((tmp_path / "etude.dd-envois").glob("run-*.json"))) == 5
-    assert main(["enrichir", str(project_path), "--modele", "qwen-test"]) == 0
+    assert main(["enrichir", str(project_path), "--taille-bloc", "8"]) == 0
     assert "déjà fait" in capsys.readouterr().out
-    assert fake_ollama.calls == 5
+    assert fake_server.calls == 5
 
 
-def test_command_explains_a_missing_model(fictional_files, tmp_path, capsys, fake_ollama):
-    project_path = tmp_path / "etude.dd.json"
-    main(["profiler", str(fictional_files["etude-sommeil.sav"]), "-o", str(project_path)])
+def test_blocks_of_25_through_an_api_key(fictional_files, tmp_path, capsys, fake_server):
+    project_path = _profiled(fictional_files, tmp_path)
+    assert main(["enrichir", str(project_path)]) == 0
+    assert "Bloc b-001 (25 variables) : réussi." in capsys.readouterr().out
+    assert fake_server.calls == 2
+
+
+def test_command_explains_a_missing_model(fictional_files, tmp_path, capsys, fake_server):
+    project_path = _profiled(fictional_files, tmp_path)
     capsys.readouterr()
-    fake_ollama.status = 404
-    assert main(["enrichir", str(project_path), "--modele", "qwen-absent"]) == 2
+    fake_server.status = 404
+    assert main(["enrichir", str(project_path), "--modele", "modele-absent"]) == 2
     out, err = capsys.readouterr()
-    assert "ollama pull qwen-absent" in err
+    assert "« modele-absent » est introuvable" in err
     assert "Aucune nouvelle proposition" in err and "à réviser" not in out
 
 
 def test_command_needs_a_model(fictional_files, tmp_path, capsys):
-    project_path = tmp_path / "etude.dd.json"
-    main(["profiler", str(fictional_files["etude-sommeil.sav"]), "-o", str(project_path)])
-    assert main(["enrichir", str(project_path)]) == 2
+    project_path = _profiled(fictional_files, tmp_path)
+    capsys.readouterr()
+    assert main(["enrichir", str(project_path)]) == 2  # no model saved, none given
     assert "--modele" in capsys.readouterr().err
 
 
-def test_command_refuses_a_remote_address(fictional_files, tmp_path, capsys):
-    project_path = tmp_path / "etude.dd.json"
-    main(["profiler", str(fictional_files["etude-sommeil.sav"]), "-o", str(project_path)])
+def test_command_refuses_a_project_not_allowed(fictional_files, tmp_path, capsys, fake_server):
+    project_path = _profiled(fictional_files, tmp_path, allow=False)
+    capsys.readouterr()
+    assert main(["enrichir", str(project_path)]) == 2
+    assert "ddict ia autoriser" in capsys.readouterr().err
+    assert fake_server.calls == 0 and load_project(project_path).ai_runs == []
+    assert main(["enrichir", str(project_path), "--apercu"]) == 0  # the preview, always
+
+
+def test_command_refuses_a_plain_http_address(fictional_files, tmp_path, capsys):
+    project_path = _profiled(fictional_files, tmp_path)
+    capsys.readouterr()
     code = main(
-        ["enrichir", str(project_path), "--modele", "m", "--adresse", "https://api.example.com/v1"]
+        ["enrichir", str(project_path), "--modele", "m", "--adresse", "http://ia.example.com/v1"]
     )
     assert code == 2
     assert "Adresse refusée" in capsys.readouterr().err

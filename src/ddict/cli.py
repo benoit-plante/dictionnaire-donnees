@@ -18,7 +18,7 @@ from datetime import datetime
 from pathlib import Path
 
 from ddict import __version__, settings, tracked
-from ddict.cli_ai import add_ai_parser
+from ddict.cli_ai import add_ai_parser, add_service_arguments, client_for_command
 from ddict.cli_decisions import add_decisions_parsers
 from ddict.cli_plan import add_plan_parser
 from ddict.cli_projects import add_projects_parser
@@ -27,9 +27,9 @@ from ddict.cli_verify import add_deposit_parser, add_verify_parser
 from ddict.export.documented import CopyError
 from ddict.i18n import LANGUAGES, _
 from ddict.io import ReadError
-from ddict.llm import DEFAULT_BLOCK_SIZE, build_blocks
-from ddict.llm.defaults import DEFAULT_ENDPOINT
-from ddict.llm.link import DEFAULT_LINK_BLOCK_SIZE, build_link_blocks
+from ddict.llm import build_blocks
+from ddict.llm.link import API_LINK_BLOCK_SIZE, build_link_blocks
+from ddict.llm.messages import API_BLOCK_SIZE
 from ddict.llm.stems import DEFAULT_STEM_BLOCK_SIZE, build_stem_blocks
 from ddict.naming import NamingError
 from ddict.privacy import MIN_CELL_COUNT
@@ -737,42 +737,31 @@ def advice_lines(proposals) -> list[str]:
 
 
 def cmd_advise(args: argparse.Namespace) -> int:
-    from ddict.llm.advise import AdviceError, build_advice_block
+    from ddict import ai_settings
+    from ddict.llm.advise import (
+        ADVICE_API_PROMPT_VERSION,
+        ADVICE_PROMPT_VERSION,
+        AdviceError,
+        build_advice_block,
+    )
 
     project_path = Path(args.projet)
     project = load_project(project_path)
+    protocol = args.protocole or ai_settings.load().protocol
+    # The whole message to Anthropic, the compact one elsewhere (v0.18, B3).
+    version = ADVICE_API_PROMPT_VERSION if protocol == "anthropic" else ADVICE_PROMPT_VERSION
     try:
-        block = build_advice_block(project, args.objectif)
+        block = build_advice_block(project, args.objectif, version)
     except AdviceError as error:
         print(advice_error_text(error), file=sys.stderr)
         return EXIT_ERROR
     if args.apercu:
         return _preview(project_path, [block])
-    if not args.modele:
-        print(_("Ajoutez --modele, ou --apercu pour voir le message sans rien envoyer."))
+    client = client_for_command(args, project, project_path)
+    if client is None:
         return EXIT_ERROR
-    try:
-        from ddict.llm.advise import advise
-        from ddict.llm.client import EndpointRefused, LocalModelClient
-    except ImportError:
-        print(
-            _(
-                "L'option IA n'est pas installée. Réinstallez l'outil avec ses options : "
-                'uv tool install --reinstall ".[ia,revision]" (voir docs/installation-windows.md).'
-            ),
-            file=sys.stderr,
-        )
-        return EXIT_ERROR
-    try:
-        client = LocalModelClient(args.modele, endpoint=args.adresse)
-    except EndpointRefused as error:
-        print(
-            _("Adresse refusée : seul un serveur sur cet ordinateur est permis ({detail}).").format(
-                detail=error
-            ),
-            file=sys.stderr,
-        )
-        return EXIT_ERROR
+    from ddict.llm.advise import advise
+
     with client:
         found = advise(
             project,
@@ -784,7 +773,7 @@ def cmd_advise(args: argparse.Namespace) -> int:
     if found.proposals is None:
         run = found.result.run
         print(_("Aucune proposition ({detail}).").format(detail=run.detail), file=sys.stderr)
-        advice = failure_advice(run.detail, client.endpoint, args.modele)
+        advice = failure_advice(run.detail, client.endpoint, client.model)
         if advice:
             print(advice, file=sys.stderr)
         return EXIT_ERROR
@@ -858,7 +847,7 @@ def cmd_rename(args: argparse.Namespace) -> int:
     if args.apercu:
         return _preview(project_path, build_stem_blocks(project, size=args.taille_bloc))
     status = 0
-    if args.modele:  # optional: the model proposes the stems the rules left open (D-051)
+    if args.modele or args.ia:  # optional: the AI proposes the stems left open (D-051)
         status = _run_model(args, project, project_path, "rename")
     for line in naming_summary(project):
         print(line)
@@ -871,9 +860,6 @@ def cmd_enrich(args: argparse.Namespace) -> int:
     project = load_project(project_path)
     if args.apercu:
         return _preview(project_path, build_blocks(project, size=args.taille_bloc))
-    if not args.modele:
-        print(_("Indiquez le modèle avec --modele, ou utilisez --apercu."), file=sys.stderr)
-        return EXIT_ERROR
     return _run_model(args, project, project_path, "enrich")
 
 
@@ -906,11 +892,11 @@ def cmd_link(args: argparse.Namespace) -> int:
     )
     if args.apercu:
         return _preview(project_path, build_link_blocks(project, size=args.taille_bloc))
-    if not args.modele:
+    if not (args.modele or args.ia):
         print(
             _(
                 "Choisissez les rattachements dans l'interface (ddict reviser), ou ajoutez "
-                "--modele pour qu'un modèle local propose un choix parmi les candidates."
+                "--ia pour que l'IA propose un choix parmi les candidates."
             )
         )
         return 0
@@ -918,32 +904,14 @@ def cmd_link(args: argparse.Namespace) -> int:
 
 
 def _run_model(args: argparse.Namespace, project, project_path: Path, task: str) -> int:
-    """Send the blocks of `task` ("enrich", "link" or "rename") to the local model, with
-    progress."""
-    try:
-        from ddict.llm.client import EndpointRefused, LocalModelClient
-        from ddict.llm.enrich import enrich
-        from ddict.llm.link import propose_links
-        from ddict.llm.stems import propose_stems
-    except ImportError:
-        print(
-            _(
-                "L'option IA n'est pas installée. Réinstallez l'outil avec ses options : "
-                'uv tool install --reinstall ".[ia,revision]" (voir docs/installation-windows.md).'
-            ),
-            file=sys.stderr,
-        )
+    """Send the blocks of `task` ("enrich", "link" or "rename") to the AI, with progress;
+    only for a project that allows it (v0.18, D-138)."""
+    client = client_for_command(args, project, project_path)
+    if client is None:
         return EXIT_ERROR
-    try:
-        client = LocalModelClient(args.modele, endpoint=args.adresse)
-    except EndpointRefused as error:
-        print(
-            _("Adresse refusée : seul un serveur sur cet ordinateur est permis ({detail}).").format(
-                detail=error
-            ),
-            file=sys.stderr,
-        )
-        return EXIT_ERROR
+    from ddict.llm.enrich import enrich
+    from ddict.llm.link import propose_links
+    from ddict.llm.stems import propose_stems
 
     outcomes = {
         "succeeded": _("réussi"),
@@ -989,7 +957,7 @@ def _run_model(args: argparse.Namespace, project, project_path: Path, task: str)
             print(_("Interrompu. Les blocs terminés sont enregistrés ; relancez pour continuer."))
             return EXIT_ERROR
     last = project.ai_runs[-1].detail if failed and project.ai_runs else None
-    advice = failure_advice(last, client.endpoint, args.modele)
+    advice = failure_advice(last, client.endpoint, client.model)
     if advice:
         print(advice, file=sys.stderr)
     if succeeded:
@@ -1000,33 +968,17 @@ def _run_model(args: argparse.Namespace, project, project_path: Path, task: str)
 
 
 def cmd_bench(args: argparse.Namespace) -> int:
-    """Measure an installed model on the fictional bases (v0.4, step 6; English in v0.5)."""
-    try:
-        from ddict.bench import render_report, run_bench, write_report
-        from ddict.llm.client import EndpointRefused, LocalModelClient
-    except ImportError:
-        print(
-            _(
-                "L'option IA n'est pas installée. Réinstallez l'outil avec ses options : "
-                'uv tool install --reinstall ".[ia,revision]" (voir docs/installation-windows.md).'
-            ),
-            file=sys.stderr,
-        )
-        return EXIT_ERROR
+    """Measure a model on the fictional bases (v0.4, step 6; English in v0.5; through the
+    AI settings since v0.18): nothing of a project is sent, but every message is billed."""
     folder = Path(args.dossier)
     if not folder.is_dir():
         print(_("Dossier introuvable : {path}").format(path=folder), file=sys.stderr)
         return EXIT_ERROR
-    try:
-        client = LocalModelClient(args.modele, endpoint=args.adresse)
-    except EndpointRefused as error:
-        print(
-            _("Adresse refusée : seul un serveur sur cet ordinateur est permis ({detail}).").format(
-                detail=error
-            ),
-            file=sys.stderr,
-        )
+    client = client_for_command(args)
+    if client is None:
         return EXIT_ERROR
+    from ddict.bench import render_report, run_bench, write_report
+
     results = []
     with client:
         for item in run_bench(client, now=lambda: datetime.now().isoformat(timespec="seconds")):
@@ -1035,12 +987,12 @@ def cmd_bench(args: argparse.Namespace) -> int:
             else:
                 results.append(item)
     detail = next((r.failure_detail for r in results if r.failure_detail), None)
-    advice = failure_advice(detail, client.endpoint, args.modele)
+    advice = failure_advice(detail, client.endpoint, client.model)
     if advice:
         print(advice, file=sys.stderr)
     today = datetime.now().date().isoformat()
-    text = render_report(results, model=args.modele, endpoint=client.endpoint, date=today)
-    path = write_report(text, folder, args.modele, today)
+    text = render_report(results, model=client.model, endpoint=client.endpoint, date=today)
+    path = write_report(text, folder, client.model, today)
     print(_("Rapport : {path}").format(path=path))
     return 0
 
@@ -1565,15 +1517,15 @@ def build_parser() -> argparse.ArgumentParser:
         "conseiller",
         aliases=["advise"],
         help=_(
-            "Demander au modèle local des analyses du catalogue pour un objectif : des "
-            "propositions à vérifier, jamais de code, rien n'est calculé."
+            "Demander à l'IA des analyses du catalogue pour un objectif : des propositions "
+            "à vérifier, jamais de code, rien n'est calculé."
         ),
     )
     advise_command.add_argument("projet", help=_("Fichier projet (.dd.json)."))
     advise_command.add_argument(
         "objectif",
         help=_(
-            "L'objectif de l'analyse, en une ou deux phrases, envoyé tel quel au modèle local. "
+            "L'objectif de l'analyse, en une ou deux phrases, envoyé tel quel à l'IA. "
             "N'y écrivez aucune donnée de participant."
         ),
     )
@@ -1583,19 +1535,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help=_("Écrire le message qui serait envoyé, sans rien envoyer."),
     )
-    advise_command.add_argument(
-        "--modele",
-        "--model",
-        help=_("Nom du modèle dans le serveur local, p. ex. qwen2.5:7b-instruct-q4_K_M."),
-    )
-    advise_command.add_argument(
-        "--adresse",
-        "--address",
-        default=DEFAULT_ENDPOINT,
-        help=_("Adresse du serveur local compatible OpenAI (défaut : Ollama, {default}).").format(
-            default=DEFAULT_ENDPOINT
-        ),
-    )
+    add_service_arguments(advise_command)
     advise_command.set_defaults(handler=cmd_advise)
 
     questionnaire = commands.add_parser(
@@ -1631,6 +1571,15 @@ def build_parser() -> argparse.ArgumentParser:
         DEFAULT_STEM_BLOCK_SIZE,
     )
     rename_command.add_argument(
+        "--ia",
+        "--ai",
+        action="store_true",
+        help=_(
+            "Faire proposer par l'IA les noms de base que les règles laissent ouverts, avec "
+            "le modèle des réglages."
+        ),
+    )
+    rename_command.add_argument(
         "--reference",
         help=_(
             "La vague précédente : son fichier projet (.dd.json), sa copie documentée (.sav) "
@@ -1649,9 +1598,9 @@ def build_parser() -> argparse.ArgumentParser:
     enrich = commands.add_parser(
         "enrichir",
         aliases=["enrich"],
-        help=_("Faire proposer libellés et descriptions par un modèle local (facultatif)."),
+        help=_("Faire proposer libellés et descriptions par l'IA (facultatif)."),
     )
-    _model_arguments(enrich, _("Renvoyer aussi les blocs déjà enrichis."), DEFAULT_BLOCK_SIZE)
+    _model_arguments(enrich, _("Renvoyer aussi les blocs déjà enrichis."), API_BLOCK_SIZE)
     enrich.set_defaults(handler=cmd_enrich)
 
     link = commands.add_parser(
@@ -1659,34 +1608,27 @@ def build_parser() -> argparse.ArgumentParser:
         aliases=["link"],
         help=_(
             "Rattacher les variables aux questions du questionnaire : questions candidates, "
-            "puis choix proposé par un modèle local (facultatif)."
+            "puis choix proposé par l'IA (facultatif, avec --ia)."
         ),
     )
-    _model_arguments(link, _("Renvoyer aussi les blocs déjà traités."), DEFAULT_LINK_BLOCK_SIZE)
+    _model_arguments(link, _("Renvoyer aussi les blocs déjà traités."), API_LINK_BLOCK_SIZE)
+    link.add_argument(
+        "--ia",
+        "--ai",
+        action="store_true",
+        help=_("Faire proposer un choix par l'IA, avec le modèle des réglages."),
+    )
     link.set_defaults(handler=cmd_link)
 
     bench = commands.add_parser(
         "evaluer",
         aliases=["evaluate"],
         help=_(
-            "Mesurer un modèle installé sur les bases fictives de l'outil : rattachements justes, "
-            "inventions signalées, durée."
+            "Mesurer un modèle sur les bases fictives de l'outil : rattachements justes, "
+            "inventions signalées, durée. Chaque message est facturé sur la clé."
         ),
     )
-    bench.add_argument(
-        "--modele",
-        "--model",
-        required=True,
-        help=_("Nom du modèle dans le serveur local, p. ex. qwen2.5:7b-instruct-q4_K_M."),
-    )
-    bench.add_argument(
-        "--adresse",
-        "--address",
-        default=DEFAULT_ENDPOINT,
-        help=_("Adresse du serveur local compatible OpenAI (défaut : Ollama, {default}).").format(
-            default=DEFAULT_ENDPOINT
-        ),
-    )
+    add_service_arguments(bench)
     bench.add_argument(
         "--dossier",
         "--folder",
@@ -1808,7 +1750,7 @@ def _analysis_arguments(command: argparse.ArgumentParser) -> None:
 
 
 def _model_arguments(command: argparse.ArgumentParser, redo_help: str, block_size: int) -> None:
-    """Options shared by the commands that call the local model."""
+    """Options shared by the commands that call the AI."""
     command.add_argument("projet", help=_("Fichier projet (.dd.json)."))
     command.add_argument(
         "--apercu",
@@ -1823,19 +1765,7 @@ def _model_arguments(command: argparse.ArgumentParser, redo_help: str, block_siz
         default=block_size,
         help=_("Nombre de variables par message (défaut : {n}).").format(n=block_size),
     )
-    command.add_argument(
-        "--modele",
-        "--model",
-        help=_("Nom du modèle dans le serveur local, p. ex. qwen2.5:7b-instruct-q4_K_M."),
-    )
-    command.add_argument(
-        "--adresse",
-        "--address",
-        default=DEFAULT_ENDPOINT,
-        help=_("Adresse du serveur local compatible OpenAI (défaut : Ollama, {default}).").format(
-            default=DEFAULT_ENDPOINT
-        ),
-    )
+    add_service_arguments(command)
     command.add_argument("--refaire", "--redo", action="store_true", help=redo_help)
 
 

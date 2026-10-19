@@ -1,4 +1,4 @@
-"""The AI page (v0.18, plan § 7; before, the local model of v0.3, D-022).
+"""The AI page (v0.18, plan § 7; v0.3 to v0.17, a model on this computer, D-022).
 
 - The settings of this computer: the protocol (Anthropic, or a server compatible with
   OpenAI, an institution's), the address, the model, the effort; the API key, typed in a

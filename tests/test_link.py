@@ -12,12 +12,12 @@ from streamlit.testing.v1 import AppTest
 from ddict import glossary
 from ddict.cli import main
 from ddict.io import read_database
-from ddict.llm.client import LocalModelClient
 from ddict.llm.link import build_link_blocks, propose_links
 from ddict.project import build_project, load_project, save_project
 from ddict.project.model import TrackedValue
 from ddict.questionnaire import link, load_questionnaire
 from ddict.review import logic
+from fake_ai import institution
 
 NOW = "2026-10-14T10:00:00"
 APP = str(Path(__file__).resolve().parent.parent / "src" / "ddict" / "review" / "app.py")
@@ -140,7 +140,7 @@ class Server:
 
 
 def _run(project, server, **kwargs):
-    client = LocalModelClient("modele-test", transport=httpx.MockTransport(server))
+    client = institution("modele-test", server)
     return list(propose_links(project, client, now=lambda: NOW, block_size=6, **kwargs))
 
 

@@ -36,7 +36,7 @@ LINK_PROMPT_VERSION = "link-v2"
 # Only for the variables offered neighbour questions, in blocks of their own (v0.6,
 # D-040): the rule about neighbours, given to all, led the model astray elsewhere.
 NEIGHBOUR_PROMPT_VERSION = "link-v3"
-# Ollama keeps 4,096 tokens of context by default: 12 variables with 5 candidates each
+# For a small context of 4,096 tokens (before v0.18): 12 variables with 5 candidates each
 # already took 3,654 tokens on the fictional base (trial of 2026-10-14).
 DEFAULT_LINK_BLOCK_SIZE = 6
 # Through an API key (v0.18): no context to fit in, fewer and larger blocks.

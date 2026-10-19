@@ -180,17 +180,18 @@ def test_preview_command_sends_nothing_and_writes_the_messages(fictional_files, 
     assert "rien n'a été envoyé" in output
     folder = tmp_path / "etude.dd-envois" / "apercu"
     files = sorted(p.name for p in folder.iterdir())
-    assert files == [f"b-00{i}.json" for i in range(1, 6)]  # 34 variables, 8 per block
+    assert files == ["b-001.json", "b-002.json"]  # 34 variables, 25 per block (v0.18)
     record = json.loads((folder / "b-001.json").read_text(encoding="utf-8"))
     assert record["prompt_version"] == PROMPT_VERSION
     assert record["message_sha256"] == message_sha256(record["messages"])
     # A second preview with another block size replaces the first one.
-    assert main(["enrichir", str(project_path), "--apercu", "--taille-bloc", "20"]) == 0
-    assert sorted(p.name for p in folder.iterdir()) == ["b-001.json", "b-002.json"]
+    assert main(["enrichir", str(project_path), "--apercu", "--taille-bloc", "8"]) == 0
+    assert sorted(p.name for p in folder.iterdir()) == [f"b-00{i}.json" for i in range(1, 6)]
 
 
-def test_enrich_without_preview_is_not_available_yet(fictional_files, tmp_path, capsys):
+def test_enrich_needs_a_project_that_allows_it(fictional_files, tmp_path, capsys):
+    """v0.18 (D-138): a new project sends nothing; its preview stays."""
     project_path = tmp_path / "etude.dd.json"
     main(["profiler", str(fictional_files["etude-sommeil.sav"]), "-o", str(project_path)])
     assert main(["enrichir", str(project_path)]) == 2
-    assert "--apercu" in capsys.readouterr().err
+    assert "ddict ia autoriser" in capsys.readouterr().err

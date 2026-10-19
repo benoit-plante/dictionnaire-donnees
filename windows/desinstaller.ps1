@@ -1,7 +1,8 @@
 ﻿# Uninstalls the tool for the current user (D-021). Started by desinstaller.bat.
 #
-# Removes the tool and its icons. Project files, codebooks and data are not touched. uv and
-# Ollama stay installed: other software may use them.
+# Removes the tool and its icons. Project files, codebooks and data are not touched. uv
+# stays installed: other software may use it. The AI settings and the API key are erased
+# only when the person asks (v0.18).
 #
 # For trials: -ShortcutDir and -NoPrompt, as for installer.ps1.
 
@@ -70,9 +71,19 @@ foreach ($folder in $folders) {
 
 $recents = Join-Path $env:APPDATA "ddict"
 if (Test-Path $recents) {
-    if (Ask "Effacer aussi les listes des projets récents et des projets suivis (les chemins de vos fichiers projet) ?") {
+    if (Ask "Effacer aussi les listes des projets récents et des projets suivis (les chemins de vos fichiers projet) et les réglages de l'IA ?") {
         Remove-Item -Recurse $recents
-        Say "Listes effacées."
+        Say "Listes et réglages effacés."
+    }
+}
+
+# The API key (v0.18, D-137): entries "ddict:<address>" of Windows' Credential Manager. The
+# label before "target=" depends on the language of Windows; "target=" does not.
+$keys = @(cmdkey /list | Select-String -Pattern "target=(\S*ddict:\S+)" | ForEach-Object { $_.Matches[0].Groups[1].Value })
+if ($keys.Count -gt 0) {
+    if (Ask "Effacer aussi la clé d'API de l'IA, gardée dans le gestionnaire d'identifiants de Windows ?") {
+        foreach ($target in $keys) { cmdkey "/delete:$target" | Out-Null }
+        Say "Clé d'API effacée."
     }
 }
 

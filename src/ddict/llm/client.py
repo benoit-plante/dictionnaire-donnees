@@ -11,8 +11,7 @@ privacy gate, from metadata only. The clients add their own guards:
 - the API key is asked from `key` at each request and kept nowhere (D-137); an error
   message never repeats it.
 
-`LocalModelClient` is the route of v0.17 (Ollama on this computer only), kept until step C2
-of v0.18.
+Before v0.18, the AI was a model on this computer (D-023); that route is gone (D-135).
 
 httpx is an optional dependency (`ddict[ia]`): it is imported here only.
 """
@@ -28,17 +27,15 @@ import httpx
 from ddict.llm.defaults import (
     ANTHROPIC_ENDPOINT,
     DEFAULT_EFFORT,
-    DEFAULT_ENDPOINT,
     EFFORTS,
     check_endpoint,
-    check_local,
 )
 from ddict.llm.defaults import (
     EndpointRefused as EndpointRefused,  # raised by the clients, re-exported
 )
 from ddict.llm.schemas import wire_schema
 
-DEFAULT_TIMEOUT = 300.0  # seconds: a small model on a processor can be slow
+DEFAULT_TIMEOUT = 300.0  # seconds: a whole block, thinking included
 TEMPERATURE = 0
 SEED = 42
 
@@ -322,38 +319,3 @@ class OpenAICompatibleClient(_Client):
             return sorted(str(item["id"]) for item in response.json()["data"])
         except (ValueError, KeyError, TypeError) as error:
             raise ModelCallError("bad_server_response", "Unexpected server answer") from error
-
-
-class LocalModelClient(OpenAICompatibleClient):
-    """The route of v0.17: a server on this computer only (Ollama by default), no key."""
-
-    def __init__(
-        self,
-        model: str,
-        *,
-        endpoint: str = DEFAULT_ENDPOINT,
-        timeout: float = DEFAULT_TIMEOUT,
-        transport: httpx.BaseTransport | None = None,
-        sleep: Callable[[float], None] = time.sleep,
-    ) -> None:
-        super().__init__(
-            model,
-            endpoint=check_local(endpoint),
-            timeout=timeout,
-            transport=transport,
-            sleep=sleep,
-        )
-
-
-def list_models(
-    endpoint: str = DEFAULT_ENDPOINT,
-    *,
-    timeout: float = 10.0,
-    transport: httpx.BaseTransport | None = None,
-) -> list[str]:
-    """The models of the local server (route of v0.17). Raises EndpointRefused or
-    ModelCallError."""
-    with OpenAICompatibleClient(
-        "", endpoint=check_local(endpoint), timeout=timeout, transport=transport
-    ) as client:
-        return client.list_models()

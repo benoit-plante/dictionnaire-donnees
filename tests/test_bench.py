@@ -13,9 +13,9 @@ from streamlit.testing.v1 import AppTest
 import ddict.llm.client as client_module
 from ddict import ai_settings, bench
 from ddict.cli import main
-from ddict.llm.client import LocalModelClient
 from ddict.project import save_project
 from ddict.workflow import profile_database
+from fake_ai import institution, serve_commands
 
 ROOT = Path(__file__).resolve().parent.parent
 APP = str(ROOT / "src" / "ddict" / "review" / "app.py")
@@ -85,7 +85,7 @@ def _clock():
 
 
 def _run(server):
-    client = LocalModelClient(MODEL, transport=httpx.MockTransport(server))
+    client = institution(MODEL, server)
     items = list(bench.run_bench(client, now=lambda: NOW, clock=_clock()))
     return [i for i in items if isinstance(i, str)], [i for i in items if not isinstance(i, str)]
 
@@ -135,7 +135,7 @@ def test_the_report_is_reproducible():
         _progress, results = _run(Server())
         texts.append(
             bench.render_report(
-                results, model=MODEL, endpoint="http://127.0.0.1:11434/v1", date="2026-10-14"
+                results, model=MODEL, endpoint="https://ia.universite.example/v1", date="2026-10-14"
             )
         )
     assert texts[0] == texts[1]
@@ -171,22 +171,12 @@ def test_report_name():
 @pytest.fixture
 def server(monkeypatch):
     fake = Server()
-    real_list, real_client = client_module.list_models, client_module.LocalModelClient
-
-    def list_models(endpoint=client_module.DEFAULT_ENDPOINT, **kwargs):
-        return real_list(endpoint, transport=httpx.MockTransport(fake))
-
-    class Client(real_client):
-        def __init__(self, model, **kwargs):
-            super().__init__(model, transport=httpx.MockTransport(fake), **kwargs)
-
-    monkeypatch.setattr(client_module, "list_models", list_models)
-    monkeypatch.setattr(client_module, "LocalModelClient", Client)
+    serve_commands(monkeypatch, fake, model=MODEL)
     return fake
 
 
 def test_command(server, tmp_path, capsys):
-    assert main(["evaluer", "--modele", MODEL, "--dossier", str(tmp_path)]) == 0
+    assert main(["evaluer", "--dossier", str(tmp_path)]) == 0  # the model of the settings
     reports = list(tmp_path.glob("banc-essai-*.md"))
     assert len(reports) == 1
     assert "Rapport :" in capsys.readouterr().out
@@ -247,7 +237,7 @@ def test_why_links_were_missed():
 def test_the_report_says_why():
     _progress, results = _run(Server())
     report = bench.render_report(
-        results, model=MODEL, endpoint="http://127.0.0.1:11434/v1", date="2026-10-14"
+        results, model=MODEL, endpoint="https://ia.universite.example/v1", date="2026-10-14"
     )
     assert "Pourquoi les rattachements du modèle ont été manqués" in report
     assert "Bonne question absente des candidates" in report

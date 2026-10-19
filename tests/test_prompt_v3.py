@@ -7,7 +7,6 @@ import pytest
 
 from ddict import glossary
 from ddict.io import read_database
-from ddict.llm.client import LocalModelClient
 from ddict.llm.enrich import enrich
 from ddict.llm.messages import PROMPT_VERSION, build_blocks, system_prompt
 from ddict.llm.validate import invention_signals
@@ -15,6 +14,7 @@ from ddict.project import build_project
 from ddict.project.model import TrackedValue
 from ddict.questionnaire import load_questionnaire
 from ddict.review import logic
+from fake_ai import institution
 
 NOW = "2026-10-14T14:00:00"
 
@@ -136,7 +136,7 @@ def test_enrichment_flags_an_undefined_acronym(project):
         text = json.dumps(answer, ensure_ascii=False)
         return httpx.Response(200, json={"choices": [{"message": {"content": text}}]})
 
-    client = LocalModelClient("m", transport=httpx.MockTransport(server))
+    client = institution("m", server)
     list(enrich(project, client, now=lambda: NOW, block_size=8))
     assert "description:acronym" in project.variable("anx1").ai_signals  # EFA not accepted
     assert "description:acronym" not in project.variable("aide_tcc").ai_signals

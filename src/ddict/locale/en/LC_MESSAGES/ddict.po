@@ -402,14 +402,6 @@ msgstr "Address: {endpoint}"
 msgid "Adresse du serveur (défaut : celle des réglages de l'IA, sinon Anthropic)."
 msgstr "Address of the server (default: the one of the AI settings, else Anthropic)."
 
-#, python-brace-format
-msgid "Adresse du serveur local compatible OpenAI (défaut : Ollama, {default})."
-msgstr "Address of the local OpenAI-compatible server (default: Ollama, {default})."
-
-#, python-brace-format
-msgid "Adresse refusée : seul un serveur sur cet ordinateur est permis ({detail})."
-msgstr "Address refused: only a server on this computer is allowed ({detail})."
-
 msgid ""
 "Adresse refusée : une adresse en https:// est demandée (http:// n'est permis que pour cet "
 "ordinateur), sans identifiant ni paramètre."
@@ -477,9 +469,6 @@ msgstr "Add a rule"
 
 msgid "Ajouter une règle à la fin de la liste, avec sa raison."
 msgstr "Add a rule at the end of the list, with its reason."
-
-msgid "Ajoutez --modele, ou --apercu pour voir le message sans rien envoyer."
-msgstr "Add --model, or --preview to see the message without sending anything."
 
 msgid "Ajoutez d'abord le questionnaire de l'étude (page « Questionnaire »)."
 msgstr "First add the study questionnaire (\"Questionnaire\" page)."
@@ -650,6 +639,9 @@ msgstr "No group found."
 
 msgid "Aucun item inversé"
 msgstr "No reversed item"
+
+msgid "Aucun modèle choisi : ajoutez --modele, ou enregistrez-le sur la page « IA » de l'interface."
+msgstr "No model chosen: add --model, or save it on the \"AI\" page of the interface."
 
 msgid "Aucun niveau de mesure proposé."
 msgstr "No measure level proposed."
@@ -1159,11 +1151,11 @@ msgid "Choisissez les items du score, ou décrivez la cotation en note."
 msgstr "Choose the items of the score, or describe the scoring in a note."
 
 msgid ""
-"Choisissez les rattachements dans l'interface (ddict reviser), ou ajoutez --modele pour qu'un "
-"modèle local propose un choix parmi les candidates."
+"Choisissez les rattachements dans l'interface (ddict reviser), ou ajoutez --ia pour que l'IA "
+"propose un choix parmi les candidates."
 msgstr ""
-"Choose the links in the interface (ddict review), or add --model to have a local model propose a "
-"choice among the candidates."
+"Choose the links in the interface (ddict review), or add --ai so that the AI proposes a choice "
+"among the candidates."
 
 msgid "Choisissez une question, ou « Aucune question du questionnaire »."
 msgstr "Choose a question, or “No question of the questionnaire”."
@@ -1614,18 +1606,18 @@ msgstr ""
 msgid "De travail : avec les propositions en attente, marquées comme telles"
 msgstr "Working: with the pending proposals, marked as such"
 
-msgid ""
-"Demander au modèle local des analyses du catalogue pour un objectif : des propositions à "
-"vérifier, jamais de code, rien n'est calculé."
-msgstr ""
-"Ask the local model for analyses of the catalogue for an objective: proposals to check, never "
-"code, nothing is computed."
-
 msgid "Demander une proposition"
 msgstr "Ask for a proposal"
 
 msgid "Demander une proposition à l'IA (facultatif)"
 msgstr "Ask the AI for a proposal (optional)"
+
+msgid ""
+"Demander à l'IA des analyses du catalogue pour un objectif : des propositions à vérifier, jamais "
+"de code, rien n'est calculé."
+msgstr ""
+"Ask the AI for analyses of the catalogue for an objective: proposals to check, never code, "
+"nothing is computed."
 
 #, python-brace-format
 msgid "Dernier rapport : {name}"
@@ -2144,8 +2136,16 @@ msgstr ""
 msgid "Faire proposer : {title}"
 msgstr "Get proposals: {title}"
 
-msgid "Faire proposer libellés et descriptions par un modèle local (facultatif)."
-msgstr "Have a local model propose labels and descriptions (optional)."
+msgid "Faire proposer libellés et descriptions par l'IA (facultatif)."
+msgstr "Have the AI propose labels and descriptions (optional)."
+
+msgid ""
+"Faire proposer par l'IA les noms de base que les règles laissent ouverts, avec le modèle des "
+"réglages."
+msgstr "Have the AI propose the base names the rules leave open, with the model of the settings."
+
+msgid "Faire proposer un choix par l'IA, avec le modèle des réglages."
+msgstr "Have the AI propose a choice, with the model of the settings."
 
 msgid "Famille (correction)"
 msgstr "Family (correction)"
@@ -2405,6 +2405,10 @@ msgid ""
 msgstr "Cannot write the files: {detail}. The codebook may be open in Excel: close it, then try again."
 
 #, python-brace-format
+msgid "Impossible de joindre {endpoint} : vérifiez la connexion Internet et l'adresse (page « IA »)."
+msgstr "Cannot reach {endpoint}: check the Internet connection and the address (\"AI\" page)."
+
+#, python-brace-format
 msgid "Impossible de joindre {endpoint} : vérifiez la connexion Internet."
 msgstr "Cannot reach {endpoint}: check the Internet connection."
 
@@ -2439,9 +2443,6 @@ msgstr "Grouping clues"
 
 msgid "Indiquez l'adresse du serveur avec --adresse."
 msgstr "Give the address of the server with --address."
-
-msgid "Indiquez le modèle avec --modele, ou utilisez --apercu."
-msgstr "Give the model with --model, or use --preview."
 
 msgid "Informations"
 msgstr "Information"
@@ -2567,6 +2568,14 @@ msgstr ""
 "Sending to the AI is not allowed for this project: tick \"Allow the metadata of this project to "
 "be sent to the AI\" in the sidebar. The preview stays available."
 
+#, python-brace-format
+msgid ""
+"L'envoi à l'IA n'est pas permis pour ce projet : rien n'est envoyé. Pour le permettre : ddict ia "
+"autoriser {path}"
+msgstr ""
+"Sending to the AI is not allowed for this project: nothing is sent. To allow it: ddict ai allow "
+"{path}"
+
 msgid "L'envoi à l'IA n'est plus permis pour ce projet ; l'aperçu des messages le reste."
 msgstr "Sending to the AI is no longer allowed for this project; previewing the messages still is."
 
@@ -2620,11 +2629,11 @@ msgid "L'item {item} est inversé avant le calcul du score."
 msgstr "Item {item} is reversed before the score is computed."
 
 msgid ""
-"L'objectif de l'analyse, en une ou deux phrases, envoyé tel quel au modèle local. N'y écrivez "
-"aucune donnée de participant."
+"L'objectif de l'analyse, en une ou deux phrases, envoyé tel quel à l'IA. N'y écrivez aucune "
+"donnée de participant."
 msgstr ""
-"The objective of the analysis, in one or two sentences, sent as is to the local model. Do not "
-"write any participant data in it."
+"The objective of the analysis, in one or two sentences, sent as written to the AI. Write no "
+"participant data in it."
 
 #, python-brace-format
 msgid "L'objectif est trop long : {n} caractères au plus."
@@ -3146,10 +3155,8 @@ msgid ""
 "même."
 msgstr "The model did not give a valid answer ({detail}). Try again, or choose the analysis yourself."
 
-msgid ""
-"Le modèle n'a pas répondu à temps. Sur un ordinateur sans carte graphique, réduisez la taille des"
-" blocs."
-msgstr "The model did not answer in time. On a computer without a graphics card, make the blocks smaller."
+msgid "Le modèle n'a pas répondu à temps : réessayez, ou réduisez la taille des blocs."
+msgstr "The model did not answer in time: try again, or reduce the block size."
 
 msgid "Le modèle ne propose aucune analyse du catalogue pour cet objectif."
 msgstr "The model proposes no analysis of the catalogue for this objective."
@@ -3176,16 +3183,19 @@ msgstr ""
 "the objective. The model is chosen on the \"AI\" page."
 
 #, python-brace-format
-msgid ""
-"Le modèle « {model} » est introuvable sur le serveur. Avec Ollama, téléchargez-le d'abord : "
-"ollama pull {model}"
-msgstr ""
-"The model \"{model}\" cannot be found on the server. With Ollama, download it first: ollama pull "
-"{model}"
+msgid "Le modèle « {model} » est introuvable à cette adresse : vérifiez son nom sur la page « IA »."
+msgstr "The model \"{model}\" cannot be found at this address: check its name on the \"AI\" page."
 
 #, python-brace-format
 msgid "Le modèle « {model} » n'est pas dans la liste."
 msgstr "The model \"{model}\" is not in the list."
+
+msgid ""
+"Le modèle, p. ex. claude-haiku-5-5 (défaut : celui des réglages de l'IA, page « IA » de "
+"l'interface)."
+msgstr ""
+"The model, e.g. claude-haiku-5-5 (default: the one of the AI settings, \"AI\" page of the "
+"interface)."
 
 msgid "Le même chiffre que la barre de la barre latérale du projet."
 msgstr "The same figure as the bar in the project's sidebar."
@@ -3357,10 +3367,6 @@ msgstr "The expected direction was: {direction}."
 #, python-brace-format
 msgid "Le serveur a répondu par une erreur ({code})."
 msgstr "The server answered with an error ({code})."
-
-#, python-brace-format
-msgid "Le serveur {endpoint} ne répond pas. Ollama est-il lancé ?"
-msgstr "The server {endpoint} does not answer. Is Ollama running?"
 
 msgid ""
 "Le service a refusé la demande ; son explication est gardée dans le dossier des envois, à côté du"
@@ -3908,11 +3914,11 @@ msgid "Mesurer ce modèle"
 msgstr "Measure this model"
 
 msgid ""
-"Mesurer un modèle installé sur les bases fictives de l'outil : rattachements justes, inventions "
-"signalées, durée."
+"Mesurer un modèle sur les bases fictives de l'outil : rattachements justes, inventions signalées,"
+" durée. Chaque message est facturé sur la clé."
 msgstr ""
-"Measure an installed model on the tool's fictional databases: correct links, flagged inventions, "
-"duration."
+"Measure a model on the tool's fictional bases: right links, flagged inventions, time taken. Each "
+"message is billed on the key."
 
 msgid "Mesures"
 msgstr "Measures"
@@ -4122,9 +4128,6 @@ msgid ""
 msgstr ""
 "Invalid score name: lower case, digits and \"_\", a letter first, different from the names of the"
 " variables."
-
-msgid "Nom du modèle dans le serveur local, p. ex. qwen2.5:7b-instruct-q4_K_M."
-msgstr "Name of the model in the local server, e.g. qwen2.5:7b-instruct-q4_K_M."
 
 msgid "Nom du score"
 msgstr "Score name"
@@ -4950,10 +4953,10 @@ msgstr "Link"
 
 msgid ""
 "Rattacher les variables aux questions du questionnaire : questions candidates, puis choix proposé"
-" par un modèle local (facultatif)."
+" par l'IA (facultatif, avec --ia)."
 msgstr ""
 "Link the variables to the questions of the questionnaire: candidate questions, then a choice "
-"proposed by a local model (optional)."
+"proposed by the AI (optional, with --ai)."
 
 msgid "Rattacher à"
 msgstr "Link to"

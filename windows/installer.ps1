@@ -3,13 +3,14 @@
 #
 # It:
 #   1. installs uv (Python manager, astral.sh) when missing, in the user's folder;
-#   2. installs the tool with its options (local AI, interface), or updates it;
-#   3. creates the "Dictionnaire de données" icon in the Start menu and on the desktop;
-#   4. checks Ollama and, only when the person asks, downloads the model.
-# Internet is needed during the installation only; the tool itself never uses it.
+#   2. installs the tool with its options (AI, interface), or updates it;
+#   3. creates the "Dictionnaire de données" icon in the Start menu and on the desktop.
+# The AI needs no installation: an API key, typed on the tool's "IA" page (v0.18, D-135).
+# Internet is needed during the installation; afterwards the tool uses it only for the AI,
+# for a project that allows it, and never sends a participant's data (D-134).
 #
 # For trials: -ShortcutDir (one folder instead of the Start menu and the desktop; PATH is
-# then left alone) and -NoPrompt (ask nothing, download nothing but the tool).
+# then left alone) and -NoPrompt (ask nothing).
 
 param(
     [string]$ShortcutDir = "",
@@ -19,7 +20,6 @@ param(
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
 $ShortcutName = "Dictionnaire de données.lnk"
-$Model = "qwen2.5:7b-instruct-q4_K_M"
 
 function Say([string]$Text) { Write-Host $Text }
 
@@ -50,7 +50,7 @@ if (-not (Test-Path (Join-Path $Root "pyproject.toml"))) {
 }
 
 # --- 1. uv ---------------------------------------------------------------------------
-Step "1/4 - uv, le gestionnaire de Python"
+Step "1/3 - uv, le gestionnaire de Python"
 $uv = $null
 $found = Get-Command uv -ErrorAction SilentlyContinue
 if ($found) { $uv = $found.Source }
@@ -72,7 +72,7 @@ if ($uv) {
 }
 
 # --- 2. L'outil ------------------------------------------------------------------------
-Step "2/4 - L'outil (une ou deux minutes la première fois)"
+Step "2/3 - L'outil (une ou deux minutes la première fois)"
 # An open tool locks its own files: updating it then fails half-way and leaves it broken
 # (found by the trial of 0.4.0). Ask to close it first.
 $toolDir = Join-Path (& $uv tool dir).Trim() "ddict"
@@ -116,7 +116,7 @@ $version = (& $ddict --version).Trim()
 Say "Installé : $version"
 
 # --- 3. Les icônes --------------------------------------------------------------------
-Step "3/4 - Les icônes"
+Step "3/3 - Les icônes"
 if ($ShortcutDir) {
     $folders = @($ShortcutDir)
 } else {
@@ -134,36 +134,13 @@ foreach ($folder in $folders) {
     Say "Icône créée : $(Join-Path $folder $ShortcutName)"
 }
 
-# --- 4. Ollama (facultatif) -----------------------------------------------------------
-Step "4/4 - IA locale (facultative)"
-$models = $null
-try {
-    $models = (Invoke-RestMethod -Uri "http://127.0.0.1:11434/api/tags" -TimeoutSec 3).models
-} catch {
-    $models = $null
-}
-if ($null -eq $models) {
-    Say "Ollama ne répond pas sur cet ordinateur. L'outil fonctionne sans IA ; pour l'utiliser,"
-    Say "installez Ollama depuis https://ollama.com, puis relancez installer.bat."
-    if (Ask "Ouvrir la page de téléchargement d'Ollama dans le navigateur ?") {
-        Start-Process "https://ollama.com/download"
-    }
-} elseif ($models.name -contains $Model) {
-    Say "Ollama répond, et le modèle recommandé est installé ($Model)."
-} else {
-    Say "Ollama répond, mais le modèle recommandé n'est pas installé ($Model, environ 4,7 Go)."
-    if (Ask "Le télécharger maintenant ?") {
-        $ollama = Get-Command ollama -ErrorAction SilentlyContinue
-        $exe = if ($ollama) { $ollama.Source } else { Join-Path $env:LOCALAPPDATA "Programs\Ollama\ollama.exe" }
-        & $exe pull $Model
-    } else {
-        Say "Plus tard, dans PowerShell : ollama pull $Model"
-    }
-}
-
 Write-Host ""
 Write-Host "Installation terminée." -ForegroundColor Green
 Say "Double-cliquez sur l'icône « Dictionnaire de données » (bureau ou menu Démarrer) : l'outil"
 Say "s'ouvre dans votre navigateur. Une petite fenêtre réduite le fait tourner ; fermez-la pour"
 Say "arrêter l'outil."
+Say ""
+Say "L'IA est facultative. Pour l'utiliser : une clé d'API, à saisir sur la page « IA » de"
+Say "l'outil (voir docs/installation-windows.md). Elle n'envoie jamais les réponses des"
+Say "participants, et seulement pour un projet qui le permet."
 Finish 0

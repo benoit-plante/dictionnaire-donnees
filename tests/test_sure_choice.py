@@ -25,7 +25,7 @@ def _result(*choices):
     run = AiRun(
         run_id="run-0001",
         block="l-001",
-        endpoint="http://127.0.0.1:11434/v1",
+        endpoint="https://ia.universite.example/v1",
         model="m",
         prompt_version="link-v2",
         message_sha256="0" * 64,

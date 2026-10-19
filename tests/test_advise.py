@@ -35,8 +35,8 @@ from ddict.llm.advise import (
     build_advice_block,
     usable,
 )
-from ddict.llm.client import LocalModelClient
 from ddict.project import load_project, save_project
+from fake_ai import institution, serve_commands
 from test_analysis_data import EXAMPLES, KEY, analyses_project
 
 APP = str(Path(__file__).resolve().parent.parent / "src" / "ddict" / "review" / "app.py")
@@ -79,7 +79,7 @@ def project():
 
 def _advise(project, content, tmp_path=None):
     server = Server(content)
-    with LocalModelClient("modele-test", transport=httpx.MockTransport(server)) as client:
+    with institution("modele-test", server) as client:
         found = advise(project, client, GOAL, now=NOW, log_dir=tmp_path)
     return found, server
 
@@ -323,29 +323,35 @@ def _folder(tmp_path):
 
 
 @pytest.fixture
-def fake_ollama(monkeypatch):
+def fake_server(monkeypatch):
     server = Server(answer(T_TEST))
-    real = client_module.LocalModelClient.__init__
-
-    def init(self, model, *, endpoint=client_module.DEFAULT_ENDPOINT, **kwargs):
-        real(self, model, endpoint=endpoint, transport=httpx.MockTransport(server))
-
-    monkeypatch.setattr(client_module.LocalModelClient, "__init__", init)
+    serve_commands(monkeypatch, server)
     return server
 
 
-def test_the_command(tmp_path, capsys, fake_ollama):
+def test_the_command(tmp_path, capsys, fake_server):
     path = _folder(tmp_path)
     assert main(["conseiller", str(path), GOAL, "--apercu"]) == 0
     preview = path.with_name("etude-analyses.dd-envois") / "apercu" / "a-001.json"
     assert GOAL in preview.read_text(encoding="utf-8")
-    assert not fake_ollama.requests
-    assert main(["conseiller", str(path), GOAL, "--modele", "qwen-test"]) == 0
+    assert '"prompt_version": "advise-v2"' in preview.read_text(encoding="utf-8")
+    assert main(["conseiller", str(path), GOAL]) == 2  # the project does not allow it
+    assert "ddict ia autoriser" in capsys.readouterr().err
+    assert not fake_server.requests
+    assert main(["ia", "autoriser", str(path)]) == 0
+    assert main(["conseiller", str(path), GOAL]) == 0
     out = capsys.readouterr().out
     assert "1. Test t : comparer deux groupes" in out
     assert "Variable dépendante : bienetre_total" in out and "rien n'est calculé" in out
     assert load_project(path).ai_runs == []
-    assert main(["conseiller", str(path), " ", "--modele", "qwen-test"]) == 2
+    assert main(["conseiller", str(path), " "]) == 2
+
+
+def test_the_command_previews_what_anthropic_gets(tmp_path):
+    path = _folder(tmp_path)
+    assert main(["conseiller", str(path), GOAL, "--apercu", "--protocole", "anthropic"]) == 0
+    preview = path.with_name("etude-analyses.dd-envois") / "apercu" / "a-001.json"
+    assert '"prompt_version": "advise-v3"' in preview.read_text(encoding="utf-8")
 
 
 @pytest.mark.allow_hosts(["127.0.0.1"])
@@ -418,7 +424,7 @@ def test_the_bench_scores_the_key_as_right(follow_up):
 
     objectives = FOLLOW_UP["objectives"] if follow_up else OBJECTIVES
     project = bench_project(EXAMPLES, FOLLOW_UP["sav"] if follow_up else None)
-    with LocalModelClient("modele-test", transport=httpx.MockTransport(server)) as client:
+    with institution("modele-test", server) as client:
         scores = run_advice_bench(project, client, objectives, now=lambda: NOW, clock=lambda: 0.0)
     total = len(objectives)
     assert summary(scores) == {

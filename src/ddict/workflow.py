@@ -450,7 +450,7 @@ def _writing_tasks(
     return found
 
 
-# --- The local model (v0.3: shared by the command line and the interface). ---
+# --- The AI (v0.3: shared by the command line and the interface). ---
 
 
 def project_stem(project_path: Path) -> str:
@@ -676,21 +676,19 @@ def copy_error_text(error: CopyError, source_name: str) -> str:
 
 
 def failure_advice(detail: str | None, endpoint: str, model: str) -> str | None:
-    """What to do when the local server failed, for the reasons a person can act on."""
+    """What to do when the AI failed, for the reasons a person can act on."""
     if detail == "connection":
-        return _("Le serveur {endpoint} ne répond pas. Ollama est-il lancé ?").format(
-            endpoint=endpoint
-        )
+        return _(
+            "Impossible de joindre {endpoint} : vérifiez la connexion Internet et l'adresse "
+            "(page « IA »)."
+        ).format(endpoint=endpoint)
     if detail == "http_404":
         return _(
-            "Le modèle « {model} » est introuvable sur le serveur. "
-            "Avec Ollama, téléchargez-le d'abord : ollama pull {model}"
+            "Le modèle « {model} » est introuvable à cette adresse : vérifiez son nom sur la "
+            "page « IA »."
         ).format(model=model)
     if detail == "timeout":
-        return _(
-            "Le modèle n'a pas répondu à temps. Sur un ordinateur sans carte graphique, "
-            "réduisez la taille des blocs."
-        )
+        return _("Le modèle n'a pas répondu à temps : réessayez, ou réduisez la taille des blocs.")
     # Through an API key (v0.18).
     if detail == "auth":
         return _(

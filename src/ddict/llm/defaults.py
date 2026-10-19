@@ -6,8 +6,6 @@ from __future__ import annotations
 import ipaddress
 from urllib.parse import SplitResult, urlsplit
 
-DEFAULT_ENDPOINT = "http://127.0.0.1:11434/v1"  # Ollama on this computer (until v0.18, C2)
-
 ANTHROPIC_ENDPOINT = "https://api.anthropic.com"
 PROTOCOLS = ("anthropic", "openai")  # the Messages API of Anthropic, or OpenAI-compatible
 EFFORTS = ("low", "medium", "high", "xhigh", "max")
@@ -46,12 +44,4 @@ def check_endpoint(endpoint: str) -> str:
     parts = _check_parts(endpoint)
     if parts.scheme == "http" and not _is_this_computer(parts.hostname or ""):
         raise EndpointRefused(f"HTTPS is required for {parts.hostname!r}")
-    return endpoint.rstrip("/")
-
-
-def check_local(endpoint: str) -> str:
-    """The v0.17 rule: this computer only, whatever the scheme."""
-    parts = _check_parts(endpoint)
-    if not _is_this_computer(parts.hostname or ""):
-        raise EndpointRefused(f"{parts.hostname!r} is not this computer")
     return endpoint.rstrip("/")

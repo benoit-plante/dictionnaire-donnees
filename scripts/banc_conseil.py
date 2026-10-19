@@ -1,14 +1,16 @@
-"""Bench of the local model's advice (v0.9, step 7): each objective of
-`exemples/bases-fictives/objectifs-analyses.json` sent to an installed local model, and its
+"""Bench of the AI's advice (v0.9, step 7; through the AI settings since v0.18): each
+objective of `exemples/bases-fictives/objectifs-analyses.json` sent to the model, and its
 proposals compared with the expected analysis and variables.
 
-    uv run python scripts/banc_conseil.py qwen2.5:7b-instruct-q4_K_M [autre-modele ...]
-    uv run python scripts/banc_conseil.py --suivi qwen2.5:7b-instruct-q4_K_M
+    uv run python scripts/banc_conseil.py claude-haiku-5-5 [autre-modele ...]
+    uv run python scripts/banc_conseil.py --suivi claude-haiku-5-5
 
 `--suivi` takes the objectives of the follow-up base, for the analyses of v0.14 (D-115).
 
+The service, its address and the effort come from the AI settings of this computer, the key
+from Windows' credential manager. Fictional bases only; every message is billed on the key.
 Prints one line per objective and a summary per model; the exchanges are kept in a
-temporary folder, given at the end. Nothing leaves this computer (local server only).
+temporary folder, given at the end.
 """
 
 from __future__ import annotations
@@ -19,6 +21,8 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+from ddict import ai_settings
+from ddict.llm import connect
 from ddict.llm.advice_bench import (
     FOLLOW_UP_FILE,
     OBJECTIVES_FILE,
@@ -27,7 +31,6 @@ from ddict.llm.advice_bench import (
     run_advice_bench,
     summary,
 )
-from ddict.llm.client import LocalModelClient
 
 FOLDER = Path(__file__).resolve().parent.parent / "exemples" / "bases-fictives"
 
@@ -39,8 +42,10 @@ def main(models: list[str]) -> int:
     objectives = found["objectives"]
     project = bench_project(FOLDER, found["sav"])
     log_dir = Path(tempfile.mkdtemp(prefix="banc-conseil-"))
+    saved = ai_settings.load()
     for model in models:
-        with LocalModelClient(model, timeout=600) as client:
+        settings = ai_settings.AiSettings(saved.protocol, saved.endpoint, model, saved.effort)
+        with connect.client_from(settings, timeout=600) as client:
             scores = run_advice_bench(
                 project,
                 client,

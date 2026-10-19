@@ -1,4 +1,4 @@
-"""The local model proposes analyses of the catalogue for an objective (v0.9, step 7, D-073,
+"""The AI proposes analyses of the catalogue for an objective (v0.9, step 7, D-073,
 D-079).
 
 The model reads the objective written by the team, the catalogue (keys, purposes, roles and
@@ -49,9 +49,9 @@ MAX_LABEL_CHARS = 60
 MAX_ROLES = max(len(a.roles) for a in CATALOGUE.values())
 MAX_ROLE_VARIABLES = max(r.most for a in CATALOGUE.values() for r in a.roles)
 MIN_COMMON_CHARS = 15  # a shorter common start of the items' labels says nothing
-# The local model reads 4,096 tokens by default (Ollama), its answer included: the message
-# keeps about 800 for the answer (D-080). Measured with qwen2.5: 3.6 characters per token
-# for this message; 3.5 stays cautious.
+# advise-v2 fits in a small context of 4,096 tokens, its answer included (the model on this
+# computer of v0.9 to v0.17): the message keeps about 800 for the answer (D-080). Measured:
+# 3.6 characters per token for this message; 3.5 stays cautious.
 MAX_MESSAGE_TOKENS = 3300
 CHARS_PER_TOKEN = 3.5
 
@@ -93,7 +93,7 @@ class AdviceResponse(BaseModel):
 
 class AdviceError(ValueError):
     """The objective cannot be sent; `reason`: "empty", "too_long", or "too_large" when
-    the message would not fit in the local model's context."""
+    the message would not fit in what the model reads."""
 
     def __init__(self, reason: str) -> None:
         super().__init__(reason)
@@ -338,7 +338,7 @@ def build_advice_block(
     project: Project, objective: str, version: str = ADVICE_PROMPT_VERSION
 ) -> Block:
     """The one message of an advice: the objective, the catalogue, the usable variables.
-    Refused when it would not fit in the local model's context (D-080), or, with
+    Refused when it would not fit in a small context (advise-v2, D-080), or, with
     advise-v3, beyond MAX_MESSAGE_CHARS."""
     objective = objective.strip()
     if not objective:
