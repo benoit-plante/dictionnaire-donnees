@@ -19,7 +19,7 @@ from ddict.glossary import propose_from_questionnaire, undefined_acronyms
 from ddict.i18n import N_, Texts, _
 from ddict.io import read_database
 from ddict.privacy import MIN_CELL_COUNT
-from ddict.project import PROJECT_SUFFIX, build_project, save_project
+from ddict.project import PROJECT_SUFFIX, build_project, ondisk, save_project
 from ddict.project.decisions import is_accepted
 from ddict.project.model import Project, Questionnaire
 from ddict.questionnaire import language as study_language
@@ -457,6 +457,36 @@ def project_stem(project_path: Path) -> str:
     """ "etude" for "etude.dd.json": the name the files next to the project start with."""
     name = project_path.name
     return name[: -len(PROJECT_SUFFIX)] if name.endswith(PROJECT_SUFFIX) else project_path.stem
+
+
+def leftover_notes(project_path: Path) -> list[str]:
+    """A save of the project or of its notebook was interrupted: its temporary file is
+    left. Said when the project is opened; the tool never removes it (v0.17)."""
+    from datetime import datetime
+
+    from ddict.analysis.notebook import notebook_path
+
+    notes = []
+    for path in (project_path, notebook_path(project_path)):
+        left = ondisk.leftover(path)
+        if left is None:
+            continue
+        try:
+            when = datetime.fromtimestamp(left.stat().st_mtime).strftime("%Y-%m-%d %H:%M")
+        except OSError:
+            when = "?"
+        notes.append(
+            _(
+                "Un enregistrement a été interrompu (le {date}) : le fichier {name} est resté. "
+                "{kept} est le dernier enregistré en entier ; le fichier {name} peut être "
+                "supprimé."
+            ).format(
+                date=when,
+                name=left.name,
+                kept=_("Le projet ouvert") if path == project_path else _("Le carnet"),
+            )
+        )
+    return notes
 
 
 def exchange_dir(project_path: Path) -> Path:

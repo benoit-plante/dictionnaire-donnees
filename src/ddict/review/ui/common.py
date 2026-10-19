@@ -6,6 +6,7 @@ otherwise a value typed just before the click would be lost.
 
 from __future__ import annotations
 
+import contextlib
 import sys
 from dataclasses import dataclass
 from datetime import datetime
@@ -17,9 +18,10 @@ from ddict import recents
 from ddict.analysis import notebook as nb
 from ddict.export import wording as w
 from ddict.i18n import _
-from ddict.project import ProjectChanged, load_project, ondisk, save_project
+from ddict.project import ProjectChanged, ProjectError, load_project, ondisk, save_project
 from ddict.project.model import Project, TrackedValue
 from ddict.review import logic
+from ddict.workflow import leftover_notes
 
 
 def now() -> str:
@@ -42,6 +44,7 @@ def project() -> Project:
     if "project" not in st.session_state:
         st.session_state.project = load_project(project_path())
         recents.add(project_path())
+        st.session_state[LEFTOVERS] = leftover_notes(project_path())  # v0.17
     return st.session_state.project
 
 
@@ -223,6 +226,7 @@ def drafts_notice(here: Place) -> None:
 REFUSED = "refused"  # [Refusal]: decisions not saved, the file having changed elsewhere
 ELSEWHERE = "changed-elsewhere"  # the file changed since it was read, seen before any save
 REDO = "redo"  # [Refusal]: after the reload, what to decide again
+LEFTOVERS = "leftovers"  # the interrupted saves found when the project was opened
 
 
 @dataclass(frozen=True)
@@ -277,6 +281,21 @@ def _refused(key: str | None, refusal: Refusal | None, action: str | None, what:
         st.session_state.message = ("error", text, key)
 
 
+def _busy(key: str | None) -> None:
+    """Windows held the file a moment: nothing written. The decision is undone in memory
+    (the project is read again: the file is what this session read), so that the page never
+    shows as decided what is not saved; what was typed stays in its fields."""
+    if key is not None:
+        st.session_state.message = (
+            "error",
+            _(
+                "Le fichier est occupé, peut-être par la synchronisation de OneDrive : rien "
+                "n'est enregistré. Réessayez dans un instant."
+            ),
+            key,
+        )
+
+
 def save(
     key: str | None = None, refusal: Refusal | None = None, *, action: str | None = None
 ) -> bool:
@@ -287,6 +306,11 @@ def save(
         save_project(project(), project_path())
     except ProjectChanged:
         _refused(key, refusal, action, "project")
+        return False
+    except ondisk.FileBusy:
+        _busy(key)
+        with contextlib.suppress(ProjectError):
+            st.session_state.project = load_project(project_path())
         return False
     return True
 
@@ -299,6 +323,9 @@ def save_notebook(
         nb.save_notebook(notebook, nb.notebook_path(project_path()))
     except nb.NotebookChanged:
         _refused(key, refusal, action, "notebook")
+        return False
+    except ondisk.FileBusy:
+        _busy(key)  # the notebook is read again by each action
         return False
     return True
 
@@ -358,6 +385,16 @@ def changed_notice() -> None:
                 on_click=reload,
                 type="primary",
                 icon=":material/refresh:",
+            )
+    leftovers = st.session_state.get(LEFTOVERS)
+    if leftovers:
+        with st.container(border=True):
+            for note in leftovers:
+                st.warning(note, icon=":material/report:")
+            st.button(
+                _("Compris"),
+                key="leftovers-close",
+                on_click=lambda: st.session_state.pop(LEFTOVERS),
             )
     redo = st.session_state.get(REDO)
     if redo:

@@ -1231,6 +1231,9 @@ msgstr "Completeness: {element}"
 msgid "Complétude d'un groupe"
 msgstr "Completeness of a group"
 
+msgid "Compris"
+msgstr "Understood"
+
 msgid "Compter les passations plus courtes que ce seuil, choisi par l'équipe."
 msgstr "Count the administrations shorter than this threshold, chosen by the team."
 
@@ -2727,6 +2730,9 @@ msgstr "Table 1"
 msgid "Le Tableau 1 décrit l'échantillon ; il ne teste aucune hypothèse."
 msgstr "Table 1 describes the sample; it tests no hypothesis."
 
+msgid "Le carnet"
+msgstr "The notebook"
+
 msgid ""
 "Le carnet d'analyses du projet : lister, ajouter, retirer, déplacer, retenir, écarter, confirmer,"
 " numéroter, décrire l'échantillon."
@@ -2818,9 +2824,22 @@ msgstr ""
 "The data file is never changed; the project keeps only what the tool computed and your decisions,"
 " not the participants' answers. Project file: {path}"
 
+msgid ""
+"Le fichier est occupé, peut-être par la synchronisation de OneDrive : rien n'est enregistré. "
+"Réessayez dans un instant."
+msgstr "The file is busy, perhaps being synced by OneDrive: nothing is saved. Try again in a moment."
+
 #, python-brace-format
 msgid "Le fichier projet {name} a disparu pendant la commande."
 msgstr "The project file {name} disappeared while the command ran."
+
+#, python-brace-format
+msgid ""
+"Le fichier {name} est occupé, peut-être par la synchronisation de OneDrive : rien n'est "
+"enregistré. Relancez la commande dans un instant."
+msgstr ""
+"The file {name} is busy, perhaps being synced by OneDrive: nothing is saved. Run the command "
+"again in a moment."
 
 msgid ""
 "Le formulaire « Ajouter une règle », plus haut, est rempli : donnez la raison, puis ajoutez la "
@@ -2986,6 +3005,9 @@ msgid ""
 "Le projet n'a pas de questionnaire. Lisez-le d'abord : ddict questionnaire {path} "
 "questionnaire.pdf"
 msgstr "The project has no questionnaire. Read it first: ddict questionnaire {path} questionnaire.pdf"
+
+msgid "Le projet ouvert"
+msgstr "The open project"
 
 #, python-brace-format
 msgid "Le projet {name} a été modifié ailleurs pendant la commande (l'interface est-elle ouverte ?)."
@@ -5490,6 +5512,14 @@ msgstr ""
 #, python-brace-format
 msgid "Un carnet {name} est apparu pendant la commande."
 msgstr "A notebook {name} appeared while the command ran."
+
+#, python-brace-format
+msgid ""
+"Un enregistrement a été interrompu (le {date}) : le fichier {name} est resté. {kept} est le "
+"dernier enregistré en entier ; le fichier {name} peut être supprimé."
+msgstr ""
+"A save was interrupted (on {date}): the file {name} was left. {kept} is the last one saved in "
+"full; the file {name} can be deleted."
 
 #, python-brace-format
 msgid "Un fichier projet {name} est apparu pendant la commande."

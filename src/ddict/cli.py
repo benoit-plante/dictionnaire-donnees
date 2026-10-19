@@ -32,12 +32,13 @@ from ddict.llm.stems import DEFAULT_STEM_BLOCK_SIZE, build_stem_blocks
 from ddict.naming import NamingError
 from ddict.privacy import MIN_CELL_COUNT
 from ddict.project import (
+    PROJECT_SUFFIX,
     ProjectChanged,
     ProjectError,
     load_project,
     save_project,
 )
-from ddict.project.ondisk import FileChanged
+from ddict.project.ondisk import FileBusy, FileChanged
 from ddict.questionnaire.labels import propose_value_labels
 from ddict.questionnaire.link import candidates
 from ddict.review import theme
@@ -59,6 +60,7 @@ from ddict.workflow import (
     export_syntax,
     failure_advice,
     format_note,
+    leftover_notes,
     naming_summary,
     platform_notes,
     platform_summary,
@@ -1852,6 +1854,14 @@ def changed_text(error: FileChanged) -> str:
     return text + " " + _("Rien n'est enregistré : relancez la commande.")
 
 
+def busy_text(error: FileBusy) -> str:
+    """Windows held the file for a moment (v0.17)."""
+    return _(
+        "Le fichier {name} est occupé, peut-être par la synchronisation de OneDrive : rien "
+        "n'est enregistré. Relancez la commande dans un instant."
+    ).format(name=error.path.name)
+
+
 def main(argv: list[str] | None = None) -> int:
     settings.apply()  # the language of this computer, or DDICT_LANG (v0.5)
     for stream in (sys.stdout, sys.stderr):
@@ -1859,6 +1869,10 @@ def main(argv: list[str] | None = None) -> int:
         if hasattr(stream, "reconfigure") and not stream.isatty():
             stream.reconfigure(encoding="utf-8")
     args = build_parser().parse_args(argv)
+    given = getattr(args, "projet", None)
+    if isinstance(given, str) and given.endswith(PROJECT_SUFFIX):
+        for note in leftover_notes(Path(given)):  # v0.17: an interrupted save, never removed
+            print(note, file=sys.stderr)
     try:
         return args.handler(args)
     except ReadError as error:
@@ -1867,6 +1881,8 @@ def main(argv: list[str] | None = None) -> int:
         print(_("Impossible de lire le projet : {detail}").format(detail=error), file=sys.stderr)
     except FileChanged as error:
         print(changed_text(error), file=sys.stderr)
+    except FileBusy as error:
+        print(busy_text(error), file=sys.stderr)
     except OSError as error:
         print(_("Erreur de fichier : {detail}").format(detail=error), file=sys.stderr)
     return EXIT_ERROR

@@ -10,8 +10,10 @@ keep the size ("validated" and "corrected" have the same length).
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import os
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
@@ -27,6 +29,19 @@ class FileChanged(Exception):
         super().__init__(f"{path.name}: {reason}")
         self.path = path
         self.reason = reason
+
+
+class FileBusy(Exception):
+    """Windows refused to open or replace the file for a moment (OneDrive syncing it, an
+    antivirus reading it): nothing was written, the file is as it was."""
+
+    def __init__(self, path: Path) -> None:
+        super().__init__(f"{path.name}: busy")
+        self.path = path
+
+
+TRIES = 3  # a file held by the synchronisation is often free again a moment later
+PAUSE = 0.2  # seconds between two tries
 
 
 @dataclass(frozen=True)
@@ -76,6 +91,8 @@ def check(path: Path, known: DiskState | None, *, overwrite: bool = False) -> No
         content, _ = read(path)
     except FileNotFoundError as error:
         raise FileChanged(path, "missing") from error
+    except PermissionError as error:
+        raise FileBusy(path) from error
     if hashlib.sha256(content).hexdigest() != known.sha256:
         raise FileChanged(path, "changed")
 
@@ -85,15 +102,26 @@ def unchanged(path: Path, known: DiskState) -> bool:
     then by the content when they moved."""
     try:
         stat = path.stat()
-    except OSError:
+    except FileNotFoundError:
         return False
+    except OSError:
+        return True  # cannot tell now (a network drive away): the save will check
     if (stat.st_mtime_ns, stat.st_size) == (known.mtime_ns, known.size):
         return True
     try:
         content, _ = read(path)
-    except OSError:
+    except FileNotFoundError:
         return False
+    except OSError:
+        return True  # held for a moment (OneDrive): the save will check
     return hashlib.sha256(content).hexdigest() == known.sha256
+
+
+def leftover(path: Path) -> Path | None:
+    """The temporary file of a save that was interrupted (`<file>.tmp`), when one is left:
+    said when the file is opened, never removed by the tool (v0.17)."""
+    temporary = path.with_name(path.name + ".tmp")
+    return temporary if temporary.is_file() else None
 
 
 def write(document, text: str, path: Path, *, overwrite: bool = False) -> None:
@@ -102,7 +130,20 @@ def write(document, text: str, path: Path, *, overwrite: bool = False) -> None:
     check(path, remembered(document), overwrite=overwrite)
     content = text.encode("utf-8")
     temporary = path.with_name(path.name + ".tmp")
-    with temporary.open("wb") as stream:
-        stream.write(content)
-    temporary.replace(path)
+    try:
+        with temporary.open("wb") as stream:
+            stream.write(content)
+    except PermissionError as error:
+        raise FileBusy(path) from error
+    for attempt in range(TRIES):
+        try:
+            temporary.replace(path)
+            break
+        except PermissionError as error:
+            if attempt + 1 == TRIES:
+                # Our own temporary file, written in full: not an interrupted save.
+                with contextlib.suppress(OSError):
+                    temporary.unlink()
+                raise FileBusy(path) from error
+            time.sleep(PAUSE)
     remember(document, _state(path, content, path.stat()))
