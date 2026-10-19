@@ -881,6 +881,9 @@ msgstr ""
 "This project was changed elsewhere since you opened it (another tab, another person or the "
 "command line)."
 
+msgid "Ce projet est maintenant suivi."
+msgstr "This project is now followed."
+
 #, python-brace-format
 msgid "Ce sigle n'attend plus de décision : {term}."
 msgstr "This acronym no longer waits for a decision: {term}."
@@ -2612,6 +2615,13 @@ msgstr ""
 "The language of the questionnaire and the labels: the model writes its proposals in this "
 "language. Guessed from the questionnaire or the file's labels."
 
+msgid ""
+"La liste des projets suivis n'a pas pu être enregistrée sur cet ordinateur ; le projet, lui, "
+"n'est pas touché."
+msgstr ""
+"The list of followed projects could not be saved on this computer; the project itself is not "
+"touched."
+
 msgid "La liste est gardée sur cet ordinateur ; elle ne contient que les chemins des fichiers projet."
 msgstr "The list is kept on this computer; it holds only the paths of the project files."
 
@@ -3000,11 +3010,17 @@ msgstr "The project already has a questionnaire ({name}). Use --replace to repla
 msgid "Le projet a déjà un questionnaire."
 msgstr "The project already has a questionnaire."
 
+msgid "Le projet figurera dans « Mes projets », sur l'accueil."
+msgstr "The project will appear in “My projects”, on the home page."
+
 #, python-brace-format
 msgid ""
 "Le projet n'a pas de questionnaire. Lisez-le d'abord : ddict questionnaire {path} "
 "questionnaire.pdf"
 msgstr "The project has no questionnaire. Read it first: ddict questionnaire {path} questionnaire.pdf"
+
+msgid "Le projet ne figure plus dans « Mes projets », sur l'accueil. Le fichier projet n'est pas touché."
+msgstr "The project no longer appears in “My projects”, on the home page. The project file is not touched."
 
 msgid "Le projet ouvert"
 msgstr "The open project"
@@ -3761,6 +3777,9 @@ msgid ""
 msgstr ""
 "Do not reproduce the text of the questions of these groups (e.g. G3), for an instrument protected"
 " by copyright (D-014)."
+
+msgid "Ne plus suivre"
+msgstr "Stop following"
 
 msgid "Niveau"
 msgstr "Level"
@@ -5266,6 +5285,12 @@ msgstr "Time suffixes (wide format), separated by commas"
 
 msgid "Suivante"
 msgstr "Next"
+
+msgid "Suivi"
+msgstr "Followed"
+
+msgid "Suivre ce projet"
+msgstr "Follow this project"
 
 msgid ""
 "Sur l'export SurveyMonkey fictif : le nom de base de chaque question, comparé à celui du corrigé "

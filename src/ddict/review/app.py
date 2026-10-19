@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 
 import streamlit as st
 
-from ddict import settings
+from ddict import settings, tracked
 from ddict.i18n import _
 from ddict.review import logic, navigation, shutdown
 from ddict.review.ui import (
@@ -68,6 +68,37 @@ def _dashboard(waiting) -> None:
             on_click=_go,
             args=(task.mode, task.filter),
             width="stretch",
+        )
+
+
+def _follow(follow: bool) -> None:
+    """Follow the open project, or no longer (v0.17, D-131); its file is never touched."""
+    path = c.project_path()
+    if not (tracked.follow(path) if follow else tracked.unfollow(path)):
+        st.session_state.message = ("error", tracked.not_written(), "follow-project")
+
+
+def _follow_button() -> None:
+    if tracked.is_followed(c.project_path()):
+        st.button(
+            _("Ne plus suivre"),
+            key="follow-project",
+            on_click=_follow,
+            args=(False,),
+            icon=":material/bookmark_remove:",
+            help=_(
+                "Le projet ne figure plus dans « Mes projets », sur l'accueil. Le fichier "
+                "projet n'est pas touché."
+            ),
+        )
+    else:
+        st.button(
+            _("Suivre ce projet"),
+            key="follow-project",
+            on_click=_follow,
+            args=(True,),
+            icon=":material/bookmark_add:",
+            help=_("Le projet figurera dans « Mes projets », sur l'accueil."),
         )
 
 
@@ -192,6 +223,7 @@ def main() -> None:
     with st.sidebar:
         st.button(_("Accueil"), key="home", on_click=c.close_project, icon=":material/home:")
         st.title(project.source.name)
+        _follow_button()
         share = logic.codebook_progress(project)  # v0.16: never full on a new project
         st.progress(share, text=_("Codebook documenté à {p} %").format(p=round(100 * share)))
         _dashboard(waiting)

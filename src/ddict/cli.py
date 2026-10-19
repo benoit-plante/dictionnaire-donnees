@@ -17,7 +17,7 @@ import webbrowser
 from datetime import datetime
 from pathlib import Path
 
-from ddict import __version__, settings
+from ddict import __version__, settings, tracked
 from ddict.cli_decisions import add_decisions_parsers
 from ddict.cli_plan import add_plan_parser
 from ddict.cli_recode import add_recode_parser
@@ -90,6 +90,8 @@ def cmd_profile(args: argparse.Namespace) -> int:
         )
         return EXIT_ERROR
     print(_("Projet créé : {path}").format(path=output))
+    if not tracked.follow(output):  # v0.17 (D-131): on the home page's table
+        print(tracked.not_written(), file=sys.stderr)
     print(profile_summary(project))
     for note in platform_notes(project):
         print(note)

@@ -12,10 +12,10 @@ from pathlib import Path
 
 import streamlit as st
 
-from ddict import i18n, recents, settings
+from ddict import i18n, recents, settings, tracked
 from ddict.i18n import _
 from ddict.io import ReadError
-from ddict.project import ProjectError, load_project
+from ddict.project import ProjectError, load_project, ondisk
 from ddict.review import trial
 from ddict.review.ui import common as c
 from ddict.review.ui import dialog
@@ -70,6 +70,8 @@ def _create(replace: bool) -> None:
         _message("error", _("Impossible de lire la base : {detail}").format(detail=error), key)
         return
     c.open_project(output)
+    if not tracked.follow(output):  # v0.17 (D-131): a new project is followed
+        _message("error", tracked.not_written(), key)
 
 
 def _open(path: Path | None, key: str) -> None:
@@ -82,6 +84,13 @@ def _open(path: Path | None, key: str) -> None:
         _message("error", _("Impossible de lire le projet : {detail}").format(detail=error), key)
         return
     c.open_project(path)
+
+
+def _follow(path: Path, key: str) -> None:
+    if tracked.follow(path):
+        _message("success", _("Ce projet est maintenant suivi."), key)
+    else:
+        _message("error", tracked.not_written(), key)
 
 
 def _clear_recents() -> None:
@@ -197,8 +206,9 @@ def _recent() -> None:
     if not found:
         return
     st.header(_("Projets récents"))
+    followed = {ondisk.key(p) for p in tracked.load()}
     for index, path in enumerate(found):
-        name, where, when = st.columns([2, 4, 1.4], vertical_alignment="center")
+        name, where, when, follow = st.columns([2, 4, 1.4, 1.6], vertical_alignment="center")
         with name:
             st.button(
                 path.name,
@@ -209,7 +219,18 @@ def _recent() -> None:
             )
         where.write(str(path.parent))
         when.write(_modified(path))
+        if ondisk.key(path) in followed:  # v0.17 (D-131)
+            follow.caption(_("Suivi"))
+        else:
+            follow.button(
+                _("Suivre ce projet"),
+                key=f"home-follow-{index}",
+                on_click=_follow,
+                args=(path, f"home-follow-{index}"),
+                icon=":material/bookmark_add:",
+            )
         c.show_message(f"home-recent-{index}")
+        c.show_message(f"home-follow-{index}")
     with st.container(horizontal=True, vertical_alignment="center"):
         st.button(_("Effacer la liste"), key="home-clear", on_click=_clear_recents)
         st.caption(
