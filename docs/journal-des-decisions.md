@@ -1624,3 +1624,82 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   2. La section de la première tâche en attente, comme la barre latérale.
 - **Justification :** La phase ne recule pas pour une nouvelle proposition (un sigle oublié ne fait pas d'un projet presque fini un projet à documenter) ; la colonne « En attente » dit la tâche.
 - **Références :** `docs/plan-v0.17.md`, § 7.2.
+
+### D-134 — Aucune donnée de participant ne quitte le poste
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** D-073 (en partie : « facultative et locale »)
+- **Décision :** La règle « Rien ne quitte le poste » devient : **aucune donnée de participant ne quitte le poste**. L'IA est un service externe, activé explicitement projet par projet, qui ne reçoit que des métadonnées (le questionnaire et le codebook), jamais rien de ce que les participants ont répondu, pas même agrégé. Le client n'accepte qu'une adresse en HTTPS, sans proxy ni redirection ; la clé reste dans le gestionnaire d'identifiants de Windows. Les tests bloquent le réseau, sauf les tests `externe`. Streamlit écoute sur 127.0.0.1, télémétrie coupée. La règle 3 du `CLAUDE.md` et les principes 5 et 6 de la conception sont reformulés en ce sens ; les autres règles restent entières.
+- **Options considérées :**
+  1. Un service externe, métadonnées seulement, activé par projet (ce choix).
+  2. Garder un modèle local seulement.
+  3. Des niveaux d'envoi au choix de l'équipe, agrégés compris (feuille de route de l'article, § 9).
+- **Justification :** Les essais des v0.2 à v0.9 montrent que le modèle local aide peu et impose Ollama, un modèle de 4,7 Go et un contexte de 4 096 jetons. Ce que les participants ont répondu reste sur le poste ; seul ce qu'un codebook dirait déjà peut partir, et seulement si l'équipe l'a permis pour ce projet.
+- **Conséquences :** `check_local()` devient `check_endpoint()` ; la page « IA » et la documentation disent exactement ce qui part, à qui, et combien de temps le fournisseur le garde.
+- **Références :** `docs/plan-v0.18.md`, § 4 et 10 ; `docs/feuille-de-route-article.md`, § 9.
+
+### D-135 — Les moteurs d'IA : Anthropic, ou un serveur compatible OpenAI
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** D-023
+- **Décision :** Ollama est retiré. Deux protocoles derrière une même interface (`complete`, `list_models`), écrits avec httpx sans bibliothèque propre au fournisseur : l'interface Messages d'Anthropic (par défaut, `https://api.anthropic.com`) et un serveur compatible OpenAI (adresse obligatoire, pour le serveur d'une université). HTTPS obligatoire ; `http` reste accepté pour une adresse de cet ordinateur écrite telle quelle (`localhost`, boucle locale), sans être documenté. Avec Anthropic : aucun paramètre d'échantillonnage (refusé par Haiku 5.5 et Sonnet 5.5), un niveau de réflexion explicite (`effort`, `low` par défaut, inscrit dans la trace), aucun repli vers un autre modèle (`fallbacks`). Le schéma envoyé perd les mots-clés que le service refuse ; la validation locale complète reste la seule garantie.
+- **Options considérées :**
+  1. Deux protocoles, HTTPS sauf pour une adresse de cet ordinateur (ce choix).
+  2. HTTPS partout.
+  3. La bibliothèque d'Anthropic.
+- **Justification :** Une adresse de cet ordinateur ne traverse aucun réseau ; la refuser n'ajoute aucune sûreté. Un repli ferait répondre un autre modèle que celui inscrit dans la trace. httpx garde les protections actuelles (proxy ignoré, aucune redirection) sans nouvelle dépendance.
+- **Conséquences :** L'installateur ne cherche plus Ollama ; les propositions et les traces faites avec Ollama restent dans les projets comme historique.
+- **Références :** `docs/plan-v0.18.md`, § 4.1, 5.1 et 5.2.
+
+### D-136 — Niveau 1 seulement
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Les quatre usages de l'IA (libellés et descriptions, rattachement, radicaux, conseillère) ne reçoivent que des métadonnées : noms et voisins, étiquettes de variables et de valeurs, codes manquants déclarés ou confirmés, textes des questions acceptées, sigles acceptés, nombre d'items et préfixe d'un groupe, catalogue d'analyses, objectif écrit par l'équipe ; et le type de la colonne, le niveau de mesure et la note de confidentialité, qui décrivent la colonne sans dire ce qu'une personne a répondu. Ne partent plus : codes observés et proportions, pourcentage de manquants, minimum, maximum, moyenne, années d'une date, étendue des codes observés dans la description d'un groupe.
+- **Options considérées :**
+  1. Niveau 1 seulement (ce choix).
+  2. Niveau 2 sur option : en plus, des agrégats filtrés par la porte de confidentialité.
+- **Justification :** Un seul niveau se décrit simplement à un comité d'éthique. Le banc mesure ce que les libellés perdent sans statistiques ; un niveau 2 ne serait reconsidéré que sur une perte nette, par une nouvelle décision. Le niveau 2 n'existe que dans le banc.
+- **Conséquences :** Consignes `variables-v4`, `link-v4`, `rename-v2`, `advise-v3` ; un test à chaînes témoins sur les messages des quatre usages.
+- **Références :** `docs/plan-v0.18.md`, § 4.2 et 6.
+
+### D-137 — La clé d'API dans le gestionnaire d'identifiants de Windows
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** La clé est gardée dans le gestionnaire d'identifiants de Windows par la bibliothèque `keyring` (extra `ia`), saisie par la page « IA » ou par `ddict ia cle`, sans écho, jamais en argument de commande ni en variable d'environnement. Elle n'est écrite nulle part ailleurs (projet, réglages, dossier des envois, message d'erreur, journal, rapport du banc, dépôt) ; l'outil dit seulement « enregistrée » ou « absente ». Les tests utilisent un gestionnaire en mémoire, sauf les tests `externe`.
+- **Options considérées :**
+  1. Le gestionnaire d'identifiants, par `keyring` (ce choix).
+  2. Un fichier dans `%APPDATA%\ddict`.
+  3. Une variable d'environnement.
+- **Justification :** Le gestionnaire protège la clé par la session Windows ; un fichier se copie avec un dossier, une variable se lit par tout programme lancé. PowerShell garde l'historique des commandes, d'où « jamais en argument ».
+- **Conséquences :** Nouvelle dépendance, licences vérifiées et notées dans `docs/dependances.md` ; le désinstalleur demande avant d'effacer la clé ; un test à chaîne témoin cherche une fausse clé dans tout ce que l'outil écrit.
+- **Références :** `docs/plan-v0.18.md`, § 5.3.
+
+### D-138 — L'activation de l'IA par projet
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Le fichier projet porte `settings.ai = {"allowed", "since"}` (schéma 0.8.0), non activé par défaut ; un projet 0.7.0 se lit « non activé ». Sans activation, rien ne part : la vérification est faite à un seul endroit, avant tout envoi ; l'aperçu des messages reste toujours permis. La case s'enregistre comme toute décision (`c.save()`, contrôle d'empreinte de D-129) ; en ligne de commande, `ddict ia autoriser` et `ddict ia interdire`.
+- **Options considérées :**
+  1. Dans le fichier projet (ce choix).
+  2. Dans les réglages de l'ordinateur.
+- **Justification :** L'activation suit le projet et son certificat d'éthique, pas le poste ; les collègues la voient en ouvrant le projet.
+- **Références :** `docs/plan-v0.18.md`, § 5.5.
+
+### D-139 — Les tests `externe`
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Un marqueur `externe`, comme `reel` (D-046) : sauté sauf avec `DDICT_TESTS_EXTERNES=1` et une clé enregistrée ; jamais en intégration continue ; bases fictives seulement ; le réseau ouvert vers l'adresse d'Anthropic, pour ces tests seuls. La clé de l'auteur est saisie par l'auteur lui-même (`ddict ia cle`), jamais transmise à Claude ni écrite dans un fichier.
+- **Options considérées :**
+  1. Un marqueur à part, sauté par défaut (ce choix).
+  2. Des essais à la main seulement.
+- **Justification :** Seul le vrai service dit si un schéma est accepté ; ces tests restent rares, payants et volontaires.
+- **Références :** `docs/plan-v0.18.md`, § 8.1.
