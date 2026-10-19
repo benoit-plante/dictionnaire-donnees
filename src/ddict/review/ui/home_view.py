@@ -255,6 +255,94 @@ def _find_again(old: Path) -> None:
     )
 
 
+SEARCH = "home-search-result"
+FOUND = "home-found-"  # the boxes of the projects found, one per project
+
+
+def _search() -> None:
+    """Choose a folder, look for projects in it (v0.17, D-132); nothing is checked."""
+    folder = dialog.choose(dialog.FOLDER)
+    if not folder:
+        _message("error", _("Aucun dossier choisi."), "home-search")
+        return
+    for key in [k for k in st.session_state if str(k).startswith(FOUND)]:
+        del st.session_state[key]
+    st.session_state[SEARCH] = (str(Path(folder)), tracked.search(folder))
+
+
+def _checked() -> list[Path]:
+    _folder, result = st.session_state[SEARCH]
+    return [p for i, p in enumerate(result.found) if st.session_state.get(f"{FOUND}{i}")]
+
+
+def _follow_found() -> None:
+    chosen = [p for p in _checked() if not tracked.is_followed(p)]
+    if not tracked.follow_all(chosen):
+        _message("error", tracked.not_written(), "home-follow-found")
+        return
+    st.session_state.pop(SEARCH)
+    text = _("1 projet suivi.") if len(chosen) == 1 else _("{n} projets suivis.")
+    _message("success", text.format(n=len(chosen)), "home-search")
+
+
+def _search_panel() -> None:
+    st.button(
+        _("Chercher les projets dans un dossier…"),
+        key="home-search",
+        on_click=_search,
+        icon=":material/manage_search:",
+        help=_(
+            "Le dossier et ses sous-dossiers, sur 4 niveaux. Seuls les noms des fichiers sont "
+            "parcourus : aucun fichier n'est ouvert."
+        ),
+    )
+    c.show_message("home-search")
+    if SEARCH not in st.session_state:
+        return
+    folder, result = st.session_state[SEARCH]
+    with st.container(border=True):
+        st.subheader(_("Projets trouvés dans {folder}").format(folder=folder))
+        if result.stopped == "folders":
+            st.warning(
+                _("Recherche arrêtée après 20 000 dossiers : choisissez un dossier plus précis.")
+            )
+        elif result.stopped == "projects":
+            st.warning(
+                _("Recherche arrêtée après 500 projets : choisissez un dossier plus précis.")
+            )
+        if not result.found:
+            st.write(_("Aucun projet dans ce dossier ni dans ses sous-dossiers (4 niveaux)."))
+        followed = {ondisk.key(p) for p in tracked.load()}
+        for index, path in enumerate(result.found):
+            name = overview.ProjectRow(path, None).name
+            if ondisk.key(path) in followed:
+                st.checkbox(
+                    _("{name} — {folder} (déjà suivi)").format(name=name, folder=path.parent),
+                    value=True,
+                    disabled=True,
+                    key=f"home-followed-{index}",
+                )
+            else:
+                st.checkbox(
+                    _("{name} — {folder}").format(name=name, folder=path.parent),
+                    key=f"{FOUND}{index}",
+                )
+        chosen = [p for p in _checked() if ondisk.key(p) not in followed]
+        with st.container(horizontal=True):
+            st.button(
+                _("Suivre ce projet") if len(chosen) == 1
+                else _("Suivre ces {n} projets").format(n=len(chosen)),
+                key="home-follow-found",
+                on_click=_follow_found,
+                disabled=not chosen,
+                type="primary",
+            )  # fmt: skip
+            st.button(
+                _("Fermer"), key="home-search-close", on_click=lambda: st.session_state.pop(SEARCH)
+            )
+        c.show_message("home-follow-found")
+
+
 WIDTHS = [2.2, 1, 0.9, 2.4, 1.6, 2, 0.9, 1.3, 0.5]
 
 
@@ -301,9 +389,11 @@ def _projects() -> None:
         st.write(
             _(
                 "Aucun projet suivi. Un projet créé ici est suivi d'office ; un projet récent "
-                "peut l'être avec « Suivre ce projet »."
+                "peut l'être avec « Suivre ce projet », et ceux d'un dossier se cherchent "
+                "ci-dessous."
             )
         )
+        _search_panel()
         return
     _headers()
     for index, row in enumerate(overview.rows(followed)):
@@ -345,6 +435,7 @@ def _projects() -> None:
                 )
     c.show_message("home-unfollow")
     c.show_message("home-find")
+    _search_panel()
 
 
 def _recent() -> None:

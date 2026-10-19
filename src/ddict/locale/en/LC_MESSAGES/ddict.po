@@ -293,6 +293,9 @@ msgstr "- Value labels changed: {n}"
 msgid "0 : le score exige tous les items."
 msgstr "0: the score requires every item."
 
+msgid "1 projet suivi."
+msgstr "1 project followed."
+
 msgid "1 retenue"
 msgstr "1 retained"
 
@@ -592,6 +595,9 @@ msgstr "No change to confirm."
 msgid "Aucun code suspect."
 msgstr "No suspect code."
 
+msgid "Aucun dossier choisi."
+msgstr "No folder chosen."
+
 msgid "Aucun fichier choisi : rien n'est changé."
 msgstr "No file chosen: nothing is changed."
 
@@ -613,12 +619,15 @@ msgstr "No reversed item"
 msgid "Aucun niveau de mesure proposé."
 msgstr "No measure level proposed."
 
+msgid "Aucun projet dans ce dossier ni dans ses sous-dossiers (4 niveaux)."
+msgstr "No project in this folder or its subfolders (4 levels)."
+
 msgid ""
 "Aucun projet suivi. Un projet créé ici est suivi d'office ; un projet récent peut l'être avec « "
-"Suivre ce projet »."
+"Suivre ce projet », et ceux d'un dossier se cherchent ci-dessous."
 msgstr ""
 "No project followed. A project created here is followed at once; a recent project can be, with "
-"“Follow this project”."
+"“Follow this project”, and those of a folder can be looked for below."
 
 msgid "Aucun préfixe proposé pour ce groupe."
 msgstr "No prefix proposed for this group."
@@ -970,6 +979,9 @@ msgstr ""
 "Each acronym will be accepted with the meaning shown here, the one in its field, corrected or "
 "not. Untick those that do not fit."
 
+msgid "Chercher les projets dans un dossier…"
+msgstr "Look for projects in a folder…"
+
 #, python-brace-format
 msgid "Chiffres à confirmer au carnet : {n}"
 msgstr "Numbers to confirm in the notebook: {n}"
@@ -986,6 +998,9 @@ msgstr "Choose the database…"
 
 msgid "Choisir la vague précédente"
 msgstr "Choose…"
+
+msgid "Choisir le dossier où chercher les projets"
+msgstr "Choose the folder to look for projects in"
 
 msgid "Choisir le manuscrit"
 msgstr "Choose the manuscript"
@@ -2859,6 +2874,13 @@ msgstr "The observed coefficient of {x} was positive."
 msgid "Le dictionnaire de données joint ({file}) décrit chaque variable."
 msgstr "The attached data dictionary ({file}) describes each variable."
 
+msgid ""
+"Le dossier et ses sous-dossiers, sur 4 niveaux. Seuls les noms des fichiers sont parcourus : "
+"aucun fichier n'est ouvert."
+msgstr ""
+"The folder and its subfolders, 4 levels down. Only the files' names are looked at: no file is "
+"opened."
+
 msgid "Le début et la fin sont la même variable."
 msgstr "The start and the end are the same variable."
 
@@ -4374,6 +4396,10 @@ msgstr "Project, documented copy or table of names"
 msgid "Projets récents"
 msgstr "Recent projects"
 
+#, python-brace-format
+msgid "Projets trouvés dans {folder}"
+msgstr "Projects found in {folder}"
+
 msgid ""
 "Proposer de nouveaux noms aux variables, par les règles de nommage ; le fichier d'origine n'est "
 "jamais modifié."
@@ -4686,6 +4712,12 @@ msgstr "Recompute and list the notebook's analyses, with what changed."
 
 msgid "Recharger le projet"
 msgstr "Reload the project"
+
+msgid "Recherche arrêtée après 20 000 dossiers : choisissez un dossier plus précis."
+msgstr "Search stopped after 20,000 folders: choose a narrower folder."
+
+msgid "Recherche arrêtée après 500 projets : choisissez un dossier plus précis."
+msgstr "Search stopped after 500 projects: choose a narrower folder."
 
 msgid "Recodage"
 msgstr "Recoding"
@@ -5359,6 +5391,10 @@ msgstr "Next"
 
 msgid "Suivre ce projet"
 msgstr "Follow this project"
+
+#, python-brace-format
+msgid "Suivre ces {n} projets"
+msgstr "Follow these {n} projects"
 
 msgid ""
 "Sur l'export SurveyMonkey fictif : le nom de base de chaque question, comparé à celui du corrigé "
@@ -7730,6 +7766,14 @@ msgid "{name} parmi {values}"
 msgstr "{name} among {values}"
 
 #, python-brace-format
+msgid "{name} — {folder}"
+msgstr "{name} — {folder}"
+
+#, python-brace-format
+msgid "{name} — {folder} (déjà suivi)"
+msgstr "{name} — {folder} (already followed)"
+
+#, python-brace-format
 msgid "{new} au lieu de {old}"
 msgstr "{new} instead of {old}"
 
@@ -7868,6 +7912,10 @@ msgstr "{n} people have all the measures: at least {least} are needed."
 #, python-brace-format
 msgid "{n} personnes sans {group} écartées."
 msgstr "{n} people without {group} excluded."
+
+#, python-brace-format
+msgid "{n} projets suivis."
+msgstr "{n} projects followed."
 
 #, python-brace-format
 msgid "{n} questions : {counts}{grids}."

@@ -4,7 +4,8 @@ It opens on this computer, where the interface runs. It runs in a process of its
 tkinter must own its thread, which a Streamlit script does not. The process prints the
 chosen path, or nothing when the person cancels.
 
-Run as: python -m ddict.review.ui.dialog database|project|questionnaire|reference
+Run as: python -m ddict.review.ui.dialog database|project|questionnaire|reference|folder
+(v0.17: "folder", the "Choose a folder" window, to look for projects in it)
 """
 
 from __future__ import annotations
@@ -43,12 +44,14 @@ KINDS = {
         ],
     ),
 }
+FOLDER = "folder"
+FOLDER_TITLE = N_("Choisir le dossier où chercher les projets")
 TIMEOUT = 600  # seconds: a person may take a while to find the file
 
 
 def choose(kind: str) -> str | None:
     """Open the window and return the chosen path, or None (cancelled or impossible)."""
-    if kind not in KINDS:
+    if kind not in KINDS and kind != FOLDER:
         raise ValueError(kind)
     try:
         result = subprocess.run(
@@ -69,6 +72,14 @@ def _open_window(kind: str) -> str:
     from tkinter import filedialog
 
     settings.apply()  # the language of this computer (v0.5)
+    if kind == FOLDER:
+        root = tkinter.Tk()
+        root.withdraw()
+        root.attributes("-topmost", True)
+        try:
+            return filedialog.askdirectory(parent=root, title=_(FOLDER_TITLE), mustexist=True)
+        finally:
+            root.destroy()
     title, types = KINDS[kind]
     title = _(title)
     types = [(_(name), pattern) for name, pattern in types]
@@ -83,4 +94,5 @@ def _open_window(kind: str) -> str:
 
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
-    print(_open_window(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1] in KINDS else "")
+    known = len(sys.argv) > 1 and (sys.argv[1] in KINDS or sys.argv[1] == FOLDER)
+    print(_open_window(sys.argv[1]) if known else "")

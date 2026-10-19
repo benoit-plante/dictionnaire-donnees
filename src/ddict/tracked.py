@@ -10,7 +10,12 @@ is a convenience, and the caller says it.
 from __future__ import annotations
 
 import json
+import os
+import stat
+from collections import deque
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
 from ddict import recents
 from ddict.i18n import _
@@ -78,13 +83,19 @@ def is_followed(path: Path | str) -> bool:
 
 def follow(path: Path | str) -> bool:
     """Add a project file to the list; True when the list is written (or already holds it)."""
+    return follow_all([path])
+
+
+def follow_all(new: list[Path] | list[str]) -> bool:
+    """Add several project files at once (one writing of the list)."""
     paths = _read()
     if paths is None:
         return False
-    wanted = ondisk.key(path)
-    if any(ondisk.key(p) == wanted for p in paths):
+    known = {ondisk.key(p) for p in paths}
+    added = [Path(p) for p in new if ondisk.key(p) not in known]
+    if not added:
         return True
-    return _save([*paths, Path(path)])
+    return _save([*paths, *added])
 
 
 def replace(old: Path | str, new: Path | str) -> bool:
@@ -104,3 +115,71 @@ def unfollow(path: Path | str) -> bool:
         return False
     wanted = ondisk.key(path)
     return _save([p for p in paths if ondisk.key(p) != wanted])
+
+
+# --- Looking for projects in a folder (D-132). ---
+
+DEPTH = 4  # levels of folders below the chosen one
+MAX_PROJECTS = 500
+MAX_FOLDERS = 20_000
+SKIPPED = {"appdata", "node_modules"}
+HIDDEN = stat.FILE_ATTRIBUTE_HIDDEN | stat.FILE_ATTRIBUTE_SYSTEM
+
+
+@dataclass(frozen=True)
+class Search:
+    found: list[Path]  # sorted
+    stopped: Literal["projects", "folders"] | None = None  # a limit was reached
+
+
+def _skipped(entry: os.DirEntry) -> bool:
+    """A folder not looked into: hidden or system, the tool's exchanges, those of programs;
+    a link or a junction, never followed (those of "Documents" would loop)."""
+    name = entry.name.casefold()
+    if name.startswith((".", "$")) or name in SKIPPED or name.endswith(".dd-envois"):
+        return True
+    if entry.is_symlink():
+        return True
+    try:
+        info = entry.stat(follow_symlinks=False)
+    except OSError:
+        return True
+    if getattr(info, "st_file_attributes", 0) & HIDDEN:
+        return True
+    return getattr(info, "st_reparse_tag", 0) == stat.IO_REPARSE_TAG_MOUNT_POINT
+
+
+def search(folder: Path | str) -> Search:
+    """The project files (`*.dd.json`) in a folder and its subfolders, down to DEPTH levels.
+    Only names are looked at: no file is opened, so a OneDrive file "online only" is not
+    downloaded. A folder that cannot be read is passed over."""
+    found: list[Path] = []
+    waiting = deque([(Path(folder), 0)])
+    looked = 0
+    while waiting:
+        if looked >= MAX_FOLDERS:
+            return Search(sorted(found, key=_order), "folders")
+        current, depth = waiting.popleft()
+        looked += 1
+        try:
+            with os.scandir(current) as entries:
+                listed = sorted(entries, key=lambda e: e.name.casefold())
+        except OSError:
+            continue
+        for entry in listed:
+            try:
+                is_dir = entry.is_dir(follow_symlinks=False)
+            except OSError:
+                continue
+            if is_dir:
+                if depth < DEPTH and not _skipped(entry):
+                    waiting.append((Path(entry.path), depth + 1))
+            elif entry.name.casefold().endswith(".dd.json"):
+                if len(found) >= MAX_PROJECTS:
+                    return Search(sorted(found, key=_order), "projects")
+                found.append(Path(entry.path))
+    return Search(sorted(found, key=_order))
+
+
+def _order(path: Path) -> tuple[str, str]:
+    return str(path).casefold(), str(path)
