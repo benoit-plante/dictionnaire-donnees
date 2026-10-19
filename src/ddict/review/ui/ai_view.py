@@ -19,7 +19,7 @@ import streamlit as st
 
 from ddict import ai_settings
 from ddict.i18n import N_, Texts, _
-from ddict.llm.defaults import EFFORTS, PROTOCOLS, EndpointRefused, check_endpoint
+from ddict.llm.defaults import DEFAULT_MODEL, EFFORTS, PROTOCOLS, EndpointRefused, check_endpoint
 from ddict.llm.link import API_LINK_BLOCK_SIZE, build_link_blocks
 from ddict.llm.messages import API_BLOCK_SIZE, build_blocks
 from ddict.project.model import Project
@@ -36,7 +36,6 @@ EFFORT = "ai-effort"
 KEY_INPUT = "ai-key-input"
 TESTED = "ai-tested"  # (kind, text) of the last connection test
 START = "ai-start"
-RECOMMENDED = "claude-haiku-5-5"  # until the bench (v0.18, D2) chooses the default
 VERIFIED = "2026-10-19"  # the day the provider's retention was read
 RETENTION_URL = (
     "https://privacy.claude.com/en/articles/7996866-how-long-does-anthropic-store-my-"
@@ -47,8 +46,8 @@ PROTOCOL_NAMES = Texts(
 )
 EFFORT_NAMES = Texts(
     {
-        "low": N_("faible (par défaut, le moins coûteux)"),
-        "medium": N_("moyen"),
+        "low": N_("faible (le moins coûteux)"),
+        "medium": N_("moyen (par défaut)"),
         "high": N_("élevé"),
         "xhigh": N_("très élevé"),
         "max": N_("maximal"),
@@ -70,7 +69,7 @@ def _fill_fields() -> None:
     saved = ai_settings.load()
     st.session_state.setdefault(PROTOCOL, saved.protocol)
     st.session_state.setdefault(ENDPOINT, saved.endpoint)
-    st.session_state.setdefault(MODEL, saved.model or RECOMMENDED)
+    st.session_state.setdefault(MODEL, saved.model)
     st.session_state.setdefault(EFFORT, saved.effort)
 
 
@@ -102,6 +101,7 @@ def _refused_address() -> str:
 
 def _protocol_changed() -> None:
     st.session_state[ENDPOINT] = ai_settings.default_endpoint(st.session_state[PROTOCOL])
+    st.session_state[MODEL] = ai_settings.default_model(st.session_state[PROTOCOL])
 
 
 def _save_settings() -> None:
@@ -218,7 +218,10 @@ def _settings_section() -> None:
     st.text_input(
         _("Modèle"),
         key=MODEL,
-        help=_("Pour Anthropic : claude-haiku-5-5 (le moins coûteux) ou claude-sonnet-5-5."),
+        help=_(
+            "Pour Anthropic : {model} par défaut, choisi d'après le banc (le moins coûteux), ou "
+            "claude-sonnet-5-5."
+        ).format(model=DEFAULT_MODEL),
     )
     if anthropic:
         st.selectbox(

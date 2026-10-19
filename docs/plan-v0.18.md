@@ -204,7 +204,7 @@ La préparation ne demande plus Ollama mais une clé enregistrée (la clé de l'
 | D-138 | **L'activation par projet**, schéma 0.8.0 | `Settings.ai = {"allowed", "since"}`, décochée par défaut ; un projet 0.7.0 se lit « non activé » ; écrite par `c.save()` et le contrôle d'empreinte ; vérifiée à un seul endroit avant tout envoi ; l'aperçu toujours permis. |
 | D-139 | **Les tests `externe`** | Sautés sans `DDICT_TESTS_EXTERNES=1` et sans clé enregistrée ; bases fictives seulement ; réseau ouvert vers l'adresse d'Anthropic pour ces tests seuls ; jamais en intégration continue ; la clé saisie par l'auteur lui-même. |
 
-**À trancher après le banc (D2)**, par de nouvelles décisions : le modèle par défaut (Haiku 5.5 ou Sonnet 5.5) et l'effort ; le retour des radicaux dans l'interface (règle de D-051) ; le remplacement formel de D-080 par la borne de 100 000 caractères ; le nombre de candidates du rattachement.
+**Tranché après le banc (D2, le 2026-10-19)** : D-140 (`claude-haiku-5-5`, réflexion `medium`), D-141 (les radicaux dans l'interface, page « Noms »), D-142 (la conseillère sans compression avec Anthropic) ; le nombre de candidates reste 5. Ce qui était prévu : le modèle par défaut (Haiku 5.5 ou Sonnet 5.5) et l'effort ; le retour des radicaux dans l'interface (règle de D-051) ; le remplacement formel de D-080 par la borne de 100 000 caractères ; le nombre de candidates du rattachement.
 
 ## 11. Risques
 

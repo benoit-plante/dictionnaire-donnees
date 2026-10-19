@@ -2131,6 +2131,16 @@ msgid "Face au plan : {state}"
 msgstr "Against the plan: {state}"
 
 msgid ""
+"Facultatif : l'IA peut proposer les noms de base que les règles laissent ouverts, à partir du "
+"texte des questions et de leurs options (métadonnées seulement). Sur les bases fictives, elle en "
+"trouve plus souvent le nom qu'une équipe choisirait que les règles seules ; chaque proposition "
+"reste à décider."
+msgstr ""
+"Optional: the AI can propose the base names the rules leave open, from the text of the questions "
+"and their options (metadata only). On the fictional bases, it finds the name a team would choose "
+"more often than the rules alone; each proposal stays to decide."
+
+msgid ""
 "Facultatif : l'IA peut proposer les rattachements aux questions, puis des libellés et des "
 "descriptions, à partir des seules métadonnées ; chaque proposition attendra votre décision."
 msgstr ""
@@ -2143,6 +2153,10 @@ msgid ""
 msgstr ""
 "Optional. Every proposal waits for your decision, and the AI never defines an acronym. "
 "Recommended order: glossary, links, review of the links, then labels and descriptions."
+
+#, python-brace-format
+msgid "Faire proposer : noms de base ({n} questions)"
+msgstr "Get proposals: base names ({n} questions)"
 
 #, python-brace-format
 msgid "Faire proposer : {title}"
@@ -4194,6 +4208,9 @@ msgstr ""
 msgid "Noms : {n} décidés"
 msgstr "Names: {n} decided"
 
+msgid "Noms de base"
+msgstr "Base names"
+
 #, python-brace-format
 msgid "Noms de base des questions ({n})"
 msgstr "Base names of the questions ({n})"
@@ -4528,8 +4545,13 @@ msgstr "Positive"
 msgid "Position"
 msgstr "Position"
 
-msgid "Pour Anthropic : claude-haiku-5-5 (le moins coûteux) ou claude-sonnet-5-5."
-msgstr "For Anthropic: claude-haiku-5-5 (the least costly) or claude-sonnet-5-5."
+#, python-brace-format
+msgid ""
+"Pour Anthropic : {model} par défaut, choisi d'après le banc (le moins coûteux), ou claude-"
+"sonnet-5-5."
+msgstr ""
+"For Anthropic: {model} by default, chosen after the bench (the least costly), or claude-"
+"sonnet-5-5."
 
 msgid ""
 "Pour appliquer vos décisions à vos données dans SPSS ou R : libellés, étiquettes de valeurs, "
@@ -6841,8 +6863,8 @@ msgstr "exploratory"
 msgid "exporté pour toutes les variables rattachées"
 msgstr "exported for all linked variables"
 
-msgid "faible (par défaut, le moins coûteux)"
-msgstr "low (default, the least costly)"
+msgid "faible (le moins coûteux)"
+msgstr "low (the least costly)"
 
 #, python-brace-format
 msgid "famille : {new} au lieu de {old}"
@@ -7098,8 +7120,8 @@ msgstr "SPSS reserved word"
 msgid "mots-clés"
 msgstr "keywords"
 
-msgid "moyen"
-msgstr "medium"
+msgid "moyen (par défaut)"
+msgstr "medium (default)"
 
 msgid "moyenne"
 msgstr "mean"
@@ -8567,6 +8589,10 @@ msgstr "{title}: block {done} of {total}"
 #, python-brace-format
 msgid "{title} : envoi du premier bloc…"
 msgstr "{title}: sending the first block…"
+
+#, python-brace-format
+msgid "{title} : {ok} blocs réussis, {failed} en échec."
+msgstr "{title}: {ok} blocks succeeded, {failed} failed."
 
 #, python-brace-format
 msgid "{title} : {ok} blocs réussis, {skipped} déjà faits, {failed} en échec."

@@ -9,7 +9,9 @@ from urllib.parse import SplitResult, urlsplit
 ANTHROPIC_ENDPOINT = "https://api.anthropic.com"
 PROTOCOLS = ("anthropic", "openai")  # the Messages API of Anthropic, or OpenAI-compatible
 EFFORTS = ("low", "medium", "high", "xhigh", "max")
-DEFAULT_EFFORT = "low"
+# Chosen after the bench of v0.18 (D-140, docs/essais/2026-10-19-anthropic.md).
+DEFAULT_MODEL = "claude-haiku-5-5"
+DEFAULT_EFFORT = "medium"
 
 
 class EndpointRefused(ValueError):

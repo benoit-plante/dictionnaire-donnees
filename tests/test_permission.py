@@ -189,6 +189,6 @@ def test_settings_of_this_computer_are_used(project):
 def test_no_model_or_a_refused_address(project):
     permission.allow(project, "2026-10-19")
     with pytest.raises(NoModel):
-        client_for(project, ai_settings.AiSettings())
+        client_for(project, ai_settings.AiSettings(model=""))
     with pytest.raises(EndpointRefused):
         client_for(project, ai_settings.AiSettings("openai", "http://ia.universite.example", "m"))

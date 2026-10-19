@@ -166,7 +166,7 @@ def test_request_sent_to_anthropic(block):
     # No sampling parameter (refused by Haiku 5.5 and Sonnet 5.5), no fallback (D-135).
     for refused in ("temperature", "top_p", "top_k", "seed", "fallbacks", "stream"):
         assert refused not in body
-    assert body["output_config"]["effort"] == "low"
+    assert body["output_config"]["effort"] == "medium"  # D-140
     assert body["output_config"]["format"] == {
         "type": "json_schema",
         "schema": wire_schema(response_schema()),

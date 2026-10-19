@@ -202,10 +202,19 @@ def test_command_explains_a_missing_model(fictional_files, tmp_path, capsys, fak
 
 
 def test_command_needs_a_model(fictional_files, tmp_path, capsys):
+    """Anthropic has a default model (D-140); an institution's server has none."""
     project_path = _profiled(fictional_files, tmp_path)
     capsys.readouterr()
-    assert main(["enrichir", str(project_path)]) == 2  # no model saved, none given
+    command = ["enrichir", str(project_path), "--protocole", "openai"]
+    assert main([*command, "--adresse", "https://ia.universite.example/v1"]) == 2
     assert "--modele" in capsys.readouterr().err
+
+
+def test_command_without_a_key_sends_nothing(fictional_files, tmp_path, capsys):
+    project_path = _profiled(fictional_files, tmp_path)
+    capsys.readouterr()
+    assert main(["enrichir", str(project_path)]) == 2  # the default model, no key recorded
+    assert "ddict ia cle" in capsys.readouterr().err
 
 
 def test_command_refuses_a_project_not_allowed(fictional_files, tmp_path, capsys, fake_server):

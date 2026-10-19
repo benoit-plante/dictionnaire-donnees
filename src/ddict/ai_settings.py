@@ -11,7 +11,13 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 
-from ddict.llm.defaults import ANTHROPIC_ENDPOINT, DEFAULT_EFFORT, EFFORTS, PROTOCOLS
+from ddict.llm.defaults import (
+    ANTHROPIC_ENDPOINT,
+    DEFAULT_EFFORT,
+    DEFAULT_MODEL,
+    EFFORTS,
+    PROTOCOLS,
+)
 from ddict.recents import config_dir
 
 FILE_NAME = "ia.json"
@@ -22,13 +28,18 @@ FORMAT = 1
 class AiSettings:
     protocol: str = "anthropic"
     endpoint: str = ANTHROPIC_ENDPOINT
-    model: str = ""
+    model: str = DEFAULT_MODEL  # D-140; an OpenAI-compatible server has none by default
     effort: str = DEFAULT_EFFORT
 
 
 def default_endpoint(protocol: str) -> str:
     """Anthropic has its address; an OpenAI-compatible server has none by default."""
     return ANTHROPIC_ENDPOINT if protocol == "anthropic" else ""
+
+
+def default_model(protocol: str) -> str:
+    """Anthropic's chosen model (D-140); an OpenAI-compatible server's is its own."""
+    return DEFAULT_MODEL if protocol == "anthropic" else ""
 
 
 def load() -> AiSettings:
@@ -48,7 +59,7 @@ def load() -> AiSettings:
     return AiSettings(
         protocol=protocol,
         endpoint=endpoint.strip() if isinstance(endpoint, str) else default_endpoint(protocol),
-        model=model.strip() if isinstance(model, str) else "",
+        model=model.strip() if isinstance(model, str) else default_model(protocol),
         effort=effort if effort in EFFORTS else DEFAULT_EFFORT,
     )
 

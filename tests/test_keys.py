@@ -33,7 +33,10 @@ UNIVERSITY = "https://ia.universite.example/v1"
 
 def test_settings_default_to_anthropic():
     assert ai_settings.load() == ai_settings.AiSettings(
-        protocol="anthropic", endpoint=ANTHROPIC_ENDPOINT, model="", effort="low"
+        protocol="anthropic",
+        endpoint=ANTHROPIC_ENDPOINT,
+        model="claude-haiku-5-5",
+        effort="medium",  # D-140
     )
 
 

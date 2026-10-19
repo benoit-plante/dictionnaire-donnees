@@ -1703,3 +1703,40 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   2. Des essais à la main seulement.
 - **Justification :** Seul le vrai service dit si un schéma est accepté ; ces tests restent rares, payants et volontaires.
 - **Références :** `docs/plan-v0.18.md`, § 8.1.
+
+### D-140 — Le modèle et la réflexion par défaut
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** D-135 (en partie : la réflexion `low` par défaut)
+- **Décision :** Par défaut, l'IA passe par `claude-haiku-5-5` avec la réflexion `medium`. Les deux se changent sur la page « IA » ou par `--modele` ; un serveur compatible OpenAI n'a pas de modèle par défaut.
+- **Options considérées :**
+  1. Haiku 5.5, réflexion `medium` (ce choix).
+  2. Haiku 5.5, réflexion `low`.
+  3. Sonnet 5.5.
+- **Justification :** Au banc (`docs/essais/2026-10-19-anthropic.md`), Haiku 5.5 en `medium` égale Sonnet 5.5 sur le rattachement (113 / 121, contre 110 pour le calcul seul), le dépasse sur les noms de base (7 contre 6 / 10), pour environ un douzième du coût (0,02 $ le banc entier) ; aucun libellé de niveau 1 n'est signalé. En `low`, il répondait « incertain » pour trois items que le calcul choisissait juste.
+- **Références :** `docs/essais/2026-10-19-anthropic.md` ; `docs/plan-v0.18.md`, § 10.
+
+### D-141 — Les radicaux proposés par l'IA, dans l'interface
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** D-051 (en partie : la proposition par le modèle, réservée à la ligne de commande)
+- **Décision :** La page « Noms » offre « Faire proposer : noms de base », pour les noms de base que les règles laissent ouverts, seulement pour un projet qui permet l'envoi (D-138) ; chaque nom proposé reste une proposition, avec le signal d'un sigle possible.
+- **Options considérées :**
+  1. Dans l'interface, dès la v0.18 (ce choix).
+  2. Rester en ligne de commande.
+- **Justification :** La condition de D-051 est remplie : sur l'export SurveyMonkey fictif, Haiku 5.5 trouve 7 noms de base sur 10 égaux au choix d'une équipe, contre 3 pour les règles seules (qwen2.5 7B : 2).
+- **Références :** `docs/essais/2026-10-19-anthropic.md`.
+
+### D-142 — La conseillère sans compression, avec Anthropic
+
+- **Date :** 2026-10-19
+- **Statut :** adoptée
+- **Remplace :** D-080 (pour Anthropic ; elle reste pour un serveur compatible OpenAI)
+- **Décision :** Avec Anthropic, la conseillère envoie le message entier (`advise-v3`) : libellés entiers, chaque item d'un groupe avec son libellé, une seule borne de 100 000 caractères. Un serveur compatible OpenAI garde le message compact de D-080 (`advise-v2`), qui tient dans un petit contexte.
+- **Options considérées :**
+  1. Le message entier pour Anthropic (ce choix).
+  2. Le message compact partout.
+- **Justification :** Avec `advise-v3`, Haiku 5.5 et Sonnet 5.5 donnent la bonne analyse et les bonnes variables au premier rang pour 13 objectifs sur 13 et 6 sur 6 (qwen2.5 7B avec le message compact : 10 / 13 et 4 / 6).
+- **Références :** `docs/essais/2026-10-19-anthropic.md`.

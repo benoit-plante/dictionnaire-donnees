@@ -318,6 +318,84 @@ def _stems(project: Project) -> None:
             args=(rows,),
         )
         c.show_message("names-stems-save")
+        _ai_stems(project)
+
+
+AI_STEMS = "names-ai-stems"
+
+
+def _ask_stems() -> None:
+    st.session_state[AI_STEMS] = True
+
+
+def _ai_stems(project: Project) -> None:
+    """The AI proposes the stems the rules left open (v0.18, D-141: offered since it did
+    better than the rules alone on the bench, as D-051 asks); each stays a proposal."""
+    import importlib.util
+
+    from ddict.llm.stems import build_stem_blocks
+    from ddict.review.ui import ai_view
+
+    if importlib.util.find_spec("httpx") is None or importlib.util.find_spec("keyring") is None:
+        return
+    st.divider()
+    st.caption(
+        _(
+            "Facultatif : l'IA peut proposer les noms de base que les règles laissent ouverts, "
+            "à partir du texte des questions et de leurs options (métadonnées seulement). Sur "
+            "les bases fictives, elle en trouve plus souvent le nom qu'une équipe choisirait "
+            "que les règles seules ; chaque proposition reste à décider."
+        )
+    )
+    blocks = build_stem_blocks(project, size=8)
+    blocked = ai_view.ready(project)
+    if blocked:
+        st.info(blocked)
+    if st.session_state.pop(AI_STEMS, False) and blocked is None and blocks:
+        _run_stems(project)
+    st.button(
+        _("Faire proposer : noms de base ({n} questions)").format(
+            n=sum(len(b.names) for b in blocks)
+        ),
+        key="names-ai-stems",
+        on_click=_ask_stems,
+        disabled=blocked is not None or not blocks,
+    )
+    c.show_message("names-ai-stems")
+
+
+def _run_stems(project: Project) -> None:
+    from ddict.llm import connect
+    from ddict.llm.stems import propose_stems
+    from ddict.workflow import exchange_dir, failure_advice
+
+    title = _("Noms de base")
+    succeeded = failed = 0
+    last = None
+    with connect.client_for(project) as client, st.spinner(_("Le modèle réfléchit…")):
+        for event in propose_stems(
+            project,
+            client,
+            now=c.now,
+            save=lambda p: c.save("names-ai-stems", action=title),
+            log_dir=exchange_dir(c.project_path()),
+        ):
+            if event.result is None:
+                continue
+            if event.result.run.outcome == "succeeded":
+                succeeded += 1
+            else:
+                failed += 1
+                last = event.result.run.detail
+        endpoint, model = client.endpoint, client.model
+    text = _("{title} : {ok} blocs réussis, {failed} en échec.").format(
+        title=title, ok=succeeded, failed=failed
+    )
+    advice = failure_advice(last, endpoint, model)
+    if advice:
+        text += " " + advice
+    st.session_state.message = ("error" if failed else "success", text, "names-ai-stems")
+    st.rerun()
 
 
 def page(project: Project) -> None:

@@ -226,7 +226,10 @@ def settings_for(args: argparse.Namespace) -> ai_settings.AiSettings | None:
     endpoint = getattr(args, "adresse", None) or (
         saved.endpoint if protocol == saved.protocol else ai_settings.default_endpoint(protocol)
     )
-    model = getattr(args, "modele", None) or saved.model
+    # The saved model is that of the saved protocol: never Anthropic's sent elsewhere.
+    model = getattr(args, "modele", None) or (
+        saved.model if protocol == saved.protocol else ai_settings.default_model(protocol)
+    )
     if not endpoint:
         print(_("Indiquez l'adresse du serveur avec --adresse."), file=sys.stderr)
         return None

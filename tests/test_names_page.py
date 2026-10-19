@@ -4,15 +4,17 @@ import json
 import shutil
 from pathlib import Path
 
+import httpx
 import pytest
 from streamlit.testing.v1 import AppTest
 
 from ddict import naming
 from ddict.io import read_database
-from ddict.project import build_project, load_project
+from ddict.project import build_project, load_project, save_project
 from ddict.review import names
 from ddict.review.logic import ReviewError
 from ddict.workflow import add_questionnaire, profile_database, tasks
+from fake_ai import serve_commands
 
 ROOT = Path(__file__).resolve().parent.parent
 EXAMPLES = ROOT / "exemples" / "bases-fictives"
@@ -207,3 +209,40 @@ def test_the_dashboard_leads_to_the_proposed_names(project_path):
     app.sidebar.button(key=f"task-{index}").click().run()
     assert app.header[0].value == "Noms des variables"
     assert app.radio(key="names-filter").value == "proposed"
+
+
+def _stems_server(requests):
+    """The fake server answers each question with the answer key's stem."""
+    stems = KEY["waves"]["t2"]["stems"]
+
+    def answer(request):
+        requests.append(request)
+        content = json.loads(json.loads(request.content)["messages"][1]["content"])
+        questions = [
+            {"key": q["key"], "stem": stems.get(q["key"], "")} for q in content["questions"]
+        ]
+        text = json.dumps({"block": content["block"], "questions": questions})
+        return httpx.Response(200, json={"choices": [{"message": {"content": text}}]})
+
+    return answer
+
+
+@pytest.mark.allow_hosts(["127.0.0.1"])
+def test_the_ai_proposes_stems_on_the_names_page(project_path, monkeypatch):
+    """v0.18 (D-141): offered in the interface since the bench, only for a project that
+    allows it; each stem stays a proposal."""
+    requests = []
+    serve_commands(monkeypatch, _stems_server(requests))
+    project = load_project(project_path)
+    add_questionnaire(project, EXAMPLES / "travail-t2_surveymonkey.xlsx")
+    save_project(project, project_path)
+    app = _app(project_path, "names")
+    assert app.button(key="names-ai-stems").disabled  # the project does not allow it
+    app.checkbox(key="ai-allowed").check().run()
+    app.button(key="names-ai-stems").click().run()
+    assert not app.exception, app.exception
+    assert requests
+    assert any("blocs réussis, 0 en échec" in s.value for s in app.success)
+    found = naming.stem(load_project(project_path), "q0005")
+    assert found.stem.origin == "ai" and found.stem.status == "proposed"
+    assert found.stem.value == "taches"
