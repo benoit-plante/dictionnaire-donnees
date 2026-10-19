@@ -39,6 +39,8 @@ NEIGHBOUR_PROMPT_VERSION = "link-v3"
 # Ollama keeps 4,096 tokens of context by default: 12 variables with 5 candidates each
 # already took 3,654 tokens on the fictional base (trial of 2026-10-14).
 DEFAULT_LINK_BLOCK_SIZE = 6
+# Through an API key (v0.18): no context to fit in, fewer and larger blocks.
+API_LINK_BLOCK_SIZE = 20
 MAX_QUESTION_CHARS = 150  # enough to tell questions apart; the answer is an identifier
 AFTER_CHARS = 80  # the question just before a candidate (link-v2)
 FOLLOW_UP = re.compile(r"\s*(si (oui|non)|if (yes|no))\b", re.IGNORECASE)  # "Si oui, …"
