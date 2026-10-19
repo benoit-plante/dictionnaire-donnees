@@ -22,7 +22,7 @@ from ddict.project.model import Project
 from ddict.review import study
 
 if TYPE_CHECKING:
-    from ddict.llm.client import LocalModelClient
+    from ddict.llm.client import ModelClient
 
 OBJECTIVES_FILE = "objectifs-analyses.json"
 KEY_FILE = "corrige-analyses.json"
@@ -101,7 +101,7 @@ def score(expected: dict | None, proposals: tuple[Proposal, ...] | None) -> dict
 
 def run_advice_bench(
     project: Project,
-    client: LocalModelClient,
+    client: ModelClient,
     objectives: list[dict],
     *,
     now,

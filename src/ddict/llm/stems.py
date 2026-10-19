@@ -30,7 +30,7 @@ from ddict.project.model import Project, TrackedValue
 from ddict.questionnaire import link
 
 if TYPE_CHECKING:
-    from ddict.llm.client import LocalModelClient
+    from ddict.llm.client import ModelClient
     from ddict.llm.enrich import BlockEvent
     from ddict.llm.run import BlockResult
 
@@ -196,7 +196,7 @@ def apply_stems(project: Project, result: BlockResult) -> None:
 
 def propose_stems(
     project: Project,
-    client: LocalModelClient,
+    client: ModelClient,
     *,
     now: Callable[[], str],
     block_size: int = DEFAULT_STEM_BLOCK_SIZE,

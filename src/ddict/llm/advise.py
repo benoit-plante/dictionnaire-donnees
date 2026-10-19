@@ -33,7 +33,7 @@ from ddict.llm.validate import InvalidResponse
 from ddict.project.model import Project
 
 if TYPE_CHECKING:
-    from ddict.llm.client import LocalModelClient
+    from ddict.llm.client import ModelClient
     from ddict.llm.run import BlockResult
 
 ADVICE_PROMPT_VERSION = "advise-v2"
@@ -361,7 +361,7 @@ def run_id(now: str) -> str:
 
 def advise(
     project: Project,
-    client: LocalModelClient,
+    client: ModelClient,
     objective: str,
     *,
     now: str,

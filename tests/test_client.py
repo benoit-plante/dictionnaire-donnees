@@ -63,7 +63,9 @@ def good(body):
 
 
 def _client(server):
-    return LocalModelClient("modele-test", transport=httpx.MockTransport(server))
+    return LocalModelClient(
+        "modele-test", transport=httpx.MockTransport(server), sleep=lambda seconds: None
+    )
 
 
 @pytest.mark.parametrize(
@@ -227,7 +229,7 @@ def test_a_second_try_can_succeed(block):
     ("response", "code"),
     [
         (httpx.Response(404, text="model not found"), "http_404"),
-        (httpx.Response(500, text="erreur"), "http_500"),
+        (httpx.Response(500, text="erreur"), "overloaded"),  # after one wait (v0.18)
         (httpx.Response(200, json={"unexpected": True}), "bad_server_response"),
         (httpx.Response(200, text="<html>"), "bad_server_response"),
     ],

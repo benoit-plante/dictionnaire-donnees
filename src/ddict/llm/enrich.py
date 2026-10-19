@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ddict import glossary
-from ddict.llm.client import LocalModelClient
+from ddict.llm.client import ModelClient
 from ddict.llm.messages import Block, build_blocks
 from ddict.llm.run import BlockResult, run_block
 from ddict.llm.schemas import VariableProposal
@@ -29,7 +29,15 @@ from ddict.project.model import Project, TrackedValue, VariableEntry
 from ddict.questionnaire.labels import accepted_labels
 
 # Failures that concern the server, not the block: no use going on with other blocks.
-STOPPING_FAILURES = {"connection", "timeout", "http_404"}
+STOPPING_FAILURES = {
+    "connection",
+    "timeout",
+    "http_404",
+    "auth",  # the key is refused or missing (v0.18)
+    "bad_request",  # the request or its schema is refused: every block would be
+    "rate_limit",  # still limited after one wait
+    "overloaded",  # still busy after one wait
+}
 
 
 def next_run_id(project: Project) -> str:
@@ -115,7 +123,7 @@ class BlockEvent:
 
 def enrich(
     project: Project,
-    client: LocalModelClient,
+    client: ModelClient,
     *,
     now: Callable[[], str],
     block_size: int,
@@ -140,7 +148,7 @@ def enrich(
 
 def run_blocks(
     project: Project,
-    client: LocalModelClient,
+    client: ModelClient,
     blocks: tuple[Block, ...],
     *,
     apply: Callable[[Project, BlockResult], None],
@@ -180,6 +188,8 @@ def _log(folder: Path, block: Block, result: BlockResult) -> None:
         "messages": list(block.messages),
         "answers": list(result.answers),
     }
+    if result.calls:  # request ids and tokens, when the server gives them (v0.18)
+        record["calls"] = list(result.calls)
     path = folder / f"{result.run.run_id}-{block.block_id}.json"
     with path.open("w", encoding="utf-8", newline="\n") as stream:
         stream.write(json.dumps(record, ensure_ascii=False, indent=2) + "\n")

@@ -5,13 +5,15 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from ddict.llm.client import LocalModelClient, ModelCallError
+from ddict.llm.client import ModelCallError, ModelClient
 from ddict.llm.messages import Block
 from ddict.llm.schemas import response_schema
 from ddict.llm.validate import InvalidResponse, parse_block_response
 from ddict.project.model import AiRun
 
 MAX_ATTEMPTS = 2
+# The server answered, but not with a usable answer: tried again, like an invalid one.
+ANSWER_FAILURES = frozenset({"refusal", "truncated"})
 
 
 @dataclass(frozen=True)
@@ -19,10 +21,11 @@ class BlockResult:
     run: AiRun
     proposals: tuple | None  # None unless the run succeeded
     answers: tuple[str, ...] = ()  # raw answers, for the exchange log only
+    calls: tuple[dict, ...] = ()  # request ids and tokens, for the exchange log only
 
 
 def run_block(
-    client: LocalModelClient,
+    client: ModelClient,
     block: Block,
     *,
     run_id: str,
@@ -38,15 +41,23 @@ def run_block(
     outcome, detail, proposals = "failed", None, None
     attempts = 0
     answers: list[str] = []
+    calls: list[dict] = []
     while attempts < MAX_ATTEMPTS:
         attempts += 1
         try:
             content = client.complete(list(block.messages), schema)
             answers.append(content)
         except ModelCallError as error:
+            if client.last_call:
+                calls.append(dict(client.last_call))
+            if error.code in ANSWER_FAILURES:
+                outcome, detail = "invalid_response", error.code
+                continue
             # The server is down or refuses: trying again at once would not help.
             outcome, detail = "failed", error.code
             break
+        if client.last_call:
+            calls.append(dict(client.last_call))
         try:
             proposals = parse(content, block)
         except InvalidResponse as error:
@@ -71,4 +82,5 @@ def run_block(
         run=run,
         proposals=proposals if outcome == "succeeded" else None,
         answers=tuple(answers),
+        calls=tuple(calls),
     )
