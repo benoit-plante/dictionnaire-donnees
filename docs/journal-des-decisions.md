@@ -1559,3 +1559,68 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
 - **Justification :** Mesuré dans le navigateur, Streamlit affiche une légende (`st.caption`) dans la couleur du texte à 60 % d'opacité ; `theme.grayTextColor` n'y change rien. Seule une couleur de texte plus foncée fait passer toutes les légendes au-dessus de 4,5:1 : 4,73:1 sur fond blanc, 4,55:1 dans la barre latérale. Le texte normal passe de 12,53:1 à 18,08:1, une différence à peine visible. Le vert par défaut des messages de succès était juste au seuil.
 - **Conséquences :** aucun code changé hors du module des couleurs (`src/ddict/review/theme.py`) ; les explications qui portent une décision restent en texte normal (D-123).
 - **Références :** D-123 ; `docs/plan-v0.16.md`, § 5.4.
+
+### D-129 — Le contrôle à l'écriture du projet et du carnet
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** À la lecture du projet et du carnet, l'outil retient l'empreinte SHA-256 du contenu du fichier, en mémoire seulement (le format ne change pas). Avant chaque enregistrement, il relit le fichier et compare : différent ou disparu, rien n'est écrit. Après l'écriture, l'empreinte retenue devient celle du fichier écrit. Un projet ou un carnet neuf ne s'écrit que si le fichier n'existe pas, sauf remplacement confirmé. La date et la taille ne servent qu'à décider s'il faut relire (avertissement dès l'affichage, cache du tableau « Mes projets »).
+- **Options considérées :**
+  1. Empreinte du contenu (ce choix).
+  2. Date de modification et taille.
+- **Justification :** OneDrive peut toucher la date sans changer le contenu (fausse alarme) ; un changement peut garder la taille (`validated` et `corrected` ont 9 lettres) et une date trop grossière (2 s sur certains partages, clés USB). Relire 139 Ko coûte moins d'une milliseconde.
+- **Conséquences :** le contrôle vit dans `save_project` et `save_notebook`, pour tous les appelants, interface et ligne de commande. Un court instant reste entre le contrôle et l'écriture.
+- **Références :** `docs/plan-v0.17.md`, § 5.1.
+
+### D-130 — Quand le fichier a changé ailleurs
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Rien n'est écrit. L'interface montre en tête de page « Ce projet a été modifié ailleurs depuis que vous l'avez ouvert (autre onglet, autre personne ou ligne de commande). Votre dernière décision n'est pas enregistrée. », rappelle la décision (endroit, bouton, champs changés) et propose « Recharger le projet » ; après le rechargement, le rappel reste en texte (« Décision à refaire »), sans être remis dans les champs. Jamais de fusion automatique. L'outil prévient aussi dès l'affichage quand le fichier a changé. La ligne de commande le dit et rend un code de sortie non nul. Pas de verrou consultatif.
+- **Options considérées :**
+  1. Refus, rappel en texte, rechargement (ce choix).
+  2. Rappel remis dans les champs après rechargement (brouillon, D-124).
+  3. Fusion automatique.
+  4. Verrou consultatif « Ouvert aussi par … ».
+- **Justification :** Remettre toute une section dans ses champs y remettrait aussi les anciennes valeurs des champs que l'autre personne vient de changer, et « Enregistrer » les effacerait. Un verrou resterait après chaque fermeture d'onglet, que Streamlit ne voit pas, et mettrait un nom de personne dans le dossier partagé.
+- **Références :** `docs/plan-v0.17.md`, § 5.2 à 5.5.
+
+### D-131 — La liste des projets suivis
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Une liste distincte des récents (D-024), `%APPDATA%\ddict\projets-suivis.json` : `{"format": 1, "projets": [...]}`, chemins absolus des fichiers projet seulement, triés, sans limite ; JSON déterministe. Un projet absent reste, marqué « introuvable ». Un projet créé dans l'interface ou par `ddict profiler` est suivi d'office, sauf l'essai sur la base fictive ; « Suivre ce projet », la recherche dans un dossier et `ddict projets suivre` en ajoutent ; « Ne plus suivre » ne touche aucun fichier projet.
+- **Options considérées :**
+  1. Liste distincte, sans limite (ce choix).
+  2. Allonger la liste des récents.
+- **Justification :** Un projet suivi ne doit pas sortir de la liste parce qu'on en a ouvert dix autres, ni disparaître parce que sa clé USB est retirée.
+- **Conséquences :** comme les récents, la liste reste sur l'ordinateur, n'entre ni dans un projet ni dans un export ; les chemins sont gardés tels que choisis (pas de `resolve()`, qui change un lecteur réseau en chemin UNC).
+- **Références :** `docs/plan-v0.17.md`, § 6.1.
+
+### D-132 — Chercher les projets dans un dossier
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Les fichiers `.dd.json` du dossier choisi et de ses sous-dossiers, jusqu'à 4 niveaux ; ignorés : dossiers cachés ou système, noms commençant par `.` ou `$`, `AppData`, `node_modules`, `*.dd-envois`, liens et jonctions, fichiers `.tmp`, dossiers illisibles. Arrêt à 500 projets ou 20 000 dossiers parcourus, dit à la personne. Aucun fichier n'est ouvert pendant la recherche. Rien n'est coché au départ ; seuls les projets cochés sont suivis.
+- **Options considérées :**
+  1. Profondeur 4, sans lire les fichiers (ce choix).
+  2. Profondeur illimitée.
+  3. Lire chaque projet trouvé pour en montrer l'état.
+- **Justification :** Assez profond pour `Études\2026\Vague 2\donnees\` ; ne pas lire évite de télécharger les fichiers OneDrive « en ligne seulement » et de tourner en rond dans les jonctions de « Documents ».
+- **Références :** `docs/plan-v0.17.md`, § 6.2.
+
+### D-133 — La phase d'un projet
+
+- **Date :** 2026-10-18
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Le tableau « Mes projets » dit jusqu'où un projet est allé : **Rédiger** si l'ébauche d'article (`<projet>-article.docx`) existe à côté du projet, sinon **Analyser** si le plan a au moins une hypothèse ou le carnet au moins une analyse, sinon **Documenter**.
+- **Options considérées :**
+  1. Jusqu'où le projet est allé (ce choix).
+  2. La section de la première tâche en attente, comme la barre latérale.
+- **Justification :** La phase ne recule pas pour une nouvelle proposition (un sigle oublié ne fait pas d'un projet presque fini un projet à documenter) ; la colonne « En attente » dit la tâche.
+- **Références :** `docs/plan-v0.17.md`, § 7.2.
