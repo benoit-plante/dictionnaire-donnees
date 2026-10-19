@@ -59,7 +59,7 @@ def _tracked_field(project: Project, entry: VariableEntry, field: str, title: st
     def draw() -> None:
         st.text_input(
             _("Corriger ou saisir"),
-            key=c.field(input_key, lambda: _start_text(entry.name, field)),
+            key=c.field(input_key, lambda: _start_text(entry.name, field), label=title),
             label_visibility="collapsed",
         )
 
@@ -142,7 +142,7 @@ def _question(project: Project, entry: VariableEntry) -> None:
             choices,
             format_func=option_text,
             placeholder=_("Choisir une question"),
-            key=c.field(key, start),
+            key=c.field(key, start, label=_("Rattacher à")),
         )
         if found and found[0] == link.NO_QUESTION:
             why = {
@@ -339,7 +339,9 @@ def _privacy(entry: VariableEntry) -> None:
             placeholder=_("Choisir…"),
             format_func=lambda c: w.PRIVACY[c],
             key=c.field(
-                key, lambda: c.project().variable(name).privacy.privacy_class.value or "ordinary"
+                key,
+                lambda: c.project().variable(name).privacy.privacy_class.value or "ordinary",
+                label=_("Classe"),
             ),
         )
 
@@ -372,7 +374,9 @@ def _level(project: Project, entry: VariableEntry) -> None:
             list(w.MEASURES),
             placeholder=_("Choisir…"),
             format_func=w.MEASURES.__getitem__,
-            key=c.field(key, lambda: c.project().variable(name).measure_level.value),
+            key=c.field(
+                key, lambda: c.project().variable(name).measure_level.value, label=_("Niveau")
+            ),
         )
 
     c.decision_card(
@@ -400,7 +404,9 @@ def _new_name(project: Project, entry: VariableEntry) -> None:
     def draw() -> None:
         st.text_input(
             _("Nouveau nom"),
-            key=c.field(key, lambda: c.project().variable(name).new_name.value or ""),
+            key=c.field(
+                key, lambda: c.project().variable(name).new_name.value or "", label=_("Nouveau nom")
+            ),
             label_visibility="collapsed",
         )
 
@@ -436,9 +442,16 @@ def _sourced(entry: VariableEntry) -> None:
             )
         with st.form(f"form-range-{name}", border=False):
             c1, c2, c3 = st.columns([1, 1, 3])
-            c1.number_input(_("Min"), key=c.field(f"range-min-{name}", lambda: None))
-            c2.number_input(_("Max"), key=c.field(f"range-max-{name}", lambda: None))
-            c3.text_input(_("Source de l'étendue"), key=c.field(f"range-source-{name}", str))
+            c1.number_input(
+                _("Min"), key=c.field(f"range-min-{name}", lambda: None, label=_("Min"))
+            )
+            c2.number_input(
+                _("Max"), key=c.field(f"range-max-{name}", lambda: None, label=_("Max"))
+            )
+            c3.text_input(
+                _("Source de l'étendue"),
+                key=c.field(f"range-source-{name}", str, label=_("Source de l'étendue")),
+            )
             c.button(
                 _("Enregistrer l'étendue"),
                 f"save-range-{name}",
@@ -464,9 +477,17 @@ def _sourced(entry: VariableEntry) -> None:
                 )
         with st.form(f"form-threshold-{name}", border=False):
             c1, c2, c3 = st.columns([1, 2, 3])
-            c1.number_input(_("Seuil"), key=c.field(f"threshold-value-{name}", lambda: None))
-            c2.text_input(_("Signification"), key=c.field(f"threshold-meaning-{name}", str))
-            c3.text_input(_("Source du seuil"), key=c.field(f"threshold-source-{name}", str))
+            c1.number_input(
+                _("Seuil"), key=c.field(f"threshold-value-{name}", lambda: None, label=_("Seuil"))
+            )
+            c2.text_input(
+                _("Signification"),
+                key=c.field(f"threshold-meaning-{name}", str, label=_("Signification")),
+            )
+            c3.text_input(
+                _("Source du seuil"),
+                key=c.field(f"threshold-source-{name}", str, label=_("Source du seuil")),
+            )
             c.button(
                 _("Ajouter le seuil"),
                 f"add-threshold-{name}",
@@ -486,12 +507,18 @@ def _sourced(entry: VariableEntry) -> None:
         st.text_area(
             _("Références (une par ligne)"),
             key=c.field(
-                f"references-{name}", lambda: "\n".join(c.project().variable(name).references)
+                f"references-{name}",
+                lambda: "\n".join(c.project().variable(name).references),
+                label=_("Références (une par ligne)"),
             ),
         )
         st.text_area(
             _("Notes de l'équipe"),
-            key=c.field(f"notes-{name}", lambda: c.project().variable(name).notes or ""),
+            key=c.field(
+                f"notes-{name}",
+                lambda: c.project().variable(name).notes or "",
+                label=_("Notes de l'équipe"),
+            ),
         )
         c.button(
             _("Enregistrer références et notes"),

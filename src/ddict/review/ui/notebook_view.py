@@ -54,8 +54,8 @@ def _open(project: Project) -> nb.Notebook | None:
         return None
 
 
-def _save(notebook: nb.Notebook) -> None:
-    nb.save_notebook(notebook, _path())
+def _save(notebook: nb.Notebook, action: str | None = None) -> None:
+    c.save_notebook(notebook, "notebook-top", action=action)
 
 
 def _change(action, *args) -> None:
@@ -97,7 +97,7 @@ def _statuses(project: Project, notebook: nb.Notebook, prepared) -> list[check.S
             notebook, project, prepared, today=date.today().isoformat(), reason=reason
         )
     if nb.dumps(notebook) != before:
-        _save(notebook)
+        _save(notebook, _("Recalcul du carnet"))
     st.session_state[STATUSES] = (_signature(project, notebook, prepared), statuses)
     return statuses
 

@@ -14,9 +14,10 @@ from pathlib import Path
 import streamlit as st
 
 from ddict import recents
+from ddict.analysis import notebook as nb
 from ddict.export import wording as w
 from ddict.i18n import _
-from ddict.project import load_project, save_project
+from ddict.project import ProjectChanged, load_project, ondisk, save_project
 from ddict.project.model import Project, TrackedValue
 from ddict.review import logic
 
@@ -60,32 +61,39 @@ def state(key: str):
     return lambda: st.session_state[key]
 
 
-def act(action, *args, key: str, timed: bool, reset: tuple[str, ...]) -> None:
+def act(
+    action, *args, key: str, timed: bool, reset: tuple[str, ...], label: str | None = None
+) -> None:
     """Run a decision with its arguments read now, save, and keep a message to show next to
-    the button `key`. On success, the fields in `reset` are drawn again from the project."""
+    the button `key`. On success, the fields in `reset` are drawn again from the project.
+    `label`, the button's, is recalled if the save is refused (v0.17, D-130)."""
     values = [a() if callable(a) else a for a in args]
     kwargs = {"now": now()} if timed else {}
+    before = recall(label)  # before the decision: afterwards, the fields equal the project
     try:
         action(project(), *values, **kwargs)
     except logic.ReviewError as error:
         st.session_state.message = ("error", str(error), key)
         return
-    save_project(project(), project_path())
+    if not save(key, before):
+        return
     st.session_state.message = ("success", _("Enregistré."), key)
     for name in reset:
         st.session_state[name] = st.session_state.fresh[name]()
 
 
-def field(key: str, fresh) -> str:
+def field(key: str, fresh, *, label: str = "") -> str:
     """Key of an input whose starting value `fresh()` comes from the project.
 
     The value is set through the session state, never with `value=`: after a decision, `act`
     sets it again, which the browser shows (it keeps its own copy of a field otherwise).
     The field remembers where it is drawn (`set_place`): a value typed there and not saved
-    becomes a draft when the person goes elsewhere (v0.16, D-124).
+    becomes a draft when the person goes elsewhere (v0.16, D-124). `label` names it when a
+    refused save recalls what was typed (v0.17, D-130).
     """
     st.session_state.setdefault("fresh", {})[key] = fresh
     st.session_state.setdefault(PLACES, {})[key] = st.session_state.get(PLACE)
+    st.session_state.setdefault(LABELS, {})[key] = label
     if key not in st.session_state:
         st.session_state[key] = fresh()
     return key
@@ -95,6 +103,7 @@ def field(key: str, fresh) -> str:
 
 PLACE = "place"  # Place of the fields drawn now
 PLACES = "field-places"  # key -> the Place where the field was drawn
+LABELS = "field-labels"  # key -> the field's label (v0.17)
 DRAFTS = "drafts"  # [Draft]: what was typed, not saved, where the person left it
 TAKEN_BACK = "drafts-taken-back"  # a draft went back into its fields on this run
 
@@ -209,6 +218,161 @@ def drafts_notice(here: Place) -> None:
             st.button(_("Abandonner"), key="draft-drop", on_click=_drop)
 
 
+# --- Changed elsewhere (v0.17, D-129, D-130). ---
+
+REFUSED = "refused"  # [Refusal]: decisions not saved, the file having changed elsewhere
+ELSEWHERE = "changed-elsewhere"  # the file changed since it was read, seen before any save
+REDO = "redo"  # [Refusal]: after the reload, what to decide again
+
+
+@dataclass(frozen=True)
+class Refusal:
+    """A decision that was not saved, in words: where, the button, what was typed."""
+
+    place: str
+    action: str | None
+    fields: tuple[tuple[str, str], ...]
+
+    def text(self) -> str:
+        head = f"**{self.place}**" if self.place else ""
+        if self.action:
+            head = f"{head} — « {self.action} »" if head else f"« {self.action} »"
+        typed = " ; ".join(f"{name} : « {value} »" for name, value in self.fields)
+        return " ; ".join(part for part in (head, typed) if part)
+
+
+def _shown(value) -> str:
+    if value is None or value == "" or value == []:
+        return DASH
+    if isinstance(value, bool):
+        return _("oui") if value else _("non")
+    if isinstance(value, list | tuple):
+        return ", ".join(str(v) for v in value)
+    return str(value)
+
+
+def _typed(values) -> tuple[tuple[str, str], ...]:
+    labels = st.session_state.get(LABELS, {})
+    return tuple((labels.get(k) or k, _shown(v)) for k, v in values)
+
+
+def recall(action: str | None = None) -> Refusal:
+    """The decision about to be made here: the place, the button, and the fields of this
+    place that differ from the project (call it before the decision changes the project)."""
+    here = st.session_state.get(PLACE)
+    places = st.session_state.get(PLACES, {})
+    keys = [k for k in unsaved() if here is not None and here.same(places.get(k))]
+    typed = _typed((k, st.session_state.get(k)) for k in keys)
+    return Refusal(here.title if here is not None else "", action, typed)
+
+
+def _refused(key: str | None, refusal: Refusal | None, action: str | None, what: str) -> None:
+    st.session_state.setdefault(REFUSED, []).append(refusal or recall(action))
+    if key is not None:
+        text = (
+            _("Non enregistré : le projet a été modifié ailleurs (voir en haut de la page).")
+            if what == "project"
+            else _("Non enregistré : le carnet a été modifié ailleurs (voir en haut de la page).")
+        )
+        st.session_state.message = ("error", text, key)
+
+
+def save(
+    key: str | None = None, refusal: Refusal | None = None, *, action: str | None = None
+) -> bool:
+    """Save the session's project: the only way the pages do it (v0.17). False, nothing
+    written, when the file changed since it was read; the page then says so at the top, with
+    what the person had decided (`refusal`, or `action` and what is typed here now)."""
+    try:
+        save_project(project(), project_path())
+    except ProjectChanged:
+        _refused(key, refusal, action, "project")
+        return False
+    return True
+
+
+def save_notebook(
+    notebook, key: str | None = None, refusal: Refusal | None = None, *, action: str | None = None
+) -> bool:
+    """Save the project's notebook, like `save`."""
+    try:
+        nb.save_notebook(notebook, nb.notebook_path(project_path()))
+    except nb.NotebookChanged:
+        _refused(key, refusal, action, "notebook")
+        return False
+    return True
+
+
+def watch(current: Project) -> None:
+    """At each run: whether the project file still holds what this session read (by its
+    date and size, then its content). Changed: said before the person decides anything."""
+    known = ondisk.remembered(current)
+    if known is not None and not ondisk.unchanged(project_path(), known):
+        st.session_state[ELSEWHERE] = True
+
+
+def reload() -> None:
+    """Read the project again, on the same page; what was refused or typed and not saved is
+    kept to be decided again, in words only: never put back into the fields, where it would
+    bring back the old values of what the other person changed (D-130)."""
+    here = st.session_state.get(PLACE)
+    redo = list(st.session_state.get(REFUSED, []))
+    redo += [
+        Refusal(d.place.title, None, _typed(d.values)) for d in st.session_state.get(DRAFTS, [])
+    ]
+    typed = recall()
+    if typed.fields:
+        redo.append(typed)
+    open_project(project_path())
+    if here is not None:
+        go_to(here.mode, **dict(here.opens))
+    if redo:
+        st.session_state[REDO] = redo
+
+
+def changed_notice() -> None:
+    """At the top of every page of a project: changed elsewhere, what was not saved, and the
+    way to read the project again; after the reload, what to decide again."""
+    refused = st.session_state.get(REFUSED, [])
+    if refused or st.session_state.get(ELSEWHERE):
+        with st.container(border=True):
+            text = _(
+                "Ce projet a été modifié ailleurs depuis que vous l'avez ouvert (autre onglet, "
+                "autre personne ou ligne de commande)."
+            )
+            if refused:
+                text += " " + _("Votre dernière décision n'est pas enregistrée.")
+            st.warning(text, icon=":material/sync_problem:")
+            for refusal in refused:
+                st.markdown(_("Votre décision : {decision}").format(decision=refusal.text()))
+            if refused:
+                st.write(
+                    _(
+                        "« Recharger le projet » lit le projet tel qu'il est maintenant ; votre "
+                        "décision restera affichée pour que vous la refassiez."
+                    )
+                )
+            st.button(
+                _("Recharger le projet"),
+                key="reload-project",
+                on_click=reload,
+                type="primary",
+                icon=":material/refresh:",
+            )
+    redo = st.session_state.get(REDO)
+    if redo:
+        with st.container(border=True):
+            st.info(
+                _("Décision à refaire : elle n'a pas été enregistrée avant le rechargement."),
+                icon=":material/replay:",
+            )
+            for refusal in redo:
+                st.markdown(refusal.text())
+            st.button(
+                _("Fermer"), key="redo-close", on_click=lambda: st.session_state.pop(REDO, None)
+            )
+
+
 def unsaved_note(keys) -> None:
     """Next to the "Enregistrer" of a section: its fields hold what is not saved yet."""
     if keys and unsaved(list(keys)):
@@ -300,7 +464,7 @@ def button(
             key=key,
             on_click=act,
             args=(action, *args),
-            kwargs={"key": key, "timed": timed, "reset": reset},
+            kwargs={"key": key, "timed": timed, "reset": reset, "label": label},
             type="primary" if primary else "secondary",
         )
         # Beside the button, never above it: a note that appears must not move the button

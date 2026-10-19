@@ -18,7 +18,6 @@ from ddict.i18n import N_, Texts, _
 from ddict.llm.defaults import DEFAULT_ENDPOINT
 from ddict.llm.link import DEFAULT_LINK_BLOCK_SIZE, build_link_blocks
 from ddict.llm.messages import DEFAULT_BLOCK_SIZE, build_blocks
-from ddict.project import save_project
 from ddict.project.model import Project
 from ddict.questionnaire.link import candidates
 from ddict.review.ui import bench_view
@@ -94,7 +93,7 @@ def _model_section() -> tuple[str, str] | None:
     with st.expander(_("Adresse du serveur local")):
         st.text_input(
             _("Adresse (Ollama par défaut)"),
-            key=c.field(ENDPOINT, lambda: DEFAULT_ENDPOINT),
+            key=c.field(ENDPOINT, lambda: DEFAULT_ENDPOINT, label=_("Adresse (Ollama par défaut)")),
         )
         st.caption(_("Seule une adresse de cet ordinateur est acceptée."))
     endpoint = str(st.session_state[ENDPOINT]).strip() or DEFAULT_ENDPOINT
@@ -165,6 +164,12 @@ def _run(project: Project, job: str, endpoint: str, model: str) -> None:
     bar = st.progress(0.0, text=_("{title} : envoi du premier bloc…").format(title=title))
     done = succeeded = skipped = failed = 0
     last = None
+
+    def save(_project: Project) -> None:
+        # v0.17 (D-130): changed elsewhere, the page says so; no block is sent after.
+        if not c.save(f"ai-{job}", action=title):
+            raise _Refused
+
     with LocalModelClient(model, endpoint=endpoint) as client:
         run = {"link": propose_links, "enrich": enrich}[job]
         events = run(
@@ -172,24 +177,27 @@ def _run(project: Project, job: str, endpoint: str, model: str) -> None:
             client,
             now=c.now,
             block_size=size,
-            save=lambda p: save_project(p, path),
+            save=save,
             log_dir=exchange_dir(path),
         )
-        for event in events:
-            done += 1
-            if event.result is None:
-                skipped += 1
-            elif event.result.run.outcome == "succeeded":
-                succeeded += 1
-            else:
-                failed += 1
-                last = event.result.run.detail
-            bar.progress(
-                min(done / total, 1.0),
-                text=_("{title} : bloc {done} sur {total}").format(
-                    title=title, done=done, total=total
-                ),
-            )
+        try:
+            for event in events:
+                done += 1
+                if event.result is None:
+                    skipped += 1
+                elif event.result.run.outcome == "succeeded":
+                    succeeded += 1
+                else:
+                    failed += 1
+                    last = event.result.run.detail
+                bar.progress(
+                    min(done / total, 1.0),
+                    text=_("{title} : bloc {done} sur {total}").format(
+                        title=title, done=done, total=total
+                    ),
+                )
+        except _Refused:
+            st.rerun()
     text = _("{title} : {ok} blocs réussis, {skipped} déjà faits, {failed} en échec.").format(
         title=title, ok=succeeded, skipped=skipped, failed=failed
     )
@@ -200,6 +208,10 @@ def _run(project: Project, job: str, endpoint: str, model: str) -> None:
         text += " " + _("Les propositions sont à réviser dans « Variables ».")
     st.session_state.message = ("error" if failed else "success", text, f"ai-{job}")
     st.rerun()
+
+
+class _Refused(Exception):
+    """A block's save was refused: the project changed elsewhere (v0.17)."""
 
 
 def _job(

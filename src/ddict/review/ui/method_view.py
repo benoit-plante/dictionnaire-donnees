@@ -27,7 +27,6 @@ from ddict.export import wording as w
 from ddict.export.preparation import plan
 from ddict.i18n import N_, Texts, _
 from ddict.project import exclusions as ex
-from ddict.project import save_project
 from ddict.project.model import Project
 from ddict.questionnaire.labels import accepted_labels
 from ddict.review.ui import analyses_view, groups_view, notebook_view
@@ -68,12 +67,14 @@ HOLE = "background:#fff59d;color:#000;padding:0 2px"
 def _act(action, *args, key: str) -> None:
     """Change the rules, save the project, and keep a message next to the button `key`."""
     project = c.project()
+    before = c.recall()
     try:
         done = action(project, *args)
     except ex.ExclusionRefused as error:
         st.session_state.message = ("error", " ".join(error.reasons), key)
         return
-    save_project(project, c.project_path())
+    if not c.save(key, before):
+        return
     text = _("Règle ajoutée : {id}.").format(id=done.id) if action is _add else _("Enregistré.")
     st.session_state.message = ("success", text, key)
 
@@ -467,7 +468,7 @@ def _describe_sample(project: Project) -> None:
     except nb.NotebookError as error:
         st.session_state.message = ("error", nb.reason_text(error), "method-sample")
         return
-    nb.save_notebook(notebook, nb.notebook_path(c.project_path()))
+    c.save_notebook(notebook, "method-sample", action=_("Description de l'échantillon"))
 
 
 def _sample(project: Project, notebook: nb.Notebook) -> None:

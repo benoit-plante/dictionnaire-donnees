@@ -186,6 +186,7 @@ def main() -> None:
         _messages_end(top)
         return
     project = c.project()
+    c.watch(project)  # v0.17 (D-130): changed elsewhere since it was read
     waiting = tasks(project, c.project_path(), notebook_view.dashboard_state(project))
     mode = _navigation(project, waiting)
     with st.sidebar:
@@ -234,6 +235,7 @@ def main() -> None:
         elif mode == "groups":
             st.info(_("Aucun groupe trouvé."))
         _quit_button()
+    c.changed_notice()
     notice = st.session_state.pop("notice", None)
     if notice:
         st.info(notice)

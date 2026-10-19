@@ -10,7 +10,6 @@ import streamlit as st
 from ddict import i18n
 from ddict.export import wording as w
 from ddict.i18n import _, field_label, quoted
-from ddict.project import save_project
 from ddict.project.model import Project
 from ddict.review import levels, logic, study
 from ddict.review.logic import ReviewError
@@ -93,26 +92,39 @@ def _dataset(project: Project) -> None:
         ["", *w.UNITS],
         placeholder=_("Choisir…"),
         format_func=lambda u: w.UNITS[u] if u else _("(non précisé)"),
-        key=c.field(keys["unit_of_observation"], lambda: now_("unit_of_observation")),
+        key=c.field(
+            keys["unit_of_observation"],
+            lambda: now_("unit_of_observation"),
+            label=_("Une ligne représente"),
+        ),
     )
     right.text_input(
-        _("Autre : laquelle ?"), key=c.field(keys["unit_other"], lambda: now_("unit_other"))
+        _("Autre : laquelle ?"),
+        key=c.field(keys["unit_other"], lambda: now_("unit_other"), label=_("Autre : laquelle ?")),
     )
     st.selectbox(
         _("Structure"),
         ["", *w.STRUCTURES],
         placeholder=_("Choisir…"),
         format_func=lambda s: w.STRUCTURES[s] if s else _("(non précisée)"),
-        key=c.field(keys["structure"], lambda: now_("structure")),
+        key=c.field(keys["structure"], lambda: now_("structure"), label=_("Structure")),
     )
     left, right = st.columns(2)
     left.text_input(
         _("Vague de ce fichier (une vague par fichier)"),
-        key=c.field(keys["wave"], lambda: now_("wave")),
+        key=c.field(
+            keys["wave"],
+            lambda: now_("wave"),
+            label=_("Vague de ce fichier (une vague par fichier)"),
+        ),
     )
     right.text_input(
         _("Suffixes de temps (format large), séparés par des virgules"),
-        key=c.field(keys["suffixes"], lambda: now_("suffixes")),
+        key=c.field(
+            keys["suffixes"],
+            lambda: now_("suffixes"),
+            label=_("Suffixes de temps (format large), séparés par des virgules"),
+        ),
         placeholder="_t1, _t2",
     )
     columns = st.columns(len(DESIGN_KEYS))
@@ -122,11 +134,17 @@ def _dataset(project: Project) -> None:
             ["", *names],
             placeholder=_("Choisir…"),
             format_func=lambda n: shown.get(n, "—") if n else "—",
-            key=c.field(keys[f"design_{part}"], lambda part=part: now_(f"design_{part}")),
+            key=c.field(
+                keys[f"design_{part}"],
+                lambda part=part: now_(f"design_{part}"),
+                label=w.DESIGN[part].capitalize(),
+            ),
         )
     st.text_area(
         _("Description (courte)"),
-        key=c.field(keys["description"], lambda: now_("description")),
+        key=c.field(
+            keys["description"], lambda: now_("description"), label=_("Description (courte)")
+        ),
         height=68,
     )
     c.button(
@@ -176,7 +194,8 @@ def _save_levels(rows: list[levels.LevelRow], levels_shown: list[str], decisions
     except ReviewError as error:
         st.session_state.message = ("error", str(error), key)
         return
-    save_project(c.project(), c.project_path())
+    if not c.save(key, action=_("Niveaux de mesure : {n} décidés").format(n=n)):
+        return
     st.session_state.pop(table_key, None)
     st.session_state.pop(LEVEL_PREFILL, None)
     st.session_state.message = ("success", _("{n} niveaux enregistrés.").format(n=n), key)

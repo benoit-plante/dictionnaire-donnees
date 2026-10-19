@@ -23,7 +23,6 @@ from ddict.analysis.book import Codebook
 from ddict.analysis.catalogue import CATALOGUE, CHOICES, OPTIONS, ROLES, TITLES
 from ddict.analysis.data import PreparedData, chosen_levels
 from ddict.i18n import N_, Texts, _, field_label
-from ddict.project import save_project
 from ddict.project.model import Hypothesis, Project
 from ddict.review import admissible
 from ddict.review.ui import analyses_view, base_view
@@ -62,23 +61,30 @@ def _prepared() -> PreparedData | None:
     return found[1] if found else None
 
 
-def _saved(project: Project) -> None:
+class _NotSaved(Exception):
+    """A save was refused, the file having changed elsewhere: the page already says so."""
+
+
+def _saved(project: Project, key: str, before: c.Refusal) -> bool:
     """Save the project; a frozen plan's notebook follows it (§ 6 of the sheet)."""
-    save_project(project, c.project_path())
+    if not c.save(key, before):
+        return False
     if project.plan.frozen is None:
-        return
+        return True
     notebook = nb.open_notebook(project, c.project_path())
     waiting = pn.sync(notebook, project, _prepared(), _today())
-    if notebook.entries:
-        nb.save_notebook(notebook, nb.notebook_path(c.project_path()))
+    if notebook.entries and not c.save_notebook(notebook, key, before):
+        return False
     if waiting:
         st.session_state["plan-waiting"] = waiting
+    return True
 
 
 def _act(action, *args, key: str, done: str = "", reset: tuple[str, ...] = ()) -> None:
     """Change the plan, save, and keep a message next to the button `key`; on a refusal,
     the fields in `reset` go back to what the project holds."""
     project = c.project()
+    before = c.recall()
     try:
         action(project, *args)
     except planning.PlanRefused as error:
@@ -86,7 +92,10 @@ def _act(action, *args, key: str, done: str = "", reset: tuple[str, ...] = ()) -
         for name in reset:
             st.session_state[name] = st.session_state.fresh[name]()
         return
-    _saved(project)
+    except _NotSaved:
+        return
+    if not _saved(project, key, before):
+        return
     st.session_state.message = ("success", done or _("Enregistré."), key)
 
 
@@ -114,11 +123,25 @@ def _set_rule(project: Project, name: str, key: str) -> None:
 def _rules(project: Project) -> None:
     st.subheader(_("Règles générales"))
     fields = {
-        "alpha": c.field("plan-alpha", lambda: _alpha_text(c.project())),
-        "correction": c.field("plan-correction", lambda: c.project().plan.correction),
-        "sample_size": c.field("plan-sample", lambda: c.project().plan.sample_size),
-        "data_origin": c.field("plan-origin", lambda: c.project().plan.data_origin),
-        "data_status": c.field("plan-status", lambda: c.project().plan.data_status),
+        "alpha": c.field("plan-alpha", lambda: _alpha_text(c.project()), label=_("Seuil α")),
+        "correction": c.field(
+            "plan-correction",
+            lambda: c.project().plan.correction,
+            label=_("Correction pour comparaisons multiples"),
+        ),
+        "sample_size": c.field(
+            "plan-sample",
+            lambda: c.project().plan.sample_size,
+            label=_("Justification de la taille d'échantillon"),
+        ),
+        "data_origin": c.field(
+            "plan-origin", lambda: c.project().plan.data_origin, label=_("Origine des données")
+        ),
+        "data_status": c.field(
+            "plan-status",
+            lambda: c.project().plan.data_status,
+            label=_("État des données quand le plan a été écrit (déclaré par l'équipe)"),
+        ),
     }
 
     def changed(name: str):
@@ -586,14 +609,16 @@ def _form(project: Project, prepared: PreparedData | None) -> None:
 def _freeze(project: Project) -> None:
     notebook = nb.open_notebook(project, c.project_path())
     pn.freeze(notebook, project, _prepared(), _today())
-    nb.save_notebook(notebook, nb.notebook_path(c.project_path()))
+    if not c.save_notebook(notebook, "plan-freeze", action=_("Figer le plan")):
+        raise _NotSaved
 
 
 def _clear(project: Project) -> None:
     notebook = nb.open_notebook(project, c.project_path())
     pn.clear(notebook, project)
-    if nb.notebook_path(c.project_path()).is_file():
-        nb.save_notebook(notebook, nb.notebook_path(c.project_path()))
+    is_file = nb.notebook_path(c.project_path()).is_file()
+    if is_file and not c.save_notebook(notebook, "plan-clear", action=_("Confirmer le retrait")):
+        raise _NotSaved
     st.session_state.pop(CLEARING, None)
     for key in ("plan-alpha", "plan-correction", "plan-sample", "plan-origin", "plan-status"):
         st.session_state.pop(key, None)

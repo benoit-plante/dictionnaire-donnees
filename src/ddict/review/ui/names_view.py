@@ -15,7 +15,6 @@ import pandas as pd
 import streamlit as st
 
 from ddict.i18n import N_, Texts, _
-from ddict.project import save_project
 from ddict.project.model import Project
 from ddict.review import names
 from ddict.review.logic import ReviewError
@@ -62,7 +61,8 @@ def _take_earlier_wave() -> None:
     except ReviewError as error:
         st.session_state.message = ("error", str(error), key)
         return
-    save_project(project, c.project_path())
+    if not c.save(key, action=_("Reprendre les noms")):
+        return
     path = write_wave_report(project, report, c.project_path())
     lines = [*wave_summary(report), _("Rapport des écarts : {name}").format(name=path.name)]
     st.session_state.message = ("success", " ".join(lines), key)
@@ -97,7 +97,8 @@ def _save_table(rows: list[names.NameRow], shown: list[str], table_key: str) -> 
     except ReviewError as error:
         st.session_state.message = ("error", str(error), key)
         return
-    save_project(c.project(), c.project_path())
+    if not c.save(key, action=_("Noms : {n} décidés").format(n=n)):
+        return
     st.session_state.pop(table_key, None)
     st.session_state.pop(PREFILL, None)
     st.session_state.message = ("success", _("{n} noms enregistrés.").format(n=n), key)
@@ -115,7 +116,8 @@ def _save_stems(rows: list[tuple]) -> None:
     except ReviewError as error:
         st.session_state.message = ("error", str(error), key)
         return
-    save_project(c.project(), c.project_path())
+    if not c.save(key, action=_("Enregistrer les noms de base")):
+        return
     st.session_state.pop(STEMS, None)
     st.session_state.message = ("success", _("{n} noms de base enregistrés.").format(n=n), key)
 
@@ -126,13 +128,21 @@ def _settings(project: Project) -> None:
     with st.expander(_("Réglages de nommage"), expanded=not started):
         st.text_input(
             _("Marque de vague (vide s'il n'y en a pas)"),
-            key=c.field(WAVE, lambda: c.project().settings.naming.wave or ""),
+            key=c.field(
+                WAVE,
+                lambda: c.project().settings.naming.wave or "",
+                label=_("Marque de vague (vide s'il n'y en a pas)"),
+            ),
             placeholder="t2",
         )
         st.radio(
             _("Place de la marque"),
             list(POSITIONS),
-            key=c.field(POSITION, lambda: c.project().settings.naming.position),
+            key=c.field(
+                POSITION,
+                lambda: c.project().settings.naming.position,
+                label=_("Place de la marque"),
+            ),
             format_func=POSITIONS.__getitem__,
             horizontal=True,
         )
@@ -140,7 +150,11 @@ def _settings(project: Project) -> None:
             _("Longueur maximale des noms"),
             min_value=8,
             max_value=64,
-            key=c.field(LENGTH, lambda: c.project().settings.naming.max_length),
+            key=c.field(
+                LENGTH,
+                lambda: c.project().settings.naming.max_length,
+                label=_("Longueur maximale des noms"),
+            ),
             help=_("32, la limite de Stata, convient à SPSS, R et Stata."),
         )
     # One action (v0.16, finding 9): the settings are saved, then the rules propose.

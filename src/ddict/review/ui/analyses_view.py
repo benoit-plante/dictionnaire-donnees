@@ -365,7 +365,8 @@ def _add(project: Project, prepared: PreparedData, asked: tuple, result) -> None
         notebook = nb.open_notebook(project, path)
         entry = nb.add(notebook, project, result, edits=apa_view.edits(project, prepared, result,
                                                                       asked))  # fmt: skip
-        nb.save_notebook(notebook, nb.notebook_path(path))
+        if not c.save_notebook(notebook, "analysis-add", action=_("Ajouter au carnet")):
+            return
     except (OSError, nb.NotebookError) as error:
         text = nb.reason_text(error) if isinstance(error, nb.NotebookError) else str(error)
         st.session_state.message = ("error", text, "analysis-add")

@@ -14,7 +14,6 @@ import streamlit as st
 from ddict import glossary
 from ddict.i18n import N_, Texts, _
 from ddict.io import ReadError
-from ddict.project import save_project
 from ddict.project.model import Project
 from ddict.review.ui import common as c
 from ddict.review.ui import dialog, glossary_view
@@ -75,7 +74,8 @@ def _read(replace: bool) -> None:
             "error", _("Impossible de lire le questionnaire : {detail}").format(detail=error), key
         )
         return
-    save_project(project, c.project_path())
+    if not c.save(key, action=_("Lire le questionnaire")):
+        return
     st.session_state[FIELD] = ""
     text = _("Questionnaire lu.")
     if removed:

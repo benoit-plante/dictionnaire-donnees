@@ -95,7 +95,11 @@ def _items(project: Project, group_id: str) -> None:
         _("Items inversés confirmés"),
         members,
         placeholder=_("Aucun item inversé"),
-        key=c.field(key, lambda: list(logic.group(c.project(), group_id).reverse_items)),
+        key=c.field(
+            key,
+            lambda: list(logic.group(c.project(), group_id).reverse_items),
+            label=_("Items inversés confirmés"),
+        ),
     )
     fields = (prefix, key) if group.kind == "scale" else (key,)
     c.button(
@@ -177,46 +181,59 @@ def _scoring(project: Project, group_id: str) -> None:
         _("Items du score"),
         members,
         placeholder=_("Choisir les items"),
-        key=c.field(keys["items"], lambda: list(current("items", []))),
+        key=c.field(keys["items"], lambda: list(current("items", [])), label=_("Items du score")),
     )
     st.radio(
         _("Calcul"),
         list(w.AGGREGATIONS),
         format_func=w.AGGREGATIONS.__getitem__,
         horizontal=True,
-        key=c.field(keys["how"], lambda: current("aggregation", None)),
+        key=c.field(keys["how"], lambda: current("aggregation", None), label=_("Calcul")),
     )
     left, middle, right = st.columns(3)
     left.number_input(
         _("Minimum de l'échelle"),
         **number,
-        key=c.field(keys["min"], lambda: bound(current("scale_min", None))),
+        key=c.field(
+            keys["min"], lambda: bound(current("scale_min", None)), label=_("Minimum de l'échelle")
+        ),
     )
     middle.number_input(
         _("Maximum de l'échelle"),
         **number,
-        key=c.field(keys["max"], lambda: bound(current("scale_max", None))),
+        key=c.field(
+            keys["max"], lambda: bound(current("scale_max", None)), label=_("Maximum de l'échelle")
+        ),
     )
     right.number_input(
         _("Items répondus, au minimum"),
         min_value=0,
         step=1,
-        key=c.field(keys["least"], least),
+        key=c.field(keys["least"], least, label=_("Items répondus, au minimum")),
         help=_("0 : le score exige tous les items."),
     )
     st.radio(
         _("Somme avec des items manquants"),
         list(w.MISSING_RULES),
         format_func=lambda r: w.MISSING_RULES[r].format(n="N"),
-        key=c.field(keys["rule"], rule),
+        key=c.field(keys["rule"], rule, label=_("Somme avec des items manquants")),
         help=_(
             "Seulement pour une somme qui accepte des items manquants : la règle du "
             "manuel de l'instrument, avec la même source."
         ),
     )
-    st.text_input(_("Nom du score"), key=c.field(keys["name"], lambda: current("score_name", "")))
-    st.text_input(_("Source"), key=c.field(keys["source"], lambda: current("source", "")))
-    st.text_area(_("Note"), key=c.field(keys["note"], lambda: current("note", "")), height=68)
+    st.text_input(
+        _("Nom du score"),
+        key=c.field(keys["name"], lambda: current("score_name", ""), label=_("Nom du score")),
+    )
+    st.text_input(
+        _("Source"), key=c.field(keys["source"], lambda: current("source", ""), label=_("Source"))
+    )
+    st.text_area(
+        _("Note"),
+        key=c.field(keys["note"], lambda: current("note", ""), label=_("Note")),
+        height=68,
+    )
     c.button(
         _("Enregistrer la cotation"),
         f"save-scoring-{group_id}",
@@ -259,7 +276,11 @@ def _prefix(project: Project, group_id: str) -> None:
         )
     st.text_input(
         _("Préfixe des noms de ses items"),
-        key=c.field(key, lambda: logic.group(c.project(), group_id).name_prefix.value or ""),
+        key=c.field(
+            key,
+            lambda: logic.group(c.project(), group_id).name_prefix.value or "",
+            label=_("Préfixe des noms de ses items"),
+        ),
         help=_(
             "Le sigle de l'échelle, en minuscules (k6, stai…) : ses items s'appelleront "
             "k6_1, k6_2… Donné par vous, jamais par l'IA."
@@ -276,8 +297,13 @@ def _instrument_and_text(project: Project, group_id: str) -> None:
         return getattr(current, part) if current else ""
 
     fields = [f"instrument-{group_id}", f"instrument-source-{group_id}"]
-    st.text_input(_("Instrument"), key=c.field(fields[0], lambda: instrument("value")))
-    st.text_input(_("Source de l'instrument"), key=c.field(fields[1], lambda: instrument("source")))
+    st.text_input(
+        _("Instrument"), key=c.field(fields[0], lambda: instrument("value"), label=_("Instrument"))
+    )
+    st.text_input(
+        _("Source de l'instrument"),
+        key=c.field(fields[1], lambda: instrument("source"), label=_("Source de l'instrument")),
+    )
     omit = None
     if project.questionnaire is not None:
         omit = f"omit-text-{group_id}"
@@ -287,7 +313,14 @@ def _instrument_and_text(project: Project, group_id: str) -> None:
                 "Ne pas reproduire le texte des questions de ce groupe dans le codebook "
                 "(instrument protégé par le droit d'auteur)"
             ),
-            key=c.field(omit, lambda: logic.group(c.project(), group_id).omit_question_text),
+            key=c.field(
+                omit,
+                lambda: logic.group(c.project(), group_id).omit_question_text,
+                label=_(
+                    "Ne pas reproduire le texte des questions de ce groupe dans le codebook "
+                    "(instrument protégé par le droit d'auteur)"
+                ),
+            ),
         )
         st.write(
             _(

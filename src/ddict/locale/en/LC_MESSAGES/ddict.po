@@ -874,6 +874,13 @@ msgstr "This score name is already another group's."
 msgid "Ce nom n'attend plus de décision."
 msgstr "This name no longer waits for a decision."
 
+msgid ""
+"Ce projet a été modifié ailleurs depuis que vous l'avez ouvert (autre onglet, autre personne ou "
+"ligne de commande)."
+msgstr ""
+"This project was changed elsewhere since you opened it (another tab, another person or the "
+"command line)."
+
 #, python-brace-format
 msgid "Ce sigle n'attend plus de décision : {term}."
 msgstr "This acronym no longer waits for a decision: {term}."
@@ -1707,6 +1714,9 @@ msgstr "Decision"
 msgid "Décision impossible : {detail}"
 msgstr "Decision impossible: {detail}"
 
+msgid "Décision à refaire : elle n'a pas été enregistrée avant le rechargement."
+msgstr "Decision to make again: it was not saved before the reload."
+
 msgid "Déclaration d'intégrité"
 msgstr "Statement of integrity"
 
@@ -1726,6 +1736,10 @@ msgstr "Define {term}"
 
 msgid "Définition"
 msgstr "Definition"
+
+#, python-brace-format
+msgid "Définition de {term}"
+msgstr "Definition of {term}"
 
 #, python-brace-format
 msgid "Déjà au carnet : {id}"
@@ -1978,6 +1992,9 @@ msgstr "Window closed: stopping the tool."
 #, python-brace-format
 msgid "Fenêtre impossible ({error}) : ouverture dans le navigateur."
 msgstr "No window ({error}): opening in the browser."
+
+msgid "Fermer"
+msgstr "Close"
 
 msgid "Fichier"
 msgstr "File"
@@ -3742,6 +3759,10 @@ msgid "Niveaux de mesure"
 msgstr "Measure levels"
 
 #, python-brace-format
+msgid "Niveaux de mesure : {n} décidés"
+msgstr "Measurement levels: {n} decided"
+
+#, python-brace-format
 msgid "Niveaux de mesure décidés : {n}."
 msgstr "Measure levels decided: {n}."
 
@@ -3801,6 +3822,10 @@ msgstr ""
 " `{copy}`, or on the database after the command file, which renames first."
 
 #, python-brace-format
+msgid "Noms : {n} décidés"
+msgstr "Names: {n} decided"
+
+#, python-brace-format
 msgid "Noms de base des questions ({n})"
 msgstr "Base names of the questions ({n})"
 
@@ -3827,6 +3852,12 @@ msgstr "No"
 #, python-brace-format
 msgid "Non documenté : {gaps}."
 msgstr "Not documented: {gaps}."
+
+msgid "Non enregistré : le carnet a été modifié ailleurs (voir en haut de la page)."
+msgstr "Not saved: the notebook was changed elsewhere (see the top of the page)."
+
+msgid "Non enregistré : le projet a été modifié ailleurs (voir en haut de la page)."
+msgstr "Not saved: the project was changed elsewhere (see the top of the page)."
 
 msgid ""
 "Non lus : les figures et les images, les zones de texte, les en-têtes et pieds de page, les notes"
@@ -4532,11 +4563,17 @@ msgstr ""
 msgid "Rattacher à"
 msgstr "Link to"
 
+msgid "Recalcul du carnet"
+msgstr "Recomputing the notebook"
+
 msgid "Recalcul du carnet…"
 msgstr "Recomputing the notebook…"
 
 msgid "Recalculer et lister les analyses du carnet, avec ce qui a changé."
 msgstr "Recompute and list the notebook's analyses, with what changed."
+
+msgid "Recharger le projet"
+msgstr "Reload the project"
 
 msgid "Recodage"
 msgstr "Recoding"
@@ -5878,6 +5915,13 @@ msgstr "See what would be sent"
 msgid "Voir exactement ce qui serait envoyé (rien n'est envoyé)"
 msgstr "See exactly what would be sent (nothing is sent)"
 
+msgid "Votre dernière décision n'est pas enregistrée."
+msgstr "Your last decision is not saved."
+
+#, python-brace-format
+msgid "Votre décision : {decision}"
+msgstr "Your decision: {decision}"
+
 msgid "Votre saisie non enregistrée est reprise dans ses champs."
 msgstr "What you typed and did not save is back in its fields."
 
@@ -6525,6 +6569,9 @@ msgstr "nominal (by default) or ordinal."
 
 msgid "nominal, ordinal ou echelle."
 msgstr "nominal, ordinal or scale."
+
+msgid "non"
+msgstr "no"
 
 msgid "non documenté"
 msgstr "not documented"
@@ -7898,6 +7945,13 @@ msgid ""
 msgstr ""
 "\"Not documented\" means unknown: do not guess it. Quote no threshold, range or instrument absent"
 " from this document."
+
+msgid ""
+"« Recharger le projet » lit le projet tel qu'il est maintenant ; votre décision restera affichée "
+"pour que vous la refassiez."
+msgstr ""
+"“Reload the project” reads the project as it is now; your decision stays shown so that you can "
+"make it again."
 
 msgid "« ddict resultats » s'appelle maintenant « ddict article »."
 msgstr "“ddict results” is now called “ddict article”."

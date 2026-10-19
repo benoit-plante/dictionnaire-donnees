@@ -37,7 +37,8 @@ def _glossary_entry(project: Project, item) -> None:
         return "" if current is None or current.status == "rejected" else current.meaning
 
     def draw() -> None:
-        st.text_input(_("Définition"), key=c.field(input_key, start))
+        label = _("Définition de {term}").format(term=term)
+        st.text_input(_("Définition"), key=c.field(input_key, start, label=label))
 
     shown = str(st.session_state.get(input_key, item.meaning)).strip()
     c.decision_card(
@@ -89,8 +90,10 @@ def page(project: Project) -> None:
     st.subheader(_("Ajouter un sigle"))
     with st.form("form-glossary-add", border=False):
         c1, c2 = st.columns([1, 3])
-        c1.text_input(_("Sigle"), key=c.field(NEW_TERM, str))
-        c2.text_input(_("Définition"), key=c.field("glossary-new-meaning", str))
+        c1.text_input(_("Sigle"), key=c.field(NEW_TERM, str, label=_("Sigle")))
+        c2.text_input(
+            _("Définition"), key=c.field("glossary-new-meaning", str, label=_("Définition"))
+        )
         c.button(
             _("Ajouter"),
             "glossary-add",

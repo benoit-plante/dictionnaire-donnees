@@ -263,14 +263,14 @@ def page(project: Project) -> None:
     st.radio(
         _("Version"),
         list(KINDS),
-        key=c.field(KIND, lambda: "final"),
+        key=c.field(KIND, lambda: "final", label=_("Version")),
         format_func=KINDS.__getitem__,
     )
     kind = st.session_state[KIND]
     st.segmented_control(
         _("Langue du codebook"),
         list(i18n.LANGUAGES),
-        key=c.field(LANGUAGE, i18n.language),
+        key=c.field(LANGUAGE, i18n.language, label=_("Langue du codebook")),
         format_func=i18n.LANGUAGES.__getitem__,
         help=_(
             "Pour les en-têtes, les notes et les commentaires des fichiers de commandes. Ce que "
@@ -286,6 +286,7 @@ def page(project: Project) -> None:
             key=c.field(
                 OMIT,
                 lambda: [g.group_id for g in c.project().groups if g.omit_question_text],
+                label=_("Groupes dont le texte des questions n'est pas reproduit"),
             ),
             help=_(
                 "Pour un instrument protégé par le droit d'auteur : le codebook donne la "
