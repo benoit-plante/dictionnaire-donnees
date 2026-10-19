@@ -3,7 +3,7 @@ options, its conditions checked before the computation, its result, and its repo
 script, as `ddict analyser` writes them.
 
 The database is read in memory for the session, never written in the project (D-070); only
-the last analysis run is kept, in memory too (D-078). The local model may propose analyses
+the last analysis run is kept, in memory too (D-078). The AI may propose analyses
 (step 7, `advice_view`): a person takes them up or not.
 """
 

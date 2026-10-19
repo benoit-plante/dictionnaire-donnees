@@ -120,7 +120,7 @@ def test_add_the_questionnaire_from_the_ai_page(sleep):
 
 @pytest.mark.allow_hosts(["127.0.0.1"])
 def test_choose_the_model_from_the_advice(sleep):
-    _go(_open(sleep, "analyses"), "go-ai-advice", "IA locale")
+    _go(_open(sleep, "analyses"), "go-ai-advice", "IA")
 
 
 @pytest.mark.allow_hosts(["127.0.0.1"])

@@ -1,7 +1,8 @@
-"""The local model's advice on the Analyses page (v0.9, step 7, D-073, D-079): optional; an
-objective written by the team, sent with the catalogue and the variables (metadata only);
-proposals of analyses of the catalogue, checked against the codebook, which a person takes
-up or not. Nothing is computed until "Lancer l'analyse" is clicked.
+"""The AI's advice on the Analyses page (v0.9, step 7, D-073, D-079; through an API key since
+v0.18): optional; an objective written by the team, sent with the catalogue and the
+variables (metadata only, D-136), and only when the project allows it (D-138); proposals of
+analyses of the catalogue, checked against the codebook, which a person takes up or not.
+Nothing is computed until "Lancer l'analyse" is clicked.
 
 Proposals stay in memory; the exchange is kept next to the project, like every exchange
 with the model.
@@ -14,17 +15,19 @@ from datetime import datetime
 
 import streamlit as st
 
+from ddict import ai_settings
 from ddict.analysis import conditions
 from ddict.analysis.catalogue import CATALOGUE, ROLES, TITLES
 from ddict.i18n import _
 from ddict.llm.advise import (
+    ADVICE_API_PROMPT_VERSION,
+    ADVICE_PROMPT_VERSION,
     MAX_OBJECTIVE_CHARS,
     AdviceError,
     Proposal,
     build_advice_block,
     method_text,
 )
-from ddict.llm.defaults import DEFAULT_ENDPOINT
 from ddict.project.model import Project
 from ddict.review.ui import ai_view
 from ddict.review.ui import common as c
@@ -37,10 +40,11 @@ ADVICE = "advice"  # (objective, proposals) or None
 ERROR = "advice-error"
 
 
-def _model() -> tuple[str, str]:
-    """The model chosen on the local AI page, or the recommended one."""
-    endpoint = str(st.session_state.get(ai_view.ENDPOINT) or DEFAULT_ENDPOINT).strip()
-    return endpoint, st.session_state.get(ai_view.MODEL) or ai_view.RECOMMENDED
+def _version() -> str:
+    """The prompt the saved settings send: the whole message to Anthropic (v0.18, B3)."""
+    if ai_settings.load().protocol == "anthropic":
+        return ADVICE_API_PROMPT_VERSION
+    return ADVICE_PROMPT_VERSION
 
 
 def _start() -> None:
@@ -77,19 +81,13 @@ def take_up(project: Project, proposal: Proposal) -> None:
 
 
 def _ask(project: Project, objective: str) -> None:
+    from ddict.llm import connect
     from ddict.llm.advise import advise
-    from ddict.llm.client import EndpointRefused, LocalModelClient
 
-    endpoint, model = _model()
     st.session_state.pop(ADVICE, None)
-    try:
-        client = LocalModelClient(model, endpoint=endpoint)
-    except EndpointRefused:
-        st.session_state[ERROR] = _(
-            "Adresse refusée : seul un serveur sur cet ordinateur est permis."
-        )
-        return
-    with client, st.spinner(_("Le modèle local réfléchit ; cela peut prendre quelques minutes…")):
+    client = connect.client_for(project)  # ready() said it can
+    endpoint, model = client.endpoint, client.model
+    with client, st.spinner(_("Le modèle réfléchit…")):
         found = advise(
             project,
             client,
@@ -133,10 +131,10 @@ def _show(project: Project, proposals: tuple[Proposal, ...]) -> None:
 
 def panel(project: Project) -> None:
     """The optional box; absent when the AI option is not installed."""
-    if importlib.util.find_spec("httpx") is None:
+    if importlib.util.find_spec("httpx") is None or importlib.util.find_spec("keyring") is None:
         return
     with st.expander(
-        _("Demander une proposition à l'IA locale (facultatif)"),
+        _("Demander une proposition à l'IA (facultatif)"),
         expanded=bool(st.session_state.get(ADVICE) or st.session_state.get(ERROR)),
     ):
         st.text_area(
@@ -145,16 +143,19 @@ def panel(project: Project) -> None:
             max_chars=MAX_OBJECTIVE_CHARS,
             placeholder=_("Par exemple : comparer le bien-être entre les deux groupes de l'étude."),
         )
-        model = _model()[1]
+        model = ai_settings.load().model or "—"
         st.caption(
             _(
-                "Le modèle {model}, sur cet ordinateur, reçoit cet objectif tel quel, le catalogue "
-                "et la liste des variables (nom, libellé, niveau de mesure, groupe) : aucune "
-                "donnée, aucune statistique. N'écrivez aucune donnée de participant dans "
-                "l'objectif. Le modèle se choisit sur la page IA locale."
+                "Le modèle {model} reçoit cet objectif tel quel, le catalogue et la liste des "
+                "variables (nom, libellé, niveau de mesure, groupe) : aucune donnée, aucune "
+                "statistique. N'écrivez aucune donnée de participant dans l'objectif. Le "
+                "modèle se choisit sur la page « IA »."
             ).format(model=model)
         )
-        c.go_button(_("Choisir le modèle (IA locale)"), "go-ai-advice", "ai")
+        blocked = ai_view.ready(project)
+        if blocked:
+            st.info(blocked)
+        c.go_button(_("Réglages de l'IA"), "go-ai-advice", "ai")
         objective = str(st.session_state.get(GOAL) or "")
         left, right = st.columns(2)
         left.button(_("Voir ce qui serait envoyé"), key="advice-show", on_click=_toggle_preview)
@@ -162,20 +163,20 @@ def panel(project: Project) -> None:
             _("Demander une proposition"),
             key="advice-ask",
             type="primary",
-            disabled=not objective.strip(),
+            disabled=not objective.strip() or blocked is not None,
             on_click=_start,
         )
         if st.session_state.get(SHOWN):
             try:
-                block = build_advice_block(project, objective)
+                block = build_advice_block(project, objective, _version())
             except AdviceError as error:
                 st.info(advice_error_text(error))
             else:
                 st.code(block.messages[1]["content"], language="json")
-        if st.session_state.pop(START, False):
+        if st.session_state.pop(START, False) and blocked is None:
             st.session_state.pop(ERROR, None)
             try:
-                build_advice_block(project, objective)
+                build_advice_block(project, objective, _version())
             except AdviceError as error:
                 st.session_state[ERROR] = advice_error_text(error)
             else:

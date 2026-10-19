@@ -11,7 +11,7 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 import ddict.llm.client as client_module
-from ddict import bench
+from ddict import ai_settings, bench
 from ddict.cli import main
 from ddict.llm.client import LocalModelClient
 from ddict.project import save_project
@@ -194,7 +194,17 @@ def test_command(server, tmp_path, capsys):
 
 
 @pytest.mark.allow_hosts(["127.0.0.1"])
-def test_ai_page(server, fictional_files, tmp_path):
+def test_ai_page(fictional_files, tmp_path, monkeypatch):
+    """v0.18: through the settings of the AI page, after a confirmation (it is billed)."""
+    fake = Server()
+    real = client_module.OpenAICompatibleClient
+
+    class Client(real):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, transport=httpx.MockTransport(fake), **kwargs)
+
+    monkeypatch.setattr(client_module, "OpenAICompatibleClient", Client)
+    ai_settings.save(ai_settings.AiSettings("openai", "https://ia.universite.example/v1", MODEL))
     shutil.copy(fictional_files["etude-sommeil.sav"], tmp_path / "etude-sommeil.sav")
     project, path = profile_database(tmp_path / "etude-sommeil.sav")
     save_project(project, path)
@@ -205,6 +215,12 @@ def test_ai_page(server, fictional_files, tmp_path):
     app.run()
     assert not app.exception, app.exception
     app.button(key="bench-run").click().run()
+    assert not app.exception, app.exception
+    assert any("facturé sur votre clé" in w.value for w in app.warning)  # asked first
+    app.button(key="bench-cancel").click().run()
+    assert not list(tmp_path.glob("banc-essai-*.md"))
+    app.button(key="bench-run").click().run()
+    app.button(key="bench-confirm").click().run()
     assert not app.exception, app.exception
     assert any("Rapport écrit à côté du projet" in s.value for s in app.success)
     assert len(list(tmp_path.glob("banc-essai-*.md"))) == 1

@@ -37,7 +37,7 @@ SECTIONS: dict[str, tuple[PageInfo, ...]] = {
         PageInfo("method", N_("Méthode"), ":material/edit_note:"),
         PageInfo("verify", N_("Vérifier"), ":material/fact_check:"),
     ),
-    N_("Réglages"): (PageInfo("ai", N_("IA locale"), ":material/smart_toy:"),),
+    N_("Réglages"): (PageInfo("ai", N_("IA"), ":material/smart_toy:"),),
 }
 PAGES = {page.mode: page for pages in SECTIONS.values() for page in pages}
 FIRST = "base"  # a project opens on its database (v0.3)

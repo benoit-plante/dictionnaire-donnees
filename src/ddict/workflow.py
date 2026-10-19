@@ -691,6 +691,23 @@ def failure_advice(detail: str | None, endpoint: str, model: str) -> str | None:
             "Le modèle n'a pas répondu à temps. Sur un ordinateur sans carte graphique, "
             "réduisez la taille des blocs."
         )
+    # Through an API key (v0.18).
+    if detail == "auth":
+        return _(
+            "La clé d'API est refusée ou absente : enregistrez-la sur la page « IA » "
+            "(ou par « ddict ia cle »)."
+        )
+    if detail == "key_store":
+        return _("Le gestionnaire d'identifiants de Windows n'a pas donné la clé d'API.")
+    if detail == "bad_request":
+        return _(
+            "Le service a refusé la demande ; son explication est gardée dans le dossier des "
+            "envois, à côté du projet."
+        )
+    if detail == "rate_limit":
+        return _("Trop de demandes pour cette clé : réessayez dans quelques minutes.")
+    if detail == "overloaded":
+        return _("Le service est surchargé : réessayez plus tard.")
     return None
 
 

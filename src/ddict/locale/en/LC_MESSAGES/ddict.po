@@ -239,6 +239,25 @@ msgstr "**What changed since the last confirmed computation:**"
 msgid "**Chaque valeur** : le nom de son nouveau groupe, ou « manquante »."
 msgstr "**Each value**: the name of its new group, or “missing”."
 
+#, python-brace-format
+msgid ""
+"**Chez Anthropic**, pour l'interface de programmation (API), les demandes et les réponses sont "
+"supprimées dans les 30 jours, sauf exceptions : une entente « zéro conservation », le respect de "
+"la politique d'usage (un contenu signalé peut être gardé jusqu'à 2 ans), une obligation légale. "
+"Source : [politique de conservation d'Anthropic]({url}), lue le {day}."
+msgstr ""
+"**At Anthropic**, for the programming interface (API), requests and answers are deleted within 30"
+" days, with exceptions: a \"zero data retention\" agreement, the enforcement of the usage policy "
+"(flagged content may be kept up to 2 years), a legal obligation. Source: [Anthropic's retention "
+"policy]({url}), read on {day}."
+
+msgid ""
+"**Chez le serveur choisi** : sa durée de conservation est celle de l'établissement qui l'offre ; "
+"demandez-la-lui."
+msgstr ""
+"**At the chosen server**: how long it keeps data is up to the institution that offers it; ask "
+"them."
+
 msgid "**Doublons** (une réponse qui en répète une antérieure)"
 msgstr "**Duplicates** (an answer that repeats an earlier one)"
 
@@ -301,15 +320,6 @@ msgstr "1 project followed."
 
 msgid "1 retenue"
 msgstr "1 retained"
-
-msgid ""
-"1. Installez Ollama depuis [ollama.com](https://ollama.com) (bouton « Download for Windows »), "
-"puis lancez-le : son icône apparaît près de l'horloge.\n"
-"2. Téléchargez le modèle recommandé, une seule fois (environ 4,7 Go), dans PowerShell :"
-msgstr ""
-"1. Install Ollama from [ollama.com](https://ollama.com) (\"Download for Windows\" button), then "
-"start it: its icon appears next to the clock.\n"
-"2. Download the recommended model, once (about 4.7 GB), in PowerShell:"
 
 msgid "32, la limite de Stata, convient à SPSS, R et Stata."
 msgstr "32, Stata's limit, suits SPSS, R and Stata."
@@ -382,8 +392,8 @@ msgstr "Home"
 msgid "Accès public aux données"
 msgstr "Open or publicly available data"
 
-msgid "Adresse (Ollama par défaut)"
-msgstr "Address (Ollama by default)"
+msgid "Adresse"
+msgstr "Address"
 
 #, python-brace-format
 msgid "Adresse : {endpoint}"
@@ -391,9 +401,6 @@ msgstr "Address: {endpoint}"
 
 msgid "Adresse du serveur (défaut : celle des réglages de l'IA, sinon Anthropic)."
 msgstr "Address of the server (default: the one of the AI settings, else Anthropic)."
-
-msgid "Adresse du serveur local"
-msgstr "Local server address"
 
 #, python-brace-format
 msgid "Adresse du serveur local compatible OpenAI (défaut : Ollama, {default})."
@@ -403,8 +410,12 @@ msgstr "Address of the local OpenAI-compatible server (default: Ollama, {default
 msgid "Adresse refusée : seul un serveur sur cet ordinateur est permis ({detail})."
 msgstr "Address refused: only a server on this computer is allowed ({detail})."
 
-msgid "Adresse refusée : seul un serveur sur cet ordinateur est permis."
-msgstr "Address refused: only a server on this computer is allowed."
+msgid ""
+"Adresse refusée : une adresse en https:// est demandée (http:// n'est permis que pour cet "
+"ordinateur), sans identifiant ni paramètre."
+msgstr ""
+"Address refused: an https:// address is required (http:// is allowed for this computer only), "
+"without credentials or parameters."
 
 #, python-brace-format
 msgid ""
@@ -535,6 +546,9 @@ msgstr "Former name of “ddict article”, kept for this version."
 
 msgid "Annuler"
 msgstr "Cancel"
+
+msgid "Anthropic (par défaut)"
+msgstr "Anthropic (default)"
 
 #, python-brace-format
 msgid "Aperçu : {n} blocs de messages, rien n'a été envoyé."
@@ -678,6 +692,9 @@ msgstr "None"
 
 msgid "Aucune analyse retenue dans le carnet."
 msgstr "No retained analysis in the notebook."
+
+msgid "Aucune clé enregistrée pour cette adresse."
+msgstr "No key recorded for this address."
 
 #, python-brace-format
 msgid "Aucune clé enregistrée pour {endpoint}."
@@ -925,6 +942,9 @@ msgstr "This project file cannot be found."
 msgid "Ce n'est pas une clé (espaces ou plusieurs lignes) : rien n'est enregistré."
 msgstr "This is not a key (spaces or several lines): nothing is recorded."
 
+msgid "Ce n'est pas une clé (vide, avec des espaces ou sur plusieurs lignes)."
+msgstr "This is not a key (empty, with spaces or on several lines)."
+
 msgid "Ce niveau n'attend plus de décision."
 msgstr "This level no longer waits for a decision."
 
@@ -948,9 +968,17 @@ msgstr "This project is now followed."
 msgid "Ce projet n'était pas suivi : {path}"
 msgstr "This project was not followed: {path}"
 
+msgid "Ce qui part"
+msgstr "What is sent"
+
 #, python-brace-format
 msgid "Ce sigle n'attend plus de décision : {term}."
 msgstr "This acronym no longer waits for a decision: {term}."
+
+msgid ""
+"Celle d'Anthropic par défaut. Pour le serveur d'IA d'une université, l'adresse qu'il donne, "
+"souvent terminée par /v1."
+msgstr "Anthropic's by default. For a university's AI server, the address it gives, often ending with /v1."
 
 msgid "Centrer le prédicteur et le modérateur"
 msgstr "Centre the predictor and the moderator"
@@ -1048,9 +1076,6 @@ msgstr "Choose the manuscript"
 
 msgid "Choisir le manuscrit…"
 msgstr "Choose the manuscript…"
-
-msgid "Choisir le modèle (IA locale)"
-msgstr "Choose the model (Local AI)"
 
 msgid "Choisir le questionnaire"
 msgstr "Choose the questionnaire"
@@ -1171,6 +1196,10 @@ msgid "Clé : {state}"
 msgstr "Key: {state}"
 
 #, python-brace-format
+msgid "Clé d'API : {state}."
+msgstr "API key: {state}."
+
+#, python-brace-format
 msgid ""
 "Clé d'API pour {endpoint}. Collez-la puis appuyez sur Entrée : rien ne s'affiche pendant la "
 "saisie, c'est normal."
@@ -1179,6 +1208,12 @@ msgstr "API key for {endpoint}. Paste it, then press Enter: nothing shows while 
 #, python-brace-format
 msgid "Clé effacée pour {endpoint}."
 msgstr "Key erased for {endpoint}."
+
+msgid "Clé effacée."
+msgstr "Key erased."
+
+msgid "Clé enregistrée dans le gestionnaire d'identifiants de Windows."
+msgstr "Key recorded in Windows' Credential Manager."
 
 msgid ""
 "Clé enregistrée dans le gestionnaire d'identifiants de Windows. Elle ne s'affichera jamais ; « "
@@ -1589,8 +1624,8 @@ msgstr ""
 msgid "Demander une proposition"
 msgstr "Ask for a proposal"
 
-msgid "Demander une proposition à l'IA locale (facultatif)"
-msgstr "Ask the local AI for a proposal (optional)"
+msgid "Demander une proposition à l'IA (facultatif)"
+msgstr "Ask the AI for a proposal (optional)"
 
 #, python-brace-format
 msgid "Dernier rapport : {name}"
@@ -1982,6 +2017,9 @@ msgstr "Save"
 msgid "Enregistrer l'étendue"
 msgstr "Save the range"
 
+msgid "Enregistrer la clé"
+msgstr "Record the key"
+
 msgid "Enregistrer la cotation"
 msgstr "Save the scoring"
 
@@ -1994,6 +2032,9 @@ msgstr "Save the recoding"
 msgid "Enregistrer les noms de base"
 msgstr "Save the base names"
 
+msgid "Enregistrer les réglages"
+msgstr "Save the settings"
+
 msgid "Enregistrer références et notes"
 msgstr "Save references and notes"
 
@@ -2003,6 +2044,9 @@ msgstr "Save {id}"
 
 msgid "Enregistrez d'abord la clé : ddict ia cle"
 msgstr "Record the key first: ddict ai key"
+
+msgid "Enregistrez d'abord les réglages de l'IA : adresse et modèle."
+msgstr "Save the AI settings first: address and model."
 
 #, python-brace-format
 msgid "Enregistré dans {path}."
@@ -2014,13 +2058,6 @@ msgstr "Saved."
 #, python-brace-format
 msgid "Ensemble ({n})"
 msgstr "All ({n})"
-
-msgid ""
-"Environ trois minutes avec un modèle de 7 milliards de paramètres et une carte graphique ; "
-"davantage sans. Changer de page arrête la mesure."
-msgstr ""
-"About three minutes with a 7-billion-parameter model and a graphics card; longer without. "
-"Changing pages stops the measurement."
 
 #, python-brace-format
 msgid "Erreur de fichier : {detail}"
@@ -2090,11 +2127,11 @@ msgid "Face au plan : {state}"
 msgstr "Against the plan: {state}"
 
 msgid ""
-"Facultatif : l'IA locale peut proposer les rattachements aux questions, puis des libellés et des "
-"descriptions ; chaque proposition attendra votre décision."
+"Facultatif : l'IA peut proposer les rattachements aux questions, puis des libellés et des "
+"descriptions, à partir des seules métadonnées ; chaque proposition attendra votre décision."
 msgstr ""
-"Optional: the local AI can propose the links to the questions, then labels and descriptions; each"
-" proposal will wait for your decision."
+"Optional: the AI can propose links to questions, then labels and descriptions, from metadata "
+"only; each proposal will wait for your decision."
 
 msgid ""
 "Facultative. Chaque proposition attend votre décision, et l'IA ne définit jamais un sigle. Ordre "
@@ -2219,6 +2256,13 @@ msgstr "Unknown format: {formats}. Formats: {known}."
 msgid "Gardée"
 msgstr "Kept"
 
+msgid ""
+"Gardée dans le gestionnaire d'identifiants de Windows, jamais dans le projet ni dans un fichier ;"
+" elle ne s'affichera plus."
+msgstr ""
+"Kept in Windows' Credential Manager, never in the project nor in a file; it will not be shown "
+"again."
+
 msgid "Glossaire"
 msgstr "Glossary"
 
@@ -2279,9 +2323,6 @@ msgstr "Hypotheses"
 
 msgid "IA"
 msgstr "AI"
-
-msgid "IA locale"
-msgstr "Local AI"
 
 msgid "IC 95 %"
 msgstr "95% CI"
@@ -2519,6 +2560,13 @@ msgstr "Sending the metadata of this project to the AI is now allowed."
 msgid "L'envoi à l'IA est déjà permis pour ce projet (depuis le {day})."
 msgstr "Sending to the AI is already allowed for this project (since {day})."
 
+msgid ""
+"L'envoi à l'IA n'est pas permis pour ce projet : cochez « Permettre l'envoi des métadonnées de ce"
+" projet à l'IA » dans la barre latérale. L'aperçu reste possible."
+msgstr ""
+"Sending to the AI is not allowed for this project: tick \"Allow the metadata of this project to "
+"be sent to the AI\" in the sidebar. The preview stays available."
+
 msgid "L'envoi à l'IA n'est plus permis pour ce projet ; l'aperçu des messages le reste."
 msgstr "Sending to the AI is no longer allowed for this project; previewing the messages still is."
 
@@ -2620,9 +2668,6 @@ msgstr ""
 msgid "L'outil ne propose aucun seuil : c'est un choix de l'équipe."
 msgstr "The tool proposes no threshold: it is the team's choice."
 
-msgid "L'outil ne télécharge jamais de modèle lui-même : c'est une étape d'installation, faite par vous."
-msgstr "The tool never downloads a model itself: that is an installation step, done by you."
-
 #, python-brace-format
 msgid "L'échantillon analysé compte {n} personnes."
 msgstr "The analysed sample includes {n} people."
@@ -2677,6 +2722,9 @@ msgstr ""
 
 msgid "La base, si elle n'est pas à côté du projet."
 msgstr "The database, if it is not next to the project."
+
+msgid "La clé d'API est refusée ou absente : enregistrez-la sur la page « IA » (ou par « ddict ia cle »)."
+msgstr "The API key is refused or missing: record it on the \"AI\" page (or with \"ddict ai key\")."
 
 msgid ""
 "La clé d'API et la connexion à l'IA : enregistrer la clé, l'oublier, tester ; permettre ou non "
@@ -2871,6 +2919,9 @@ msgstr "The variable, by its name."
 msgid "Lancer l'analyse"
 msgstr "Run the analysis"
 
+msgid "Lancer la mesure"
+msgstr "Start the measure"
+
 msgid ""
 "Lancer une analyse du catalogue sur la base, avec les décisions acceptées, et écrire son rapport "
 "et son script R à côté du projet."
@@ -2902,6 +2953,15 @@ msgstr "Table 1"
 
 msgid "Le Tableau 1 décrit l'échantillon ; il ne teste aucune hypothèse."
 msgstr "Table 1 describes the sample; it tests no hypothesis."
+
+#, python-brace-format
+msgid ""
+"Le banc envoie plusieurs dizaines de messages au service, tirés des bases fictives seulement. "
+"Chacun est facturé sur votre clé : de l'ordre de quelques cents avec {model}, davantage avec un "
+"modèle plus grand. Lancer la mesure ?"
+msgstr ""
+"The bench sends several dozen messages to the service, drawn from the fictional bases only. Each "
+"is billed on your key: a few cents with {model}, more with a larger model. Start the measure?"
 
 msgid "Le carnet"
 msgstr "The notebook"
@@ -3029,6 +3089,9 @@ msgid ""
 "règle."
 msgstr "The “Add a rule” form, above, is filled: give the reason, then add the rule."
 
+msgid "Le gestionnaire d'identifiants de Windows n'a pas donné la clé d'API."
+msgstr "Windows' Credential Manager did not give the API key."
+
 msgid "Le gestionnaire d'identifiants de Windows n'a pas donné la clé."
 msgstr "Windows' Credential Manager did not give the key."
 
@@ -3077,9 +3140,6 @@ msgstr ""
 "The model explained {pct}% of the variance of {outcome}, F({df1}, {df2}) = {f}, {p}, adjusted R² "
 "= {adj} (n = {n})."
 
-msgid "Le modèle local réfléchit ; cela peut prendre quelques minutes…"
-msgstr "The local model is thinking; this may take a few minutes…"
-
 #, python-brace-format
 msgid ""
 "Le modèle n'a pas donné de réponse valable ({detail}). Réessayez, ou choisissez l'analyse vous-"
@@ -3102,24 +3162,18 @@ msgstr ""
 "The model proposes a label and a description for each variable, from its metadata, the exact text"
 " of its question when the link is accepted, and the meaning of the accepted acronyms."
 
-msgid ""
-"Le modèle tourne sur cet ordinateur. Il ne reçoit jamais les réponses des participants : "
-"seulement des noms, des étiquettes, des proportions et, pour le rattachement, quelques questions "
-"candidates."
-msgstr ""
-"The model runs on this computer. It never receives the participants' answers: only names, labels,"
-" proportions and, for the links, a few candidate questions."
+msgid "Le modèle réfléchit…"
+msgstr "The model is thinking…"
 
 #, python-brace-format
 msgid ""
-"Le modèle {model}, sur cet ordinateur, reçoit cet objectif tel quel, le catalogue et la liste des"
-" variables (nom, libellé, niveau de mesure, groupe) : aucune donnée, aucune statistique. "
-"N'écrivez aucune donnée de participant dans l'objectif. Le modèle se choisit sur la page IA "
-"locale."
+"Le modèle {model} reçoit cet objectif tel quel, le catalogue et la liste des variables (nom, "
+"libellé, niveau de mesure, groupe) : aucune donnée, aucune statistique. N'écrivez aucune donnée "
+"de participant dans l'objectif. Le modèle se choisit sur la page « IA »."
 msgstr ""
-"The model {model}, on this computer, receives this objective as is, the catalogue and the list of"
-" variables (name, label, measure level, group): no data, no statistic. Do not write any "
-"participant data in the objective. The model is chosen on the Local AI page."
+"The model {model} receives this objective as written, the catalogue and the list of variables "
+"(name, label, level of measurement, group): no data, no statistic. Write no participant data in "
+"the objective. The model is chosen on the \"AI\" page."
 
 #, python-brace-format
 msgid ""
@@ -3128,6 +3182,10 @@ msgid ""
 msgstr ""
 "The model \"{model}\" cannot be found on the server. With Ollama, download it first: ollama pull "
 "{model}"
+
+#, python-brace-format
+msgid "Le modèle « {model} » n'est pas dans la liste."
+msgstr "The model \"{model}\" is not in the list."
 
 msgid "Le même chiffre que la barre de la barre latérale du projet."
 msgstr "The same figure as the bar in the project's sidebar."
@@ -3300,12 +3358,16 @@ msgstr "The expected direction was: {direction}."
 msgid "Le serveur a répondu par une erreur ({code})."
 msgstr "The server answered with an error ({code})."
 
-msgid "Le serveur local ne répond pas comme prévu."
-msgstr "The local server does not answer as expected."
-
 #, python-brace-format
 msgid "Le serveur {endpoint} ne répond pas. Ollama est-il lancé ?"
 msgstr "The server {endpoint} does not answer. Is Ollama running?"
+
+msgid ""
+"Le service a refusé la demande ; son explication est gardée dans le dossier des envois, à côté du"
+" projet."
+msgstr ""
+"The service refused the request; its explanation is kept in the exchange folder, next to the "
+"project."
 
 msgid "Le service est surchargé : réessayez plus tard."
 msgstr "The service is overloaded: try again later."
@@ -3603,6 +3665,10 @@ msgstr ""
 
 msgid "Les règles s'appliquent dans cet ordre :"
 msgstr "The rules apply in this order:"
+
+#, python-brace-format
+msgid "Les réglages n'ont pas pu être enregistrés : {detail}."
+msgstr "The settings could not be saved: {detail}."
 
 msgid "Les scores sont calculés comme décrit sous « Indices »."
 msgstr "The scores are computed as described under “Indices”."
@@ -3902,9 +3968,6 @@ msgstr "Model"
 msgid "Modèle choisi : {model} ({found})"
 msgstr "Model chosen: {model} ({found})"
 
-msgid "Modèle local"
-msgstr "Local model"
-
 msgid "Modèle statistique par hypothèse"
 msgstr "Statistical model for each hypothesis"
 
@@ -4117,6 +4180,15 @@ msgstr "Proposed names to validate: {n}"
 msgid "Non"
 msgstr "No"
 
+msgid ""
+"Non cochée par défaut. Cochée, les boutons d'IA peuvent envoyer les métadonnées du projet "
+"(questionnaire et codebook), jamais une réponse ni une statistique ; la case est enregistrée dans"
+" le projet, pour que vos collègues la voient."
+msgstr ""
+"Not ticked by default. Ticked, the AI buttons may send the project's metadata (questionnaire and "
+"codebook), never an answer nor a statistic; the box is saved in the project, so that your "
+"colleagues see it."
+
 #, python-brace-format
 msgid "Non documenté : {gaps}."
 msgstr "Not documented: {gaps}."
@@ -4169,6 +4241,9 @@ msgstr "New rank (1 is the first)."
 msgid "Nouveau recodage"
 msgstr "New recoding"
 
+msgid "Nouvelle clé d'API"
+msgstr "New API key"
+
 msgid "Nouvelle modalité"
 msgstr "New category"
 
@@ -4209,9 +4284,6 @@ msgstr "Observations used"
 msgid "Observations écartées"
 msgstr "Observations excluded"
 
-msgid "Ollama répond, mais aucun modèle n'est installé."
-msgstr "Ollama answers, but no model is installed."
-
 #, python-brace-format
 msgid "Option inconnue : {option}."
 msgstr "Unknown option: {option}."
@@ -4228,6 +4300,9 @@ msgstr "Origin"
 
 msgid "Origine des données"
 msgstr "Origin of the data"
+
+msgid "Oublier la clé"
+msgstr "Forget the key"
 
 msgid "Oui"
 msgstr "Yes"
@@ -4310,12 +4385,19 @@ msgstr "Simple slopes of {x}"
 msgid "Pentes simples de {x} selon {w}"
 msgstr "Simple slopes of {x} by {w}"
 
+msgid "Permettre l'envoi des métadonnées de ce projet à l'IA"
+msgstr "Allow the metadata of this project to be sent to the AI"
+
 msgid ""
 "Permettre l'envoi des métadonnées de ce projet à l'IA (jamais une réponse ni une statistique) ; "
 "non permis par défaut."
 msgstr ""
 "Allow the metadata of this project to be sent to the AI (never an answer nor a statistic); not "
 "allowed by default."
+
+#, python-brace-format
+msgid "Permis depuis le {day}."
+msgstr "Allowed since {day}."
 
 msgid "Personne n'est dans le sous-groupe."
 msgstr "Nobody is in the subgroup."
@@ -4374,6 +4456,9 @@ msgstr "Plan removed."
 msgid "Plan à figer"
 msgstr "Plan to freeze"
 
+msgid "Plus de réflexion coûte plus cher ; le banc dira si elle aide."
+msgstr "More thinking costs more; the bench will tell whether it helps."
+
 msgid ""
 "Plusieurs distributions ont été comparées par le test de Kruskal-Wallis ; la taille d'effet est "
 "ε²."
@@ -4399,6 +4484,9 @@ msgstr "Positive"
 msgid "Position"
 msgstr "Position"
 
+msgid "Pour Anthropic : claude-haiku-5-5 (le moins coûteux) ou claude-sonnet-5-5."
+msgstr "For Anthropic: claude-haiku-5-5 (the least costly) or claude-sonnet-5-5."
+
 msgid ""
 "Pour appliquer vos décisions à vos données dans SPSS ou R : libellés, étiquettes de valeurs, "
 "codes manquants et niveaux de mesure. Seulement ce qui est accepté, quelle que soit la version "
@@ -4412,12 +4500,11 @@ msgid ""
 "Pour choisir un modèle en connaissance de cause : sur les bases fictives de l'outil, dont on "
 "connaît les bonnes réponses, le banc mesure les rattachements justes, les libellés qui inventent "
 "peut-être (citation, seuil, nom d'instrument, sens d'un sigle, étendue, sens de codes) et la "
-"durée. Vos données ne sont pas utilisées, et aucun modèle n'est téléchargé."
+"durée. Vos données ne sont pas utilisées."
 msgstr ""
-"To choose a model knowingly: on the tool's fictional databases, whose right answers are known, "
-"the bench measures the correct links, the labels that may invent something (citation, threshold, "
-"instrument name, meaning of an acronym, range, meaning of codes) and the duration. Your data is "
-"not used, and no model is downloaded."
+"To choose a model knowingly: on the tool's fictional bases, whose right answers are known, the "
+"bench measures the right links, the labels that may invent (citation, threshold, instrument name,"
+" meaning of an acronym, range, meaning of codes) and the time taken. Your data are not used."
 
 msgid "Pour figer le plan"
 msgstr "To freeze the plan"
@@ -4694,6 +4781,9 @@ msgid ""
 msgstr ""
 "When the plan was written: before-creation, before-observation, before-access, before-analysis or"
 " after-analysis."
+
+msgid "Quelques minutes. Changer de page arrête la mesure."
+msgstr "A few minutes. Changing page stops the measure."
 
 msgid "Question"
 msgstr "Question"
@@ -5152,6 +5242,9 @@ msgstr "Rules alone"
 msgid "Rédiger"
 msgstr "Write"
 
+msgid "Réflexion du modèle"
+msgstr "Model's thinking"
+
 msgid "Référence"
 msgstr "Reference"
 
@@ -5168,11 +5261,17 @@ msgstr "References (one per line)"
 msgid "Réglages"
 msgstr "Settings"
 
-msgid "Réglages de l'IA locale"
-msgstr "Local AI settings"
+msgid "Réglages de cet ordinateur"
+msgstr "Settings of this computer"
+
+msgid "Réglages de l'IA"
+msgstr "AI settings"
 
 msgid "Réglages de nommage"
 msgstr "Naming settings"
+
+msgid "Réglages enregistrés."
+msgstr "Settings saved."
 
 msgid "Régler les conflits de noms"
 msgstr "Settle the name conflicts"
@@ -5329,8 +5428,14 @@ msgstr "Sensitive"
 msgid "Sensibles ({n})"
 msgstr "Sensitive ({n})"
 
+msgid "Serveur compatible OpenAI"
+msgstr "OpenAI-compatible server"
+
 msgid "Serveur local"
 msgstr "Local server"
+
+msgid "Service d'IA"
+msgstr "AI service"
 
 msgid "Seuil"
 msgstr "Threshold"
@@ -5359,8 +5464,30 @@ msgstr "Rule thresholds, not compared (“p < .05”): {n}."
 msgid "Seuils, croissants (une classe va de son seuil inclus au suivant exclu)"
 msgstr "Cuts, increasing (a class goes from its cut included to the next one excluded)"
 
-msgid "Seule une adresse de cet ordinateur est acceptée."
-msgstr "Only an address on this computer is accepted."
+msgid ""
+"Seulement des métadonnées : ce que disent le questionnaire et le codebook.\n"
+"\n"
+"- **Partent** : les noms des variables et de leurs voisines, les étiquettes des variables et des "
+"valeurs, les codes manquants déclarés, le texte des questions dont le rattachement est accepté, "
+"les sigles acceptés du glossaire, le type et le niveau de mesure, le nombre d'items et le préfixe"
+" d'un groupe ; pour la conseillère, l'objectif que vous écrivez et le catalogue des analyses.\n"
+"- **Ne partent jamais** : une réponse d'un participant, une statistique tirée des réponses "
+"(effectifs, proportions, manquants, minimum, maximum, moyenne, années), une valeur d'un texte "
+"libre ou d'un identifiant, le nom ou le chemin de la base, les notes de l'équipe.\n"
+"- **Seulement pour un projet qui le permet** : la case de la barre latérale, non cochée par "
+"défaut. L'aperçu de chaque message reste toujours possible."
+msgstr ""
+"Metadata only: what the questionnaire and the codebook say.\n"
+"\n"
+"- **Sent**: the names of the variables and of their neighbours, the labels of variables and "
+"values, the declared missing codes, the text of the questions whose link is accepted, the "
+"accepted acronyms of the glossary, the type and level of measurement, the number of items and the"
+" prefix of a group; for the adviser, the objective you write and the catalogue of analyses.\n"
+"- **Never sent**: an answer of a participant, a statistic drawn from the answers (counts, "
+"proportions, missing values, minimum, maximum, mean, years), a value of a free text or of an "
+"identifier, the name or path of the database, the team's notes.\n"
+"- **Only for a project that allows it**: the box of the sidebar, not ticked by default. The "
+"preview of each message stays always available."
 
 msgid ""
 "Seulement les décisions acceptées : libellés, étiquettes de valeurs, codes manquants (déclarés ou"
@@ -5720,6 +5847,9 @@ msgstr ""
 "Paired {t} test; the difference is the first measure minus the second, with its 95% CI. {d}: mean"
 " of the differences divided by their standard deviation."
 
+msgid "Tester la connexion"
+msgstr "Test the connection"
+
 msgid "Tests t appariés ; la différence est la première mesure moins la seconde."
 msgstr "Paired t tests; the difference is the first measure minus the second."
 
@@ -5799,6 +5929,9 @@ msgstr "Transformations"
 
 msgid "Travaux antérieurs sur ces données"
 msgstr "Prior work based on the dataset"
+
+msgid "Trop de demandes pour cette clé : réessayez dans quelques minutes."
+msgstr "Too many requests for this key: try again in a few minutes."
 
 msgid "Trop de demandes pour cette clé : réessayez dans une minute."
 msgstr "Too many requests for this key: try again in a minute."
@@ -5936,6 +6069,13 @@ msgstr "A repeated-measures ANOVA"
 
 msgid "Une autre analyse du catalogue."
 msgstr "Another analysis of the catalogue."
+
+msgid ""
+"Une clé s'obtient dans la console d'Anthropic (console.anthropic.com). Fixez-y une limite de "
+"dépenses : chaque envoi est facturé sur cette clé."
+msgstr ""
+"A key is obtained in Anthropic's console (console.anthropic.com). Set a spending limit there: "
+"each request is billed on this key."
 
 msgid "Une condition sur le score d'un groupe : GROUPE OPÉRATEUR VALEUR."
 msgstr "A condition on a group's score: GROUP OPERATOR VALUE."
@@ -6307,9 +6447,6 @@ msgstr "Verify"
 msgid "Vérifier aussi que ce modèle est offert."
 msgstr "Also check that this model is offered."
 
-msgid "Vérifier de nouveau"
-msgstr "Check again"
-
 msgid ""
 "Vérifier la clé et la connexion en demandant la liste des modèles ; aucun contenu de projet n'est"
 " envoyé, rien n'est facturé."
@@ -6656,6 +6793,9 @@ msgstr "exploratory"
 msgid "exporté pour toutes les variables rattachées"
 msgstr "exported for all linked variables"
 
+msgid "faible (par défaut, le moins coûteux)"
+msgstr "low (default, the least costly)"
+
 #, python-brace-format
 msgid "famille : {new} au lieu de {old}"
 msgstr "family: {new} instead of {old}"
@@ -6733,6 +6873,9 @@ msgstr "cannot be computed"
 
 msgid "incomplète"
 msgstr "incomplete"
+
+msgid "inconnue"
+msgstr "unknown"
 
 msgid "insu"
 msgstr "blinding"
@@ -6875,6 +7018,9 @@ msgstr "reproduction material"
 msgid "max"
 msgstr "max"
 
+msgid "maximal"
+msgstr "maximum"
+
 msgid "minuscules, chiffres et « _ », en commençant par une lettre"
 msgstr "lower case, digits and \"_\", starting with a letter"
 
@@ -6897,6 +7043,9 @@ msgstr "SPSS reserved word"
 
 msgid "mots-clés"
 msgstr "keywords"
+
+msgid "moyen"
+msgstr "medium"
 
 msgid "moyenne"
 msgstr "mean"
@@ -7354,6 +7503,9 @@ msgstr "too long"
 
 msgid "trouvée"
 msgstr "found"
+
+msgid "très élevé"
+msgstr "very high"
 
 msgid "type d'étude : expérience, observation, méta-analyse ou autre"
 msgstr "study type: experiment, observational study, meta-analysis or other"
@@ -8725,6 +8877,9 @@ msgstr "failed"
 
 msgid "échelle"
 msgstr "scale"
+
+msgid "élevé"
+msgstr "high"
 
 msgid "énoncé reformulé"
 msgstr "statement reworded"

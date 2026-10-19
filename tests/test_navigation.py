@@ -94,14 +94,14 @@ def test_a_task_of_the_dashboard_opens_its_page(sleep):
 
 
 @pytest.mark.allow_hosts(["127.0.0.1"])
-def test_the_local_ai_is_reached_from_the_pages_that_use_it(sleep, tmp_path):
+def test_the_ai_is_reached_from_the_pages_that_use_it(sleep, tmp_path):
     shutil.copy(EXAMPLES / "questionnaire-sommeil.pdf", tmp_path / "questionnaire-sommeil.pdf")
     project = load_project(sleep)
     add_questionnaire(project, tmp_path / "questionnaire-sommeil.pdf")
     save_project(project, sleep)
     app = _open(sleep, "questionnaire")
     app.button(key="go-ai-questionnaire").click().run()
-    assert app.header[0].value == "IA locale"
+    assert app.header[0].value == "IA"
     app = _open(sleep, "variables")
     app.button(key="go-ai-variables").click().run()
-    assert app.header[0].value == "IA locale"
+    assert app.header[0].value == "IA"

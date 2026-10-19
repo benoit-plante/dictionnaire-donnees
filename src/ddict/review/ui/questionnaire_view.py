@@ -199,13 +199,14 @@ def page(project: Project) -> None:
 
 
 def ai_link(where: str) -> None:
-    """The local model is a setting, outside the steps (v0.16, D-122): the pages that use it
-    lead to it."""
+    """The AI is a setting, outside the steps (v0.16, D-122): the pages that use it lead to
+    it."""
     st.divider()
     st.write(
         _(
-            "Facultatif : l'IA locale peut proposer les rattachements aux questions, puis des "
-            "libellés et des descriptions ; chaque proposition attendra votre décision."
+            "Facultatif : l'IA peut proposer les rattachements aux questions, puis des "
+            "libellés et des descriptions, à partir des seules métadonnées ; chaque "
+            "proposition attendra votre décision."
         )
     )
-    c.go_button(_("Réglages de l'IA locale"), f"go-ai-{where}", "ai")
+    c.go_button(_("Réglages de l'IA"), f"go-ai-{where}", "ai")

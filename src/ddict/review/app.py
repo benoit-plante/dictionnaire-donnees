@@ -8,12 +8,14 @@ at once. The views are in `review/ui/`.
 
 from __future__ import annotations
 
+from datetime import date
 from urllib.parse import urlparse
 
 import streamlit as st
 
 from ddict import settings, tracked
-from ddict.i18n import _
+from ddict.i18n import N_, _
+from ddict.project import permission
 from ddict.review import logic, navigation, shutdown
 from ddict.review.ui import (
     ai_view,
@@ -91,6 +93,38 @@ def _follow_button() -> None:
             icon=":material/bookmark_add:",
             help=_("Le projet figurera dans « Mes projets », sur l'accueil."),
         )
+
+
+AI_ALLOWED = "ai-allowed"
+AI_ALLOWED_LABEL = N_("Permettre l'envoi des métadonnées de ce projet à l'IA")
+
+
+def _allow_ai() -> None:
+    """The team's decision (v0.18, D-138), saved like any other (D-129, D-130)."""
+    project = c.project()
+    if st.session_state[AI_ALLOWED]:
+        permission.allow(project, date.today().isoformat())
+    else:
+        permission.forbid(project)
+    c.save(AI_ALLOWED, action=_(AI_ALLOWED_LABEL))
+
+
+def _ai_permission(project) -> None:
+    """The box of the sidebar; drawn from the project at each run, so that a refused save
+    (changed elsewhere) shows the project as it is."""
+    st.session_state[AI_ALLOWED] = permission.is_allowed(project)
+    st.checkbox(
+        _(AI_ALLOWED_LABEL),
+        key=AI_ALLOWED,
+        on_change=_allow_ai,
+        help=_(
+            "Non cochée par défaut. Cochée, les boutons d'IA peuvent envoyer les métadonnées "
+            "du projet (questionnaire et codebook), jamais une réponse ni une statistique ; "
+            "la case est enregistrée dans le projet, pour que vos collègues la voient."
+        ),
+    )
+    if permission.is_allowed(project):
+        st.caption(_("Permis depuis le {day}.").format(day=project.settings.ai.since))
 
 
 QUITTING = "quitting"
@@ -215,6 +249,7 @@ def main() -> None:
         st.button(_("Accueil"), key="home", on_click=c.close_project, icon=":material/home:")
         st.title(project.source.name)
         _follow_button()
+        _ai_permission(project)
         share = logic.codebook_progress(project)  # v0.16: never full on a new project
         st.progress(share, text=_("Codebook documenté à {p} %").format(p=round(100 * share)))
         _dashboard(waiting)

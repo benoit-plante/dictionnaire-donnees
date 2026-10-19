@@ -12,6 +12,7 @@ from streamlit.testing.v1 import AppTest
 
 import ddict.llm.advise as advise_module
 import ddict.llm.client as client_module
+from ddict import ai_settings
 from ddict.analysis.catalogue import CATALOGUE
 from ddict.cli import main
 from ddict.llm.advice_bench import (
@@ -348,7 +349,18 @@ def test_the_command(tmp_path, capsys, fake_ollama):
 
 
 @pytest.mark.allow_hosts(["127.0.0.1"])
-def test_the_page_takes_a_proposal_up(tmp_path, fake_ollama):
+def test_the_page_takes_a_proposal_up(tmp_path, monkeypatch):
+    """v0.18: through the AI settings (here an institution's server), for a project that
+    allows it."""
+    server = Server(answer(T_TEST))
+    real = client_module.OpenAICompatibleClient
+
+    class Client(real):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, transport=httpx.MockTransport(server), **kwargs)
+
+    monkeypatch.setattr(client_module, "OpenAICompatibleClient", Client)
+    ai_settings.save(ai_settings.AiSettings("openai", "https://ia.universite.example/v1", "m"))
     path = _folder(tmp_path)
     app = AppTest.from_file(APP, default_timeout=60)
     app.session_state["project_path"] = str(path)
@@ -356,6 +368,9 @@ def test_the_page_takes_a_proposal_up(tmp_path, fake_ollama):
     app.run()
     assert app.button(key="advice-ask").disabled  # no objective yet
     app.text_area(key="advice-goal").input(GOAL).run()
+    assert app.button(key="advice-ask").disabled  # the project does not allow it yet
+    assert any("n'est pas permis pour ce projet" in i.value for i in app.info)
+    app.checkbox(key="ai-allowed").check().run()
     app.button(key="advice-ask").click().run()
     assert not app.exception, app.exception
     assert any("Test t : comparer deux groupes" in m.value for m in app.markdown)
