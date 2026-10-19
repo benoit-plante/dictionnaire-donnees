@@ -700,8 +700,8 @@ def advice_error_text(error) -> str:
         return _("Écrivez d'abord l'objectif de l'analyse.")
     if error.reason == "too_large":
         return _(
-            "La base compte trop de variables pour le modèle local : le message dépasserait ce "
-            "qu'il peut lire. Rien n'a été envoyé ; choisissez l'analyse vous-même."
+            "La base compte trop de variables : le message dépasserait ce que le modèle peut "
+            "lire. Rien n'a été envoyé ; choisissez l'analyse vous-même."
         )
     from ddict.llm.advise import MAX_OBJECTIVE_CHARS
 

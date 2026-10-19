@@ -2628,11 +2628,11 @@ msgid "L'échantillon analysé compte {n} personnes."
 msgstr "The analysed sample includes {n} people."
 
 msgid ""
-"La base compte trop de variables pour le modèle local : le message dépasserait ce qu'il peut "
-"lire. Rien n'a été envoyé ; choisissez l'analyse vous-même."
+"La base compte trop de variables : le message dépasserait ce que le modèle peut lire. Rien n'a "
+"été envoyé ; choisissez l'analyse vous-même."
 msgstr ""
-"The database has too many variables for the local model: the message would exceed what it can "
-"read. Nothing was sent; choose the analysis yourself."
+"The database has too many variables: the message would exceed what the model can read. Nothing "
+"was sent; choose the analysis yourself."
 
 #, python-brace-format
 msgid "La base compte {n} variables."

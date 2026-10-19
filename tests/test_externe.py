@@ -91,7 +91,7 @@ def blocks(fictional_files):
         ),
         "radicaux": (build_stem_blocks(work, size=4)[0], stem_schema(), parse_stem_response),
         "conseillère": (
-            build_advice_block(analyses, objective),
+            build_advice_block(analyses, objective, "advise-v3"),  # as Anthropic gets it
             advice_schema(analyses, flat=True),  # as `advise` sends it to Anthropic
             parse_advice,
         ),

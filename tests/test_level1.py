@@ -1,6 +1,7 @@
-"""v0.18 (D-136): level 1, a witness test. A fictional base whose answers give numbers
-found nowhere else (values, proportions, minimum, maximum, mean, share of missing values,
-years, the observed range of a group's codes): none may be in a message to the model.
+"""v0.18 (D-136): level 1, a witness test for the four uses of the AI. A fictional base
+whose answers give numbers found nowhere else (values, proportions, minimum, maximum, mean,
+share of missing values, years, the observed range of a group's codes): none may be in a
+message to the model.
 
 The control: the prompt of the local model (level 2, kept for the bench) does send them,
 so the witnesses would show if level 1 let them through.
@@ -14,6 +15,7 @@ import pytest
 from ddict import naming
 from ddict.io import read_csv
 from ddict.llm import build_blocks
+from ddict.llm.advise import build_advice_block, usable
 from ddict.llm.link import build_link_blocks
 from ddict.llm.stems import build_stem_blocks
 from ddict.project import TrackedValue, build_project
@@ -76,6 +78,10 @@ def project(tmp_path_factory):
     for name, rank in (("score", 0), ("statut", 1), ("humeur", 3)):  # as a person links them
         found.variable(name).question = TrackedValue[str](value=ids[rank], origin="human")
     naming.propose(found)
+    levels = {"score": "scale", "statut": "nominal", "humeur": "ordinal"}
+    levels |= {f"echelle_{k}": "ordinal" for k in (1, 2, 3, 4)}
+    for name, level in levels.items():  # as a person decides them
+        found.variable(name).measure_level = TrackedValue[str](value=level, origin="human")
     return found
 
 
@@ -106,3 +112,19 @@ def test_links_and_stems_send_no_witness(project):
     text = _text(links + stems)
     for name, witness in WITNESSES.items():
         assert witness not in text, name
+
+
+@pytest.mark.parametrize("version", ["advise-v2", "advise-v3"])
+def test_the_advice_sends_no_witness(project, version):
+    assert {"score", "statut", "echelle_1"} <= set(usable(project))
+    block = build_advice_block(project, "Le score diffère-t-il selon le statut ?", version)
+    text = _text((block,))
+    for name, witness in WITNESSES.items():
+        assert witness not in text, name
+
+
+def test_the_advice_describes_the_group_without_its_range(project):
+    block = build_advice_block(project, "Le score diffère-t-il selon le statut ?", "advise-v3")
+    groups = json.loads(block.messages[1]["content"])["groups"]
+    assert [n for n, _label in groups[0]["items"]] == [f"echelle_{k}" for k in (1, 2, 3, 4)]
+    assert "items" in groups[0]["label"] and "codes" not in groups[0]["label"]

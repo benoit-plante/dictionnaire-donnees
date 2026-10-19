@@ -36,7 +36,11 @@ if TYPE_CHECKING:
     from ddict.llm.client import ModelClient
     from ddict.llm.run import BlockResult
 
+# A local or OpenAI-compatible server: the compact message of D-080, which fits in a small
+# context. Anthropic (v0.18): the whole labels, the items with theirs, one bound only.
 ADVICE_PROMPT_VERSION = "advise-v2"
+ADVICE_API_PROMPT_VERSION = "advise-v3"
+MAX_MESSAGE_CHARS = 100_000  # advise-v3: beyond, nothing is sent
 BLOCK_ID = "a-001"
 MAX_OBJECTIVE_CHARS = 1000
 MAX_PROPOSALS = 3
@@ -258,9 +262,13 @@ def _common_start(labels: list[str]) -> str:
     return start.strip(" -:–—?.") if len(start) >= MIN_COMMON_CHARS else ""
 
 
-def _content(project: Project, objective: str) -> dict:
+def _content(project: Project, objective: str, whole: bool = False) -> dict:
     """The variables by measure level, each as [name, label]; groups of items as one entry
-    each, their items by name only; labels shortened; scores with their group (D-080)."""
+    each, their items by name only; labels shortened; scores with their group (D-080).
+
+    `whole` (advise-v3, v0.18): labels whole, and each item of a group as [name, label]. A
+    group's description never has its range of observed codes (level 1, D-136)."""
+    shorten = (lambda text: " ".join(text.split())) if whole else _short
     found = usable(project)
     entries = {w.final_name(e): e for e in project.variables}
     scores = {s.name: s.group for s in plan(project)[1]}
@@ -272,11 +280,14 @@ def _content(project: Project, objective: str) -> dict:
         grouped.update(items)
         labels = [w.label_text(entries[n], "final") for n in items]
         levels = [found[n] for n in items]
+        described = _common_start(labels) or w.group_description(group, "final", observed=False)
         entry = {
             "group": group.group_id,
-            "label": _short(_common_start(labels) or w.group_description(group, "final")),
+            "label": shorten(described),
             "level": max(levels, key=levels.count),  # the most frequent, first on a tie
-            "items": items,
+            "items": [[n, shorten(t)] for n, t in zip(items, labels, strict=True)]
+            if whole
+            else items,
         }
         score = next((s for s, g in scores.items() if g == group.group_id and s in found), None)
         if score:
@@ -290,7 +301,7 @@ def _content(project: Project, objective: str) -> dict:
             label = i18n._("{name} (score de {group})").format(name=name, group=scores[name])
         else:
             label = w.label_text(entries[name], "final")
-        variables.setdefault(level, []).append([name, _short(label)])
+        variables.setdefault(level, []).append([name, shorten(label)])
     content = {
         "block": BLOCK_ID,
         "objective": objective,
@@ -323,9 +334,12 @@ def estimated_tokens(messages: tuple[dict, ...]) -> int:
     return int(sum(len(m["content"]) for m in messages) / CHARS_PER_TOKEN)
 
 
-def build_advice_block(project: Project, objective: str) -> Block:
+def build_advice_block(
+    project: Project, objective: str, version: str = ADVICE_PROMPT_VERSION
+) -> Block:
     """The one message of an advice: the objective, the catalogue, the usable variables.
-    Refused when it would not fit in the local model's context (D-080)."""
+    Refused when it would not fit in the local model's context (D-080), or, with
+    advise-v3, beyond MAX_MESSAGE_CHARS."""
     objective = objective.strip()
     if not objective:
         raise AdviceError("empty")
@@ -333,17 +347,20 @@ def build_advice_block(project: Project, objective: str) -> Block:
         raise AdviceError("too_long")
     language = project.settings.language
     with i18n.using(language):
-        content = _content(project, objective)
-    system = system_prompt(ADVICE_PROMPT_VERSION, language)
+        content = _content(project, objective, whole=version == ADVICE_API_PROMPT_VERSION)
+    system = system_prompt(version, language)
     text = json.dumps(content, ensure_ascii=False, separators=(",", ":"))
     messages = ({"role": "system", "content": system}, {"role": "user", "content": text})
-    if estimated_tokens(messages) > MAX_MESSAGE_TOKENS:
+    if version == ADVICE_API_PROMPT_VERSION:
+        if sum(len(m["content"]) for m in messages) > MAX_MESSAGE_CHARS:
+            raise AdviceError("too_large")
+    elif estimated_tokens(messages) > MAX_MESSAGE_TOKENS:
         raise AdviceError("too_large")
     return Block(
         block_id=BLOCK_ID,
         names=tuple(usable(project)),
         messages=messages,
-        prompt_version=recorded_version(ADVICE_PROMPT_VERSION, language),
+        prompt_version=recorded_version(version, language),
     )
 
 
@@ -408,14 +425,17 @@ def advise(
     from ddict.llm.enrich import _log  # needs httpx, an optional dependency
     from ddict.llm.run import run_block
 
-    block = build_advice_block(project, objective)
+    # Anthropic (v0.18): the whole message (B3), and the flat schema, as it refuses the
+    # grammar of the strict one as too large (A5).
+    anthropic = getattr(client, "protocol", "") == "anthropic"
+    version = ADVICE_API_PROMPT_VERSION if anthropic else ADVICE_PROMPT_VERSION
+    block = build_advice_block(project, objective, version)
     result = run_block(
         client,
         block,
         run_id=run_id(now),
         now=now,
-        # Anthropic refuses the grammar of the strict schema as too large (v0.18, A5).
-        schema=advice_schema(project, flat=getattr(client, "protocol", "") == "anthropic"),
+        schema=advice_schema(project, flat=anthropic),
         parse=parse_advice,
     )
     if log_dir is not None:

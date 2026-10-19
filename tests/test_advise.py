@@ -109,7 +109,7 @@ def test_the_message_holds_metadata_only(project):
     assert content["groups"] == [
         {
             "group": "G1",
-            "label": "5 items, codes de 1 à 5, préfixe « bienetre »",
+            "label": "5 items, préfixe « bienetre »",  # never the observed codes (D-136)
             "level": "ordinal",
             "items": ["bienetre_1", "bienetre_2", "bienetre_3", "bienetre_4", "bienetre_5"],
             "score": "bienetre_total",
@@ -133,6 +133,33 @@ def test_a_base_too_large_for_the_model(project, monkeypatch):
     monkeypatch.setattr(advise_module, "MAX_MESSAGE_TOKENS", 500)
     with pytest.raises(AdviceError) as error:
         build_advice_block(project, GOAL)
+    assert error.value.reason == "too_large"
+
+
+def test_advise_v3_sends_whole_labels_and_the_items_labels(project, monkeypatch):
+    """For Anthropic (v0.18, B3): no compression of D-080, one bound only."""
+    monkeypatch.setattr(advise_module, "MAX_LABEL_CHARS", 10)  # v2 would cut every label
+    block = build_advice_block(project, GOAL, "advise-v3")
+    assert block.prompt_version == "advise-v3"
+    assert "chacun [nom, libellé]" in block.messages[0]["content"]
+    content = json.loads(block.messages[1]["content"])
+    variables = {n: label for pairs in content["variables"].values() for n, label in pairs}
+    assert variables["groupe"] == "Groupe de l'étude"  # whole
+    group = content["groups"][0]
+    assert group["label"] == "5 items, préfixe « bienetre »"
+    assert [n for n, _label in group["items"]] == [f"bienetre_{k}" for k in range(1, 6)]
+    assert any("énergique" in label for _n, label in group["items"])  # the items' labels
+    assert "…" not in block.messages[1]["content"]
+    compact = build_advice_block(project, GOAL)
+    assert compact.prompt_version == "advise-v2" and "…" in compact.messages[1]["content"]
+
+
+def test_advise_v3_one_bound(project, monkeypatch):
+    monkeypatch.setattr(advise_module, "MAX_MESSAGE_TOKENS", 10)  # D-080's: not this one's
+    assert build_advice_block(project, GOAL, "advise-v3")
+    monkeypatch.setattr(advise_module, "MAX_MESSAGE_CHARS", 2000)
+    with pytest.raises(AdviceError) as error:
+        build_advice_block(project, GOAL, "advise-v3")
     assert error.value.reason == "too_large"
 
 
@@ -205,12 +232,13 @@ def _anthropic_advise(project, content):
     def reply(request):
         body = json.loads(request.content)
         sent.append(body["output_config"]["format"]["schema"])
+        systems.append(body["system"])
         text = json.dumps(content, ensure_ascii=False)
         return httpx.Response(
             200, json={"content": [{"type": "text", "text": text}], "stop_reason": "end_turn"}
         )
 
-    sent = []
+    sent, systems = [], []
     with client_module.AnthropicClient(
         "claude-haiku-5-5", key=lambda: "sk-ant-FAUSSE", transport=httpx.MockTransport(reply)
     ) as client:
@@ -223,6 +251,7 @@ def test_anthropic_gets_the_flat_schema(project):
     analyses, the roles, the methods and the variables; the checks stay on this computer."""
     found, sent = _anthropic_advise(project, answer(T_TEST))
     assert found.result.run.outcome == "succeeded"
+    assert found.result.run.prompt_version == "advise-v3"  # the whole message (B3)
     assert found.proposals[0].chosen == {"outcome": ["bienetre_total"], "group": ["groupe"]}
     proposal = sent[0]["properties"]["proposals"]["items"]
     assert "anyOf" not in json.dumps(sent[0])
