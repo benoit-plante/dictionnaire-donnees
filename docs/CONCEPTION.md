@@ -1,4 +1,4 @@
-# Conception — outil de dictionnaire de données assisté par IA locale
+# Conception — outil de dictionnaire de données assisté par IA
 
 > Document de conception, version de travail du 2026-10-13. « dictionnaire-donnees » est un nom de travail (voir § 11).
 > Rien n'est encore codé. Ce document est à valider avant d'initialiser Git ou d'écrire du code.
@@ -12,7 +12,7 @@ Une équipe de recherche reçoit ou hérite d'une base de données (souvent un `
 Ce travail est long, répétitif et sujet à l'erreur. L'outil le découpe en deux couches :
 
 1. **Une couche déterministe**, qui calcule et extrait exactement tout ce qui peut l'être (types, manquants, étendues observées, modalités, étiquettes déjà présentes dans le fichier, anomalies de codage). À elle seule, elle produit un dictionnaire utile.
-2. **Une couche d'IA locale, facultative**, qui propose ce qui demande de l'interprétation : libellés lisibles, descriptions, regroupements probables en échelles, signalement d'incohérences. Chaque proposition attend une décision humaine.
+2. **Une couche d'IA facultative**, activée projet par projet et qui ne reçoit que des métadonnées (depuis la v0.18 ; un modèle local avant), qui propose ce qui demande de l'interprétation : libellés lisibles, descriptions, regroupements probables en échelles, signalement d'incohérences. Chaque proposition attend une décision humaine.
 
 Le produit final est un codebook Excel et un rapport Markdown, plus un fichier projet qui permet de reprendre le travail.
 
@@ -29,8 +29,8 @@ Le produit final est un codebook Excel et un rapport Markdown, plus un fichier p
 2. **L'IA est optionnelle.** L'outil est pleinement utile sans modèle ni GPU. L'IA ajoute une couche d'enrichissement.
 3. **Toute production de l'IA est une proposition.** Chaque champ suggéré porte un statut (« proposé par IA », « validé », « corrigé », « rejeté ») et la trace du modèle utilisé. Rien n'est accepté sans action humaine.
 4. **Aucune invention.** Le modèle n'a jamais le droit de proposer un seuil clinique, une étendue théorique, une référence bibliographique ou un nom d'instrument présenté comme certain. Ces champs restent vides tant qu'une source n'est pas documentée par l'utilisateur. Un seuil sans origine documentée n'a pas le droit d'exister.
-5. **Confidentialité par conception.** Rien ne quitte le poste. Le modèle ne reçoit jamais de données brutes individuelles : seulement des métadonnées et des statistiques agrégées. Les colonnes de texte libre et les identifiants probables ne transmettent aucune valeur au modèle.
-6. **Neutralité du moteur.** L'IA passe par une API compatible OpenAI configurable (Ollama, LM Studio, serveur llama.cpp).
+5. **Confidentialité par conception.** Aucune donnée de participant ne quitte le poste. L'IA est un service externe, activé explicitement projet par projet, qui ne reçoit que des métadonnées (le questionnaire et le codebook) : jamais une valeur, une statistique ni un effectif tirés des réponses, pas même agrégés. Les colonnes de texte libre et les identifiants probables ne transmettent que leur nom et leur nature. (Depuis la v0.18, D-134 et D-136 ; avant, « rien ne quitte le poste », avec un modèle local qui recevait aussi des statistiques agrégées.)
+6. **Neutralité du moteur.** L'IA passe par une adresse configurable, en deux protocoles : l'interface Messages d'Anthropic (par défaut) ou un serveur compatible OpenAI (celui d'une université, par exemple), avec une clé d'API (D-135). Avant la v0.18 : Ollama sur le poste.
 7. **Aucune donnée réelle dans le dépôt.** Exemples et tests utilisent des bases fictives générées par script.
 
 ### Comment le code garantit ces principes (et pas seulement la bonne volonté)
@@ -41,8 +41,8 @@ Le produit final est un codebook Excel et un rapport Markdown, plus un fichier p
 | 2 | Chaîne complète « lire → profiler → exporter » testée sans IA ; le module IA est une dépendance facultative (`pip install ...[ia]`). |
 | 3 | Un champ d'origine `ai` ne peut avoir que le statut `proposed` à sa création ; l'export final n'inclut que les valeurs validées ou corrigées. |
 | 4 | Les schémas de réponse du modèle **n'ont pas** de champ pour un seuil, une étendue théorique, une référence ou un nom d'instrument (`extra="forbid"` : tout champ imprévu fait rejeter la réponse). Côté humain, ces champs exigent une source non vide pour être enregistrés. Un filtre signale en plus tout texte proposé qui ressemble à une citation (« Auteur, 2003 ») ou à un seuil (« ≥ 14 », « cut-off »). |
-| 5 | Tout ce qui part vers le modèle passe par **une seule fonction** (une « porte de confidentialité ») qui construit le message à partir du profil agrégé, jamais à partir du tableau de données. Le client refuse toute adresse qui n'est pas locale (`127.0.0.1`, `localhost`, `::1`). Des tests à « chaînes témoins » le vérifient (§ 9). |
-| 6 | Un seul client HTTP générique, configuré par une adresse et un nom de modèle ; aucune bibliothèque propre à un fournisseur. |
+| 5 | Tout ce qui part vers le modèle passe par **une seule fonction** (une « porte de confidentialité ») qui construit le message à partir du fichier projet, jamais à partir du tableau de données, et n'en garde que les métadonnées (§ 6.1). Rien ne part d'un projet non activé (un seul contrôle, avant tout envoi ; l'aperçu reste permis). Le client n'accepte qu'une adresse en HTTPS (ou une adresse de cet ordinateur, `localhost` ou boucle locale), ignore les proxys de l'environnement et ne suit aucune redirection ; la clé d'API n'est lue dans le gestionnaire d'identifiants de Windows qu'au moment de l'envoi et n'est écrite nulle part. Des tests à « chaînes témoins » vérifient qu'aucune valeur ni statistique tirée des réponses n'entre dans un message, et qu'une fausse clé n'apparaît dans aucun fichier ni aucune sortie (§ 9). |
+| 6 | Deux clients HTTP écrits avec httpx (Anthropic, compatible OpenAI), derrière une même interface, configurés par un protocole, une adresse et un nom de modèle ; aucune bibliothèque propre à un fournisseur. |
 | 7 | Les bases de test sont produites par `scripts/generer_bases_fictives.py` avec une graine fixe ; `.gitignore` exclut `*.sav`, `*.csv`, `*.xlsx` hors de `exemples/`. |
 
 ## 4. Architecture
@@ -180,18 +180,23 @@ Le texte exact envoyé au modèle est conservé à côté, dans `mon-projet.dd-e
 
 ### 6.1 Contenu autorisé et contenu exclu
 
+**Depuis la v0.18 : le niveau 1, des métadonnées seulement (D-136).** L'IA ne reçoit rien de ce que les participants ont répondu, pas même agrégé, et seulement pour un projet dont l'envoi a été permis (D-138).
+
 | Envoyé | Jamais envoyé |
 |---|---|
 | Nom de la variable et ses voisines immédiates (contexte) | Toute ligne ou valeur individuelle |
 | Étiquette de variable du fichier | Toute valeur d'une colonne de texte libre (ni extrait, ni exemple) |
-| Étiquettes de valeurs | Toute valeur d'un identifiant probable (seulement son nom et « identifiant probable ») |
-| Type déduit, niveau de mesure | Les effectifs inférieurs au seuil (remplacés par « < 5 ») |
-| Pourcentage de manquants, cardinalité | Les dates exactes (seulement l'année pour les étendues de dates) |
-| Min, max, moyenne arrondis (numériques non sensibles) | Le chemin et le nom du fichier source |
-| Codes observés et proportions arrondies (catégorielles) | Les notes internes de l'équipe |
-| Anomalies calculées (codes sans étiquette, sentinelles probables, signe de la corrélation item-total) | — |
+| Étiquettes de valeurs | Toute valeur d'un identifiant probable |
+| Codes manquants déclarés dans le fichier ou confirmés par l'équipe | Les codes observés et leurs proportions |
+| Texte de la question, une fois le rattachement accepté | Le pourcentage de manquants |
+| Sigles acceptés du glossaire | Le minimum, le maximum, la moyenne ; les années d'une date |
+| Groupe : nombre d'items et préfixe | L'étendue des codes observés d'un groupe (« codes de 1 à 5 ») |
+| Type de la colonne, niveau de mesure, note de confidentialité (« texte libre : aucune valeur transmise ») : calculés, mais ils décrivent la colonne, pas une réponse | Les effectifs, quels qu'ils soient |
+| Conseillère : objectif écrit par l'équipe, catalogue des analyses | Le chemin et le nom du fichier source ; les notes internes de l'équipe |
 
-Les variables classées comme quasi-identifiants (code postal, date de naissance, âge exact très élevé, etc.) n'envoient que leur nom, leur étiquette et leur type.
+Les variables sensibles (identifiants probables, texte libre, quasi-identifiants) n'envoient que leur nom, leur étiquette, leur type et leur note de confidentialité.
+
+**Avant la v0.18**, le modèle local recevait aussi des statistiques agrégées : pourcentage de manquants, minimum, maximum et moyenne arrondis, codes observés et proportions arrondies (effectifs inférieurs au seuil masqués), années des dates, et l'étendue observée des codes d'un groupe. Ces messages restent dans le dossier des envois des projets qui les ont faits, et le niveau 2 n'existe plus que dans le banc d'essai, pour mesurer ce que le niveau 1 perd.
 
 ### 6.2 Découpage
 

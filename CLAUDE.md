@@ -4,7 +4,7 @@ Instructions pour Claude Code. Lire ce fichier au début de chaque séance.
 
 ## Le projet
 
-Outil **libre, local et hors ligne** qui aide les équipes de recherche en psychologie et en sciences sociales à produire le dictionnaire de données d'une base existante (`.sav`, `.csv`). Le calcul déterministe d'abord ; une IA locale facultative propose, une personne décide. « dictionnaire-donnees » est un nom de travail (D-003). Conception complète : `docs/CONCEPTION.md`.
+Outil **libre, local et hors ligne** qui aide les équipes de recherche en psychologie et en sciences sociales à produire le dictionnaire de données d'une base existante (`.sav`, `.csv`). Le calcul déterministe d'abord ; une IA facultative, activée projet par projet et qui ne reçoit que des métadonnées, propose, une personne décide. « dictionnaire-donnees » est un nom de travail (D-003). Conception complète : `docs/CONCEPTION.md`.
 
 L'auteur n'est pas développeur de métier : expliquer les choix techniques simplement et le guider pour chaque commande à exécuter.
 
@@ -12,7 +12,7 @@ L'auteur n'est pas développeur de métier : expliquer les choix techniques simp
 
 1. **Aucune donnée réelle dans le dépôt.** Exemples et tests utilisent des bases fictives générées par `scripts/` avec une graine fixe. Ne jamais demander de données réelles.
 2. **Le modèle ne reçoit jamais de données individuelles.** Tout message destiné au modèle est construit par la porte de confidentialité (module `privacy`) à partir du profil agrégé, jamais à partir du tableau. Aucune valeur de texte libre ni d'identifiant probable ; effectifs < 5 masqués (D-006).
-3. **Rien ne quitte le poste.** Le client IA refuse toute adresse non locale. Les tests bloquent le réseau (pytest-socket). Streamlit écoute sur 127.0.0.1, télémétrie désactivée.
+3. **Aucune donnée de participant ne quitte le poste.** L'IA est un service externe, activé explicitement projet par projet, qui ne reçoit que des métadonnées (le questionnaire et le codebook), jamais rien de ce que les participants ont répondu, pas même agrégé (D-134, D-136). Le client IA n'accepte qu'une adresse en HTTPS (ou une adresse de cet ordinateur), sans proxy ni redirection ; la clé d'API reste dans le gestionnaire d'identifiants de Windows, jamais ailleurs (D-137). Les tests bloquent le réseau (pytest-socket), sauf les tests `externe` (D-139). Streamlit écoute sur 127.0.0.1, télémétrie désactivée.
 4. **Aucune invention.** Les schémas de réponse du modèle n'ont aucun champ pour un seuil, une étendue théorique, une référence ou un nom d'instrument (`extra="forbid"`). Ces champs sont humains et exigent une source.
 5. **Toute production de l'IA est une proposition** (statut `proposed`) ; l'export final n'inclut que les valeurs validées ou corrigées.
 6. **L'IA est facultative** : la chaîne lire → profiler → exporter fonctionne sans aucune dépendance IA installée.
