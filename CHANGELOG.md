@@ -1,5 +1,19 @@
 # Changements
 
+## 0.18.0 — 2026-10-19
+
+L'IA par une clé d'API (plan : `docs/plan-v0.18.md`, D-134 à D-142). La version change de moteur, pas de fonctions : les quatre usages de l'IA (libellés et descriptions, rattachement, noms de base, conseillère) et le banc d'essai restent ; ni le calcul, ni les exports, ni le carnet, ni l'ébauche d'article ne changent.
+
+- **Aucune donnée de participant ne quitte le poste** (D-134, D-136) : la règle « Rien ne quitte le poste » devient celle-ci. L'IA est un service externe qui ne reçoit que des **métadonnées** : noms, étiquettes des variables et des valeurs, codes manquants déclarés, texte des questions acceptées, sigles acceptés, type et niveau de mesure. Plus de codes observés ni de proportions, de manquants, de minimum, de maximum, de moyenne ni d'années, et plus l'étendue observée des codes d'un groupe, que la conseillère envoyait encore. Un test à chaînes témoins le vérifie sur les quatre usages.
+- **Anthropic, ou le serveur d'une université** (D-135) : deux protocoles, une adresse en HTTPS (ou sur cet ordinateur), sans proxy ni redirection. **Ollama est retiré** : de l'installateur, de l'interface, de la ligne de commande et des guides. Par défaut `claude-haiku-5-5`, avec une réflexion moyenne (D-140).
+- **La clé d'API** (D-137) : gardée dans le gestionnaire d'identifiants de Windows, saisie dans un champ masqué de la page « IA » ou par `ddict ia cle` (jamais en argument), jamais écrite ailleurs ni affichée ; « Oublier la clé ». Le désinstalleur demande avant de l'effacer.
+- **Une case par projet** (D-138) : « Permettre l'envoi des métadonnées de ce projet à l'IA », non cochée par défaut, enregistrée dans le projet avec sa date (format 0.8.0 ; un projet de la 0.17 s'ouvre non permis). Sans elle, rien ne part ; l'aperçu des messages reste toujours possible. `ddict ia autoriser` et `ddict ia interdire`.
+- **La page « IA »** (au lieu de « IA locale ») : service, adresse, modèle, réflexion, clé, **Tester la connexion** (rien d'un projet n'est envoyé, rien n'est facturé), et **Ce qui part** : la liste, et la conservation chez Anthropic avec sa source.
+- **Des blocs plus grands** (25 variables pour les libellés, 20 pour le rattachement) ; **la conseillère** envoie à Anthropic le message entier, libellés et items compris (D-142) ; **les noms de base** se font proposer sur la page « Noms » (D-141). Le numéro de chaque requête, ses jetons et, en cas de refus, l'explication du service sont gardés dans le dossier des envois.
+- **Le banc d'essai** compte les jetons et le coût de chaque passage, demande confirmation avant de dépenser, et mesure sur demande les libellés au niveau 2 (`ddict evaluer --niveau-2`, le banc seulement). Essai du 2026-10-19 (`docs/essais/2026-10-19-anthropic.md`) : 113 rattachements justes sur 121 (110 pour le calcul seul), aucun libellé signalé, 7 noms de base sur 10 égaux au corrigé (3 pour les règles), la conseillère juste 13 fois sur 13 ; environ 0,02 $ le banc entier avec Haiku 5.5.
+- **Ligne de commande** : le service, l'adresse et le modèle viennent des réglages de la page « IA » (`--protocole`, `--adresse`, `--modele` pour les changer) ; `ddict rattacher` et `ddict renommer` appellent l'IA avec `--ia`.
+- Guides : « Obtenir une clé d'API » (avec une limite de dépenses), « Ce qui part » ; le scénario manuel gagne les étapes 83 à 89.
+
 ## 0.17.0 — 2026-10-19
 
 Plusieurs projets, et aucune décision perdue (plan : `docs/plan-v0.17.md`, D-129 à D-133). Ni le calcul, ni les exports, ni le format du fichier projet, ni les règles de confidentialité ne changent ; aucune IA ajoutée.
