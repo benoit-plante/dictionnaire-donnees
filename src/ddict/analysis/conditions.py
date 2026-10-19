@@ -73,6 +73,11 @@ def _sensitive(project: Project) -> set[str]:
     }
 
 
+def excluded(project: Project) -> set[str]:
+    """The variables no analysis takes (D-093): identifiers, free texts, dates."""
+    return _sensitive(project)
+
+
 def check_subgroup(project: Project, subset, data: PreparedData | None) -> list[str]:
     """Why a subgroup cannot be taken (v0.14, D-113): an unknown variable, an identifier, a
     free text or a date; an order on categories written as text; nobody in it."""

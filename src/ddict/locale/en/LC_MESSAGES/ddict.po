@@ -6241,6 +6241,9 @@ msgstr "grouping identifier"
 msgid "identifiant probable"
 msgstr "likely identifier"
 
+msgid "il faut deux modalités"
+msgstr "two categories are needed"
+
 msgid "impossible à calculer"
 msgstr "cannot be computed"
 
@@ -6451,6 +6454,16 @@ msgstr "no missing-value codes and no levels of measurement"
 
 msgid "ni étiquettes des valeurs, ni codes de valeurs manquantes, ni niveaux de mesure"
 msgstr "no value labels, no missing-value codes and no levels of measurement"
+
+msgid "niveau de mesure non décidé"
+msgstr "measure level not decided"
+
+msgid "niveau ordinal"
+msgstr "ordinal level"
+
+#, python-brace-format
+msgid "niveau {level}"
+msgstr "{level} level"
 
 msgid "nom d'instrument"
 msgstr "instrument name"
@@ -7548,6 +7561,18 @@ msgstr "{n} exploratory hypotheses"
 #, python-brace-format
 msgid "{n} items"
 msgstr "{n} items"
+
+#, python-brace-format
+msgid "{n} modalités : choisir les deux comparées"
+msgstr "{n} categories: choose the two compared"
+
+#, python-brace-format
+msgid "{n} modalités ; au plus {high}"
+msgstr "{n} categories; at most {high}"
+
+#, python-brace-format
+msgid "{n} modalités ; il en faut au moins {low}"
+msgstr "{n} categories; at least {low} are needed"
 
 #, python-brace-format
 msgid "{n} niveaux enregistrés."

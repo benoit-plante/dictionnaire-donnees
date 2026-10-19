@@ -25,6 +25,7 @@ from ddict.analysis.data import PreparedData, chosen_levels
 from ddict.i18n import N_, Texts, _, field_label
 from ddict.project import save_project
 from ddict.project.model import Hypothesis, Project
+from ddict.review import admissible
 from ddict.review.ui import analyses_view, base_view
 from ddict.review.ui import common as c
 
@@ -328,10 +329,10 @@ def _shown(book: Codebook):
 
 def _choose(project: Project, key: str, book: Codebook) -> dict[str, list[str]]:
     chosen: dict[str, list[str]] = {}
+    prepared = st.session_state.get(analyses_view.PREPARED, (None, None))[1]
     for role in CATALOGUE[key].roles:
-        names = conditions.candidates(project, CATALOGUE[key], role.key)
         widget = f"{NEW}role-{key}-{role.key}"
-        if not names:
+        if not conditions.candidates(project, CATALOGUE[key], role.key):
             st.info(
                 _(
                     "{role} : aucune variable ne convient. Le niveau de mesure se décide sur la "
@@ -342,13 +343,17 @@ def _choose(project: Project, key: str, book: Codebook) -> dict[str, list[str]]:
                         f"go-base-{widget}", "base",
                         **{base_view.TAB: base_view.tab_levels()})  # fmt: skip
             continue
+        # v0.16 (finding 22): what fits first, the others after, each with its reason.
+        fits = admissible.ranked(project, key, role.key, prepared)
+        names = [f.name for f in fits]
+        shown = analyses_view.admissible_text(fits, _shown(book))
         if role.most == 1:
             picked = st.selectbox(
                 ROLES[role.key],
                 names,
                 index=None,
                 key=widget,
-                format_func=_shown(book),
+                format_func=shown,
                 placeholder=_("Aucune") if role.least == 0 else _("Choisir une variable"),
             )
             chosen[role.key] = [picked] if picked else []
@@ -357,7 +362,7 @@ def _choose(project: Project, key: str, book: Codebook) -> dict[str, list[str]]:
                 ROLES[role.key],
                 names,
                 key=widget,
-                format_func=_shown(book),
+                format_func=shown,
                 max_selections=role.most,
                 placeholder=_("Choisir de {least} à {most} variables").format(
                     least=role.least, most=role.most

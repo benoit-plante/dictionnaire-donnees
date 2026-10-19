@@ -41,6 +41,7 @@ from ddict.i18n import _
 from ddict.io import read_database
 from ddict.project import fingerprint
 from ddict.project.model import Project
+from ddict.review import admissible
 from ddict.review.ui import advice_view, apa_view, base_view, dialog
 from ddict.review.ui import common as c
 from ddict.review.ui.advice_view import option_key, role_key
@@ -99,10 +100,10 @@ def _choose_variables(project: Project, key: str, book: Codebook) -> dict[str, l
         label = book.label(name)
         return label if label.startswith(name) else f"{name} — {label}"
 
+    prepared = st.session_state.get(PREPARED, (None, None))[1]
     for role in analysis.roles:
-        names = conditions.candidates(project, analysis, role.key)
         widget = role_key(key, role.key)
-        if not names:
+        if not conditions.candidates(project, analysis, role.key):
             st.info(
                 _(
                     "{role} : aucune variable ne convient. Le niveau de mesure se décide sur la "
@@ -113,13 +114,17 @@ def _choose_variables(project: Project, key: str, book: Codebook) -> dict[str, l
                         f"go-base-{widget}", "base",
                         **{base_view.TAB: base_view.tab_levels()})  # fmt: skip
             continue
+        # v0.16 (finding 22): what fits first, the others after, each with its reason.
+        fits = admissible.ranked(project, key, role.key, prepared)
+        names = [f.name for f in fits]
+        shown_fit = admissible_text(fits, shown)
         if role.most == 1:
             picked = st.selectbox(
                 ROLES[role.key],
                 names,
                 index=None,
                 key=widget,
-                format_func=shown,
+                format_func=shown_fit,
                 placeholder=_("Aucune") if role.least == 0 else _("Choisir une variable"),
             )
             chosen[role.key] = [picked] if picked else []
@@ -128,13 +133,24 @@ def _choose_variables(project: Project, key: str, book: Codebook) -> dict[str, l
                 ROLES[role.key],
                 names,
                 key=widget,
-                format_func=shown,
+                format_func=shown_fit,
                 max_selections=role.most,
                 placeholder=_("Choisir de {least} à {most} variables").format(
                     least=role.least, most=role.most
                 ),
             )
     return {k: v for k, v in chosen.items() if v}
+
+
+def admissible_text(fits, shown):
+    """A variable in a list of an analysis: its name and label, and why it does not fit."""
+    reasons = {f.name: f.reason for f in fits}
+
+    def text(name: str) -> str:
+        reason = reasons.get(name)
+        return f"{shown(name)} ({reason})" if reason else shown(name)
+
+    return text
 
 
 def _choose_options(
