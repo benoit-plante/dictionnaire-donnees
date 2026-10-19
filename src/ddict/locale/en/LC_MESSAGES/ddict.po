@@ -592,6 +592,9 @@ msgstr "No change to confirm."
 msgid "Aucun code suspect."
 msgstr "No suspect code."
 
+msgid "Aucun fichier choisi : rien n'est changé."
+msgstr "No file chosen: nothing is changed."
+
 msgid "Aucun fichier choisi. Vous pouvez aussi coller son chemin dans le champ."
 msgstr "No file chosen. You can also paste its path in the field."
 
@@ -871,6 +874,10 @@ msgid ""
 msgstr ""
 "This deposit holds the data dictionary, the analysis plan and the scripts that run again the "
 "analyses of the article {article}. It does not hold the data: {where}."
+
+#, python-brace-format
+msgid "Ce fichier n'est pas un projet lisible : rien n'est changé. ({name})"
+msgstr "This file is not a readable project: nothing is changed. ({name})"
 
 msgid "Ce fichier projet est introuvable."
 msgstr "This project file cannot be found."
@@ -3111,6 +3118,9 @@ msgstr ""
 "database's folder, with the command file and the preparation script included. These results come "
 "from the study's data: store them with care."
 
+msgid "Le retrouver…"
+msgstr "Find it again…"
+
 #, python-brace-format
 msgid "Le score ({name}) est la moyenne des items, de {low} à {high}."
 msgstr "The score ({name}) is the mean of the items, from {low} to {high}."
@@ -3780,6 +3790,9 @@ msgstr "Under {threshold}: **{count}** people."
 msgid "Monter"
 msgstr "Move up"
 
+msgid "Montrez où est maintenant ce fichier projet."
+msgstr "Show where this project file is now."
+
 #, python-brace-format
 msgid "Mots-clés : {words}"
 msgstr "Keywords: {words}"
@@ -4346,6 +4359,14 @@ msgstr "Project"
 #, python-brace-format
 msgid "Projet créé : {path}"
 msgstr "Project created: {path}"
+
+#, python-brace-format
+msgid ""
+"Projet retrouvé : {name}, fait à partir de la base {base}. Si ce n'est pas le bon, retirez-le "
+"avec « Ne plus suivre » dans le menu « ⋮ » de sa ligne."
+msgstr ""
+"Project found again: {name}, made from the database {base}. If it is not the right one, take it "
+"off with “Stop following” in the “⋮” menu of its row."
 
 msgid "Projet, copie documentée ou table de noms"
 msgstr "Project, documented copy or table of names"

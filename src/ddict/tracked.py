@@ -87,6 +87,16 @@ def follow(path: Path | str) -> bool:
     return _save([*paths, Path(path)])
 
 
+def replace(old: Path | str, new: Path | str) -> bool:
+    """A project found again elsewhere: its new path takes the old one's place (once, when
+    the new one was followed already)."""
+    paths = _read()
+    if paths is None:
+        return False
+    gone = {ondisk.key(old), ondisk.key(new)}
+    return _save([*(p for p in paths if ondisk.key(p) not in gone), Path(new)])
+
+
 def unfollow(path: Path | str) -> bool:
     """Take a project off the list, found or not. No project file is touched."""
     paths = _read()

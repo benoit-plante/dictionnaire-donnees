@@ -222,6 +222,39 @@ def _unfollow(path: Path) -> None:
         _message("error", tracked.not_written(), "home-unfollow")
 
 
+def _find_again(old: Path) -> None:
+    """A project not found: the person shows where it is now (v0.17, D-131). The old file
+    is gone, so the tool cannot check it is the same project: it refuses only a file that
+    is not a readable project, and says its database for the person to judge."""
+    key = "home-find"
+    chosen = dialog.choose("project")
+    if not chosen:
+        _message("error", _("Aucun fichier choisi : rien n'est changé."), key)
+        return
+    try:
+        project = load_project(chosen)
+    except ProjectError:
+        _message(
+            "error",
+            _("Ce fichier n'est pas un projet lisible : rien n'est changé. ({name})").format(
+                name=Path(chosen).name
+            ),
+            key,
+        )
+        return
+    if not tracked.replace(old, chosen):
+        _message("error", tracked.not_written(), key)
+        return
+    _message(
+        "success",
+        _(
+            "Projet retrouvé : {name}, fait à partir de la base {base}. Si ce n'est pas le "
+            "bon, retirez-le avec « Ne plus suivre » dans le menu « ⋮ » de sa ligne."
+        ).format(name=Path(chosen).name, base=project.source.name),
+        key,
+    )
+
+
 WIDTHS = [2.2, 1, 0.9, 2.4, 1.6, 2, 0.9, 1.3, 0.5]
 
 
@@ -301,7 +334,17 @@ def _projects() -> None:
                 icon=":material/bookmark_remove:",
                 help=_("Le projet quitte ce tableau ; son fichier n'est pas touché."),
             )
+            if row.problem == "missing":
+                st.button(
+                    _("Le retrouver…"),
+                    key=f"home-find-{index}",
+                    on_click=_find_again,
+                    args=(row.path,),
+                    icon=":material/search:",
+                    help=_("Montrez où est maintenant ce fichier projet."),
+                )
     c.show_message("home-unfollow")
+    c.show_message("home-find")
 
 
 def _recent() -> None:
