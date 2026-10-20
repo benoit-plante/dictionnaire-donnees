@@ -62,7 +62,7 @@ def study(folder: Path) -> Path:
 
 def start(project: Path, config: Path) -> subprocess.Popen:
     command, env = review_command(project, PORT)
-    env = {**env, "DDICT_CONFIG_DIR": str(config), "DDICT_TRIAL_DIR": str(config / "essai")}
+    env = {**env, "DDICT_CONFIG_DIR": str(config)}
     server = subprocess.Popen(command, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     for _ in range(120):
         try:

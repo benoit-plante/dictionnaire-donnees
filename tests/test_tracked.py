@@ -1,5 +1,5 @@
 """v0.17, step A1 (D-131): the projects followed, kept on this computer — paths only, written
-the same way every time, never resolved; a new project is followed, the trial is not;
+the same way every time, never resolved; a new project is followed;
 "Suivre ce projet" on a recent project and in the sidebar, "Ne plus suivre" touches no
 project file. On the fictional sleep study."""
 
@@ -12,7 +12,6 @@ from streamlit.testing.v1 import AppTest
 
 from ddict import recents, tracked
 from ddict.cli import main
-from ddict.review import trial
 from ddict.workflow import profile_database
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -115,12 +114,6 @@ def test_ddict_profiler_follows_the_new_project(base):
     assert tracked.load() == [base.with_name("etude-sommeil.dd.json")]
 
 
-def test_the_trial_is_not_followed():
-    path = trial.start()
-    assert path.is_file()
-    assert tracked.load() == []
-
-
 @pytest.mark.allow_hosts(["127.0.0.1"])
 def test_a_new_project_is_followed_then_no_longer(base):
     app = _home()
@@ -137,15 +130,6 @@ def test_a_new_project_is_followed_then_no_longer(base):
     assert app.button(key="follow-project").label == "Suivre ce projet"
     app.button(key="follow-project").click().run()
     assert tracked.load() == [path]
-
-
-@pytest.mark.allow_hosts(["127.0.0.1"])
-def test_the_trial_from_the_home_page_is_not_followed():
-    app = _home()
-    app.button(key="home-trial").click().run()
-    assert not app.exception, app.exception
-    assert app.button(key="follow-project").label == "Suivre ce projet"
-    assert tracked.load() == []
 
 
 @pytest.mark.allow_hosts(["127.0.0.1"])

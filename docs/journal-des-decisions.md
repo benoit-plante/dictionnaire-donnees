@@ -1948,3 +1948,15 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
 - **Justification :** Demandé par l'auteur le 2026-10-20, après un essai sur une vraie base qui contenait des colonnes sans intérêt pour l'étude. Le lecteur du codebook sait qu'une colonne existe et pourquoi elle n'est pas documentée ; rien ne casse en silence ; la copie documentée reste la base telle quelle, vérifiée case par case. Retirer une colonne sensible avant de créer le projet reste la meilleure voie, et le guide le dit.
 - **Conséquences :** Un projet 0.10.0 ne s'ouvre plus avec la 0.20.1 ; l'inverse fonctionne.
 - **Références :** `src/ddict/project/aside.py`.
+
+### D-159 — Retirer « Essayer l'outil » de l'accueil
+
+- **Date :** 2026-10-20
+- **Statut :** adoptée
+- **Remplace :** D-125
+- **Décision :** L'accueil n'offre plus d'essai sur la base fictive : la section « Essayer l'outil », « Reprendre l'essai » et « Recommencer l'essai » sont retirées, avec `ddict.review.trial`, ses tests et la variable `DDICT_TRIAL_DIR`. `etude-sommeil.sav` quitte le paquet installé ; `questionnaire-sommeil.pdf` y reste, car le banc d'essai des modèles s'en sert. Un dossier `Documents\Dictionnaire de données - essai` déjà créé n'est pas touché : son projet s'ouvre comme un autre. La base fictive reste dans `exemples/bases-fictives/`, pour le guide, les tests et les captures.
+- **Options considérées :**
+  1. Tout retirer, sauf ce que le banc utilise (ce choix).
+  2. Garder l'essai, plus bas sur l'accueil.
+- **Justification :** Demandé par l'auteur le 2026-10-20, avec la nouvelle page d'accueil : l'essai prenait une place de choix pour un geste fait une fois ; le guide montre déjà comment créer le projet de la base fictive comme avec ses propres données.
+- **Références :** `docs/plan-accueil.md`, § 6.

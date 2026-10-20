@@ -35,7 +35,7 @@ If the window cannot open (on a computer without the Edge engine, for example), 
 
 The fictional database is a small invented study of sleep (200 fictional participants), with its questionnaire. It lets you try the tool without any real data. It exists in French and in English; this guide uses the English version.
 
-**The shortest way** (since 0.16): on the home page, section **Try the tool**, click **Try with the fictional database**. The tool copies the French version (`etude-sommeil.sav` and `questionnaire-sommeil.pdf`) into your Documents folder, under `Dictionnaire de données - essai`, creates the project, reads the questionnaire and opens it. Afterwards the button becomes **Resume the trial**; **Start the trial again** makes the project anew after a tick box (its decisions are lost). The steps below use the English version, as with your own data:
+The steps below use the English version, as with your own data:
 
 1. On the home page, under **New project**, click **Choose a database…**. The Windows "Open" window appears (if you do not see it, look in the taskbar). Go to the tool's folder, then `exemples\bases-fictives`, and choose `sleep-study.sav`.
 2. Click **Create the project**. The tool reads the database and creates next to it the **project file**, `sleep-study.dd.json`. It holds everything the tool computed (types, missing values, categories, labels) and, later, your decisions; it does not hold the participants' individual answers. The data file is never changed.
@@ -360,7 +360,7 @@ Since 0.17, the home page begins with the table **My projects**: one row per fol
 
 **Open a project**: a click on its name opens it where something waits ("Acronyms to accept" opens the glossary), otherwise on the first page of its phase.
 
-**Which projects are followed.** A project created from the home page, or by `ddict profile`, is followed at once; the trial project on the fictional database is not. To follow another one: **Follow this project** next to a recent project, or in the sidebar of the open project. To find several at once: **Look for projects in a folder…**, under the table, then choose the folder. The tool looks in that folder and its subfolders, 4 levels down, without opening any file (a OneDrive file "available online only" is not downloaded); it passes over hidden and system folders. Nothing is checked at first: check those you want to follow, then **Follow these N projects**.
+**Which projects are followed.** A project created from the home page, or by `ddict profile`, is followed at once. To follow another one: **Follow this project** next to a recent project, or in the sidebar of the open project. To find several at once: **Look for projects in a folder…**, under the table, then choose the folder. The tool looks in that folder and its subfolders, 4 levels down, without opening any file (a OneDrive file "available online only" is not downloaded); it passes over hidden and system folders. Nothing is checked at first: check those you want to follow, then **Follow these N projects**.
 
 **The ⋮ menu** at the end of a row: **Stop following** takes the project off the table; its file is never touched, nor its notebook. A project moved or renamed stays in the table, greyed, "Not found": **Find it again…** opens the "Open" window, where you show where it is now. The old file being gone, the tool cannot check it is the same project: it says which database the chosen project was made from, for you to judge.
 

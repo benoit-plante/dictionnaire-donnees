@@ -18,7 +18,6 @@ from ddict.design import DesignError
 from ddict.i18n import _
 from ddict.io import ReadError
 from ddict.project import ProjectError, load_project, ondisk
-from ddict.review import trial
 from ddict.review.ui import common as c
 from ddict.review.ui import dialog
 from ddict.workflow import (
@@ -219,7 +218,6 @@ def page() -> None:
 
     _projects()  # v0.17: taking up one's work first
     _recent()
-    _trial()
     st.header(_("Nouveau projet"))
     st.write(
         _(
@@ -573,49 +571,3 @@ def _recent() -> None:
             )
         )
     c.show_message("home-clear")
-
-
-def _start_trial(again: bool) -> None:
-    key = "home-trial-again" if again else "home-trial"
-    try:
-        path = trial.start(again=again)
-    except (OSError, ReadError, ProjectError) as error:
-        _message("error", _("Impossible de préparer l'essai : {detail}").format(detail=error),
-                 key)  # fmt: skip
-        return
-    c.open_project(path)
-
-
-def _trial() -> None:
-    """Try the tool on the fictional database (v0.16, D-125)."""
-    st.header(_("Essayer l'outil"))
-    where = trial.folder()
-    st.write(
-        _(
-            "Sur une base fictive de 200 personnes et son questionnaire, copiés dans le "
-            "dossier {folder}. Rien de réel ; les fichiers de l'essai s'écrivent là."
-        ).format(folder=where)
-    )
-    exists = trial.project_path(where).is_file()
-    st.button(
-        _("Reprendre l'essai") if exists else _("Essayer avec la base fictive"),
-        key="home-trial",
-        on_click=_start_trial,
-        args=(False,),
-        icon=":material/science:",
-    )
-    c.show_message("home-trial")
-    if exists:
-        with st.expander(_("Recommencer l'essai")):
-            st.checkbox(
-                _("Je recommence : les décisions de l'essai seront perdues."),
-                key="home-trial-sure",
-            )
-            st.button(
-                _("Recommencer l'essai"),
-                key="home-trial-again",
-                on_click=_start_trial,
-                args=(True,),
-                disabled=not st.session_state.get("home-trial-sure"),
-            )
-            c.show_message("home-trial-again")

@@ -33,9 +33,7 @@ Si la fenêtre ne peut pas s'ouvrir (sur un ordinateur sans le moteur d'Edge, pa
 
 La base fictive est une petite étude inventée sur le sommeil (200 participants fictifs), avec son questionnaire. Elle permet d'essayer l'outil sans aucune donnée réelle.
 
-**Le plus court** (depuis la 0.16) : sur l'accueil, section **Essayer l'outil**, cliquez sur **Essayer avec la base fictive**. L'outil copie `etude-sommeil.sav` et `questionnaire-sommeil.pdf` dans votre dossier Documents, sous `Dictionnaire de données - essai`, crée le projet, lit le questionnaire et l'ouvre : passez à l'étape 3, puis à la section 4 à partir de son étape 2. Ensuite, le bouton devient **Reprendre l'essai** ; **Recommencer l'essai** refait le projet après une case à cocher (ses décisions sont perdues).
-
-Pour le faire vous-même, comme avec vos propres données :
+Pour le faire, comme avec vos propres données :
 
 1. Sur l'accueil, sous **Nouveau projet**, cliquez sur **Choisir une base…**. La fenêtre « Ouvrir » de Windows apparaît (si vous ne la voyez pas, regardez dans la barre des tâches). Allez dans le dossier de l'outil, puis `exemples\bases-fictives`, et choisissez `etude-sommeil.sav`.
 2. Cliquez sur **Créer le projet**. L'outil lit la base et crée à côté d'elle le **fichier projet**, `etude-sommeil.dd.json`. Il contient tout ce que l'outil a calculé (types, manquants, modalités, étiquettes) et, plus tard, vos décisions ; il ne contient pas les réponses individuelles des participants. Le fichier de données n'est jamais modifié.
@@ -361,7 +359,7 @@ Depuis la 0.17, l'accueil commence par le tableau **Mes projets** : une ligne pa
 
 **Ouvrir un projet** : un clic sur son nom l'ouvre là où quelque chose attend (« Sigles à valider » ouvre le glossaire), sinon sur la première page de sa phase.
 
-**Quels projets sont suivis.** Un projet créé depuis l'accueil, ou par `ddict profiler`, est suivi d'office ; le projet d'essai de la base fictive ne l'est pas. Pour en suivre un autre : **Suivre ce projet** à côté d'un projet récent, ou dans la barre latérale du projet ouvert. Pour en retrouver plusieurs d'un coup : **Chercher les projets dans un dossier…**, sous le tableau, puis choisir le dossier. L'outil cherche dans ce dossier et ses sous-dossiers, sur 4 niveaux, sans ouvrir aucun fichier (un fichier OneDrive « disponible en ligne seulement » n'est pas téléchargé) ; il passe les dossiers cachés ou système. Rien n'est coché au départ : cochez ceux que vous voulez suivre, puis **Suivre ces N projets**.
+**Quels projets sont suivis.** Un projet créé depuis l'accueil, ou par `ddict profiler`, est suivi d'office. Pour en suivre un autre : **Suivre ce projet** à côté d'un projet récent, ou dans la barre latérale du projet ouvert. Pour en retrouver plusieurs d'un coup : **Chercher les projets dans un dossier…**, sous le tableau, puis choisir le dossier. L'outil cherche dans ce dossier et ses sous-dossiers, sur 4 niveaux, sans ouvrir aucun fichier (un fichier OneDrive « disponible en ligne seulement » n'est pas téléchargé) ; il passe les dossiers cachés ou système. Rien n'est coché au départ : cochez ceux que vous voulez suivre, puis **Suivre ces N projets**.
 
 **Le menu ⋮** au bout d'une ligne : **Ne plus suivre** retire le projet du tableau ; son fichier n'est jamais touché, ni son carnet. Un projet déplacé ou renommé reste dans le tableau, grisé, « Introuvable » : **Le retrouver…** ouvre la fenêtre « Ouvrir », où vous montrez où il est maintenant. L'ancien fichier n'existant plus, l'outil ne peut pas vérifier que c'est le même projet : il dit sur quelle base le projet choisi a été fait, pour que vous jugiez.
 
