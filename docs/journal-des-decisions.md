@@ -1960,3 +1960,16 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   2. Garder l'essai, plus bas sur l'accueil.
 - **Justification :** Demandé par l'auteur le 2026-10-20, avec la nouvelle page d'accueil : l'essai prenait une place de choix pour un geste fait une fois ; le guide montre déjà comment créer le projet de la base fictive comme avec ses propres données.
 - **Références :** `docs/plan-accueil.md`, § 6.
+
+### D-160 — La structure de l'accueil
+
+- **Date :** 2026-10-20
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** L'accueil se partage en cinq onglets choisis dans la barre de gauche avec `st.navigation`, comme les pages d'un projet ouvert (D-122) : Mes projets (par défaut), Nouveau projet, Concevoir un questionnaire, Ouvrir un projet (un fichier, les projets récents, la recherche dans un dossier), Réglages (la langue) ; « Quitter l'outil » en bas. Chaque onglet a son adresse ; la page servie à la racine n'est jamais celle que l'adresse nomme (`navigation.root`), pour qu'un rechargement ne dise pas « Page not found ». Dans « Mes projets », la liste des projets suivis est dans la barre de gauche, sous le menu (nom et phase, ou ce qui ne va pas) ; un clic montre le détail du projet dans la fenêtre, sans l'ouvrir et sans lire sa base : chemin, phases, codebook, tâches (chacune ouvre le projet à sa page), plan, carnet, base, questionnaire, fichiers produits à côté (lus pour le projet montré seulement, par leurs noms), Ouvrir, Ouvrir le dossier, Ne plus suivre, Le retrouver.
+- **Options considérées :**
+  1. `st.navigation` et la liste dans la barre de gauche (ce choix).
+  2. `st.navigation` et la liste dans la fenêtre, à gauche du détail.
+  3. Un choix maison dans la barre de gauche, sans adresse (un rechargement revient toujours à « Mes projets »).
+- **Justification :** Demandé par l'auteur le 2026-10-20. La liste dans la fenêtre était la recommandation du plan ; la maquette (étape C1) a montré qu'à 900 × 600 Streamlit ne replie pas la barre de gauche et que la colonne de liste y coupait les noms, alors que la barre de gauche les montre entiers : l'auteur a choisi la barre.
+- **Références :** `docs/plan-accueil.md`, § 7 ; `src/ddict/review/ui/home_view.py`.
