@@ -30,7 +30,11 @@ KINDS = {
     ),
     "questionnaire": (
         N_("Choisir le questionnaire"),
-        [(N_("Questionnaires"), "*.pdf *.txt *.xlsx"), (N_("Tous les fichiers"), "*.*")],
+        [(N_("Questionnaires"), "*.pdf *.txt *.xlsx *.lss"), (N_("Tous les fichiers"), "*.*")],
+    ),
+    "limesurvey": (  # v0.20: a structure re-exported from LimeSurvey
+        N_("Choisir la structure réexportée de LimeSurvey"),
+        [(N_("Structures LimeSurvey"), "*.lss *.txt"), (N_("Tous les fichiers"), "*.*")],
     ),
     "manuscript": (
         N_("Choisir le manuscrit"),

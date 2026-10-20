@@ -2,19 +2,22 @@
 
 from __future__ import annotations
 
+import contextlib
 from collections import Counter
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
-from ddict import i18n
+from ddict import arrival, i18n
 from ddict.export import wording as w
 from ddict.i18n import _, field_label, quoted
+from ddict.io.model import ReadError
 from ddict.project.model import Project
 from ddict.review import levels, logic, study
 from ddict.review.logic import ReviewError
 from ddict.review.ui import common as c
-from ddict.review.ui import design_view
+from ddict.review.ui import design_view, dialog
 from ddict.workflow import format_note, platform_notes, profile_summary
 
 FORMATS = {
@@ -310,13 +313,81 @@ def page(project: Project) -> None:
         _sensitive(sensitive)
 
 
+# --- v0.20 (E4): the database of a designed questionnaire arrives. ---
+
+ARRIVAL = "base-arrival-path"
+
+
+def _browse() -> None:
+    path = dialog.choose("database")
+    if path:
+        st.session_state[ARRIVAL] = path
+
+
+def _receive() -> None:
+    key = "base-arrival"
+    text = str(st.session_state.get(ARRIVAL) or "").strip().strip('"')
+    path = Path(text) if text else None
+    if path is None or not path.is_file():
+        st.session_state.message = ("error", _("Choisissez d'abord la base de données."), key)
+        return
+    project = c.project()
+    try:
+        found = arrival.receive(project, path)
+    except ReadError as error:
+        st.session_state.message = (
+            "error", _("Impossible de lire la base : {detail}").format(detail=error), key,
+        )  # fmt: skip
+        return
+    if not c.save(key, action=_("Lire la base")):
+        return
+    report = arrival.report_path(c.project_path())
+    with contextlib.suppress(OSError):
+        report.write_text(arrival.report_markdown(project, found), encoding="utf-8", newline="\n")
+    st.session_state[ARRIVAL] = ""
+    st.session_state.message = ("success", arrival.summary_text(found), "base-conformity")
+
+
+def _arrival(project: Project) -> None:
+    st.subheader(_("La base est arrivée"))
+    st.caption(
+        _(
+            "Les réponses de la collecte : l'export de LimeSurvey (.sav de préférence), ou "
+            "une autre base. Chaque variable trouve sa variable prévue par son nom et reprend "
+            "les décisions prises ; un rapport de conformité dit ce qui diffère du "
+            "questionnaire. Le fichier n'est jamais modifié."
+        )
+    )
+    with st.container(horizontal=True, vertical_alignment="bottom"):
+        st.text_input(_("Base de données"), key=ARRIVAL)
+        st.button(_("Choisir…"), key="base-arrival-browse", on_click=_browse)
+    st.button(_("Lire la base"), key="base-arrival", type="primary", on_click=_receive)
+    c.show_message("base-arrival")
+
+
+def _conformity(project: Project) -> None:
+    found = arrival.conformity(project)
+    c.show_message("base-conformity")
+    with st.expander(_("Conformité au questionnaire"), expanded=not found.empty):
+        text = arrival.report_markdown(project, found)
+        st.markdown(text.split("\n", 2)[2])  # without its title
+        st.caption(
+            _("Le rapport est aussi écrit à côté du projet : {name}").format(
+                name=arrival.report_path(c.project_path()).name
+            )
+        )
+
+
 def _summary(project: Project, sensitive: list) -> None:
     source = project.source
     if source is None:  # v0.20 (D-145): what the file says waits for the file
         st.write(profile_summary(project))
         design_view.waiting_note(project, "waiting-base")
+        _arrival(project)
         return
     st.write(profile_summary(project))
+    if project.design is not None:  # v0.20 (E4): the base of a designed questionnaire
+        _conformity(project)
     for note in platform_notes(project):
         st.info(note)
     if note := format_note(project):

@@ -79,7 +79,34 @@ from ddict.workflow import (
 EXIT_ERROR = 2
 
 
+def _arrival(args: argparse.Namespace) -> int:
+    """`ddict profiler <base> --projet <projet>` (v0.20, E4): the database of a designed
+    questionnaire arrives; the conformity report next to the project."""
+    from ddict import arrival
+
+    path = Path(args.projet)
+    project = load_project(path)
+    try:
+        found = arrival.receive(project, args.base, min_cell_count=args.seuil)
+    except arrival.AlreadyThere as error:
+        print(
+            _("Ce projet a déjà sa base ({name}) : rien n'a été changé.").format(name=error),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
+    save_project(project, path)
+    report = arrival.report_path(path)
+    report.write_text(arrival.report_markdown(project, found), encoding="utf-8", newline="\n")
+    print(profile_summary(project))
+    print(arrival.summary_text(found))
+    print(_("Rapport de conformité : {path}").format(path=report))
+    print(_("Enregistré dans {path}.").format(path=path))
+    return 0
+
+
 def cmd_profile(args: argparse.Namespace) -> int:
+    if args.projet:  # v0.20: the database of a designed questionnaire
+        return _arrival(args)
     try:
         project, output = profile_database(
             args.base, args.sortie, replace=args.remplacer, min_cell_count=args.seuil
@@ -860,11 +887,46 @@ def _design_word(args: argparse.Namespace) -> int:
     return 0
 
 
+def _design_limesurvey(args: argparse.Namespace) -> int:
+    """`ddict questionnaire limesurvey <projet>` (v0.20, D-148): the designed questionnaire
+    as a file to import into LimeSurvey, next to the project."""
+    from ddict import design_limesurvey
+
+    path = Path(args.fichier)
+    project = load_project(path)
+    found = design_limesurvey.summary(project)
+    if found.problems:
+        print(_("LimeSurvey refuserait ce questionnaire, ou l'importerait autrement :"),
+              file=sys.stderr)  # fmt: skip
+        for problem in found.problems:
+            print(f"- {problem}", file=sys.stderr)
+        print(_("Rien n'a été écrit. Voyez la page « Relecture »."), file=sys.stderr)
+        return EXIT_ERROR
+    try:
+        written = design_limesurvey.write(project, path.parent)
+    except design_limesurvey.FileOpen as error:
+        print(
+            _("Fermez {name}, puis recommencez. Rien n'a été écrit.").format(name=error.path.name),
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
+    print(_("Fichier LimeSurvey : {path}").format(path=written))
+    print(_("Restent dans l'outil, que LimeSurvey n'aura pas :"))
+    for line in found.left:
+        print(f"- {line}")
+    print(_("Importer dans LimeSurvey, pas à pas"))
+    for number, step in enumerate(design_limesurvey.import_steps(project), start=1):
+        print(f"{number}. {step}")
+    return 0
+
+
 def cmd_questionnaire(args: argparse.Namespace) -> int:
     if args.projet in ("creer", "create"):  # v0.20: no file to read, a questionnaire to design
         return _create_design(args)
     if args.projet == "word":  # v0.20: the designed questionnaire in Word
         return _design_word(args)
+    if args.projet == "limesurvey":  # v0.20: the designed questionnaire for LimeSurvey
+        return _design_limesurvey(args)
     project_path = Path(args.projet)
     project = load_project(project_path)
     try:
@@ -1274,6 +1336,15 @@ def build_parser() -> argparse.ArgumentParser:
     profile.add_argument(
         "--remplacer", "--replace", action="store_true", help=_("Écraser un projet existant.")
     )
+    profile.add_argument(
+        "--projet",
+        "--project",
+        help=_(
+            "Le projet d'un questionnaire conçu dans l'outil, qui attend cette base : elle y "
+            "est lue, ses variables reprennent les décisions prises, et un rapport de "
+            "conformité est écrit à côté."
+        ),
+    )
     profile.set_defaults(handler=cmd_profile)
 
     export = commands.add_parser(
@@ -1640,16 +1711,16 @@ def build_parser() -> argparse.ArgumentParser:
         "projet",
         help=_(
             "Fichier projet (.dd.json) ; ou « creer », pour un questionnaire à concevoir dans "
-            "l'outil, dans le dossier donné ensuite ; ou « word », pour écrire en Word le "
-            "questionnaire conçu du projet donné ensuite."
+            "l'outil, dans le dossier donné ensuite ; ou « word » ou « limesurvey », pour écrire "
+            "en Word ou pour LimeSurvey le questionnaire conçu du projet donné ensuite."
         ),
     )
     questionnaire.add_argument(
         "fichier",
         help=_(
             "Questionnaire (.pdf, .txt, export .xlsx d'une plateforme, structure LimeSurvey "
-            ".lss ou .txt) ; ou, avec « creer », le dossier du projet ; avec « word », le "
-            "fichier projet."
+            ".lss ou .txt) ; ou, avec « creer », le dossier du projet ; avec « word » ou "
+            "« limesurvey », le fichier projet."
         ),
     )
     questionnaire.add_argument(

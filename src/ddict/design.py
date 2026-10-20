@@ -576,6 +576,11 @@ def _wanted(project: Project) -> list[_Wanted]:
     return unique
 
 
+def wanted(project: Project) -> list[_Wanted]:
+    """The variables the questionnaire plans: target, name, label, type, value labels."""
+    return _wanted(project)
+
+
 def _replace(wanted: _Wanted, name: str) -> _Wanted:
     return _Wanted(
         wanted.target, name, wanted.label, wanted.type, wanted.labels, wanted.long, wanted.choice
@@ -685,7 +690,11 @@ def plan_variables(project: Project) -> Changes:
     """Make the planned variables again from the questionnaire, in its order: a variable
     keeps its decisions through every change of its question; renamed when its codes change
     (and in its group); removed with its item. Refused when a renamed or removed variable is
-    still cited by the plan, a recoding, an exclusion rule or the description of the base."""
+    still cited by the plan, a recoding, an exclusion rule or the description of the base.
+    Once the database is there (E4), its variables are the file's: the questionnaire changes
+    alone, and the conformity report says what differs."""
+    if project.source is not None:
+        return Changes()
     wanted = _wanted(project)
     by_target = {e.question.value: e for e in project.variables if e.planned is not None}
     changes = Changes()

@@ -59,7 +59,7 @@ def fresh():
 def test_each_column(made, stage):
     found = overview.row(made[stage])
     assert tuple(text(found) for text in COLUMNS) == EXPECTED[stage]
-    assert found.name in ("etude-sommeil", "etude-analyses", "etude-concue")
+    assert found.name in ("etude-sommeil", "etude-analyses", "etude-concu", "etude-collecte")
     assert "Études 2026" in found.folder
 
 

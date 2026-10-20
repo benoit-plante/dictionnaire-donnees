@@ -52,7 +52,7 @@ def _of(entry) -> str | None:
 # --- Acting: change, save, say so. ---
 
 
-def _act(change, *args, key: str = MESSAGE, done: str = "", close: bool = False) -> None:
+def act(change, *args, key: str = MESSAGE, done: str = "", close: bool = False) -> None:
     """Change the questionnaire, then save; on a refusal, say why and keep what was typed."""
     project = c.project()
     before = c.recall()
@@ -379,7 +379,7 @@ def _form(project: Project, question_id: str) -> None:
             _("Enregistrer"),
             key=f"{prefix}save",
             type="primary",
-            on_click=_act,
+            on_click=act,
             args=(_save_question, question_id),
             kwargs={"key": f"{prefix}save", "close": True},
         )
@@ -426,7 +426,7 @@ def _question_line(
             key=f"{key}-up",
             icon=":material/arrow_upward:",
             disabled=rank == 1,
-            on_click=_act,
+            on_click=act,
             args=(design.move_question, question.question_id, rank - 1),
         )
         down.button(
@@ -434,7 +434,7 @@ def _question_line(
             key=f"{key}-down",
             icon=":material/arrow_downward:",
             disabled=rank == total,
-            on_click=_act,
+            on_click=act,
             args=(design.move_question, question.question_id, rank + 1),
         )
         edit.button(
@@ -453,7 +453,7 @@ def _question_line(
             st.button(
                 _("Retirer la question"),
                 key=f"{key}-remove",
-                on_click=_act,
+                on_click=act,
                 args=(design.remove_question, question.question_id),
                 kwargs={"done": _("Question retirée.")},
             )
@@ -470,9 +470,9 @@ def _section_controls(project: Project, section, rank: int, total: int) -> None:
     )
     up, down, edit, remove, add, _space = st.columns([1, 1, 1, 1, 2, 1])
     up.button(_("Monter"), key=f"{key}-up", icon=":material/arrow_upward:", disabled=rank == 1,
-              on_click=_act, args=(design.move_section, section.section_id, rank - 1))  # fmt: skip
+              on_click=act, args=(design.move_section, section.section_id, rank - 1))  # fmt: skip
     down.button(_("Descendre"), key=f"{key}-down", icon=":material/arrow_downward:",
-                disabled=rank == total, on_click=_act,
+                disabled=rank == total, on_click=act,
                 args=(design.move_section, section.section_id, rank + 1))  # fmt: skip
     with edit.popover(_("Modifier"), icon=":material/edit:"):
         st.text_input(_("Titre de la section"), key=title_key)
@@ -480,7 +480,7 @@ def _section_controls(project: Project, section, rank: int, total: int) -> None:
         st.button(
             _("Enregistrer la section"),
             key=f"{key}-save",
-            on_click=_act,
+            on_click=act,
             args=(
                 lambda p, s: design.modify_section(
                     p, s, st.session_state[title_key], st.session_state[instruction_key]
@@ -493,7 +493,7 @@ def _section_controls(project: Project, section, rank: int, total: int) -> None:
         st.button(
             _("Retirer la section"),
             key=f"{key}-remove",
-            on_click=_act,
+            on_click=act,
             args=(design.remove_section, section.section_id),
         )
     add.button(
@@ -522,7 +522,7 @@ def _add_section(project: Project) -> None:
 def _added_section() -> None:
     """Add the section, then empty its title once saved: Streamlit's `clear_on_submit` empties
     it before the callback reads it."""
-    _act(_add_section, key="design-new-section-form", done=_("Section ajoutée."))
+    act(_add_section, key="design-new-section-form", done=_("Section ajoutée."))
     kind, _text, _key = st.session_state.get("message", (None, None, None))
     if kind == "success":
         st.session_state[SECTION_TITLE] = ""
@@ -642,7 +642,7 @@ def review_page(project: Project) -> None:
             keep.button(
                 _("Garder tel quel"),
                 key=f"design-review-keep-{index}",
-                on_click=_act,
+                on_click=act,
                 args=(_keep, point),
                 kwargs={
                     "key": "design-review",

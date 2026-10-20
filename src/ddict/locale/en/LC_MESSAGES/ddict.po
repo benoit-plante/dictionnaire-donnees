@@ -521,6 +521,9 @@ msgstr "Go to the questionnaire"
 msgid "Aller à la question"
 msgstr "Go to the question"
 
+msgid "Aller à la relecture"
+msgstr "Go to the review"
+
 msgid "Alpha de Cronbach observé"
 msgstr "Observed Cronbach's alpha"
 
@@ -594,6 +597,15 @@ msgstr "Preview of the paragraphs"
 
 msgid "Appel IA"
 msgstr "AI call"
+
+msgid ""
+"Après l'importation, réexportez la structure du questionnaire depuis LimeSurvey (.lss ou .txt) : "
+"l'outil la compare au questionnaire du projet, par les codes des questions. Rien ne change sans "
+"votre décision."
+msgstr ""
+"After the import, export the survey structure again from LimeSurvey (.lss or .txt): the tool "
+"compares it with the project's questionnaire, by the codes of the questions. Nothing changes "
+"without your decision."
 
 msgid "Après le gel : la raison de ce changement (amendement)."
 msgstr "After freezing: the reason for this change (amendment)."
@@ -814,6 +826,9 @@ msgstr "No sensitive variable."
 msgid "Aucune variable à envoyer."
 msgstr "No variable to send."
 
+msgid "Aucune version envoyée."
+msgstr "No version sent."
+
 msgid "Auteurs"
 msgstr "Authors"
 
@@ -888,6 +903,9 @@ msgstr "Database: `{name}` ({format}), {rows} rows, {n} variables. File fingerpr
 msgid "Base : {planned} ; {n} variables prévues."
 msgstr "Database: {planned}; {n} planned variables."
 
+msgid "Base de données"
+msgstr "Database"
+
 msgid ""
 "Base de données : SPSS (.sav, .zsav), CSV, Stata (.dta), SAS (.sas7bdat) ou Excel (.xlsx, "
 "première feuille)."
@@ -899,6 +917,19 @@ msgstr "Database not found: compared with the values kept in the notebook, witho
 #, python-brace-format
 msgid "Base introuvable ou différente du projet : {detail}"
 msgstr "Database not found or different from the project: {detail}"
+
+msgid "Base lue : elle dit ce que le questionnaire prévoyait."
+msgstr "Database read: it says what the questionnaire planned."
+
+#, python-brace-format
+msgid ""
+"Base lue. Conformité au questionnaire — variables prévues absentes : {absent} ; non prévues : "
+"{extra} ; avec des codes hors des codes prévus : {codes} ; aux étiquettes différentes : {labels} "
+"; d'un autre type : {types}."
+msgstr ""
+"Database read. Conformity to the questionnaire — planned variables absent: {absent}; not planned:"
+" {extra}; with codes outside the planned codes: {codes}; with different labels: {labels}; of "
+"another type: {types}."
 
 msgid "Bases de données"
 msgstr "Databases"
@@ -1032,6 +1063,10 @@ msgstr "This score name is already another group's."
 msgid "Ce nom n'attend plus de décision."
 msgstr "This name no longer waits for a decision."
 
+#, python-brace-format
+msgid "Ce projet a déjà sa base ({name}) : rien n'a été changé."
+msgstr "This project already has its database ({name}): nothing was changed."
+
 msgid ""
 "Ce projet a un questionnaire conçu dans l'outil : aucun fichier ne le remplace. Rien n'a été "
 "changé."
@@ -1056,6 +1091,22 @@ msgstr "This project has no database yet: it will open once the responses have a
 #, python-brace-format
 msgid "Ce projet n'était pas suivi : {path}"
 msgstr "This project was not followed: {path}"
+
+#, python-brace-format
+msgid ""
+"Ce questionnaire a été envoyé au comité d'éthique le {date} et a changé depuis : le comité devra "
+"peut-être recevoir une modification."
+msgstr ""
+"This questionnaire was sent to the ethics committee on {date} and has changed since: the "
+"committee may need to receive an amendment."
+
+#, python-brace-format
+msgid ""
+"Ce questionnaire a été publié dans LimeSurvey le {date} et a changé depuis : LimeSurvey doit être"
+" mis à jour (un nouveau fichier est proposé ci-dessous)."
+msgstr ""
+"This questionnaire was published in LimeSurvey on {date} and has changed since: LimeSurvey must "
+"be updated (a new file is offered below)."
 
 msgid "Ce qui part"
 msgstr "What is sent"
@@ -1124,6 +1175,10 @@ msgid "Changez d'abord ce qui cite ces variables :"
 msgstr "First change what cites these variables:"
 
 #, python-brace-format
+msgid "Changé : {fields}."
+msgstr "Changed: {fields}."
+
+#, python-brace-format
 msgid "Chaque corrélation est calculée sur les personnes qui ont les deux valeurs ({n} de {a} à {b})."
 msgstr "Each correlation is computed on the people who have both values ({n} from {a} to {b})."
 
@@ -1159,6 +1214,9 @@ msgstr "Choose the database"
 
 msgid "Choisir la base…"
 msgstr "Choose the database…"
+
+msgid "Choisir la structure réexportée de LimeSurvey"
+msgstr "Choose the structure exported again from LimeSurvey"
 
 msgid "Choisir la vague précédente"
 msgstr "Choose…"
@@ -1228,6 +1286,9 @@ msgstr "Choose…"
 msgid "Choisissez comment la somme traite les items manquants."
 msgstr "Choose how the sum handles missing items."
 
+msgid "Choisissez d'abord la base de données."
+msgstr "Choose the database first."
+
 msgid "Choisissez d'abord le dossier du projet."
 msgstr "First choose the project's folder."
 
@@ -1272,6 +1333,9 @@ msgstr "Choose a question, or “No question of the questionnaire”."
 msgid "Choisissez une variable."
 msgstr "Choose a variable."
 
+msgid "Choix"
+msgstr "Choice"
+
 msgid "Choix de réponse (code, texte ; cochez « Autre » pour l'option à préciser)"
 msgstr "Answer choices (code, text; tick “Other” for the option to specify)"
 
@@ -1291,6 +1355,9 @@ msgstr "Empty class: {label}."
 
 msgid "Classes montrées"
 msgstr "Classes shown"
+
+msgid "Cliquez sur « Importer »."
+msgstr "Click “Import”."
 
 msgid "Clé : "
 msgstr "Key: "
@@ -1406,6 +1473,9 @@ msgstr ""
 msgid "Codes manquants déclarés"
 msgstr "Declared missing codes"
 
+msgid "Codes observés hors des codes prévus"
+msgstr "Codes observed outside the planned codes"
+
 msgid "Codes suspects"
 msgstr "Suspect codes"
 
@@ -1478,6 +1548,9 @@ msgstr ""
 "Compares three measures or more of the same person, for example at the start, at the end and "
 "three months after a programme."
 
+msgid "Comparer le réexport de LimeSurvey"
+msgstr "Compare LimeSurvey's re-export"
+
 msgid "Comparé à l'ébauche que l'outil écrit, recalculée sur la base."
 msgstr "Compared with the draft the tool writes, recomputed on the database."
 
@@ -1549,6 +1622,12 @@ msgstr "Confirm all those that changed."
 #, python-brace-format
 msgid "Confirmée : {id}"
 msgstr "Confirmed: {id}"
+
+msgid "Conformité au questionnaire"
+msgstr "Conformity to the questionnaire"
+
+msgid "Conformité de la base au questionnaire"
+msgstr "Conformity of the database to the questionnaire"
 
 msgid "Connaissance des données"
 msgstr "Knowledge of data"
@@ -1719,6 +1798,9 @@ msgstr "Create the questionnaire"
 msgid "D'où vient la règle ou son seuil (p. ex. un procès-verbal)."
 msgstr "Where the rule or its threshold comes from (e.g. minutes of a meeting)."
 
+msgid "Dans LimeSurvey, ouvrez la liste des questionnaires."
+msgstr "In LimeSurvey, open the list of surveys."
+
 #, python-brace-format
 msgid ""
 "Dans SPSS ou PSPP : ouvrez la base, puis exécutez `{stem}.sps` et, s'il est présent, "
@@ -1737,6 +1819,12 @@ msgstr "In the questionnaire: {v}"
 #, python-brace-format
 msgid "Dans {folder} : {xlsx} et {md}."
 msgstr "In {folder}: {xlsx} and {md}."
+
+#, python-brace-format
+msgid ""
+"Dans « Importer un questionnaire », choisissez le fichier {name} (laissez « Importer sur le "
+"groupe de questionnaires par défaut »)."
+msgstr "In “Import survey”, choose the file {name} (leave the default survey group)."
 
 msgid "Date"
 msgstr "Date"
@@ -2246,6 +2334,12 @@ msgstr "All ({n})"
 msgid "Entrée"
 msgstr "Input"
 
+msgid "Envoyé au comité d'éthique"
+msgstr "Sent to the ethics committee"
+
+msgid "Envoyé où"
+msgstr "Sent where"
+
 #, python-brace-format
 msgid "Erreur de fichier : {detail}"
 msgstr "File error: {detail}"
@@ -2376,8 +2470,19 @@ msgstr "Close"
 msgid "Fermez {name} dans Word, puis recommencez. Rien n'a été écrit."
 msgstr "Close {name} in Word, then try again. Nothing was written."
 
+#, python-brace-format
+msgid "Fermez {name}, puis recommencez. Rien n'a été écrit."
+msgstr "Close {name}, then try again. Nothing was written."
+
 msgid "Fichier"
 msgstr "File"
+
+msgid "Fichier LimeSurvey (.txt)"
+msgstr "LimeSurvey file (.txt)"
+
+#, python-brace-format
+msgid "Fichier LimeSurvey : {path}"
+msgstr "LimeSurvey file: {path}"
 
 #, python-brace-format
 msgid "Fichier de commandes : {path}"
@@ -2391,11 +2496,12 @@ msgstr "File of the earlier wave"
 
 msgid ""
 "Fichier projet (.dd.json) ; ou « creer », pour un questionnaire à concevoir dans l'outil, dans le"
-" dossier donné ensuite ; ou « word », pour écrire en Word le questionnaire conçu du projet donné "
-"ensuite."
+" dossier donné ensuite ; ou « word » ou « limesurvey », pour écrire en Word ou pour LimeSurvey le"
+" questionnaire conçu du projet donné ensuite."
 msgstr ""
 "Project file (.dd.json); or “creer”, for a questionnaire to design in the tool, in the folder "
-"given next; or “word”, to write in Word the designed questionnaire of the project given next."
+"given next; or “word” or “limesurvey”, to write in Word or for LimeSurvey the designed "
+"questionnaire of the project given next."
 
 msgid "Fichier projet (.dd.json)."
 msgstr "Project file (.dd.json)."
@@ -2480,6 +2586,9 @@ msgstr "Unknown format: {formats}. Formats: {known}."
 
 msgid "Français"
 msgstr "French"
+
+msgid "Garder le projet"
+msgstr "Keep the project"
 
 msgid "Garder tel quel"
 msgstr "Keep as it is"
@@ -2635,6 +2744,9 @@ msgstr "At least one cut is needed."
 msgid "Il faut deux variables de date et d'heure : le début et la fin."
 msgstr "Two date and time variables are needed: the start and the end."
 
+msgid "Importer dans LimeSurvey, pas à pas"
+msgstr "Importing into LimeSurvey, step by step"
+
 #, python-brace-format
 msgid "Impossible d'écrire le rapport : {detail}."
 msgstr "Cannot write the report: {detail}."
@@ -2660,6 +2772,10 @@ msgstr "Cannot reach {endpoint}: check the Internet connection."
 #, python-brace-format
 msgid "Impossible de lire la base : {detail}"
 msgstr "Cannot read the database: {detail}"
+
+#, python-brace-format
+msgid "Impossible de lire la structure : {detail}"
+msgstr "Cannot read the structure: {detail}"
 
 #, python-brace-format
 msgid "Impossible de lire la vague précédente : {detail}"
@@ -2940,6 +3056,12 @@ msgstr "The database has {n} variables."
 msgid "La base d'origine, si elle n'est pas à côté du projet."
 msgstr "The original database, if it is not next to the project."
 
+msgid "La base dit ce que le questionnaire prévoyait."
+msgstr "The database says what the questionnaire planned."
+
+msgid "La base est arrivée"
+msgstr "The database has arrived"
+
 msgid ""
 "La base est en format long (plusieurs lignes par personne) : cette analyse suppose des "
 "observations indépendantes."
@@ -3144,6 +3266,14 @@ msgstr ""
 msgid "La signification du seuil est obligatoire."
 msgstr "The meaning of the threshold is required."
 
+msgid ""
+"La structure en texte à colonnes de LimeSurvey (.txt), vérifiée sur LimeSurvey Cloud 7.6 ; une "
+"autre version n'est pas garantie. Ni branchement, ni ordre aléatoire, ni quota : ils se règlent "
+"dans LimeSurvey."
+msgstr ""
+"LimeSurvey's tab-separated structure (.txt), checked on LimeSurvey Cloud 7.6; another version is "
+"not guaranteed. No branching, random order or quota: they are set in LimeSurvey."
+
 msgid "La taille d'échantillon tient en 2 000 caractères au plus."
 msgstr "The sample size takes 2,000 characters at most."
 
@@ -3204,6 +3334,9 @@ msgstr "Language of the document (default: the interface's)."
 #, python-brace-format
 msgid "Langue inconnue : {language}"
 msgstr "Unknown language: {language}"
+
+msgid "Le"
+msgstr "On"
 
 msgid "Le Tableau 1"
 msgstr "Table 1"
@@ -3324,6 +3457,10 @@ msgid "Le début et la fin sont la même variable."
 msgstr "The start and the end are the same variable."
 
 #, python-brace-format
+msgid "Le fichier contient {groups} groupes et {questions} questions : {kinds}."
+msgstr "The file holds {groups} groups and {questions} questions: {kinds}."
+
+#, python-brace-format
 msgid ""
 "Le fichier de données n'est jamais modifié ; le projet garde seulement ce que l'outil a calculé "
 "et vos décisions, pas les réponses des participants. Fichier projet : {path}"
@@ -3335,6 +3472,9 @@ msgid ""
 "Le fichier est occupé, peut-être par la synchronisation de OneDrive : rien n'est enregistré. "
 "Réessayez dans un instant."
 msgstr "The file is busy, perhaps being synced by OneDrive: nothing is saved. Try again in a moment."
+
+msgid "Le fichier pour LimeSurvey"
+msgstr "The file for LimeSurvey"
 
 #, python-brace-format
 msgid "Le fichier projet {name} a disparu pendant la commande."
@@ -3539,6 +3679,13 @@ msgstr "The project already has a questionnaire ({name}). Use --replace to repla
 msgid "Le projet a déjà un questionnaire."
 msgstr "The project already has a questionnaire."
 
+msgid ""
+"Le projet d'un questionnaire conçu dans l'outil, qui attend cette base : elle y est lue, ses "
+"variables reprennent les décisions prises, et un rapport de conformité est écrit à côté."
+msgstr ""
+"The project of a questionnaire designed in the tool, waiting for this database: it is read into "
+"it, its variables take again the decisions made, and a conformity report is written next to it."
+
 msgid "Le projet figurera dans « Mes projets », sur l'accueil."
 msgstr "The project will appear in “My projects”, on the home page."
 
@@ -3592,12 +3739,15 @@ msgstr ""
 msgid "Le questionnaire en Word"
 msgstr "The questionnaire in Word"
 
+msgid "Le questionnaire n'a aucune question."
+msgstr "The questionnaire has no question."
+
 msgid ""
-"Le questionnaire pour le comité d'éthique et pour l'équipe, produit par le calcul depuis le "
-"questionnaire de l'outil, jamais par l'IA."
+"Le questionnaire pour le comité d'éthique, pour l'équipe et pour LimeSurvey, produit par le "
+"calcul depuis le questionnaire de l'outil, jamais par l'IA."
 msgstr ""
-"The questionnaire for the ethics committee and for the team, produced by computation from the "
-"tool's questionnaire, never by the AI."
+"The questionnaire for the ethics committee, for the team and for LimeSurvey, produced by "
+"computation from the tool's questionnaire, never by the AI."
 
 msgid ""
 "Le questionnaire à peu près comme le verra une personne qui répond, les champs désactivés : une "
@@ -3605,6 +3755,16 @@ msgid ""
 msgstr ""
 "The questionnaire roughly as a person answering will see it, its fields disabled: an "
 "approximation. Only LimeSurvey is authoritative."
+
+#, python-brace-format
+msgid ""
+"Le rapport d'importation doit annoncer {groups} groupes, {questions} questions, {subquestions} "
+"sous-questions et {answers} réponses, sans avertissement. Un avertissement dit qu'un code a été "
+"changé : notez-le, et corrigez-le dans l'outil."
+msgstr ""
+"The import report should announce {groups} groups, {questions} questions, {subquestions} "
+"subquestions and {answers} answers, without warning. A warning says a code was changed: note it, "
+"and correct it in the tool."
 
 #, python-brace-format
 msgid "Le rapport de cotes observé de {x} était inférieur à 1."
@@ -3628,6 +3788,10 @@ msgstr ""
 "versions of the libraries. The R script redoes the analysis outside the tool; it runs in the "
 "database's folder, with the command file and the preparation script included. These results come "
 "from the study's data: store them with care."
+
+#, python-brace-format
+msgid "Le rapport est aussi écrit à côté du projet : {name}"
+msgstr "The report is also written next to the project: {name}"
 
 msgid "Le retrouver…"
 msgstr "Find it again…"
@@ -3983,6 +4147,15 @@ msgstr "The rules apply in this order:"
 msgid "Les réglages n'ont pas pu être enregistrés : {detail}."
 msgstr "The settings could not be saved: {detail}."
 
+msgid ""
+"Les réponses de la collecte : l'export de LimeSurvey (.sav de préférence), ou une autre base. "
+"Chaque variable trouve sa variable prévue par son nom et reprend les décisions prises ; un "
+"rapport de conformité dit ce qui diffère du questionnaire. Le fichier n'est jamais modifié."
+msgstr ""
+"The responses of the collection: LimeSurvey's export (.sav preferably), or another database. Each"
+" variable finds its planned variable by its name and takes again the decisions made; a conformity"
+" report says what differs from the questionnaire. The file is never changed."
+
 msgid "Les scores sont calculés comme décrit sous « Indices »."
 msgstr "The scores are computed as described under “Indices”."
 
@@ -4113,6 +4286,19 @@ msgstr "Rows"
 msgid "Lignes complètes"
 msgstr "Complete rows"
 
+msgid "LimeSurvey dit la même chose que le projet."
+msgstr "LimeSurvey says the same as the project."
+
+#, python-brace-format
+msgid "LimeSurvey est à corriger pour : {codes}."
+msgstr "LimeSurvey is to be corrected for: {codes}."
+
+msgid "LimeSurvey refuserait ce questionnaire, ou l'importerait autrement :"
+msgstr "LimeSurvey would refuse this questionnaire, or import it otherwise:"
+
+msgid "Lire la base"
+msgstr "Read the database"
+
 msgid "Lire le questionnaire"
 msgstr "Read the questionnaire"
 
@@ -4197,6 +4383,18 @@ msgstr "Wave mark at the end of the names, for example _t2."
 
 msgid "Marque décimale"
 msgstr "Decimal mark"
+
+msgid "Marquer comme envoyé"
+msgstr "Mark as sent"
+
+msgid ""
+"Marquez le questionnaire comme envoyé au comité d'éthique ou publié dans LimeSurvey : le projet "
+"en garde une copie et son empreinte. Le modifier ensuite reste permis ; la page dit alors ce qui "
+"a changé depuis."
+msgstr ""
+"Mark the questionnaire as sent to the ethics committee or published in LimeSurvey: the project "
+"keeps a copy and its fingerprint. Changing it afterwards stays allowed; the page then says what "
+"changed since."
 
 msgid "Max"
 msgstr "Max"
@@ -4570,6 +4768,9 @@ msgstr "Not recognised: a writing the tool cannot read without guessing."
 msgid "Note"
 msgstr "Note"
 
+msgid "Note (facultative)"
+msgstr "Note (optional)"
+
 msgid "Note."
 msgstr "Note."
 
@@ -4676,8 +4877,18 @@ msgstr "Yes"
 msgid "Outil"
 msgstr "Tool"
 
+msgid ""
+"Ouvrez l'aperçu du questionnaire dans LimeSurvey et relisez-le : seul LimeSurvey montre ce que "
+"verront les personnes qui répondent."
+msgstr ""
+"Open the survey's preview in LimeSurvey and read it again: only LimeSurvey shows what the people "
+"answering will see."
+
 msgid "Ouvrez la base pour figer le plan : chaque hypothèse devient une analyse du carnet."
 msgstr "Open the database to finalise the plan: each hypothesis becomes an analysis of the notebook."
+
+msgid "Ouvrez le menu « + », puis choisissez « Importer »."
+msgstr "Open the “+” menu, then choose “Import”."
 
 msgid "Ouvrez-le avec « ddict » pour concevoir le questionnaire."
 msgstr "Open it with “ddict” to design the questionnaire."
@@ -5008,6 +5219,9 @@ msgstr "Take the {n} items of the group"
 msgid "Primaires"
 msgstr "Primary"
 
+msgid "Probablement la même : même texte, autre code"
+msgstr "Probably the same: same text, another code"
+
 msgid "Problème"
 msgstr "Problem"
 
@@ -5216,6 +5430,9 @@ msgstr "Planned by the questionnaire"
 msgid "Publier"
 msgstr "Publish"
 
+msgid "Publié dans LimeSurvey"
+msgstr "Published in LimeSurvey"
+
 msgid "Puissance statistique"
 msgstr "Statistical power"
 
@@ -5238,6 +5455,12 @@ msgid ""
 "l'option."
 msgstr "Question: {question} Each option: 1 = ticked, empty = not ticked; the row's label is the option."
 
+msgid "Question ajoutée"
+msgstr "Question added"
+
+msgid "Question changée"
+msgstr "Question changed"
+
 msgid "Question du questionnaire"
 msgstr "Question in the questionnaire"
 
@@ -5259,6 +5482,9 @@ msgstr ""
 msgid "Question rattachée"
 msgstr "Linked question"
 
+msgid "Question retirée"
+msgstr "Question removed"
+
 msgid "Question retirée."
 msgstr "Question removed."
 
@@ -5277,10 +5503,10 @@ msgstr "Questionnaire"
 
 msgid ""
 "Questionnaire (.pdf, .txt, export .xlsx d'une plateforme, structure LimeSurvey .lss ou .txt) ; "
-"ou, avec « creer », le dossier du projet ; avec « word », le fichier projet."
+"ou, avec « creer », le dossier du projet ; avec « word » ou « limesurvey », le fichier projet."
 msgstr ""
 "Questionnaire (.pdf, .txt, a platform's .xlsx export, a LimeSurvey structure .lss or .txt); or, "
-"with “creer”, the project's folder; with “word”, the project file."
+"with “creer”, the project's folder; with “word” or “limesurvey”, the project file."
 
 msgid "Questionnaire de l'étude"
 msgstr "Study questionnaire"
@@ -5291,6 +5517,10 @@ msgstr "Questionnaire read: {name}{pages}"
 
 msgid "Questionnaire lu."
 msgstr "Questionnaire read."
+
+#, python-brace-format
+msgid "Questionnaire « {title} », base {base}."
+msgstr "Questionnaire \"{title}\", database {base}."
 
 #, python-brace-format
 msgid "Questionnaire « {title} », version {n} du {date} — empreinte {fingerprint}"
@@ -5374,6 +5604,10 @@ msgstr "Markdown report: {path}"
 
 msgid "Rapport Markdown à écrire."
 msgstr "Markdown report to write."
+
+#, python-brace-format
+msgid "Rapport de conformité : {path}"
+msgstr "Conformity report: {path}"
 
 msgid "Rapport de cotes (échelle logarithmique)"
 msgstr "Odds ratio (logarithmic scale)"
@@ -5542,6 +5776,9 @@ msgstr "Also send again the questions whose base name the model already proposed
 msgid "Reprendre cette proposition"
 msgstr "Take up this proposal"
 
+msgid "Reprendre dans le projet"
+msgstr "Take into the project"
+
 msgid "Reprendre l'essai"
 msgstr "Resume the trial"
 
@@ -5570,6 +5807,9 @@ msgstr "Take the names"
 msgid "Reprendre les noms d'une vague précédente"
 msgstr "Take the names of an earlier wave"
 
+msgid "Repris dans le projet."
+msgstr "Taken into the project."
+
 msgid ""
 "Reproduire les items d'un instrument protégé relève de l'équipe ; le codebook donnera alors la "
 "référence de la question (Q12.r3, p. 4) sans son texte."
@@ -5579,6 +5819,9 @@ msgstr ""
 
 msgid "Restantes"
 msgstr "Remaining"
+
+msgid "Restent dans l'outil, que LimeSurvey n'aura pas :"
+msgstr "Staying in the tool, which LimeSurvey will not have:"
 
 msgid "Retenir des analyses pour l'ébauche d'article."
 msgstr "Retain analyses for the article draft."
@@ -5663,6 +5906,12 @@ msgstr "Back to {place}"
 
 msgid "Rien en attente."
 msgstr "Nothing waiting."
+
+msgid "Rien n'a changé depuis cette version."
+msgstr "Nothing changed since this version."
+
+msgid "Rien n'a été écrit. Voyez la page « Relecture »."
+msgstr "Nothing was written. See the page “Review”."
 
 msgid "Rien n'est enregistré : relancez la commande."
 msgstr "Nothing is saved: run the command again."
@@ -5911,6 +6160,10 @@ msgstr "Unknown section: {id}."
 
 msgid "Section sans titre"
 msgstr "Untitled section"
+
+#, python-brace-format
+msgid "Section {n}"
+msgstr "Section {n}"
 
 msgid "Sens attendu"
 msgstr "Expected direction"
@@ -6206,6 +6459,12 @@ msgstr "Unknown structure."
 msgid "Structure proposée : {structure}"
 msgstr "Proposed structure: {structure}"
 
+msgid "Structure réexportée (.lss ou .txt)"
+msgstr "Structure exported again (.lss or .txt)"
+
+msgid "Structures LimeSurvey"
+msgstr "LimeSurvey structures"
+
 msgid "Student (variances égales)"
 msgstr "Student (equal variances)"
 
@@ -6474,6 +6733,9 @@ msgstr "Study type"
 
 msgid "Types de variables"
 msgstr "Types of variables"
+
+msgid "Types différents"
+msgstr "Different types"
 
 #, python-brace-format
 msgid "Types mélangés ({n} valeurs non numériques)"
@@ -6891,6 +7153,9 @@ msgstr "Variables: {names}"
 msgid "Variables absentes (appliquez d'abord le fichier de commandes) : "
 msgstr "Variables missing (apply the command file first): "
 
+msgid "Variables de la base que le questionnaire ne prévoyait pas"
+msgstr "Variables of the database the questionnaire did not plan"
+
 msgid "Variables de plan"
 msgstr "Design variables"
 
@@ -6906,6 +7171,9 @@ msgstr "Manipulated variables"
 
 msgid "Variables mesurées"
 msgstr "Measured variables"
+
+msgid "Variables prévues absentes de la base"
+msgstr "Planned variables absent from the database"
 
 #, python-brace-format
 msgid "Variables qui décrivent l'échantillon : {names}"
@@ -6950,8 +7218,14 @@ msgstr ""
 "Working version: with the codes, the provenance and the review points. For the ethics committee, "
 "produce the other version."
 
+msgid "Version marquée comme envoyée."
+msgstr "Version marked as sent."
+
 msgid "Versions"
 msgstr "Versions"
+
+msgid "Versions envoyées"
+msgstr "Versions sent"
 
 msgid "Violation des conditions"
 msgstr "Violated assumptions"
@@ -7080,6 +7354,9 @@ msgstr "missing"
 
 msgid "accès public aux données"
 msgstr "open or public availability of the data"
+
+msgid "ajouté"
+msgstr "added"
 
 msgid "anthropic (par défaut) ou openai (un serveur compatible OpenAI, d'une université)."
 msgstr "anthropic (default) or openai (an OpenAI-compatible server, a university's)."
@@ -7236,6 +7513,9 @@ msgstr "confirmatory"
 
 msgid "connaissance préalable des données"
 msgstr "prior knowledge of the data"
+
+msgid "consigne"
+msgstr "instruction"
 
 msgid "contact"
 msgstr "contact"
@@ -7510,6 +7790,9 @@ msgstr "the partial correlation"
 msgid "la corrélation partielle entre {a} et {b}"
 msgstr "the partial correlation between {a} and {b}"
 
+msgid "la cotation des échelles"
+msgstr "the scoring of the scales"
+
 msgid "la description de la base"
 msgstr "the description of the database"
 
@@ -7518,6 +7801,10 @@ msgstr "the difference between the two groups"
 
 msgid "la différence entre les deux mesures"
 msgstr "the difference between the two measures"
+
+#, python-brace-format
+msgid "la provenance des textes tirés d'une source (questions : {n})"
+msgstr "the provenance of the texts taken from a source (questions: {n})"
 
 msgid "la structure"
 msgstr "the structure"
@@ -7532,6 +7819,9 @@ msgstr "group {id} has a scoring or an instrument name"
 
 msgid "le modèle"
 msgstr "the model"
+
+msgid "le nom des instruments et leur source"
+msgstr "the names of the instruments and their source"
 
 msgid "le plan"
 msgstr "the plan"
@@ -7549,6 +7839,12 @@ msgstr "the second group, in the order of the codes, higher"
 #, python-brace-format
 msgid "le {date}, pour {target} ({summary}) : {reason}"
 msgstr "on {date}, for {target} ({summary}): {reason}"
+
+msgid "les décisions du dictionnaire (étiquettes, niveaux de mesure, noms)"
+msgstr "the dictionary's decisions (labels, measure levels, names)"
+
+msgid "les items inversés"
+msgstr "the reversed items"
 
 msgid "les règles générales"
 msgstr "the general rules"
@@ -7672,6 +7968,9 @@ msgstr "same value labels"
 msgid "n = {n}"
 msgstr "n = {n}"
 
+msgid "nature"
+msgstr "kind"
+
 msgid "neuf"
 msgstr "nine"
 
@@ -7764,6 +8063,9 @@ msgstr "offered"
 #, python-brace-format
 msgid "omis pour les groupes {groups} (instrument protégé, D-014)"
 msgstr "left out for the groups {groups} (protected instrument, D-014)"
+
+msgid "option « autre »"
+msgstr "“other” option"
 
 msgid "ordinaire"
 msgstr "ordinary"
@@ -7870,8 +8172,15 @@ msgstr "common prefix"
 msgid "préfixe « {prefix} »"
 msgstr "prefix \"{prefix}\""
 
+msgid "présentation"
+msgstr "layout"
+
 msgid "présente l'étendue observée comme celle de l'échelle : à vérifier dans le manuel"
 msgstr "presents the observed range as the scale's range: check in the manual"
+
+#, python-brace-format
+msgid "prévu {planned}, observé {observed}"
+msgstr "planned {planned}, observed {observed}"
 
 #, python-brace-format
 msgid "prévue ({id})"
@@ -7922,6 +8231,12 @@ msgstr "links"
 msgid "recalculée, sans changement"
 msgstr "recomputed, unchanged"
 
+msgid "recodé"
+msgstr "recoded"
+
+msgid "reformulé"
+msgstr "reworded"
+
 msgid "refusé"
 msgstr "refused"
 
@@ -7944,6 +8259,9 @@ msgstr "looks like a citation"
 msgid "retenue"
 msgstr "retained"
 
+msgid "retiré"
+msgstr "removed"
+
 msgid "robustesse"
 msgstr "robustness"
 
@@ -7958,6 +8276,9 @@ msgstr "reference of the article"
 
 msgid "répartition aléatoire"
 msgstr "randomization"
+
+msgid "réponse attendue"
+msgstr "expected answer"
 
 msgid "réponse invalide"
 msgstr "invalid answer"
@@ -8099,6 +8420,10 @@ msgstr "short text"
 
 msgid "texte d'affichage"
 msgstr "displayed text"
+
+#, python-brace-format
+msgid "texte d'affichage {id}"
+msgstr "displayed text {id}"
 
 msgid "texte libre"
 msgstr "free text"
@@ -9148,6 +9473,10 @@ msgid "{score} = {how} des {n} items"
 msgstr "{score} = {how} of the {n} items"
 
 #, python-brace-format
+msgid "{sent} le {date} — empreinte {fingerprint}"
+msgstr "{sent} on {date} — fingerprint {fingerprint}"
+
+#, python-brace-format
 msgid "{sizes}. Test de Mann-Whitney ; {r} : corrélation bisériale de rang."
 msgstr "{sizes}. Mann-Whitney test; {r}: rank-biserial correlation."
 
@@ -9216,6 +9545,50 @@ msgstr "{what} missing"
 #, python-brace-format
 msgid "{what} parmi {values}"
 msgstr "{what} among {values}"
+
+#, python-brace-format
+msgid "{where} : aucun choix."
+msgstr "{where}: no choice."
+
+#, python-brace-format
+msgid "{where} : code en double ({codes})."
+msgstr "{where}: duplicate code ({codes})."
+
+#, python-brace-format
+msgid ""
+"{where} : l'énoncé ou l'option « {text} » n'a pas un code que LimeSurvey accepte (lettres et "
+"chiffres, 20 au plus)."
+msgstr ""
+"{where}: the item or option “{text}” has no code LimeSurvey accepts (letters and digits, 20 at "
+"most)."
+
+#, python-brace-format
+msgid ""
+"{where} : le choix « {text} » n'a pas un code que LimeSurvey accepte (lettres et chiffres, 5 au "
+"plus)."
+msgstr "{where}: the choice “{text}” has no code LimeSurvey accepts (letters and digits, 5 at most)."
+
+#, python-brace-format
+msgid ""
+"{where} : le code {code} ne convient pas à LimeSurvey (une lettre d'abord, puis lettres et "
+"chiffres, 20 au plus)."
+msgstr ""
+"{where}: the code {code} does not suit LimeSurvey (a letter first, then letters and digits, 20 at"
+" most)."
+
+#, python-brace-format
+msgid "{where} : même code LimeSurvey que {other} ({code})."
+msgstr "{where}: same LimeSurvey code as {other} ({code})."
+
+#, python-brace-format
+msgid ""
+"{where} : une accolade {{ ou }} serait lue par LimeSurvey comme une expression à calculer ; "
+"retirez-la."
+msgstr "{where}: a brace {{ or }} would be read by LimeSurvey as an expression to compute; remove it."
+
+#, python-brace-format
+msgid "{where} : une grille sans énoncé."
+msgstr "{where}: a grid without items."
 
 #, python-brace-format
 msgid "{x} (centré)"
@@ -9458,6 +9831,9 @@ msgstr "Elements decided by the team, out of those that apply; the rest is not d
 msgid "Éléments décidés par l'équipe, sur ceux qui s'appliquent."
 msgstr "Elements decided by the team, out of those that apply."
 
+msgid "Énoncé"
+msgstr "Item"
+
 msgid "Énoncés de la grille (code, texte)"
 msgstr "Items of the grid (code, text)"
 
@@ -9501,6 +9877,9 @@ msgstr "Value labels"
 
 msgid "Étiquettes de valeurs (variables codées)"
 msgstr "Value labels (coded variables)"
+
+msgid "Étiquettes de valeurs différentes"
+msgstr "Different value labels"
 
 msgid "Étiquettes de valeurs proposées pour ce groupe"
 msgstr "Value labels proposed for this group"

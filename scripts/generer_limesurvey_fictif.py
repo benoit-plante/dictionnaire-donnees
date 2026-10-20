@@ -23,6 +23,8 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import generer_bases_fictives as common
 
+from ddict.design_limesurvey import COLUMNS, THEMES
+
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "exemples" / "bases-fictives"
 STEM = "questionnaire-limesurvey"
@@ -64,48 +66,14 @@ GROUPS = [
         ],
     ),
 ]  # fmt: skip
-THEMES = {"L": "listradio", "!": "list_dropdown", "M": "multiplechoice", "F": "arrays/array",
-          "S": "shortfreetext", "T": "longfreetext", "N": "numerical", "D": "date",
-          "X": "boilerplate"}  # fmt: skip
+# The 151 columns of LimeSurvey 7.6, and its themes: those the tool writes (v0.20, E2).
+TSV_COLUMNS = list(COLUMNS)
 
 
 def _names(text: str) -> list[str]:
     return text.split()
 
 
-# The 151 columns of LimeSurvey 7.6's tab-separated export, in its order.
-TSV_COLUMNS = _names(
-    "id related_id class type/scale name relevance text help language validation mandatory "
-    "encrypted other default same_default question_theme_name same_script allowed_filetypes "
-    "alphasort answer_order answer_width answer_width_bycolumn array_filter array_filter_exclude "
-    "array_filter_style assessment_value category_separator choice_input_columns choice_title "
-    "commented_checkbox commented_checkbox_auto cssclass date_format date_max date_min "
-    "display_columns display_rows display_type dropdown_dates dropdown_dates_minute_step "
-    "dropdown_dates_month_style dropdown_prefix dropdown_prepostfix dropdown_separators "
-    "dropdown_size dualscale_headerA dualscale_headerB em_validation_q em_validation_q_tip "
-    "em_validation_sq em_validation_sq_tip equals_num_value equation exclude_all_others "
-    "exclude_all_others_auto hidden hide_tip input_boxes input_size keep_codes_order "
-    "label_input_columns location_city location_country location_defaultcoordinates "
-    "location_mapheight location_mapservice location_mapwidth location_mapzoom "
-    "location_nodefaultfromip location_postal location_state max_answers max_filesize "
-    "max_num_of_files max_num_value max_num_value_n max_subquestions maximum_chars min_answers "
-    "min_num_of_files min_num_value min_num_value_n multiflexible_checkbox multiflexible_max "
-    "multiflexible_min multiflexible_step num_value_int_only numbers_only "
-    "other_comment_mandatory other_numbers_only other_replace_text page_break parent_order "
-    "placeholder prefix printable_help public_statistics random_group random_order rank_title "
-    "repeat_headings reverse samechoiceheight samelistheight scale_export show_comment "
-    "show_grand_total show_title show_totals showpopups slider_accuracy slider_custom_handle "
-    "slider_default slider_default_set slider_handle slider_layout slider_max "
-    "slider_middlestart slider_min slider_orientation slider_rating slider_reset "
-    "slider_reversed slider_separator slider_showminmax statistics_graphtype "
-    "statistics_showgraph statistics_showmap subquestion_order suffix text_input_columns "
-    "text_input_width time_limit time_limit_action time_limit_countdown_message "
-    "time_limit_disable_next time_limit_disable_prev time_limit_message "
-    "time_limit_message_delay time_limit_message_style time_limit_timer_style "
-    "time_limit_warning time_limit_warning_2 time_limit_warning_2_display_time "
-    "time_limit_warning_2_message time_limit_warning_2_style time_limit_warning_display_time "
-    "time_limit_warning_message time_limit_warning_style use_dropdown value_range_allows_missing"
-)
 QUESTION_FIELDS = _names("qid parent_qid sid gid type title preg other mandatory encrypted "
                    "question_order scale_id same_default relevance question_theme_name "
                    "modulename same_script")  # fmt: skip

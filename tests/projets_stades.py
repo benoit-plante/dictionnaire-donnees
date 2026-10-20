@@ -133,7 +133,7 @@ def make(root: Path) -> dict[str, Path]:
                 Publication(kind="limesurvey", date="2026-10-20", fingerprint="0" * 64,
                             questionnaire=project.questionnaire.model_copy(deep=True))
             ]  # fmt: skip
-        path = folder / "etude-concue.dd.json"
+        path = folder / f"etude-{stage}.dd.json"  # two names: one order
         save_project(project, path)
         found[stage] = path
 

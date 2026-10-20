@@ -123,12 +123,16 @@ def footer_text(project: Project) -> str:
     )
 
 
+def stem(project: Project) -> str:
+    """The questionnaire's name as a file name: a character Windows refuses becomes "-"."""
+    found = design.questionnaire(project).file_name
+    return "".join("-" if c in '<>:"/\\|?*' else c for c in found).strip(" .") or "questionnaire"
+
+
 def file_name(project: Project, which: Version) -> str:
     """ "Étude du sommeil - comité.docx", "Étude du sommeil - travail.docx"."""
     words = {"ethics": _("comité"), "working": _("travail")}
-    stem = design.questionnaire(project).file_name
-    stem = "".join("-" if c in '<>:"/\\|?*' else c for c in stem).strip(" .") or "questionnaire"
-    return f"{stem} - {words[which]}.docx"
+    return f"{stem(project)} - {words[which]}.docx"
 
 
 # --- Writing. ---
