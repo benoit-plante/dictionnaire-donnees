@@ -16,7 +16,7 @@ import streamlit as st
 from ddict import settings, tracked
 from ddict.export.wording import dataset_title
 from ddict.i18n import N_, _
-from ddict.project import permission
+from ddict.project import aside, permission
 from ddict.review import logic, navigation, shutdown
 from ddict.review.ui import (
     ai_view,
@@ -264,7 +264,10 @@ def main() -> None:
         chosen = None
         if mode == "variables":
             filters = [
-                f for f in variables_view.FILTERS if f != "unlinked" or project.questionnaire
+                f
+                for f in variables_view.FILTERS
+                if (f != "unlinked" or project.questionnaire)
+                and (f != "aside" or aside.aside(project))
             ]
             if st.session_state.get("filter") not in filters:  # v0.16: never an empty page
                 st.session_state.filter = variables_view.default_filter(project)

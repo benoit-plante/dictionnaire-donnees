@@ -190,7 +190,7 @@ def test_the_project_file(tmp_path, project, prepared):
     path = tmp_path / "etude-analyses.dd.json"
     save_project(project, path)
     data = json.loads(path.read_text(encoding="utf-8"))
-    assert data["schema_version"] == "0.9.0"
+    assert data["schema_version"] == "0.10.0"
     assert list(data["plan"]) == ["alpha", "correction", "missing", "sample_size", "data_origin",
                                   "data_status", "next_id", "hypotheses", "frozen",
                                   "amendments"]  # fmt: skip
@@ -198,7 +198,7 @@ def test_the_project_file(tmp_path, project, prepared):
     data["schema_version"] = "0.4.0"  # a project of v0.12
     path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
     old = load_project(path)
-    assert old.schema_version == "0.9.0" and old.plan.hypotheses == []
+    assert old.schema_version == "0.10.0" and old.plan.hypotheses == []
     _planned(old, prepared, frozen=True)
     pl.modify(old, "H2", {"options": {"method": "spearman"}}, prepared, "Asymétrie", LATER)
     save_project(old, path)

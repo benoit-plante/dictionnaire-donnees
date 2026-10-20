@@ -82,6 +82,9 @@ def refusals(project: Project, rule: Recode) -> list[str]:
         return found
     if ref.variable is not None:
         entry = project.variable(ref.variable)
+        if entry.set_aside is not None:  # D-158
+            found.append(_("{name} : variable écartée du codebook.").format(name=name))
+            return found
         if (entry.privacy.privacy_class.value in NAMING) or entry.data_type in (
             "empty",
             "mixed",

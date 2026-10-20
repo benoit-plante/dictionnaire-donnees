@@ -97,12 +97,30 @@ def _missing(entry: VariableEntry, confirmed: bool = True) -> list[Code | dict] 
     return items + [str(c) if string else c for c in singles]
 
 
+def _as_in_file(entry, labels: dict, value_labels: dict, missing: dict, measure: dict) -> None:
+    """A variable set aside keeps, in the copy, the metadata of the file, under its name."""
+    name = entry.name
+    labels[name] = entry.file.label or None
+    string = entry.file.storage_type == "string"
+    found = {(str(lab.code) if string else lab.code): lab.label for lab in entry.file.value_labels}
+    if found:
+        value_labels[name] = found
+    codes = _missing(entry, confirmed=False)
+    if codes:
+        missing[name] = codes
+    if entry.file.measure_level:
+        measure[name] = entry.file.measure_level
+
+
 def _metadata(project: Project, columns: list[str]) -> tuple[dict, list[str]]:
     """The metadata of the copy, by the names of the copy (the accepted new names)."""
     labels, value_labels, missing, measure, refused = {}, {}, {}, {}, []
     for original in columns:
         entry = project.variable(original)
         name = w.final_name(entry)
+        if entry.set_aside is not None:  # D-158: what the file said, none of the team's
+            _as_in_file(entry, labels, value_labels, missing, measure)
+            continue
         labels[name] = w.label_text(entry, "final") or None
         string = entry.file.storage_type == "string"
         accepted = {

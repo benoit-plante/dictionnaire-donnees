@@ -13,6 +13,7 @@ from ddict import arrival, i18n
 from ddict.export import wording as w
 from ddict.i18n import _, field_label, quoted
 from ddict.io.model import ReadError
+from ddict.project import aside
 from ddict.project.model import Project
 from ddict.review import levels, logic, study
 from ddict.review.logic import ReviewError
@@ -298,7 +299,7 @@ def page(project: Project) -> None:
     source = project.source
     label = f" — {source.label}" if source is not None and source.label else ""
     st.header(w.dataset_title(project) + label)
-    sensitive = [e for e in project.variables if logic.is_sensitive(e)]
+    sensitive = [e for e in aside.kept(project) if logic.is_sensitive(e)]
     labels = [_("Résumé"), _("Description"), tab_levels(), _("Sensibles ({n})").format(
         n=len(sensitive))]  # fmt: skip
     summary, description, measure, private = c.tabs(TAB, labels)
@@ -392,9 +393,9 @@ def _summary(project: Project, sensitive: list) -> None:
         st.info(note)
     if note := format_note(project):
         st.warning(note)
-    flagged = [e for e in project.variables if w.entry_anomalies(e)]
+    flagged = [e for e in aside.kept(project) if w.entry_anomalies(e)]
     columns = st.columns(4)
-    columns[0].metric(_("Variables"), len(project.variables))
+    columns[0].metric(_("Variables"), len(aside.kept(project)))
     columns[1].metric(_("Lignes"), source.n_rows)
     columns[2].metric(_("Variables sensibles"), len(sensitive))
     columns[3].metric(_("Avec signalements"), len(flagged))
@@ -424,7 +425,7 @@ def _summary(project: Project, sensitive: list) -> None:
         width="stretch",
         column_config={missing: st.column_config.TextColumn(missing, width="large")},
     )
-    types = Counter(w.TYPES.get(e.data_type, e.data_type) for e in project.variables)
+    types = Counter(w.TYPES.get(e.data_type, e.data_type) for e in aside.kept(project))
     st.subheader(_("Types de variables"))
     st.dataframe(
         pd.DataFrame(sorted(types.items()), columns=[_("Type"), _("Variables")]),

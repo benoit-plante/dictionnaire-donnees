@@ -15,7 +15,7 @@ from ddict import naming, waves
 from ddict.export import wording as w
 from ddict.i18n import N_, Texts, _, colon
 from ddict.io import ReadError
-from ddict.project import ProjectError
+from ddict.project import ProjectError, aside
 from ddict.project.decisions import is_accepted
 from ddict.project.model import Project, TrackedValue, VariableEntry
 from ddict.questionnaire import link
@@ -94,7 +94,7 @@ def rows(project: Project, which: NameFilter = "all") -> list[NameRow]:
     clashes = set(naming.conflicts(project))
     sure = link.sure_choices(project) if project.questionnaire else {}
     found = []
-    for entry in project.variables:
+    for entry in aside.kept(project):
         if not _selected(project, entry, which, clashes):
             continue
         tracked = entry.new_name

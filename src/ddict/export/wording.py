@@ -15,7 +15,7 @@ from ddict import glossary
 from ddict.i18n import N_, TextList, Texts, _, colon, decimal, quoted, semicolon
 from ddict.profile.compute import is_missing_label
 from ddict.profile.variants import spelling_variants
-from ddict.project import completeness, measure, scoring
+from ddict.project import aside, completeness, measure, scoring
 from ddict.project.build import GROUP_PARTS
 from ddict.project.decisions import is_accepted
 from ddict.project.model import (
@@ -132,7 +132,7 @@ def status_text(tracked: TrackedValue) -> str:
 
 def renamed(project: Project, kind: ExportKind) -> bool:
     """Whether this export shows new names: accepted ones, and proposals in a work export."""
-    return any(shown(e.new_name, kind) is not None for e in project.variables)
+    return any(shown(e.new_name, kind) is not None for e in aside.kept(project))
 
 
 def name_text(entry: VariableEntry, kind: ExportKind) -> str:
@@ -145,7 +145,10 @@ def name_text(entry: VariableEntry, kind: ExportKind) -> str:
 
 
 def final_name(entry: VariableEntry) -> str:
-    """The name the data has once the decisions are applied: only an accepted new name."""
+    """The name the data has once the decisions are applied: only an accepted new name;
+    a variable set aside keeps its own (D-158)."""
+    if entry.set_aside is not None:
+        return entry.name
     return entry.new_name.value if is_accepted(entry.new_name) else entry.name
 
 
@@ -157,7 +160,7 @@ def names_of(project: Project) -> dict[str, str]:
 def correspondence_rows(project: Project, kind: ExportKind) -> list[tuple[str, str, str, str]]:
     """(original name, new name, status, origin) for each variable this export renames."""
     rows = []
-    for entry in project.variables:
+    for entry in aside.kept(project):
         value = shown(entry.new_name, kind)
         if value is None:
             continue
@@ -549,7 +552,7 @@ def questionnaire_facts(project: Project) -> list[tuple[str, str]]:
     if questionnaire is None:
         return []
     pages = f" ({questionnaire.n_pages} pages)" if questionnaire.n_pages else ""
-    linked = sum(1 for e in project.variables if is_accepted(e.question))
+    linked = sum(1 for e in aside.kept(project) if is_accepted(e.question))
     return [
         (_("Questionnaire"), f"{questionnaire.file_name}{pages}"),
         (_("Empreinte SHA-256 du questionnaire"), questionnaire.sha256),

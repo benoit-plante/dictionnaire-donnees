@@ -32,7 +32,7 @@ from importlib import resources
 
 from ddict import glossary, i18n
 from ddict.export.wording import code_text, confirmed_missing, group_description
-from ddict.project import measure
+from ddict.project import aside, measure
 from ddict.project.decisions import is_accepted
 from ddict.project.model import Group, Project, VariableEntry
 from ddict.questionnaire import link
@@ -220,7 +220,7 @@ def build_blocks(
     """
     if size < 1:
         raise ValueError("Block size must be at least 1")
-    variables = project.variables
+    variables = aside.kept(project)
     groups = {g.group_id: g for g in project.groups}
     language = project.settings.language
     system = system_prompt(version, language)

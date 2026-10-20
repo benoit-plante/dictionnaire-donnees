@@ -25,7 +25,7 @@ import unicodedata
 from dataclasses import dataclass
 
 from ddict import platforms
-from ddict.project import dataset
+from ddict.project import aside, dataset
 from ddict.project.decisions import DecisionError, correct, enter, is_accepted, reject, validate
 from ddict.project.model import Project, QuestionStem, TrackedValue, VariableEntry
 from ddict.questionnaire import link
@@ -332,10 +332,10 @@ def propose(project: Project) -> None:
     no longer give, or that breaks a rule, is withdrawn."""
     _propose_stems(project, stem_questions(project))
     wanted = _rule_names(project)
-    for entry in project.variables:
+    for entry in aside.kept(project):
         if _undecided(entry.new_name):
             entry.new_name = TrackedValue[str](origin="human")
-    for entry in project.variables:
+    for entry in aside.kept(project):
         if not _undecided(entry.new_name) or entry.name not in wanted:
             continue
         name = with_wave(slug(wanted[entry.name]) or wanted[entry.name], project)
@@ -345,14 +345,14 @@ def propose(project: Project) -> None:
 
 def to_name(project: Project) -> list[str]:
     """The variables without a new name, proposed or decided."""
-    return [e.name for e in project.variables if not e.new_name.value]
+    return [e.name for e in aside.kept(project) if not e.new_name.value]
 
 
 def summary(project: Project) -> dict[str, int]:
     """Counts for a person: proposed, accepted, to name, in conflict."""
     return {
-        "proposed": sum(1 for e in project.variables if e.new_name.status == "proposed"),
-        "accepted": sum(1 for e in project.variables if is_accepted(e.new_name)),
+        "proposed": sum(1 for e in aside.kept(project) if e.new_name.status == "proposed"),
+        "accepted": sum(1 for e in aside.kept(project) if is_accepted(e.new_name)),
         "to_name": len(to_name(project)),
         "conflicts": len(conflicts(project)),
     }

@@ -21,7 +21,7 @@ from ddict import __version__
 from ddict.export import wording as w
 from ddict.i18n import N_, Texts, _, colon, in_language, semicolon
 from ddict.profile.variants import spelling_variants
-from ddict.project import completeness, fingerprint, measure, scoring
+from ddict.project import aside, completeness, fingerprint, measure, scoring
 from ddict.project.decisions import is_accepted
 from ddict.project.model import Group, NoDatabase, Project, VariableEntry
 from ddict.questionnaire import link
@@ -98,7 +98,7 @@ def _sensitive(entry: VariableEntry) -> str | None:
 
 
 def _renamed(project: Project) -> bool:
-    return any(w.final_name(e) != e.name for e in project.variables)
+    return any(w.final_name(e) != e.name for e in aside.kept(project))
 
 
 def _groups_of(project: Project) -> dict[str, Group]:
@@ -199,7 +199,7 @@ def _attention(project: Project) -> list[tuple[str, list[str]]]:
     """The findings, grouped: one line per finding, with the variables it concerns."""
     names = w.names_of(project)
     found: dict[str, list[str]] = {}
-    for entry in project.variables:
+    for entry in aside.kept(project):
         for text in _findings(entry, names):
             found.setdefault(text[0].lower() + text[1:], []).append(w.final_name(entry))
     return list(found.items())
@@ -224,7 +224,7 @@ def _base_line(project: Project) -> str:
     source = project.source
     if source is None:  # v0.20 (D-145): designed before its collection
         return _("Base : {planned} ; {n} variables prévues.").format(
-            planned=_(w.PLANNED_DICTIONARY), n=len(project.variables)
+            planned=_(w.PLANNED_DICTIONARY), n=len(aside.kept(project))
         )
     return _(
         "Base : `{name}` ({format}), {rows} lignes, {n} variables. Empreinte du fichier : `{sha}`."
@@ -345,7 +345,7 @@ def _variables(project: Project) -> list[str]:
         _("Note"),
     ]
     lines = [_("## Variables"), "", "| " + " | ".join(header) + " |", "|---" * len(header) + "|"]
-    for entry in project.variables:
+    for entry in aside.kept(project):
         group = groups.get(entry.name)
         name = w.final_name(entry)
         shown = f"`{name}`" + (f" ({entry.name})" if name != entry.name else "")
@@ -400,7 +400,7 @@ def _statistics(project: Project) -> list[str]:
         ).format(n=project.settings.min_cell_count),
         "",
     ]
-    for entry in project.variables:
+    for entry in aside.kept(project):
         if _sensitive(entry):
             continue
         text = _statistics_text(entry)
@@ -436,7 +436,7 @@ def _question_texts(project: Project, omitted: set[str]) -> list[str]:
     order = {q.question_id: n for n, q in enumerate(project.questionnaire.questions)}
     checkboxes = {n for g in project.groups if g.kind == "multiple_response"
                   for n in [*(g.members.value or []), *g.attached]}  # fmt: skip
-    for entry in project.variables:
+    for entry in aside.kept(project):
         target = _question(entry)
         if not target or target == link.NO_QUESTION:
             continue
@@ -504,6 +504,12 @@ def render_context(
 
 
 def _field(project: Project, entry: VariableEntry, groups: dict, statistics: bool) -> dict:
+    if entry.set_aside is not None:  # D-158: the column is in the file, nothing said of it
+        return {
+            "name": entry.name,
+            "type": FIELD_TYPES.get(entry.data_type, "any"),
+            "_ddict": {"set_aside": entry.set_aside.reason},
+        }
     field: dict = {"name": w.final_name(entry)}
     label = w.label_text(entry, "final")
     if label:

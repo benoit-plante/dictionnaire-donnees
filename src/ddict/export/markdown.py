@@ -7,7 +7,7 @@ from pathlib import Path
 
 from ddict.export import wording as w
 from ddict.i18n import _, colon, field_label, in_language, semicolon
-from ddict.project import fingerprint
+from ddict.project import aside, fingerprint
 from ddict.project.model import Profile, Project, VariableEntry
 
 
@@ -20,13 +20,27 @@ def _inline(value: object) -> str:
     return str(value).replace("\r", " ").replace("\n", " ")
 
 
+def _set_aside(project: Project) -> list[str]:
+    """The variables the team left out of the codebook, with their reason (D-158)."""
+    found = aside.aside(project)
+    if not found:
+        return []
+    lines = [
+        _("## Variables écartées"),
+        "",
+        _("Dans la base, mais laissées hors du codebook par l'équipe."),
+        "",
+    ]
+    lines += [f"- `{e.name}` : {_inline(e.set_aside.reason)}" for e in found]
+    return [*lines, ""]
+
+
 def _overview(project: Project, kind: w.ExportKind) -> list[str]:
     source = project.source
-    types = Counter(w.TYPES.get(e.data_type, "") for e in project.variables)
-    sensitive = [
-        e for e in project.variables if (e.privacy.privacy_class.value or "ordinary") != "ordinary"
-    ]
-    flagged = [e for e in project.variables if w.issues(e, kind)]
+    kept = aside.kept(project)
+    types = Counter(w.TYPES.get(e.data_type, "") for e in kept)
+    sensitive = [e for e in kept if (e.privacy.privacy_class.value or "ordinary") != "ordinary"]
+    flagged = [e for e in kept if w.issues(e, kind)]
     kind_text = _("finale") if kind == "final" else _("de travail (propositions de l'IA incluses)")
     lines = [
         _("# Dictionnaire de données : {name}").format(name=_inline(w.dataset_title(project))),
@@ -339,8 +353,9 @@ def render_markdown(
     lines += _groups(project, kind)
     lines += _recodes(project)
     lines += [_("## Variables"), ""]
-    for entry in project.variables:
+    for entry in aside.kept(project):
         lines += _variable(project, entry, kind, omitted)
+    lines += _set_aside(project)
     lines += _correspondence(project, kind)
     return "\n".join(lines).rstrip("\n") + "\n"
 

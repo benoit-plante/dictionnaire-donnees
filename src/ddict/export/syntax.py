@@ -21,7 +21,7 @@ from ddict import __version__
 from ddict.export import wording as w
 from ddict.i18n import _, in_language
 from ddict.io.csv_reader import MISSING_TOKENS
-from ddict.project import fingerprint, measure
+from ddict.project import aside, fingerprint, measure
 from ddict.project.model import Code, NoDatabase, Project, VariableEntry
 from ddict.questionnaire.labels import accepted_labels
 
@@ -136,7 +136,7 @@ def spss(project: Project, today: str) -> str:
             f"  ({renames[-1][0]} = {renames[-1][1]}).",
             "",
         ]
-    for entry in project.variables:
+    for entry in aside.kept(project):
         d = decisions(entry)
         if not SPSS_NAME.match(d.name) or d.name.endswith("."):
             lines.append(
@@ -278,7 +278,7 @@ def r_script(project: Project, today: str) -> str:
             "names(donnees)[match(names(ddict_noms), names(donnees))] <- ddict_noms",
             "",
         ]
-    for entry in project.variables:
+    for entry in aside.kept(project):
         d = decisions(entry)
         column = f"donnees[[{_r_text(d.name)}]]"
         if d.labels or d.missing or d.missing_range:

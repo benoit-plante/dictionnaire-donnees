@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.9.0",
+  "schema_version": "0.10.0",
   "source": {
     "name": "etude-sommeil.sav",
     "format": "sav",
@@ -152,7 +152,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "courriel",
@@ -280,7 +281,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "date_passation",
@@ -405,7 +407,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "date_naissance",
@@ -533,7 +536,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "age",
@@ -660,7 +664,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "genre",
@@ -828,7 +833,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "vague",
@@ -966,7 +972,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "sommeil_q1",
@@ -1138,7 +1145,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "sommeil_q2",
@@ -1310,7 +1318,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "sommeil_q3",
@@ -1491,7 +1500,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "sommeil_q4",
@@ -1663,7 +1673,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "sommeil_q5",
@@ -1835,7 +1846,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "sommeil_q6",
@@ -2007,7 +2019,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "sommeil_q7",
@@ -2179,7 +2192,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "sommeil_q8",
@@ -2351,7 +2365,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "anx1",
@@ -2528,7 +2543,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "anx2",
@@ -2705,7 +2721,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "anx3",
@@ -2882,7 +2899,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "anx4",
@@ -3059,7 +3077,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "heures_sommeil",
@@ -3184,7 +3203,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "heures_sommeil_2",
@@ -3311,7 +3331,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "nb_reveils",
@@ -3474,7 +3495,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "aide_medicament",
@@ -3607,7 +3629,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "aide_naturel",
@@ -3740,7 +3763,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "aide_tcc",
@@ -3873,7 +3897,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "aide_aucune",
@@ -4006,7 +4031,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "anx5",
@@ -4183,7 +4209,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "anx6",
@@ -4360,7 +4387,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "anx7",
@@ -4537,7 +4565,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "satisfaction_globale",
@@ -4733,7 +4762,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "taille_cm",
@@ -4860,7 +4890,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "q_retiree",
@@ -4987,7 +5018,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "langue_maison",
@@ -5143,7 +5175,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     },
     {
       "name": "commentaire",
@@ -5271,7 +5304,8 @@
       "references": [],
       "notes": null,
       "ai_signals": [],
-      "planned": null
+      "planned": null,
+      "set_aside": null
     }
   ],
   "groups": [

@@ -30,6 +30,7 @@ from ddict.export import wording as w
 from ddict.export.preparation import plan
 from ddict.llm.messages import Block, recorded_version, system_prompt
 from ddict.llm.validate import InvalidResponse
+from ddict.project import aside
 from ddict.project.model import Project
 
 if TYPE_CHECKING:
@@ -270,7 +271,7 @@ def _content(project: Project, objective: str, whole: bool = False) -> dict:
     group's description never has its range of observed codes (level 1, D-136)."""
     shorten = (lambda text: " ".join(text.split())) if whole else _short
     found = usable(project)
-    entries = {w.final_name(e): e for e in project.variables}
+    entries = {w.final_name(e): e for e in aside.kept(project)}
     scores = {s.name: s.group for s in plan(project)[1]}
     groups, grouped = [], set()
     for group in project.groups:

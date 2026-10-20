@@ -5,7 +5,8 @@ any accepted change gives another. In it: what the file says of each variable, t
 values, the team's decisions (suspect codes, sourced ranges and thresholds, notes), the
 groups, the accepted glossary, the questionnaire the question texts come from and, since
 v0.12, the exclusion rules (only when there are some: a project without rules keeps its
-fingerprint), and since v0.15 the recodings, likewise. Not in it:
+fingerprint), and since v0.15 the recodings, likewise; since v0.20.2 (D-158), the reason
+of a variable set aside, only for one set aside. Not in it:
 proposals waiting or rejected, dates, model calls, settings, statistics computed on the
 data. Exports show its first 12 characters.
 """
@@ -35,7 +36,7 @@ def _dump(value: object) -> object:
 
 def _variable(entry: VariableEntry) -> dict:
     file = entry.file
-    return {
+    found = {
         "name": entry.name,
         "file": {
             "label": file.label,
@@ -59,6 +60,9 @@ def _variable(entry: VariableEntry) -> dict:
         "references": entry.references,
         "notes": entry.notes,
     }
+    if entry.set_aside is not None:  # a variable kept keeps its fingerprint
+        found["set_aside"] = entry.set_aside.reason
+    return found
 
 
 def _glossary_accepted(entry: GlossaryEntry) -> bool:

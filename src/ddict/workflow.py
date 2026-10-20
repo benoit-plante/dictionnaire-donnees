@@ -20,7 +20,7 @@ from ddict.glossary import propose_from_questionnaire, undefined_acronyms
 from ddict.i18n import N_, Texts, _
 from ddict.io import read_database
 from ddict.privacy import MIN_CELL_COUNT
-from ddict.project import PROJECT_SUFFIX, build_project, ondisk, save_project
+from ddict.project import PROJECT_SUFFIX, aside, build_project, ondisk, save_project
 from ddict.project.decisions import is_accepted
 from ddict.project.model import Project, Questionnaire
 from ddict.questionnaire import language as study_language
@@ -63,17 +63,19 @@ def profile_database(
 def profile_summary(project: Project) -> str:
     """One line: "34 variables, 200 lignes ; 4 variables sensibles ; 10 avec signalements"."""
     sensitive = sum(
-        1 for e in project.variables if (e.privacy.privacy_class.value or "ordinary") != "ordinary"
+        1
+        for e in aside.kept(project)
+        if (e.privacy.privacy_class.value or "ordinary") != "ordinary"
     )
     # The same count as the "Avec signalements" filter of the review (notes excluded).
-    flagged = sum(1 for e in project.variables if entry_anomalies(e))
+    flagged = sum(1 for e in aside.kept(project) if entry_anomalies(e))
     if project.source is None:
-        return _("{n} variables prévues ; pas encore de base.").format(n=len(project.variables))
+        return _("{n} variables prévues ; pas encore de base.").format(n=len(aside.kept(project)))
     return _(
         "{n} variables, {rows} lignes ; {sensitive} variables sensibles ; "
         "{flagged} avec signalements."
     ).format(
-        n=len(project.variables),
+        n=len(aside.kept(project)),
         rows=project.source.n_rows,
         sensitive=sensitive,
         flagged=flagged,
@@ -404,7 +406,7 @@ def tasks(
     undefined = len(undefined_acronyms(project))
     if undefined:
         found.append(Task(undefined, _("Sigles sans définition : {n}"), "glossary"))
-    proposed_links = sum(1 for e in project.variables if e.question.status == "proposed")
+    proposed_links = sum(1 for e in aside.kept(project) if e.question.status == "proposed")
     if proposed_links:
         found.append(
             Task(
@@ -415,14 +417,14 @@ def tasks(
             )
         )
     if project.questionnaire is not None:
-        unlinked = sum(1 for e in project.variables if e.question.value is None)
+        unlinked = sum(1 for e in aside.kept(project) if e.question.value is None)
         if unlinked:
             found.append(
                 Task(unlinked, _("Variables sans question : {n}"), "variables", "unlinked")
             )
     sentinels = sum(
         1
-        for e in project.variables
+        for e in aside.kept(project)
         for code in e.suspect_codes
         if all(d.code != code for d in e.sentinel_decisions)
     )
@@ -430,22 +432,22 @@ def tasks(
         found.append(
             Task(sentinels, _("Codes suspects à confirmer : {n}"), "variables", "suspects")
         )
-    labels = sum(1 for e in project.variables if e.value_labels.status == "proposed")
+    labels = sum(1 for e in aside.kept(project) if e.value_labels.status == "proposed")
     if labels:
         found.append(
             Task(labels, _("Étiquettes de valeurs à vérifier : {n}"), "variables", "to_review")
         )
-    levels = sum(1 for e in project.variables if e.measure_level.status == "proposed")
+    levels = sum(1 for e in aside.kept(project) if e.measure_level.status == "proposed")
     if levels:  # v0.8 (D-063): decided on the "Base" page
         found.append(Task(levels, _("Niveaux de mesure proposés : {n}"), "base"))
     # New names (v0.7): only once the team has begun to rename.
-    if any(e.new_name.value for e in project.variables):
+    if any(e.new_name.value for e in aside.kept(project)):
         grids = sum(
             1 for g in project.groups if g.kind == "scale" and not is_accepted(g.name_prefix)
         )
         if grids:
             found.append(Task(grids, _("Grilles sans préfixe de noms : {n}"), "groups"))
-        proposed = sum(1 for e in project.variables if e.new_name.status == "proposed")
+        proposed = sum(1 for e in aside.kept(project) if e.new_name.status == "proposed")
         if proposed:
             found.append(Task(proposed, _("Noms proposés à valider : {n}"), "names", "proposed"))
         clashes = len(naming.conflicts(project))
@@ -453,7 +455,7 @@ def tasks(
             found.append(Task(clashes, _("Noms en conflit : {n}"), "names", "conflicts"))
     texts = sum(
         1
-        for e in project.variables
+        for e in aside.kept(project)
         if e.label.status == "proposed" or e.description.status == "proposed"
     )
     if texts:
@@ -592,7 +594,7 @@ def export_codebook(
 def export_name_table(project: Project, project_path: Path) -> Path | None:
     """The table of names (D-052) next to the project, when a person accepted new names:
     "etude-correspondance.csv", the reference of the next wave."""
-    if not any(e.name != naming.final_name(e) for e in project.variables):
+    if not any(e.name != naming.final_name(e) for e in aside.kept(project)):
         return None
     path = project_path.with_name(project_stem(project_path) + "-correspondance.csv")
     waves.write_name_table(project, path)

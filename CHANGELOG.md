@@ -2,6 +2,7 @@
 
 ## Non publié
 
+- **Écarter une variable du codebook** (D-158, format du projet 0.10.0) : sur la fiche d'une variable, avec sa raison ; elle reste dans la base et dans le projet, mais quitte le codebook (une section « Variables écartées » la nomme, avec sa raison), le contexte d'analyse (le Data Package garde la colonne, sans rien en dire), les compteurs à documenter, les noms proposés, les choix des analyses, des règles d'exclusion et des recodages, et les messages à l'IA. Refusé tant qu'elle sert, chaque usage dit. Filtre **Écartées** ; **Remettre dans le codebook**. Un projet 0.10.0 ne s'ouvre plus avec la 0.20.1.
 - **Revoir** : un « Garder le projet » de la comparaison avec LimeSurvey se défait par **Revoir**, sans fermer l'outil (vu au second essai de l'auteur, 2026-10-20).
 
 ## 0.20.1 — 2026-10-20

@@ -21,7 +21,7 @@ from ddict import __version__, i18n
 from ddict.analysis import notebook as nb
 from ddict.analysis import notebook_export as export
 from ddict.i18n import _
-from ddict.project import fingerprint
+from ddict.project import aside, fingerprint
 
 SUFFIX = "-depot.zip"
 
@@ -70,7 +70,7 @@ def readme(project, project_path: Path, notebook, files: list[str], today: str) 
         "",
         "- "
         + _("`codebook/` : le dictionnaire des {n} variables (Excel, Markdown, "
-            "`datapackage.json`).").format(n=len(project.variables)),
+            "`datapackage.json`).").format(n=len(aside.kept(project))),
     ]  # fmt: skip
     if any(f.startswith("plan/") for f in files):
         if plan.frozen is not None:

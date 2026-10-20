@@ -46,9 +46,12 @@ def _group(project: Project, group_id: str) -> Group | None:
 
 def _variable(project: Project, name: str, found: list[str]) -> bool:
     try:
-        project.variable(name)
+        entry = project.variable(name)
     except KeyError:
         found.append(_("{name} : variable inconnue du projet.").format(name=name))
+        return False
+    if entry.set_aside is not None:  # D-158
+        found.append(_("{name} : variable écartée du codebook.").format(name=name))
         return False
     return True
 

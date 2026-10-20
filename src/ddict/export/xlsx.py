@@ -13,7 +13,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 
 from ddict.export import wording as w
 from ddict.i18n import N_, TextList, _, colon, in_language, semicolon
-from ddict.project import fingerprint
+from ddict.project import aside, fingerprint
 from ddict.project.model import Profile, Project, TrackedValue
 
 MAX_WIDTH = 60
@@ -131,7 +131,7 @@ def _statistics(p: Profile | None) -> list:
 def _variables(project: Project, kind: w.ExportKind, omitted: set[str]) -> list[list]:
     rows = []
     renamed = w.renamed(project, kind)
-    for e in project.variables:
+    for e in aside.kept(project):
         reference = w.question_reference(project, e, kind)
         p = e.profile
         sourced_range = ""
@@ -210,7 +210,7 @@ VARIABLE_HEADER = TextList(
 
 def _values(project: Project, kind: w.ExportKind) -> list[list]:
     rows = []
-    for e in project.variables:
+    for e in aside.kept(project):
         source = w.value_labels_source(e, kind)
         for code, label, count, is_missing in w.value_rows(e):
             rows.append(
@@ -306,7 +306,7 @@ def _provenance(project: Project, kind: w.ExportKind) -> list[list]:
             ]
         )
 
-    for e in project.variables:
+    for e in aside.kept(project):
         add(e.name, _("Nouveau nom"), e.new_name)
         add(e.name, _("Question"), e.question)
         if e.value_labels.value is not None:
@@ -393,6 +393,13 @@ def write_xlsx(
             _("Glossaire"),
             [_("Sigle"), _("Définition"), _("Origine"), _("Statut"), _("Source")],
             [list(row) for row in w.glossary_rows(project, kind)],
+        )
+    if aside.aside(project):  # D-158: what the codebook leaves out, and why
+        _sheet(
+            book,
+            _("Variables écartées"),
+            [_("Variable"), _("Raison"), _("Date")],
+            [[e.name, e.set_aside.reason, e.set_aside.date] for e in aside.aside(project)],
         )
     if w.renamed(project, kind):
         _sheet(

@@ -11,7 +11,7 @@ from typing import Literal
 
 from ddict.export import wording as w
 from ddict.i18n import N_, Texts, _
-from ddict.project import measure
+from ddict.project import aside, measure
 from ddict.project.decisions import correct, enter, reject, validate
 from ddict.project.model import Project
 from ddict.review.logic import ReviewError
@@ -36,7 +36,7 @@ class LevelRow:
 
 def rows(project: Project, which: LevelFilter = "proposed") -> list[LevelRow]:
     found = []
-    for entry in project.variables:
+    for entry in aside.kept(project):
         tracked = entry.measure_level
         waiting = tracked.status == "proposed"
         if which == "proposed" and not waiting:
@@ -57,7 +57,7 @@ def rows(project: Project, which: LevelFilter = "proposed") -> list[LevelRow]:
 
 
 def _entry_named(project: Project, shown_name: str):
-    for entry in project.variables:
+    for entry in aside.kept(project):
         if w.final_name(entry) == shown_name:
             return entry
     raise KeyError(shown_name)
@@ -114,4 +114,4 @@ def accept_shown(project: Project, name: str, shown: str, *, now: str) -> None:
 
 
 def waiting(project: Project) -> int:
-    return sum(1 for e in project.variables if e.measure_level.status == "proposed")
+    return sum(1 for e in aside.kept(project) if e.measure_level.status == "proposed")

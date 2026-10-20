@@ -162,6 +162,9 @@ msgstr "## Recoded variables"
 msgid "## Variables retirées"
 msgstr "## Variables removed"
 
+msgid "## Variables écartées"
+msgstr "## Variables set aside"
+
 msgid "## Vue d'ensemble"
 msgstr "## Overview"
 
@@ -1810,6 +1813,9 @@ msgstr ""
 "In SPSS or PSPP: open the database, then run `{stem}.sps` and, if present, "
 "`{stem}-preparation.sps`."
 
+msgid "Dans la base, mais laissées hors du codebook par l'équipe."
+msgstr "In the database, but left out of the codebook by the team."
+
 msgid "Dans le fichier"
 msgstr "In the file"
 
@@ -2018,6 +2024,9 @@ msgstr "Give at least one answer choice."
 
 msgid "Donnez au moins un énoncé à la grille."
 msgstr "Give the grid at least one item."
+
+msgid "Donnez la raison : elle figurera dans le codebook."
+msgstr "Give the reason: it will appear in the codebook."
 
 msgid "Donnez la raison de la règle, en clair."
 msgstr "Give the reason of the rule, in plain words."
@@ -5177,6 +5186,17 @@ msgstr ""
 "already decided are kept."
 
 msgid ""
+"Pour une variable sans intérêt pour l'étude (une colonne technique de la plateforme, une question"
+" retirée) : elle reste dans la base, qui ne change pas, mais quitte le codebook, où une ligne "
+"donne sa raison, les listes à documenter et les analyses. Pour une colonne sensible dont vous "
+"n'avez pas besoin, mieux vaut la retirer de la base avant de créer le projet."
+msgstr ""
+"For a variable of no interest to the study (a technical column of the platform, a question "
+"removed): it stays in the database, which does not change, but leaves the codebook, where one "
+"line gives its reason, the lists to document and the analyses. For a sensitive column you do not "
+"need, better remove it from the database before creating the project."
+
+msgid ""
 "Pour une étude qui n'a pas encore de questionnaire : construisez-le dans l'outil, et le "
 "dictionnaire de données existe avant la collecte. Le fichier projet est créé dans le dossier "
 "choisi."
@@ -5751,6 +5771,9 @@ msgstr "Reject the labels"
 
 msgid "Relecture"
 msgstr "Review"
+
+msgid "Remettre dans le codebook"
+msgstr "Put back in the codebook"
 
 msgid "Remplacer le projet"
 msgstr "Replace the project"
@@ -7155,6 +7178,9 @@ msgstr "Variable without a question linked"
 msgid "Variable sensible : aucune statistique sur ses valeurs."
 msgstr "Sensitive variable: no statistics on its values."
 
+msgid "Variable technique de la plateforme"
+msgstr "Technical variable of the platform"
+
 msgid "Variables"
 msgstr "Variables"
 
@@ -7209,6 +7235,9 @@ msgstr "Variables without a question: {n}"
 
 msgid "Variables sensibles"
 msgstr "Sensitive variables"
+
+msgid "Variables écartées"
+msgstr "Variables set aside"
 
 #, python-brace-format
 msgid "Variances inégales (Levene {p}) : le test de Welch convient mieux."
@@ -7783,6 +7812,10 @@ msgstr "June"
 msgid "justification de la taille d'échantillon"
 msgstr "sample size rationale"
 
+#, python-brace-format
+msgid "l'analyse {id} du carnet"
+msgstr "analysis {id} of the notebook"
+
 msgid "l'association"
 msgstr "the association"
 
@@ -7791,6 +7824,10 @@ msgstr "the effect of the group"
 
 msgid "l'effet du temps"
 msgstr "the effect of time"
+
+#, python-brace-format
+msgid "l'hypothèse {id} du plan"
+msgstr "hypothesis {id} of the plan"
 
 msgid "l'interaction"
 msgstr "the interaction"
@@ -7816,6 +7853,9 @@ msgstr "the partial correlation between {a} and {b}"
 msgid "la cotation des échelles"
 msgstr "the scoring of the scales"
 
+msgid "la description de l'échantillon (page « Méthode »)"
+msgstr "the description of the sample (page “Method”)"
+
 msgid "la description de la base"
 msgstr "the description of the database"
 
@@ -7829,12 +7869,23 @@ msgstr "the difference between the two measures"
 msgid "la provenance des textes tirés d'une source (questions : {n})"
 msgstr "the provenance of the texts taken from a source (questions: {n})"
 
+#, python-brace-format
+msgid "la règle d'exclusion {id}"
+msgstr "exclusion rule {id}"
+
 msgid "la structure"
 msgstr "the structure"
+
+msgid "la structure de la base (page « Base »)"
+msgstr "the structure of the database (page “Database”)"
 
 #, python-brace-format
 msgid "le coefficient de {x}"
 msgstr "the coefficient of {x}"
+
+#, python-brace-format
+msgid "le groupe {id}"
+msgstr "group {id}"
 
 #, python-brace-format
 msgid "le groupe {id} a une cotation ou un nom d'instrument"
@@ -7855,6 +7906,10 @@ msgstr "the first group, in the order of the codes, higher"
 #, python-brace-format
 msgid "le rapport de cotes de {x}"
 msgstr "the odds ratio of {x}"
+
+#, python-brace-format
+msgid "le recodage {id}"
+msgstr "recoding {id}"
 
 msgid "le second groupe, dans l'ordre des codes, plus élevé"
 msgstr "the second group, in the order of the codes, higher"
@@ -9116,6 +9171,10 @@ msgid "{name} : variable inconnue."
 msgstr "{name}: unknown variable."
 
 #, python-brace-format
+msgid "{name} : variable écartée du codebook."
+msgstr "{name}: variable set aside from the codebook."
+
+#, python-brace-format
 msgid "{name} : {n} modalités ; choisissez-en deux."
 msgstr "{name}: {n} categories; choose two of them."
 
@@ -9166,6 +9225,10 @@ msgstr "{name} is no longer the file the project comes from: its content has cha
 #, python-brace-format
 msgid "{name} parmi {values}"
 msgstr "{name} among {values}"
+
+#, python-brace-format
+msgid "{name} sert encore : {uses}. Retirez-la d'abord."
+msgstr "{name} is still in use: {uses}. Remove it there first."
 
 #, python-brace-format
 msgid "{name} — {folder}"
@@ -9749,6 +9812,16 @@ msgstr "Standard deviation"
 
 msgid "Écarter des analyses du document, sans les retirer."
 msgstr "Leave analyses out of the document, without removing them."
+
+msgid "Écarter du codebook"
+msgstr "Set aside from the codebook"
+
+#, python-brace-format
+msgid "Écartée du codebook le {date} : {reason}"
+msgstr "Set aside from the codebook on {date}: {reason}"
+
+msgid "Écartées"
+msgstr "Set aside"
 
 #, python-brace-format
 msgid "Écartées : {ids}"

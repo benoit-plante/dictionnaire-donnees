@@ -70,11 +70,13 @@ def _sensitive(project: Project) -> set[str]:
         or e.data_type in ("empty", "mixed", "date", "datetime")
         # Categories written as text enter once nominal; free text is a privacy class.
         or (e.data_type == "text" and measure.level(e) != "nominal")
+        or e.set_aside is not None  # D-158: left out of the codebook
     }
 
 
 def excluded(project: Project) -> set[str]:
-    """The variables no analysis takes (D-093): identifiers, free texts, dates."""
+    """The variables no analysis takes (D-093): identifiers, free texts, dates, and
+    since v0.20.2 the variables set aside (D-158)."""
     return _sensitive(project)
 
 

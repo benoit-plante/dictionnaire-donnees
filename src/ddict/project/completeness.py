@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ddict.project import measure
+from ddict.project import aside, measure
 from ddict.project.decisions import is_accepted
 from ddict.project.model import Project, VariableEntry
 from ddict.questionnaire.labels import accepted_labels
@@ -59,7 +59,7 @@ def _part(key: str, entries: list[VariableEntry], decided) -> Part:
 
 def parts(project: Project) -> list[Part]:
     """The elements that apply to this project, in the order of the exports."""
-    variables = project.variables
+    variables = aside.kept(project)
     found = []
     if project.questionnaire is not None:
         found.append(_part("question", variables, lambda e: is_accepted(e.question)))

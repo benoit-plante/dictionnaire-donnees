@@ -26,6 +26,7 @@ from ddict.analysis.formats.figures import image
 from ddict.export import wording as w
 from ddict.export.preparation import plan
 from ddict.i18n import N_, Texts, _
+from ddict.project import aside
 from ddict.project import exclusions as ex
 from ddict.project.model import Project
 from ddict.questionnaire.labels import accepted_labels
@@ -218,7 +219,7 @@ def _form(project: Project, prepared: PreparedData | None) -> None:
         )
         if kind in ("condition", "score"):
             if kind == "condition":
-                originals = [e.name for e in project.variables]
+                originals = [e.name for e in aside.kept(project)]
                 chosen = st.selectbox(
                     _("Variable"),
                     originals,
@@ -296,7 +297,7 @@ def _form(project: Project, prepared: PreparedData | None) -> None:
             )
             st.multiselect(
                 _("Variables"),
-                [e.name for e in project.variables],
+                [e.name for e in aside.kept(project)],
                 key="method-new-duplicates",
                 placeholder=_("Choisir les variables"),
                 format_func=shown,

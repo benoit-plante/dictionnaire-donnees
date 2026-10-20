@@ -13,7 +13,7 @@ from pydantic import ValidationError
 from ddict import glossary, i18n
 from ddict.export.wording import entry_anomalies
 from ddict.i18n import N_, Texts, _, quoted
-from ddict.project import completeness
+from ddict.project import aside, completeness
 from ddict.project.decisions import DecisionError, correct, enter, reject, validate
 from ddict.project.model import (
     Group,
@@ -30,7 +30,7 @@ from ddict.questionnaire.labels import propose_value_labels
 
 Field = Literal["label", "description", "unit", "question", "value_labels"]
 Action = Literal["accept", "correct", "reject"]
-Filter = Literal["all", "to_review", "flagged", "sensitive", "unlinked", "suspects"]
+Filter = Literal["all", "to_review", "flagged", "sensitive", "unlinked", "suspects", "aside"]
 
 PRIVACY_CLASSES = ("ordinary", "likely_identifier", "free_text", "quasi_identifier")
 
@@ -105,7 +105,9 @@ def select(project: Project, which: Filter) -> list[VariableEntry]:
         "unlinked": lambda e: project.questionnaire is not None and not link.is_linked(e),
         "suspects": has_undecided_suspects,
     }
-    return [e for e in project.variables if tests[which](e)]
+    if which == "aside":  # D-158: found again, to put back
+        return aside.aside(project)
+    return [e for e in aside.kept(project) if tests[which](e)]
 
 
 def codebook_progress(project: Project) -> float:
@@ -120,8 +122,8 @@ def codebook_progress(project: Project) -> float:
 
 def progress(project: Project) -> tuple[int, int]:
     """Variables without pending proposal, out of all variables."""
-    done = sum(1 for e in project.variables if not pending(e))
-    return done, len(project.variables)
+    done = sum(1 for e in aside.kept(project) if not pending(e))
+    return done, len(aside.kept(project))
 
 
 def signal_texts(entry: VariableEntry) -> list[str]:
@@ -418,7 +420,7 @@ def agreeing_links(project: Project) -> list[str]:
     computed = link.best_guess(project)
     return [
         e.name
-        for e in project.variables
+        for e in aside.kept(project)
         if e.question.origin == "ai"
         and e.question.status == "proposed"
         and e.question.value is not None
@@ -462,3 +464,24 @@ def accept_group_labels(project: Project, group_id: str, names: list[str], *, no
         raise ReviewError(_("Aucune variable cochée."))
     for name in names:
         decide(project, name, "value_labels", "accept", now=now)
+
+
+# --- Set aside from the codebook (v0.20.2, D-158). ---
+
+
+def set_aside(project: Project, name: str, reason: str, notebook, *, now: str) -> None:
+    """Leave a variable out of the codebook, with its reason; refused while in use."""
+    if not (reason or "").strip():
+        raise ReviewError(_("Donnez la raison : elle figurera dans le codebook."))
+    try:
+        aside.set_aside(project, name, reason.strip(), now[:10], notebook)
+    except aside.InUse as error:
+        raise ReviewError(
+            _("{name} sert encore : {uses}. Retirez-la d'abord.").format(
+                name=name, uses=", ".join(error.uses)
+            )
+        ) from None
+
+
+def restore(project: Project, name: str) -> None:
+    aside.restore(project, name)

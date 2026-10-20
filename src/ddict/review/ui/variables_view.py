@@ -27,6 +27,7 @@ FILTERS = Texts(
         "unlinked": N_("Sans question"),
         "suspects": N_("Codes suspects"),
         "all": N_("Toutes"),
+        "aside": N_("Écartées"),  # v0.20.2 (D-158), shown when there are some
     }
 )
 
@@ -547,9 +548,61 @@ def _sourced(entry: VariableEntry) -> None:
         )
 
 
+def _notebook():
+    """The project's notebook, when it has one: an analysis in it names its variables."""
+    from ddict.analysis import notebook as nb
+
+    path = nb.notebook_path(c.project_path())
+    if not path.is_file():
+        return None
+    try:
+        return nb.load_notebook(path)
+    except nb.NotebookError:
+        return None
+
+
+def _set_aside(entry: VariableEntry) -> None:
+    """Leave the variable out of the codebook, with its reason, or put it back (D-158)."""
+    name = entry.name
+    if entry.set_aside is not None:
+        c.button(_("Remettre dans le codebook"), f"restore-{name}", logic.restore, name)
+        return
+    with st.expander(_("Écarter du codebook")):
+        st.caption(
+            _(
+                "Pour une variable sans intérêt pour l'étude (une colonne technique de la "
+                "plateforme, une question retirée) : elle reste dans la base, qui ne change "
+                "pas, mais quitte le codebook, où une ligne donne sa raison, les listes à "
+                "documenter et les analyses. Pour une colonne sensible dont vous n'avez pas "
+                "besoin, mieux vaut la retirer de la base avant de créer le projet."
+            )
+        )
+        reason = f"aside-reason-{name}"
+        st.text_input(_("Raison"), key=reason, placeholder=_("Variable technique de la plateforme"))
+        c.button(
+            _("Écarter du codebook"),
+            f"aside-{name}",
+            logic.set_aside,
+            name,
+            c.state(reason),
+            _notebook,
+            timed=True,
+        )
+
+
 def page(project: Project, entry: VariableEntry) -> None:
     label = w.label_text(entry, "work")
     st.header(entry.name + (f" — {label}" if label else ""))
+    if entry.set_aside is not None:  # D-158: what it was set aside for, and the way back
+        st.warning(
+            _("Écartée du codebook le {date} : {reason}").format(
+                date=entry.set_aside.date, reason=entry.set_aside.reason
+            ),
+            icon=":material/visibility_off:",
+        )
+        _set_aside(entry)
+        _file_and_computed(entry)
+        return
     for text in logic.signal_texts(entry):
         st.error(text)
     _file_and_computed(entry)
@@ -596,6 +649,7 @@ def page(project: Project, entry: VariableEntry) -> None:
     from ddict.review.ui import recode_view
 
     recode_view.panel(project, entry)  # v0.15 (D-120)
+    _set_aside(entry)
 
 
 def default_filter(project: Project) -> str:

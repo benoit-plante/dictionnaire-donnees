@@ -24,6 +24,7 @@ from pydantic import BaseModel, ConfigDict, ValidationError
 from ddict.export.wording import code_text
 from ddict.llm.messages import Block, recorded_version, sensitive_note, system_prompt
 from ddict.llm.validate import InvalidResponse
+from ddict.project import aside
 from ddict.project.model import Project, TrackedValue, VariableEntry
 from ddict.questionnaire import link
 
@@ -178,7 +179,7 @@ def build_link_blocks(project: Project, *, size: int) -> tuple[Block, ...]:
     near = link.neighbours(project, found)
     sure = link.sure_choices(project)
     offered = {**near, **{name: ids for name, ids in found.items() if ids}}
-    waiting = [e for e in project.variables if offered.get(e.name) and not is_decided(e)]
+    waiting = [e for e in aside.kept(project) if offered.get(e.name) and not is_decided(e)]
     language = project.settings.language
     groups = (
         (LINK_PROMPT_VERSION, [e for e in waiting if found.get(e.name)]),

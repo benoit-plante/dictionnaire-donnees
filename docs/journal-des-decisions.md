@@ -1933,3 +1933,18 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
 - **Justification :** À l'essai de l'auteur, le 2026-10-20, un code changé dans LimeSurvey (`nuit` devenu `nuisance`) laissait les variables de la base sans leurs décisions. Le rattachement par le nom est déjà automatique ; des textes identiques ne laissent pas plus de doute. Une confirmation demanderait de garder ailleurs les décisions des variables prévues absentes, retirées à l'arrivée.
 - **Conséquences :** Les textes se comparent sans la casse, les accents ni la ponctuation (« ... » et « … » sont le même texte), ou par leur début quand un libellé est coupé. Une question reformulée et renommée à la fois reste « absente » et « non prévue ».
 - **Références :** `src/ddict/arrival.py` ; D-145.
+
+### D-158 — Écarter une variable du codebook
+
+- **Date :** 2026-10-20
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Une personne peut écarter une variable du codebook, avec sa raison (« variable technique de SurveyMonkey »), et la remettre. La variable reste dans le projet et dans la base, qui n'est jamais modifiée. Elle quitte le codebook, où une courte section « Variables écartées » donne son nom et sa raison, le contexte d'analyse (le Data Package garde sa colonne, avec son type et sa raison seulement, puisqu'il décrit le fichier), le paquet de dépôt, les compteurs « à documenter », les tâches, les propositions de noms, les choix des analyses et des règles d'exclusion, et les messages à l'IA. La copie documentée garde sa colonne, sans métadonnées ; les fichiers de commandes ne la touchent pas. Une variable qui sert déjà (un groupe, une règle d'exclusion, un recodage, une hypothèse du plan, la structure de la base, une analyse du carnet ou la description de l'échantillon) n'est pas écartée : l'outil dit chaque usage, à retirer d'abord. Jamais l'IA. Format du projet 0.10.0 (un champ `set_aside`, par défaut absent) ; l'empreinte du codebook change seulement pour une variable écartée.
+- **Options considérées :**
+  1. Listée à part dans le codebook, refusée tant qu'elle sert, colonne gardée dans la copie (ce choix, l'option recommandée sur chacun des trois points).
+  2. Disparaître complètement du codebook.
+  3. Écarter en retirant d'office ses usages (groupes, recodages), les analyses devenant « impossibles à calculer ».
+  4. Retirer la colonne de la copie documentée.
+- **Justification :** Demandé par l'auteur le 2026-10-20, après un essai sur une vraie base qui contenait des colonnes sans intérêt pour l'étude. Le lecteur du codebook sait qu'une colonne existe et pourquoi elle n'est pas documentée ; rien ne casse en silence ; la copie documentée reste la base telle quelle, vérifiée case par case. Retirer une colonne sensible avant de créer le projet reste la meilleure voie, et le guide le dit.
+- **Conséquences :** Un projet 0.10.0 ne s'ouvre plus avec la 0.20.1 ; l'inverse fonctionne.
+- **Références :** `src/ddict/project/aside.py`.

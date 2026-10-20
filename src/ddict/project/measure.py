@@ -12,6 +12,7 @@ types, and never replace a decision.
 
 from __future__ import annotations
 
+from ddict.project import aside
 from ddict.project.decisions import is_accepted
 from ddict.project.model import Project, TrackedValue, VariableEntry
 
@@ -88,7 +89,7 @@ def propose(project: Project) -> int:
     for group in project.groups:
         for name in [*(group.members.value or []), *group.attached]:
             kinds[name] = group.kind
-    for entry in project.variables:
+    for entry in aside.kept(project):
         if not _undecided(entry.measure_level):
             continue
         found = proposal(entry, kinds.get(entry.name))
@@ -96,4 +97,4 @@ def propose(project: Project) -> int:
             entry.measure_level = TrackedValue[str](origin="human")
         elif entry.measure_level.value != found:
             entry.measure_level = TrackedValue[str](value=found, origin="rule", status="proposed")
-    return sum(1 for e in project.variables if e.measure_level.status == "proposed")
+    return sum(1 for e in aside.kept(project) if e.measure_level.status == "proposed")

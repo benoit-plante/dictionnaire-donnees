@@ -30,7 +30,9 @@ from pydantic import (
 # 0.9.0 (v0.20, D-145, D-146): a project may have no database yet (no `source`; planned
 # variables without a profile) and a questionnaire designed in the tool (`design`, new
 # question fields), all with a default; a 0.8.0 file reads as it is.
-SCHEMA_VERSION = "0.9.0"
+# 0.10.0 (v0.20.2, D-158): a variable set aside from the codebook by the team, with its
+# reason, not by default; a 0.9.0 file reads as it is.
+SCHEMA_VERSION = "0.10.0"
 
 Code = int | float | str
 # "questionnaire": computed from the questionnaire under a strict rule, and like an AI value
@@ -233,6 +235,14 @@ class Planned(Strict):
     type: PlannedType
 
 
+class SetAside(Strict):
+    """The team's decision to leave a variable out of the codebook (v0.20.2, D-158): a
+    person's only, with its reason; the variable stays in the project and in the database."""
+
+    reason: NonEmptyText
+    date: str
+
+
 class VariableEntry(Strict):
     name: str
     position: int
@@ -269,6 +279,8 @@ class VariableEntry(Strict):
     ai_signals: list[str] = []
     # What the designed questionnaire planned (v0.20, D-145), kept once the database is there.
     planned: Planned | None = None
+    # Left out of the codebook by the team (v0.20.2, D-158); `ddict.project.aside`.
+    set_aside: SetAside | None = None
 
     @model_validator(mode="after")
     def _known(self) -> VariableEntry:
