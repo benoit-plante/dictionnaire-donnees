@@ -283,6 +283,12 @@ def _keep(key: str) -> None:
     st.session_state[KEPT] = [*st.session_state.get(KEPT, []), key]
 
 
+def _review(key: str) -> None:
+    """Back on a "Garder le projet": the difference is open again, to take or keep (the
+    author's trial, 2026-10-20: it came back only once the tool was closed)."""
+    st.session_state[KEPT] = [k for k in st.session_state.get(KEPT, []) if k != key]
+
+
 def _compare(project: Project) -> None:
     st.subheader(_("Comparer le réexport de LimeSurvey"))
     st.caption(
@@ -332,6 +338,11 @@ def _compare(project: Project) -> None:
                 codes=", ".join(f"`{d.code}`" for d in kept_ones)
             )
         )
+        with st.container(horizontal=True):
+            for difference in kept_ones:
+                key = f"{difference.kind}-{difference.code}"
+                st.button(_("Revoir {code}").format(code=difference.code),
+                          key=f"publish-review-{key}", on_click=_review, args=(key,))  # fmt: skip
 
 
 def page(project: Project) -> None:

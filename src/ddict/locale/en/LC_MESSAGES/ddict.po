@@ -5911,6 +5911,10 @@ msgstr "Undo this decision"
 msgid "Revenir à {place}"
 msgstr "Back to {place}"
 
+#, python-brace-format
+msgid "Revoir {code}"
+msgstr "Review {code}"
+
 msgid "Rien en attente."
 msgstr "Nothing waiting."
 

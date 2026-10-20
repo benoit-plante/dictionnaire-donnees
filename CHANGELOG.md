@@ -1,5 +1,9 @@
 # Changements
 
+## Non publié
+
+- **Revoir** : un « Garder le projet » de la comparaison avec LimeSurvey se défait par **Revoir**, sans fermer l'outil (vu au second essai de l'auteur, 2026-10-20).
+
 ## 0.20.1 — 2026-10-20
 
 Ce que l'essai de l'auteur a montré, le 2026-10-20, sur un questionnaire fictif conçu, importé dans LimeSurvey Cloud 7.6, puis reçu en `.sav`.

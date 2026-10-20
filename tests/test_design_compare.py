@@ -228,6 +228,9 @@ def test_compare_a_reexport_on_the_page(tmp_path):
     assert "~~votre~~ **ton**" in texts and "Changé : obligatoire." in texts
     app.button(key="publish-keep-changed-Q2").click().run()
     assert "LimeSurvey est à corriger pour : `Q2`" in app.warning[-1].value
+    app.button(key="publish-review-changed-Q2").click().run()  # back on it, tool still open
+    assert not [w for w in app.warning if "à corriger" in w.value]
+    app.button(key="publish-keep-changed-Q2").click().run()
     app.button(key="publish-take-changed-Q1").click().run()
     assert not app.exception, app.exception
     assert design.find(load_project(path), "Q1").text == "Quel est ton genre ?"
