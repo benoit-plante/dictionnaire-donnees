@@ -16,6 +16,7 @@ from ddict import settings, tracked
 from ddict.export.wording import dataset_title
 from ddict.i18n import N_, _
 from ddict.project import aside, permission
+from ddict.project.title import name as project_name
 from ddict.review import logic, navigation, shutdown
 from ddict.review.ui import (
     ai_view,
@@ -258,12 +259,17 @@ def main() -> None:
             _quit_button()
         return
     project = c.project()
+    st.set_page_config(page_title=project_name(project, c.project_path()))  # D-161
     c.watch(project)  # v0.17 (D-130): changed elsewhere since it was read
     waiting = tasks(project, c.project_path(), notebook_view.dashboard_state(project))
     mode = _navigation(project, waiting)
     with st.sidebar:
         st.button(_("Accueil"), key="home", on_click=home_view.back_home, icon=":material/home:")
-        st.title(dataset_title(project))
+        if project.title:  # v0.20.2 (D-161): the team's title, the database under it
+            st.title(project.title)
+            st.caption(dataset_title(project))
+        else:
+            st.title(dataset_title(project))
         _follow_button()
         _ai_permission(project)
         share = logic.codebook_progress(project)  # v0.16: never full on a new project

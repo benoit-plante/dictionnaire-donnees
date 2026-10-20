@@ -2019,6 +2019,9 @@ msgstr "Document"
 msgid "Documents Word"
 msgstr "Word documents"
 
+msgid "Donner un titre au projet, montré à la place du nom de son fichier ; aucun fichier n'est renommé."
+msgstr "Give the project a title, shown instead of its file's name; no file is renamed."
+
 msgid "Donnez au moins deux choix de réponse (les colonnes de la grille)."
 msgstr "Give at least two answer choices (the columns of the grid)."
 
@@ -2048,6 +2051,9 @@ msgstr "Give the questionnaire a name."
 
 msgid "Donnez un nom au score."
 msgstr "Give the score a name."
+
+msgid "Donnez un titre, ou --effacer, pas les deux."
+msgstr "Give a title, or --clear, not both."
 
 #, python-brace-format
 msgid "Données : {origin}."
@@ -3708,6 +3714,9 @@ msgid ""
 "questionnaire.pdf"
 msgstr "The project has no questionnaire. Read it first: ddict questionnaire {path} questionnaire.pdf"
 
+msgid "Le projet n'a pas de titre : il porte le nom de son fichier. Aucun fichier n'est renommé."
+msgstr "The project has no title: it bears its file's name. No file is renamed."
+
 msgid "Le projet ne figure plus dans « Mes projets », sur l'accueil. Le fichier projet n'est pas touché."
 msgstr "The project no longer appears in “My projects”, on the home page. The project file is not touched."
 
@@ -3894,6 +3903,16 @@ msgstr "Fisher's exact test fits better."
 
 msgid "Le texte de la question est vide."
 msgstr "The text of the question is empty."
+
+#, python-brace-format
+msgid "Le titre a {n} caractères ; {m} au plus."
+msgstr "The title has {n} characters; {m} at most."
+
+msgid "Le titre tient sur une seule ligne."
+msgstr "The title fits on one line."
+
+msgid "Le titre, entre guillemets."
+msgstr "The title, in quotation marks."
 
 msgid ""
 "Le travail s'arrête après le bloc en cours si vous cliquez sur « Arrêter » ou changez de page. "
@@ -4117,11 +4136,11 @@ msgstr ""
 "question, or closed by “Keep as it is”: it comes back if the question changes."
 
 msgid ""
-"Les projets suivis sur cet ordinateur, comme le tableau « Mes projets » de l'accueil : lister, "
-"suivre, retirer, chercher dans un dossier."
+"Les projets suivis sur cet ordinateur, comme « Mes projets » sur l'accueil : lister, suivre, "
+"retirer, chercher dans un dossier, renommer."
 msgstr ""
-"The projects followed on this computer, as the home page's table “My projects”: list, follow, "
-"remove, look for them in a folder."
+"The projects followed on this computer, as “My projects” on the home page: list, follow, remove, "
+"search a folder, rename."
 
 msgid "Les propositions sont à réviser dans « Variables »."
 msgstr "The proposals are to be reviewed in \"Variables\"."
@@ -5909,6 +5928,9 @@ msgstr ""
 msgid "Retirer le plan entier, son gel et ses amendements."
 msgstr "Remove the whole plan, its freezing and its amendments."
 
+msgid "Retirer le titre : le projet reprend le nom de son fichier."
+msgstr "Take the title off: the project bears its file's name again."
+
 msgid "Retirer un projet de la liste, trouvé ou non ; son fichier n'est pas touché."
 msgstr "Take a project off the list, found or not; its file is not touched."
 
@@ -6701,6 +6723,10 @@ msgstr "Title of the new section"
 
 msgid "Titre de la section"
 msgstr "Title of the section"
+
+#, python-brace-format
+msgid "Titre du projet : {title}. Aucun fichier n'est renommé."
+msgstr "Title of the project: {title}. No file is renamed."
 
 #, python-brace-format
 msgid "Titres ou notes changés : {n}"

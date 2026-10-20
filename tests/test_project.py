@@ -69,6 +69,7 @@ def test_key_order_follows_the_design(project):
     data = json.loads(dumps(project))
     assert list(data) == [
         "schema_version",
+        "title",  # v0.20.2: the project's title (D-161)
         "source",
         "settings",
         "variables",

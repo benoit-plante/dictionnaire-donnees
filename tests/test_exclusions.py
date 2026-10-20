@@ -127,12 +127,12 @@ def test_the_project_file_and_its_fingerprint(tmp_path):
     path = tmp_path / "etude-passation.dd.json"
     save_project(project, path)
     data = json.loads(path.read_text(encoding="utf-8"))
-    assert data["schema_version"] == "0.10.0" and data["exclusions"] == {"next_id": 1, "rules": []}
+    assert data["schema_version"] == "0.11.0" and data["exclusions"] == {"next_id": 1, "rules": []}
     del data["exclusions"]
     data["schema_version"] = "0.3.0"  # a project of v0.8 to v0.11
     path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
     old = load_project(path)
-    assert old.schema_version == "0.10.0" and old.exclusions.rules == []
+    assert old.schema_version == "0.11.0" and old.exclusions.rules == []
     assert fingerprint.fingerprint(old) == before  # no rule: the same fingerprint
     ex.add(old, KEY["rules"][0] | {"id": None})
     assert fingerprint.fingerprint(old) != before

@@ -32,7 +32,9 @@ from pydantic import (
 # question fields), all with a default; a 0.8.0 file reads as it is.
 # 0.10.0 (v0.20.2, D-158): a variable set aside from the codebook by the team, with its
 # reason, not by default; a 0.9.0 file reads as it is.
-SCHEMA_VERSION = "0.10.0"
+# 0.11.0 (v0.20.2, D-161): the project's title, given by a person, none by default; a
+# 0.10.0 file reads as it is, without one.
+SCHEMA_VERSION = "0.11.0"
 
 Code = int | float | str
 # "questionnaire": computed from the questionnaire under a strict rule, and like an AI value
@@ -960,6 +962,10 @@ class NoDatabase(ValueError):
 
 class Project(Strict):
     schema_version: str = SCHEMA_VERSION
+    # v0.20.2 (D-161): what the team calls the project, shown instead of its file's name;
+    # written by a person only, never sent to the AI, not in the codebook's fingerprint.
+    # No file is renamed. Set through `ddict.project.title`.
+    title: str | None = None
     # None until the database of a designed questionnaire arrives (v0.20, D-145).
     source: SourceInfo | None = None
     settings: Settings = Settings()

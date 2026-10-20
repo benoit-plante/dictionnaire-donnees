@@ -336,7 +336,7 @@ def _unfollow(path: Path) -> None:
         _message(
             "success",
             _("« {name} » n'est plus suivi ; son fichier n'est pas touché.").format(
-                name=overview.ProjectRow(path, None).name
+                name=overview.row(path).name  # its title, when it has one
             ),
             "home-unfollow",
         )

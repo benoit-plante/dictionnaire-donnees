@@ -52,7 +52,7 @@ def test_a_project_of_v0_17_opens_not_allowed(project, tmp_path):
     path = tmp_path / "ancien.dd.json"
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     old = load_project(path)
-    assert SCHEMA_VERSION == "0.10.0" and old.schema_version == "0.10.0"
+    assert SCHEMA_VERSION == "0.11.0" and old.schema_version == "0.11.0"
     assert not permission.is_allowed(old)
     assert json.loads(dumps(old))["settings"]["ai"] == {"allowed": False, "since": None}
     assert dumps(old) == dumps(project)  # nothing else changes

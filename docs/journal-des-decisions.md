@@ -1973,3 +1973,16 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   3. Un choix maison dans la barre de gauche, sans adresse (un rechargement revient toujours à « Mes projets »).
 - **Justification :** Demandé par l'auteur le 2026-10-20. La liste dans la fenêtre était la recommandation du plan ; la maquette (étape C1) a montré qu'à 900 × 600 Streamlit ne replie pas la barre de gauche et que la colonne de liste y coupait les noms, alors que la barre de gauche les montre entiers : l'auteur a choisi la barre.
 - **Références :** `docs/plan-accueil.md`, § 7 ; `src/ddict/review/ui/home_view.py`.
+
+### D-161 — Renommer un projet : un titre, aucun fichier renommé
+
+- **Date :** 2026-10-20
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Un projet peut recevoir un titre, écrit par une personne (« Sommeil et anxiété, cohorte 2026 »), montré à la place du nom de son fichier dans « Mes projets », en tête de la barre de gauche d'un projet ouvert (la base en dessous), dans le titre de l'onglet du navigateur et par `ddict projets` ; vide, le nom du fichier revient. Rogné, une seule ligne, 120 caractères au plus. Jamais proposé ni envoyé à l'IA, hors de l'empreinte du codebook, absent des fichiers produits. Aucun fichier n'est renommé. Format du projet 0.11.0 (un champ `title`, par défaut absent) : un projet 0.10.0 s'ouvre tel quel ; un projet 0.11.0 est « écrit par une version plus récente » pour la 0.20.1. En ligne de commande : `ddict projets renommer <projet> "<titre>"` et `--effacer`.
+- **Options considérées :**
+  1. Un titre dans le projet (ce choix).
+  2. Renommer les fichiers : le `.dd.json` et tout ce qui porte son radical.
+  3. Les deux, le renommage des fichiers en option.
+- **Justification :** Demandé par l'auteur le 2026-10-20. Les fichiers déjà écrits se nomment entre eux dans leur contenu (chaque script R d'analyse fait `source("etude-metadonnees.R")`, le script du carnet prend son nom du lien du carnet, le paquet de dépôt range les fichiers par leur nom) : les renommer casserait ces renvois, sauf à réécrire des fichiers produits ; Windows n'a pas de renommage groupé, et un fichier ouvert dans Word ou verrouillé par OneDrive laisserait un projet à moitié renommé. Le dossier d'étude prévu définira le nom des fichiers d'une étude : un renommage des fichiers, s'il en faut un, se fera dans ce cadre.
+- **Références :** `docs/plan-accueil.md`, § 8 ; `src/ddict/project/title.py`.

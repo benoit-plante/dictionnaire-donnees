@@ -63,9 +63,16 @@ class ProjectRow:
     questionnaire: str | None = None
     designed: bool = False
     questionnaire_found: bool | None = None
+    title: str | None = None  # v0.20.2 (D-161): given by the team
 
     @property
     def name(self) -> str:
+        """What the project is called: its title, else the name of its file (D-161)."""
+        return self.title or self.file_name
+
+    @property
+    def file_name(self) -> str:
+        """ "etude" for "etude.dd.json": the name the files next to the project start with."""
         return project_stem(self.path)
 
     @property
@@ -165,6 +172,7 @@ def _read(path: Path, stats: list) -> ProjectRow:
         source=project.source.name if project.source is not None else None,
         questionnaire=project.questionnaire.file_name if project.questionnaire else None,
         designed=project.design is not None,
+        title=project.title,
         **row,
     )
 
@@ -254,7 +262,7 @@ def produced(row: ProjectRow) -> list[str]:
     one reading of the folder's list, no file opened (a OneDrive file "online only" is not
     downloaded); for the project shown only. A folder ends with "\\"."""
     known = _known(row.path, row.source)
-    analysis = re.compile(re.escape(project_stem(row.path).casefold()) + r"-analyse-\d+[.-]")
+    analysis = re.compile(re.escape(row.file_name.casefold()) + r"-analyse-\d+[.-]")
     found = []
     try:
         with os.scandir(row.path.parent) as entries:
