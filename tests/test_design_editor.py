@@ -201,6 +201,23 @@ def test_a_question_typed_and_not_saved_is_a_draft(path):
 
 
 @pytest.mark.allow_hosts(["127.0.0.1"])
+def test_a_question_opened_twice_and_saved_leaves_no_draft(path):
+    # Seen in the author's trial (2026-10-20): the choices of the first opening stayed in the
+    # session and, once the second saved others, read as a draft.
+    app = _open(path)
+    _run(app, app.button(key="design-Q1-edit").click())
+    _run(app, app.button(key="design-q-Q1-1-cancel").click())
+    _run(app, app.button(key="design-Q1-edit").click())
+    rows = app.session_state["design-q-Q1-2-options"]
+    app.session_state["design-q-Q1-2-options"] = [{**rows[0], "text": "Femme ou fille"}, *rows[1:]]
+    _run(app, app.button(key="design-q-Q1-2-save").click())
+    assert design.find(load_project(path), "Q1").options[0].text == "Femme ou fille"
+    app.session_state["mode"] = "design_review"
+    app.run()
+    assert not [w.value for w in app.warning if "non enregistrée" in w.value]
+
+
+@pytest.mark.allow_hosts(["127.0.0.1"])
 def test_a_save_refused_when_the_file_changed_elsewhere(path):
     app = _open(path)
     _run(app, app.button(key="design-Q1-edit").click())

@@ -73,17 +73,19 @@ def act(change, *args, key: str = MESSAGE, done: str = "", close: bool = False) 
 
 
 def _close() -> None:
-    """The form closed, its fields back to what the project holds: nothing left as typed."""
+    """The form closed, the fields of every opening of it gone: nothing left as typed. A
+    table's rows are no widget and stay in the session: kept, those of an earlier opening
+    would differ from the project once the question changed, and read as a draft."""
     opened = st.session_state.pop(OPEN, None)
     if opened is None:
         return
-    prefix = _prefix(opened)
-    fresh = st.session_state.get("fresh", {})
+    prefix = f"design-q-{opened}-"
     for key in [k for k in st.session_state if str(k).startswith(prefix)]:
-        if key in fresh:
-            st.session_state[key] = fresh[key]()
-        else:
-            del st.session_state[key]
+        del st.session_state[key]
+    for name in ("fresh", c.PLACES, c.LABELS):
+        found = st.session_state.get(name, {})
+        for key in [k for k in found if str(k).startswith(prefix)]:
+            del found[key]
 
 
 def _open(question_id: str, section: str | None = None) -> None:

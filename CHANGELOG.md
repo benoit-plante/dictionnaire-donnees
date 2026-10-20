@@ -1,5 +1,9 @@
 # Changements
 
+## Non publié
+
+- **Correction** : une question ouverte deux fois dans l'éditeur, puis enregistrée avec d'autres choix, laissait l'avertissement « Saisie non enregistrée » alors que tout était enregistré (vu à l'essai de l'auteur, 2026-10-20).
+
 ## 0.20.0 — 2026-10-19
 
 Concevoir le questionnaire dans l'outil, avant la collecte (plan : `docs/plan-v0.20.md`, D-143 à D-156). Le numéro 0.19 est sauté : le dossier d'étude, prévu en v0.19, viendra plus tard. Aucune IA ajoutée, aucune source déposée (elles viennent ensuite) ; la chaîne lire → profiler → exporter d'une base existante ne change pas.
