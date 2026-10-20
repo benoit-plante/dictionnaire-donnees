@@ -1,10 +1,10 @@
 # Changements
 
-## Non publié
+## 0.20.1 — 2026-10-20
 
 Ce que l'essai de l'auteur a montré, le 2026-10-20, sur un questionnaire fictif conçu, importé dans LimeSurvey Cloud 7.6, puis reçu en `.sav`.
 
-- **Le rapport de conformité** dit les textes de la base qui diffèrent du questionnaire (une question reformulée dans LimeSurvey), et retrouve une question dont le code a changé dans LimeSurvey par ses textes, quand ils ne laissent aucun doute : ses variables reprennent alors les décisions prévues (question, groupe, description…), et le rapport les nomme « retrouvées sous un autre nom ».
+- **Le rapport de conformité** dit les textes de la base qui diffèrent du questionnaire (une question reformulée dans LimeSurvey), et retrouve une question dont le code a changé dans LimeSurvey par ses textes, quand ils ne laissent aucun doute : ses variables reprennent alors les décisions prévues (question, groupe, description…), et le rapport les nomme « retrouvées sous un autre nom » (D-157).
 - **La relecture** signale, pour un questionnaire en français, l'espace manquante avant « ? », « ! », « : » ou « ; ».
 - **L'éditeur** : dans une grille, les énoncés viennent avant les colonnes, comme dans le Word et dans LimeSurvey.
 - **Le Word de travail** ne donne plus de code à l'option « Autre » (LimeSurvey n'en a pas), et dit la variable d'un texte d'affichage « toujours vide ».

@@ -1919,3 +1919,17 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
 - **Justification :** Sur LimeSurvey Cloud 7.6, un code de question n'accepte que des lettres et des chiffres : `aides_sommeil` a été changé en `aidessommeil` à l'importation (`docs/essais/2026-10-19-limesurvey-fictif.md`). Le calcul donne le code sans une décision de plus.
 - **Conséquences :** Deux radicaux qui ne diffèrent que par leurs « _ » (`aide_s`, `aides`) donneraient le même code : c'est un point de relecture. Les colonnes de la base portent ce code (`aidessommeil_SQ001` dans le `.sav`).
 - **Références :** `docs/essais/2026-10-19-limesurvey-fictif.md` ; `docs/plan-v0.20.md`, § 7.
+
+### D-157 — Une question renommée dans LimeSurvey, retrouvée par ses textes
+
+- **Date :** 2026-10-20
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** À l'arrivée de la base, une variable prévue que son nom ne retrouve pas est cherchée par ses textes, dans le libellé que le `.sav` de LimeSurvey donne à chaque variable (« [Le bruit] Qu'est-ce qui nuit à votre sommeil ? ») : le même texte de question, qu'une seule question du questionnaire porte, autant de variables que de variables prévues, et chaque choix ou énoncé retrouvé une seule fois. Retrouvée, elle reprend les décisions prévues, comme par son nom (question, groupe, description…), sans demander de confirmation ; au moindre doute (un texte changé aussi, deux candidates), rien n'est rattaché. Le rapport de conformité nomme chaque variable retrouvée ainsi, et dit les textes de la base qui diffèrent du questionnaire.
+- **Options considérées :**
+  1. Le rattachement automatique, seulement sans aucun doute (ce choix).
+  2. Une proposition à confirmer par une personne.
+  3. Le nom seul, comme en 0.20.0.
+- **Justification :** À l'essai de l'auteur, le 2026-10-20, un code changé dans LimeSurvey (`nuit` devenu `nuisance`) laissait les variables de la base sans leurs décisions. Le rattachement par le nom est déjà automatique ; des textes identiques ne laissent pas plus de doute. Une confirmation demanderait de garder ailleurs les décisions des variables prévues absentes, retirées à l'arrivée.
+- **Conséquences :** Les textes se comparent sans la casse, les accents ni la ponctuation (« ... » et « … » sont le même texte), ou par leur début quand un libellé est coupé. Une question reformulée et renommée à la fois reste « absente » et « non prévue ».
+- **Références :** `src/ddict/arrival.py` ; D-145.
