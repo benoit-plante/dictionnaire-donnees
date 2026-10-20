@@ -368,6 +368,29 @@ Since 0.17, the home page begins with the table **My projects**: one row per fol
 
 On the command line: `ddict projects list` prints the table; `ddict projects follow study.dd.json` and `ddict projects remove study.dd.json`; `ddict projects search "C:\Users\you\Documents\Studies"` lists the projects found, and `--follow` adds them all.
 
+## 20. Design a questionnaire, before the collection
+
+For a study without data yet: the questionnaire is built in the tool, and the data dictionary exists **before the collection**. The Word for the ethics committee and the file for LimeSurvey are drawn from it **by computation**, never by the AI; when the responses arrive, each variable finds again what the team decided.
+
+**Create the project.** On the home page, **Design a questionnaire**: the folder, the questionnaire's name and the study's language. The project opens on the phase **Design**, at the top of the menu: Questionnaire, Review, Publish.
+
+**Questionnaire.** The sections and their questions, one row each, with Move up, Move down, Change and Remove. A question opens in a form: its kind (single choice, checkbox, grid, open, displayed text), its text, its instruction, "required", its choices or items and their **codes**, where its text comes from (typed by the team, or taken from a source, with the page), and the **question's code**, which names its variables (`sommeil_SQ001`). One **Save** per question; what is typed and not saved is kept as a draft.
+
+**Review.** The points to look at, all computed: choices without a code, a duplicate code, a question's code not decided, categories that overlap ("18-25", "25 to 35"), a required question without "Prefer not to answer", a grid without instruction, a grid taken from a source without an instrument name, names in conflict. Each one leads to where it is settled; **Keep as it is** closes it while the question does not change.
+
+**Publish.**
+
+- **The Word**, in two versions: **for the ethics committee** (what a person answering will read, without names, codes or provenance) and **working** (with each question's codes, kind and LimeSurvey type, its variables, the provenance, the groups and the review points). The footer gives the version, the date of the last change and the questionnaire's fingerprint: the same questionnaire gives the same file.
+- **The file for LimeSurvey** (`… - LimeSurvey.txt`, the tab-separated structure), checked on LimeSurvey Cloud 7.6. Before giving it, the tool says what it holds and what stays in the tool (provenance, reversed items, scoring, instruments). What LimeSurvey would refuse (a code not starting with a letter, a brace, a duplicate code) blocks the file and leads to the review.
+- **Import into LimeSurvey**, step by step (folded in the page): in the list of surveys, the **+** menu, then **Import**; choose the file; **Import**; the import report should announce the number of groups, questions, subquestions and answers the page gives, without warning. Then read LimeSurvey's preview: only LimeSurvey shows what the people answering will see. No branching, random order or quota: they are set in LimeSurvey.
+- **Mark as sent** (to the ethics committee, or published in LimeSurvey, with the date and an optional note): the project keeps a copy. Changing it afterwards stays allowed; the page says at the top that LimeSurvey or the committee is to be updated, and each version sent shows what changed since.
+- **Compare LimeSurvey's re-export**: export the structure again from LimeSurvey (`.lss` or `.txt`) and give it: the tool compares it with the project by the codes of the questions (question added, removed, same text under another code, text changed word by word, choice recoded…). Nothing changes without you: **Take into the project** or **Keep the project** (LimeSurvey is then to be corrected).
+- **The preview**: the questionnaire roughly as a person answering will see it; **Show the names** adds the codes.
+
+**The database has arrived.** On the page **Database**, which was waiting: choose the export of the responses (LimeSurvey's `.sav` preferably), then **Read the database**. Each variable finds its planned variable by its name and takes again your decisions (question, new name, label, description, unit, measure level, labels, privacy class). The **conformity report** says what differs from the questionnaire: planned variables absent, variables not planned, codes observed outside the planned codes (the codes only, never their counts), different labels, a different type; it is on the page "Database" and written next to the project (`… -conformite.md`). The project is then documented like any other.
+
+On the command line: `ddict questionnaire create "C:\Users\you\Documents\Studies" --name "Sleep study"` creates the project; `ddict questionnaire word <project>` writes both Words next to the project; `ddict questionnaire limesurvey <project>` writes the file for LimeSurvey and prints the import steps; `ddict profile <database> --project <project>` reads the database that arrives.
+
 ## Update or uninstall
 
 - **Update**: download and extract the new archive, then double-click its `installer.bat`. If the tool is open, the installer offers to close it (answer `y`): it cannot replace it while it runs. Your project files are kept. A project opened with version 0.8 no longer opens with an older version (its format changed); the reverse works. Likewise, a project saved by version 0.18 (which notes in it whether it may be sent to the AI) no longer opens with 0.17.

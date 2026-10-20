@@ -1,5 +1,18 @@
 # Changements
 
+## Non publié — Concevoir un questionnaire (plan : `docs/plan-v0.20.md`)
+
+Concevoir le questionnaire dans l'outil, avant la collecte (D-143 à D-156). Le numéro de version reste à décider : le plan supposait la v0.19 faite avant. Aucune IA ajoutée, aucune source déposée (elles viennent ensuite) ; la chaîne lire → profiler → exporter d'une base existante ne change pas.
+
+- **Le projet sans base** (D-145, format 0.9.0) : un projet créé par **Concevoir un questionnaire** (accueil, ou `ddict questionnaire creer`) a un questionnaire structuré et des **variables prévues**, sans profil ; les pages qui montrent la base l'attendent, avec un bouton vers le questionnaire. La page « Base » s'ouvre : sa description, ses niveaux de mesure et ses variables sensibles se décident avant la collecte.
+- **La phase « Concevoir »** (D-149), en tête du menu de ces projets : **Questionnaire** (l'éditeur : sections, questions de chaque nature, choix et énoncés avec leurs codes, provenance des textes, code de la question), **Relecture** (les points calculés, « Garder tel quel »), **Publier**. « Mes projets » donne les phases « Concevoir » et « En collecte » ; le tableau de bord commence par les points de relecture.
+- **Le Word** (D-152), en deux versions, pour le comité d'éthique et de travail ; mêmes octets pour le même questionnaire ; `ddict questionnaire word`.
+- **Le fichier pour LimeSurvey** (D-148), la structure en texte à colonnes de LimeSurvey Cloud 7.6, relu par l'outil pour vérifier qu'il redonne le questionnaire ; ce qui empêcherait l'importation refuse l'écriture ; les étapes d'importation ; `ddict questionnaire limesurvey`. **L'importation réelle reste à faire** : les longueurs de codes et les étapes seront corrigées d'après elle.
+- **La boucle** (D-150) : **Marquer comme envoyé** garde une copie ; ce qui a changé depuis chaque version envoyée est montré, et un avertissement le dit ; le réexport de LimeSurvey se compare au projet par les codes, chaque question réglée par « Reprendre dans le projet » ou « Garder le projet ».
+- **La base est arrivée** : page « Base » ou `ddict profiler <base> --projet <projet>` ; chaque variable reprend les décisions de sa variable prévue ; un **rapport de conformité** (variables absentes, non prévues, codes hors des codes prévus, étiquettes, types), sur la page et en Markdown à côté du projet.
+- **LimeSurvey lu** (D-148, D-155, D-156) : la structure `.lss` ou `.txt` comme questionnaire ; ses exports de réponses (CSV, Excel, `.sav`) reconnus, rattachés par les codes des questions. lxml déclaré comme dépendance directe.
+- Guides : « Concevoir un questionnaire, avant la collecte », en français et en anglais ; le scénario manuel gagne les étapes 90 à 96 ; `scripts/captures.py` photographie aussi les pages de Concevoir.
+
 ## 0.18.0 — 2026-10-19
 
 L'IA par une clé d'API (plan : `docs/plan-v0.18.md`, D-134 à D-142). La version change de moteur, pas de fonctions : les quatre usages de l'IA (libellés et descriptions, rattachement, noms de base, conseillère) et le banc d'essai restent ; ni le calcul, ni les exports, ni le carnet, ni l'ébauche d'article ne changent.

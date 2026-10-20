@@ -368,6 +368,29 @@ Depuis la 0.17, l'accueil commence par le tableau **Mes projets** : une ligne pa
 
 En ligne de commande : `ddict projets lister` imprime le tableau ; `ddict projets suivre etude.dd.json` et `ddict projets retirer etude.dd.json` ; `ddict projets chercher "C:\Users\vous\Documents\Études"` liste les projets trouvés, et `--suivre` les ajoute tous.
 
+## 20. Concevoir un questionnaire, avant la collecte
+
+Pour une étude qui n'a pas encore de données : le questionnaire se construit dans l'outil, et le dictionnaire de données existe **avant la collecte**. Le Word pour le comité d'éthique et le fichier pour LimeSurvey en sont tirés **par le calcul**, jamais par l'IA ; à l'arrivée des réponses, chaque variable retrouve ce que l'équipe avait décidé.
+
+**Créer le projet.** Sur l'accueil, **Concevoir un questionnaire** : le dossier, le nom du questionnaire et la langue de l'étude. Le projet s'ouvre sur la phase **Concevoir**, en tête du menu : Questionnaire, Relecture, Publier.
+
+**Questionnaire.** Les sections et leurs questions, une ligne chacune, avec Monter, Descendre, Modifier et Retirer. Une question s'ouvre dans un formulaire : sa nature (choix unique, à cocher, grille, ouverte, texte d'affichage), son texte, sa consigne, « obligatoire », ses choix ou ses énoncés et leurs **codes**, la provenance de son texte (tapé par l'équipe, ou tiré d'une source, avec la page), et le **code de la question**, qui donne le nom de ses variables (`sommeil_SQ001`). Un seul **Enregistrer** par question ; une saisie non enregistrée est gardée comme brouillon.
+
+**Relecture.** Les points à voir, tous calculés : choix sans code, code en double, code de question non décidé, catégories qui se chevauchent (« 18-25 », « 25 à 35 »), question obligatoire sans « Préfère ne pas répondre », grille sans consigne, grille tirée d'une source sans nom d'instrument, noms en conflit. Chacun mène à l'endroit où il se règle ; **Garder tel quel** le ferme tant que la question ne change pas.
+
+**Publier.**
+
+- **Le Word**, en deux versions : **pour le comité d'éthique** (ce que lira une personne qui répond, sans nom, sans code, sans provenance) et **de travail** (avec les codes, la nature et le type LimeSurvey de chaque question, ses variables, la provenance, les groupes et les points de relecture). Le pied de page donne la version, la date du dernier changement et l'empreinte du questionnaire : le même questionnaire donne le même fichier.
+- **Le fichier pour LimeSurvey** (`… - LimeSurvey.txt`, la structure en texte à colonnes), vérifié sur LimeSurvey Cloud 7.6. Avant de le donner, l'outil dit ce qu'il contient et ce qui reste dans l'outil (provenance, items inversés, cotation, instruments). Ce que LimeSurvey refuserait (un code qui ne commence pas par une lettre, une accolade, un code en double) bloque le fichier et renvoie à la relecture.
+- **Importer dans LimeSurvey**, pas à pas (dépliable dans la page) : dans la liste des questionnaires, le menu **+**, puis **Importer** ; choisir le fichier ; **Importer** ; le rapport d'importation doit annoncer le nombre de groupes, de questions, de sous-questions et de réponses que la page donne, sans avertissement. Relisez ensuite l'aperçu de LimeSurvey : seul LimeSurvey montre ce que verront les personnes qui répondent. Ni branchement, ni ordre aléatoire, ni quota : ils se règlent dans LimeSurvey.
+- **Marquer comme envoyé** (au comité d'éthique, ou publié dans LimeSurvey, avec la date et une note facultative) : le projet garde une copie. Modifier ensuite reste permis ; la page dit en tête que LimeSurvey ou le comité est à mettre à jour, et chaque version envoyée montre ce qui a changé depuis.
+- **Comparer le réexport de LimeSurvey** : réexportez la structure depuis LimeSurvey (`.lss` ou `.txt`) et donnez-la : l'outil la compare au projet par les codes des questions (question ajoutée, retirée, même texte sous un autre code, texte changé mot à mot, choix recodé…). Rien ne change sans vous : **Reprendre dans le projet** ou **Garder le projet** (LimeSurvey est alors à corriger).
+- **L'aperçu** : le questionnaire à peu près comme le verra une personne qui répond ; **Montrer les noms** ajoute les codes.
+
+**La base est arrivée.** Sur la page **Base**, qui attendait : choisir l'export des réponses (le `.sav` de LimeSurvey de préférence), puis **Lire la base**. Chaque variable trouve sa variable prévue par son nom et reprend vos décisions (question, nouveau nom, libellé, description, unité, niveau de mesure, étiquettes, classe de confidentialité). Le **rapport de conformité** dit ce qui diffère du questionnaire : variables prévues absentes, variables non prévues, codes observés hors des codes prévus (les codes seulement, jamais leurs effectifs), étiquettes différentes, type différent ; il est sur la page « Base » et écrit à côté du projet (`… -conformite.md`). Le projet se documente ensuite comme tout autre.
+
+En ligne de commande : `ddict questionnaire creer "C:\Users\vous\Documents\Études" --nom "Étude du sommeil"` crée le projet ; `ddict questionnaire word <projet>` écrit les deux Word à côté du projet ; `ddict questionnaire limesurvey <projet>` écrit le fichier pour LimeSurvey et affiche les étapes d'importation ; `ddict profiler <base> --projet <projet>` lit la base qui arrive.
+
 ## Mettre à jour ou désinstaller
 
 - **Mettre à jour** : téléchargez et décompressez la nouvelle archive, puis double-cliquez sur son `installer.bat`. Si l'outil est ouvert, l'installateur propose de le fermer (répondez `o`) : il ne peut pas le remplacer pendant qu'il tourne. Vos fichiers projet sont conservés. Un projet ouvert avec la version 0.8 ne s'ouvre plus avec une version plus ancienne (son format a changé) ; l'inverse fonctionne. De même, un projet enregistré par la version 0.18 (qui y note la permission d'envoyer à l'IA) ne s'ouvre plus avec la 0.17.

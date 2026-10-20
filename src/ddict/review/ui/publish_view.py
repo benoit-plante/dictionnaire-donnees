@@ -21,6 +21,8 @@ from ddict.review.ui import common as c
 from ddict.review.ui import design_view, dialog
 
 NAMES = "publish-names"  # "Montrer les noms"
+# Short enough for a column of the window at its smallest (900 pixels).
+BUTTONS = Texts({"ethics": N_("Word pour le comité"), "working": N_("Word de travail")})
 
 
 def _label(project: Project, item: design_word.Numbered, names: bool) -> str:
@@ -111,9 +113,8 @@ def _word(project: Project) -> None:
         ),
     }
     for column, which in zip((left, right), design_word.VERSIONS, strict=True):
-        name = _(design_word.VERSION_NAMES[which])
         column.download_button(
-            _("Word {version}").format(version=name),
+            _(BUTTONS[which]),
             design_word.render(project, which),
             file_name=design_word.file_name(project, which),
             mime=design_word.MIME,

@@ -7293,9 +7293,11 @@ msgstr "Word"
 msgid "Word (tableaux et figures APA)"
 msgstr "Word (APA tables and figures)"
 
-#, python-brace-format
-msgid "Word {version}"
-msgstr "Word ({version})"
+msgid "Word de travail"
+msgstr "Working Word"
+
+msgid "Word pour le comité"
+msgstr "Word for the committee"
 
 #, python-brace-format
 msgid "Word {version} : {path}"
