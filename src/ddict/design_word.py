@@ -185,9 +185,10 @@ def _coded(code: str | None, text: str, working: bool) -> str:
 def _choices(document, question: Question, working: bool) -> None:
     mark = SQUARE if question.kind == "checkbox" else ROUND
     for option in question.options:
-        text = _coded(option.code, option.text, working)
-        if option.other:
-            text += " : " + "_" * 20
+        if option.other:  # LimeSurvey keeps what is typed, under no code
+            text = option.text + " : " + "_" * 20
+        else:
+            text = _coded(option.code, option.text, working)
         _plain(document, f"{mark} {text}", indent=True)
 
 
@@ -237,7 +238,9 @@ def _working_lines(project: Project, question: Question, tool: str) -> list[str]
             parts.append(_("obligatoire"))
         lines = [f"{question.question_id} — " + " — ".join(parts)]
         names = _variables(project, question)
-        if names:
+        if names and question.kind == "display":  # a column LimeSurvey exports empty
+            lines.append(_("Variable : {name} (toujours vide)").format(name=names[0]))
+        elif names:
             lines.append(_("Variables : {names}").format(names=", ".join(names)))
         provenance = provenance_text(question.provenance)
         if provenance:

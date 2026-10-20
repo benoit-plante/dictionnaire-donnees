@@ -4,30 +4,36 @@ The database is read and profiled as any other (`build_project`). Each of its va
 finds the planned variable of the same name, without case (a LimeSurvey CSV or Excel export
 is already read with the names of its .sav, `Q4_SQ001`), and takes again what the team
 decided about it: its question, its new name, its label, description, unit, measure level,
-value labels, privacy class, group; what the file says comes from the file. The project then
-documents a database, as any other ("Documenter").
+value labels, privacy class, group; what the file says comes from the file. A question
+whose code changed in LimeSurvey (`nuit` became `nuisance`) is found by its texts, when they
+leave no doubt: the same question text, found once in the questionnaire, and each item's
+text found once among its variables (seen in the author's trial, 2026-10-20). The project
+then documents a database, as any other ("Documenter").
 
 The conformity report says what differs from the questionnaire, computed at any time from
 the questionnaire and the variables: planned variables absent, variables not planned (the
 platform's own aside), codes observed outside the planned ones (the codes only, never their
-counts), value labels that differ, a type other than the planned one. Nothing in the
-questionnaire is changed by it.
+counts), value labels that differ, a type other than the planned one, the variables found
+under another name, the texts of the base that differ from the questionnaire's (a question
+reworded in LimeSurvey). Nothing in the questionnaire is changed by it.
 """
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from ddict import design, naming, platforms
+from ddict.design_limesurvey import OTHER_WORDS
 from ddict.i18n import _
 from ddict.io.load import read_database
 from ddict.privacy import MIN_CELL_COUNT
 from ddict.project import dataset, measure
 from ddict.project.build import build_project
 from ddict.project.decisions import PROPOSING_ORIGINS
-from ddict.project.model import Project, TrackedValue, VariableEntry
-from ddict.questionnaire.link import texts_agree
+from ddict.project.model import Project, Question, TrackedValue, VariableEntry
+from ddict.questionnaire.link import MIN_TRUNCATED, normalized_text, texts_agree
 
 # The decisions a variable keeps from its planned self, when a person made them.
 DECIDED = (
@@ -39,6 +45,9 @@ DATES = {"date", "datetime"}
 # A text column holding codes of digits and others ("1", "-oth-"), as LimeSurvey's .sav
 # writes a single choice with "other" (the real export of 2026-10-19).
 TEXTS = {"text", "mixed"}
+# "[Le bruit] Qu'est-ce qui nuit à votre sommeil ?": how LimeSurvey's .sav labels the
+# variable of an item, a choice to tick or a grid's line.
+ITEM_LABEL = re.compile(r"\s*\[(?P<item>[^\]]*)\]\s*(?P<question>.*)", re.DOTALL)
 
 
 class AlreadyThere(ValueError):
@@ -89,6 +98,7 @@ def receive(
         if before is not None and merged.name != before.name:
             _rename_members(project, before.name, merged.name)
         variables.append(merged)
+    _by_texts(project, planned, variables)
     project.source = found.source
     project.settings.min_cell_count = found.settings.min_cell_count
     project.settings.max_observed_values = found.settings.max_observed_values
@@ -101,6 +111,83 @@ def receive(
     naming.propose(project)
     dataset.propose_structure(project)
     return conformity(project)
+
+
+def _parts(label: str) -> tuple[str | None, str]:
+    """The item and the question a variable's label names."""
+    found = ITEM_LABEL.fullmatch(label)
+    return (found["item"], found["question"]) if found else (None, label)
+
+
+def _same(first: str | None, second: str | None) -> bool:
+    """The same text, punctuation, case and accents aside, or the start of it (a label cut
+    short): stricter than `texts_agree`, which takes a word changed for the same."""
+    a, b = normalized_text(first or ""), normalized_text(second or "")
+    if not a or not b:
+        return False
+    short, long = sorted((a, b), key=len)
+    return a == b or (len(short) >= MIN_TRUNCATED and long.startswith(short))
+
+
+def _item(question: Question, target: str | None):
+    """The choice or the grid's line a variable stands for; None for the question itself."""
+    for item in [*question.options, *question.rows]:
+        if target in (getattr(item, "option_id", None), getattr(item, "row_id", None)):
+            return item
+    return None
+
+
+def _item_agrees(item, text: str | None) -> bool:
+    if text is None:
+        return False
+    if getattr(item, "other", False) and text.strip().lower() in OTHER_WORDS:
+        return True  # LimeSurvey's own word for the "other" option
+    return _same(item.text, text)
+
+
+def _by_texts(
+    project: Project, planned: dict[str, VariableEntry], variables: list[VariableEntry]
+) -> None:
+    """The planned variables not found by their name, found by their texts when they leave
+    no doubt; found, they take again the decisions of the planned ones, as by their name."""
+    questions = design.questionnaire(project).questions
+    left: dict[str, list[VariableEntry]] = {}
+    for entry in planned.values():
+        left.setdefault((entry.question.value or "").partition(".")[0], []).append(entry)
+    free = {
+        n: _parts(e.file.label or "")
+        for n, e in enumerate(variables)
+        if e.planned is None and e.file.label
+    }
+    for question in questions:
+        entries = left.get(question.question_id)
+        if not entries or sum(_same(q.text, question.text) for q in questions) != 1:
+            continue
+        candidates = [n for n, (_i, text) in free.items() if _same(text, question.text)]
+        if len(candidates) != len(entries):
+            continue
+        pairs = {}
+        for entry in entries:
+            item = _item(question, entry.question.value)
+            hits = (
+                candidates
+                if item is None
+                else [n for n in candidates if _item_agrees(item, free[n][0])]
+            )
+            if len(hits) != 1:
+                break
+            pairs[entry.name] = hits[0]
+        else:
+            if len(set(pairs.values())) != len(entries):
+                continue
+            for entry in entries:
+                n = pairs[entry.name]
+                merged = _merged(entry, variables[n])
+                merged.position = variables[n].position
+                _rename_members(project, entry.name, merged.name)
+                variables[n] = merged
+                planned.pop(entry.name.lower())
+                del free[n]
 
 
 def _rename_members(project: Project, old: str, new: str) -> None:
@@ -119,10 +206,15 @@ class Conformity:
     codes: dict[str, list[str]] = field(default_factory=dict)  # codes observed, not planned
     labels: dict[str, list[tuple[str, str, str]]] = field(default_factory=dict)
     types: dict[str, tuple[str, str]] = field(default_factory=dict)  # planned, observed
+    renamed: dict[str, str] = field(default_factory=dict)  # planned name -> name in the base
+    texts: list[tuple[str, str, str]] = field(default_factory=list)  # name, planned, in base
 
     @property
     def empty(self) -> bool:
-        return not (self.absent or self.extra or self.codes or self.labels or self.types)
+        return not (
+            self.absent or self.extra or self.codes or self.labels or self.types
+            or self.renamed or self.texts
+        )  # fmt: skip
 
 
 def _family(kind: str) -> str:
@@ -148,16 +240,22 @@ def conformity(project: Project) -> Conformity:
     if project.source is None or project.design is None:
         return found
     wanted = {w.name.lower(): w for w in design.wanted(project)}
-    names = {e.name.lower(): e for e in project.variables}
-    found.absent = [w.name for key, w in wanted.items() if key not in names]
+    targets = {w.target: w for w in wanted.values()}
+    questions = {q.question_id: q for q in design.questionnaire(project).questions}
+    matched = set()
     platform = _platform_names(project)
     for entry in project.variables:
         key = entry.name.lower()
         plan = wanted.get(key)
+        if plan is None and entry.question.value in targets:  # found by its texts
+            plan = targets[entry.question.value]
+            found.renamed[plan.name] = entry.name
         if plan is None:
             if key not in platform:
                 found.extra.append(entry.name)
             continue
+        matched.add(plan.name.lower())
+        _texts(found, entry, questions.get(plan.target.partition(".")[0]), plan.target)
         observed = entry.profile.inferred_type if entry.profile is not None else plan.type
         if _family(observed) != _family(plan.type) and observed != "empty":
             found.types[entry.name] = (plan.type, observed)
@@ -182,7 +280,25 @@ def conformity(project: Project) -> Conformity:
                 differ.append((code, text, label.label))
         if differ:
             found.labels[entry.name] = differ
+    found.absent = [w.name for key, w in wanted.items() if key not in matched]
     return found
+
+
+def _texts(found: Conformity, entry: VariableEntry, question, target: str) -> None:
+    """The question's text, and its item's, as the base's label says them, when they differ
+    from the questionnaire's: each text once."""
+    label = entry.file.label
+    if question is None or not label or label == entry.name:
+        return
+    said, text = _parts(label)
+    seen = {planned for _n, planned, _b in found.texts}
+    if question.text not in seen and not _same(question.text, text):
+        found.texts.append((entry.name, question.text, text.strip()))
+    item = _item(question, target)
+    if item is None or said is None or item.text in seen:
+        return
+    if not _item_agrees(item, said):
+        found.texts.append((entry.name, item.text, said.strip()))
 
 
 def _code(code) -> str:
@@ -216,6 +332,10 @@ def report_markdown(project: Project, found: Conformity) -> str:
         (_("Types différents"),
          [f"- `{n}` : " + _("prévu {planned}, observé {observed}").format(
              planned=a, observed=b) for n, (a, b) in found.types.items()]),
+        (_("Variables retrouvées sous un autre nom (même texte, autre code)"),
+         [f"- `{a}` → `{b}`" for a, b in found.renamed.items()]),
+        (_("Textes différents du questionnaire"),
+         [f"- `{n}` : « {a} » → « {b} »" for n, a, b in found.texts]),
     ]  # fmt: skip
     for heading, items in sections:
         if items:
@@ -236,11 +356,14 @@ def summary_text(found: Conformity) -> str:
     return _(
         "Base lue. Conformité au questionnaire — variables prévues absentes : {absent} ; "
         "non prévues : {extra} ; avec des codes hors des codes prévus : {codes} ; aux "
-        "étiquettes différentes : {labels} ; d'un autre type : {types}."
+        "étiquettes différentes : {labels} ; d'un autre type : {types} ; retrouvées sous un "
+        "autre nom : {renamed} ; textes différents : {texts}."
     ).format(
         absent=len(found.absent),
         extra=len(found.extra),
         codes=len(found.codes),
         labels=len(found.labels),
         types=len(found.types),
+        renamed=len(found.renamed),
+        texts=len(found.texts),
     )

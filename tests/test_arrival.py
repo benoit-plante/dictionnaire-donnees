@@ -177,3 +177,60 @@ def test_what_limesurvey_s_sav_writes_of_an_other_answer(tmp_path):
         "Q6": {"1": "Chez moi", "-oth-": "Other"}})  # fmt: skip
     found = arrival.receive(load_project(path), base)
     assert "Q6" not in found.labels and "Q6" not in found.types
+
+
+# --- A question whose code or text changed in LimeSurvey (the author's trial, 2026-10-20) ----
+
+QUESTION = "Au cours du dernier mois, à quelle fréquence..."  # LimeSurvey's three dots
+CHECKBOX = "Qu'est-ce qui vous aide à dormir ? Cochez tout ce qui s'applique."
+
+
+def _reworded(path: Path, checkbox: str = CHECKBOX) -> Path:
+    """The .sav of LimeSurvey, its labels as it writes them: the gender reworded, and the
+    checkbox question of code `Q6` there, `Q5` in the questionnaire."""
+    from projet_concu import ROWS as ITEMS
+
+    labels = {
+        "Q1": "Quel est ton genre ?",
+        "Q2": "Quel âge avez-vous ?",
+        **{f"Q4_SQ00{n}": f"[{t}] {QUESTION}" for n, t in enumerate(ITEMS, start=1)},
+        "Q6_1": f"[La lecture] {checkbox}",
+        "Q6_2": f"[La musique] {checkbox}",
+        "Q6_other": f"[Autre] {checkbox}",
+    }
+    data = pd.DataFrame({name: [1.0, 2.0, 1.0, 2.0, 1.0, 2.0] for name in labels})
+    data["Q6_other"] = ["", "Le silence", "", "", "", ""]
+    pyreadstat.write_sav(data, str(path), column_labels=labels)
+    return path
+
+
+def test_a_question_renamed_in_limesurvey_is_found_by_its_texts(tmp_path):
+    project = designed()
+    project.variable("Q5_1").description = TrackedValue[str](value="Lit avant de dormir.",
+                                                             origin="human")  # fmt: skip
+    found = arrival.receive(project, _reworded(tmp_path / "reponses.sav"))
+    assert found.renamed == {"Q5_1": "Q6_1", "Q5_2": "Q6_2", "Q5_other": "Q6_other"}
+    assert not [n for n in found.absent if n.startswith("Q5")]
+    assert not [n for n in found.extra if n.startswith("Q6")]
+    entry = project.variable("Q6_1")
+    assert entry.question.value == "Q5.o1" and entry.description.value == "Lit avant de dormir."
+    group = next(g for g in project.groups if g.question == "Q5")
+    assert group.members.value == ["Q6_1", "Q6_2"]
+    # The one text changed, said once; the three dots of LimeSurvey are no change.
+    assert found.texts == [("Q1", "Quel est votre genre ?", "Quel est ton genre ?")]
+    assert found == arrival.conformity(project)
+    text = arrival.report_markdown(project, found)
+    assert "- `Q5_1` → `Q6_1`" in text
+    assert "- `Q1` : « Quel est votre genre ? » → « Quel est ton genre ? »" in text
+
+
+def test_a_question_renamed_and_reworded_is_not_guessed(tmp_path):
+    project = designed()
+    base = _reworded(
+        tmp_path / "reponses.sav", checkbox="Qu'est-ce qui vous aide à vous endormir ?"
+    )
+    found = arrival.receive(project, base)
+    assert found.renamed == {}
+    assert {"Q5_1", "Q5_2", "Q5_other"} <= set(found.absent)
+    assert {"Q6_1", "Q6_2", "Q6_other"} <= set(found.extra)
+    assert project.variable("Q6_1").question.value is None

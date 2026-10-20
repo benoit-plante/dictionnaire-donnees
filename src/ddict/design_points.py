@@ -45,10 +45,18 @@ TEXTS = Texts(
             "Grille tirée d'une source sans nom d'instrument : à donner, avec sa source, sur la "
             "page « Groupes »."
         ),
+        "french_spacing": N_(
+            "Espace manquante avant « ? », « ! », « : » ou « ; », comme l'écrit le français : "
+            "{words}."
+        ),
     }
 )
 # A range written in a choice: "18-25", "18 à 25", "de 18 à 25 ans", "18–25".
 _RANGE = re.compile(r"(?:de\s+)?(\d+)\s*(?:-|–|à|to)\s*(\d+)", re.IGNORECASE)
+# A word glued to "?", "!", ":" or ";" ("sommeil?"): letters only before it, so that an hour
+# ("10:30") or an address ("https://") is no point.
+_GLUED = re.compile(r"([^\W\d_][\w'’-]*)([?!:;])(?!//)")
+SHOWN = 3  # glued words shown in the point
 
 
 @dataclass(frozen=True)
@@ -147,6 +155,17 @@ def _grid(project: Project, question: Question) -> list[Point]:
     return found
 
 
+def _spacing(question: Question) -> list[Point]:
+    """French puts a space before "?", "!", ":" and ";" (v0.20.1, the author's trial)."""
+    texts = [question.text, question.instruction or ""]
+    texts += [i.text for i in [*question.options, *question.rows]]
+    glued = [f"« {m.group(0)} »" for text in texts for m in _GLUED.finditer(text)]
+    if not glued:
+        return []
+    words = ", ".join(glued[:SHOWN]) + (" …" if len(glued) > SHOWN else "")
+    return [Point("french_spacing", question.question_id, {"words": words})]
+
+
 def _code_of(project: Project, question: Question) -> list[Point]:
     """The question's code: decided, and its own in LimeSurvey (D-156)."""
     if question.kind == "display":
@@ -183,8 +202,11 @@ def points(project: Project, *, kept: bool = False) -> list[Point]:
     """The points to look at, in the order of the questionnaire; `kept`: those closed by
     "Garder tel quel" too."""
     questionnaire = design.questionnaire(project)
+    french = project.settings.language.startswith("fr")
     found: list[Point] = []
     for question in questionnaire.questions:
+        if french:
+            found += _spacing(question)
         found += _codes(question)
         found += _code_of(project, question)
         found += _ranges(question)

@@ -363,17 +363,17 @@ def _form(project: Project, question_id: str) -> None:
                 _("Choix de réponse (code, texte ; cochez « Autre » pour l'option à préciser)"),
                 other=True,
             )
-        if kind == "grid":
-            _table(
-                prefix + "options",
-                lambda: _fresh_now(question_id, "options"),
-                _("Colonnes de la grille : les choix de réponse (code, texte)"),
-                other=False,
-            )
+        if kind == "grid":  # the items first, as in the Word and in LimeSurvey
             _table(
                 prefix + "rows",
                 lambda: _fresh_now(question_id, "rows"),
                 _("Énoncés de la grille (code, texte)"),
+                other=False,
+            )
+            _table(
+                prefix + "options",
+                lambda: _fresh_now(question_id, "options"),
+                _("Colonnes de la grille : les choix de réponse (code, texte)"),
                 other=False,
             )
         save, cancel, _space = st.columns([1, 1, 3])

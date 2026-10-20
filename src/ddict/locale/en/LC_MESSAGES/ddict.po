@@ -925,11 +925,12 @@ msgstr "Database read: it says what the questionnaire planned."
 msgid ""
 "Base lue. Conformité au questionnaire — variables prévues absentes : {absent} ; non prévues : "
 "{extra} ; avec des codes hors des codes prévus : {codes} ; aux étiquettes différentes : {labels} "
-"; d'un autre type : {types}."
+"; d'un autre type : {types} ; retrouvées sous un autre nom : {renamed} ; textes différents : "
+"{texts}."
 msgstr ""
-"Database read. Conformity to the questionnaire — planned variables absent: {absent}; not planned:"
-" {extra}; with codes outside the planned codes: {codes}; with different labels: {labels}; of "
-"another type: {types}."
+"Database read. Conformity with the questionnaire — planned variables absent: {absent}; not "
+"planned: {extra}; with codes outside the planned codes: {codes}; with different labels: {labels};"
+" of another type: {types}; found under another name: {renamed}; texts that differ: {texts}."
 
 msgid "Bases de données"
 msgstr "Databases"
@@ -2343,6 +2344,10 @@ msgstr "Sent where"
 #, python-brace-format
 msgid "Erreur de fichier : {detail}"
 msgstr "File error: {detail}"
+
+#, python-brace-format
+msgid "Espace manquante avant « ? », « ! », « : » ou « ; », comme l'écrit le français : {words}."
+msgstr "Missing space before “?”, “!”, “:” or “;”, as French writes it: {words}."
 
 msgid "Essayer avec la base fictive"
 msgstr "Try with the fictional database"
@@ -6640,6 +6645,9 @@ msgstr "\"Other\" text"
 msgid "Texte « autre » : {names}."
 msgstr "\"Other\" text: {names}."
 
+msgid "Textes différents du questionnaire"
+msgstr "Texts that differ from the questionnaire"
+
 #, python-brace-format
 msgid "Tirée de {source} : {parts}. Raison : {reason}"
 msgstr "Derived from {source}: {parts}. Reason: {reason}"
@@ -7097,6 +7105,10 @@ msgstr "Valid: {v}; empty cells: {e}; declared missing: {d}"
 msgid "Variable"
 msgstr "Variable"
 
+#, python-brace-format
+msgid "Variable : {name} (toujours vide)"
+msgstr "Variable: {name} (always empty)"
+
 msgid "Variable constante"
 msgstr "Constant variable"
 
@@ -7183,6 +7195,9 @@ msgstr "Variables that describe the sample: {names}"
 
 msgid "Variables rattachées à une question"
 msgstr "Variables linked to a question"
+
+msgid "Variables retrouvées sous un autre nom (même texte, autre code)"
+msgstr "Variables found under another name (same text, other code)"
 
 #, python-brace-format
 msgid "Variables sans question : {n}"

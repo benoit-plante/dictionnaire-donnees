@@ -91,6 +91,16 @@ def test_the_working_version():
     assert "question 3 : Le code de la question n'est pas décidé" in text
 
 
+def test_the_working_version_shows_no_code_where_limesurvey_has_none():
+    # Seen in the author's trial (2026-10-20): "[4] Autre", a code no export ever holds.
+    project = designed()
+    other = next(o for q in project.questionnaire.questions for o in q.options if o.other)
+    other.code = "4"
+    text = _text(project, "working")
+    assert "☐ Autre : ____" in text and "[4] Autre" not in text
+    assert "Variable : Q3 (toujours vide)" in text  # the display text's empty column
+
+
 def test_a_kept_point_is_said_kept():
     from ddict import design_points
 

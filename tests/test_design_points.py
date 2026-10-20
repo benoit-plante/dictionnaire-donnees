@@ -95,6 +95,25 @@ def test_two_codes_that_limesurvey_would_make_the_same():
     assert shared[0].text.startswith("Même code LimeSurvey qu'une autre question")
 
 
+def test_a_word_glued_to_its_question_mark_in_french():
+    # Seen in the author's trial (2026-10-20): "Qu'est-ce qui nuit à votre sommeil?".
+    project = designed()
+    glued = _add(project, text="Qu'est-ce qui nuit à votre sommeil?",
+                 instruction="Attention: une seule réponse",
+                 options=(Item("Oui!", "1"), Item("Non", "2")))  # fmt: skip
+    spaced = _add(project, text="Vers 10:30 ? Voir https://exemple.org ; « Vraiment ?! »",
+                  options=(Item("Oui", "1"),))  # fmt: skip
+    point = next(p for p in design_points.points(project) if p.code == "french_spacing")
+    assert point.question == glued and point.page == "design"
+    assert point.text == (
+        "Espace manquante avant « ? », « ! », « : » ou « ; », comme l'écrit le français : "
+        "« sommeil? », « Attention: », « Oui! »."
+    )
+    assert "french_spacing" not in [c for _q, c in _codes(project, spaced)]
+    project.settings.language = "en"  # English glues them
+    assert "french_spacing" not in [c for _q, c in _codes(project)]
+
+
 def test_names_in_conflict():
     project = designed()
     project.variable("Q1").new_name = TrackedValue[str](value="age", origin="human")
