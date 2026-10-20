@@ -42,6 +42,18 @@ def set_title(project: Project, text: str) -> bool:
     return True
 
 
+def rename(path: Path | str, text: str) -> Project:
+    """Give the project file at `path` this title, or take it off (an empty one), when the
+    project is not open: read, changed, saved through the check of D-129 (ProjectChanged,
+    FileBusy: nothing written). Raises ProjectError, TitleError. No file is renamed."""
+    from ddict.project.store import load_project, save_project
+
+    project = load_project(path)
+    if set_title(project, text):
+        save_project(project, path)
+    return project
+
+
 def name(project: Project, path: Path) -> str:
     """What the project is called: its title, else the name of its file."""
     from ddict.workflow import project_stem

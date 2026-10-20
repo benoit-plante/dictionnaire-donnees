@@ -19,7 +19,7 @@ from ddict import i18n, overview, recents, settings, tracked
 from ddict.design import DesignError
 from ddict.i18n import N_, _
 from ddict.io import ReadError
-from ddict.project import ProjectError, load_project, ondisk
+from ddict.project import ProjectError, load_project, ondisk, title
 from ddict.review.ui import common as c
 from ddict.review.ui import dialog
 from ddict.workflow import (
@@ -609,6 +609,80 @@ def _tasks(row: overview.ProjectRow) -> None:
             )
 
 
+TITLE, TITLE_FOR = "home-title", "home-title-for"  # the field, and the project it is of
+
+
+def _save_title(path: Path, text: str) -> None:
+    """Give the project not open its title, or take it off (D-161); no file is renamed."""
+    key = "home-title"
+    try:
+        project = title.rename(path, text)
+    except title.TitleError as error:
+        _message("error", str(error), key)
+        return
+    except ProjectError as error:
+        _message("error", _("Impossible de lire le projet : {detail}").format(detail=error), key)
+        return
+    except ondisk.FileChanged:
+        _message(
+            "error",
+            _(
+                "Ce projet a été modifié ailleurs pendant l'enregistrement : le titre n'est pas "
+                "enregistré. Réessayez."
+            ),
+            key,
+        )
+        return
+    except ondisk.FileBusy:
+        _message(
+            "error",
+            _(
+                "Le fichier est occupé, peut-être par la synchronisation de OneDrive : rien "
+                "n'est enregistré. Réessayez dans un instant."
+            ),
+            key,
+        )
+        return
+    st.session_state[TITLE] = project.title or ""
+    if project.title:
+        _message("success", _("Titre enregistré. Aucun fichier n'est renommé."), key)
+    else:
+        _message("success", _("Le projet reprend le nom de son fichier."), key)
+
+
+def _rename(row: overview.ProjectRow) -> None:
+    """ "Renommer": the title, written in the project file; the files keep their names."""
+    if st.session_state.get(TITLE_FOR) != str(row.path):  # another project shown
+        st.session_state[TITLE] = row.title or ""
+        st.session_state[TITLE_FOR] = str(row.path)
+    with st.popover(_("Renommer"), icon=":material/edit:"):
+        st.text_input(
+            _("Titre du projet"),
+            key=TITLE,
+            max_chars=title.MAX_LENGTH,
+            placeholder=row.file_name,
+            help=_(
+                "Montré à la place du nom du fichier, ici et dans le projet ouvert. Jamais "
+                "envoyé à l'IA."
+            ),
+        )
+        st.caption(_("Le fichier garde son nom : {name}.").format(name=row.path.name))
+        with st.container(horizontal=True):
+            st.button(
+                _("Enregistrer le titre"),
+                key="home-title-save",
+                on_click=lambda: _save_title(row.path, st.session_state[TITLE]),
+                type="primary",
+            )
+            if row.title:
+                st.button(
+                    _("Revenir au nom du fichier"),
+                    key="home-title-clear",
+                    on_click=_save_title,
+                    args=(row.path, ""),
+                )
+
+
 def _detail(row: overview.ProjectRow) -> None:
     """What the project is, read from its files without its database (plan-accueil, § 7.3)."""
     st.subheader(row.name)
@@ -628,8 +702,10 @@ def _detail(row: overview.ProjectRow) -> None:
             type="primary",
             help=_("Le projet s'ouvre là où quelque chose attend."),
         )
+        _rename(row)
         _folder_button(row)
         _unfollow_button(row)
+    c.show_message("home-title")
     st.markdown(_phases(row))
     share = row.codebook or 0
     st.progress(share, text=_("Codebook documenté à {p} %").format(p=round(100 * share)))
@@ -646,8 +722,8 @@ def _detail(row: overview.ProjectRow) -> None:
         _bold(_("Questionnaire"))
         st.write(_questionnaire_text(row))
     files = overview.produced(row)
-    title = _("Fichiers produits à côté du projet ({n})").format(n=len(files))
-    with st.expander(title, expanded=bool(files)):
+    heading = _("Fichiers produits à côté du projet ({n})").format(n=len(files))
+    with st.expander(heading, expanded=bool(files)):
         if files:
             st.markdown("\n".join(f"- {name}" for name in files))
         else:

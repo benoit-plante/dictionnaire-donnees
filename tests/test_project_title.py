@@ -157,7 +157,7 @@ def test_the_sidebar_of_the_open_project(path):
     app.run()
     assert not app.exception, app.exception
     assert app.sidebar.title[0].value == "Sommeil 2026"
-    assert app.sidebar.caption[0].value == "etude-sommeil.sav"
+    assert "etude-sommeil.sav" in [c.value for c in app.sidebar.caption]
 
 
 @pytest.mark.allow_hosts(["127.0.0.1"])

@@ -1086,6 +1086,11 @@ msgstr ""
 "This project was changed elsewhere since you opened it (another tab, another person or the "
 "command line)."
 
+msgid ""
+"Ce projet a été modifié ailleurs pendant l'enregistrement : le titre n'est pas enregistré. "
+"Réessayez."
+msgstr "This project was changed elsewhere during the save: the title is not saved. Try again."
+
 msgid "Ce projet est maintenant suivi."
 msgstr "This project is now followed."
 
@@ -2324,6 +2329,9 @@ msgstr "Save the section"
 msgid "Enregistrer le recodage"
 msgstr "Save the recoding"
 
+msgid "Enregistrer le titre"
+msgstr "Save the title"
+
 msgid "Enregistrer les noms de base"
 msgstr "Save the base names"
 
@@ -3498,6 +3506,10 @@ msgid ""
 "Réessayez dans un instant."
 msgstr "The file is busy, perhaps being synced by OneDrive: nothing is saved. Try again in a moment."
 
+#, python-brace-format
+msgid "Le fichier garde son nom : {name}."
+msgstr "The file keeps its name: {name}."
+
 msgid "Le fichier pour LimeSurvey"
 msgstr "The file for LimeSurvey"
 
@@ -3725,6 +3737,9 @@ msgstr "The open project"
 
 msgid "Le projet quitte « Mes projets » ; son fichier n'est pas touché."
 msgstr "The project leaves “My projects”; its file is not touched."
+
+msgid "Le projet reprend le nom de son fichier."
+msgstr "The project bears its file's name again."
 
 msgid "Le projet s'ouvre là où quelque chose attend."
 msgstr "The project opens where something is waiting."
@@ -4595,6 +4610,12 @@ msgstr "Show the names"
 
 msgid "Montrez où est maintenant ce fichier projet."
 msgstr "Show where this project file is now."
+
+msgid "Montré à la place du nom du fichier, ici et dans le projet ouvert. Jamais envoyé à l'IA."
+msgstr "Shown instead of the file's name, here and in the open project. Never sent to the AI."
+
+msgid "Montré à la place du nom du fichier, ici et dans « Mes projets ». Jamais envoyé à l'IA."
+msgstr "Shown instead of the file's name, here and in “My projects”. Never sent to the AI."
 
 #, python-brace-format
 msgid "Mots-clés : {words}"
@@ -5828,6 +5849,9 @@ msgstr ""
 "Fills in the \"Decision\" column; nothing is saved before you have read the table and clicked "
 "\"Save\"."
 
+msgid "Renommer"
+msgstr "Rename"
+
 msgid "Renvoyer aussi les blocs déjà enrichis."
 msgstr "Also send the blocks already enriched."
 
@@ -5960,6 +5984,9 @@ msgstr "Taken off the list, its file is not touched: {path}"
 #, python-brace-format
 msgid "Retirée du carnet : {id}"
 msgstr "Removed from the notebook: {id}"
+
+msgid "Revenir au nom du fichier"
+msgstr "Back to the file's name"
 
 msgid "Revenir sur cette décision"
 msgstr "Undo this decision"
@@ -6724,9 +6751,15 @@ msgstr "Title of the new section"
 msgid "Titre de la section"
 msgstr "Title of the section"
 
+msgid "Titre du projet"
+msgstr "Title of the project"
+
 #, python-brace-format
 msgid "Titre du projet : {title}. Aucun fichier n'est renommé."
 msgstr "Title of the project: {title}. No file is renamed."
+
+msgid "Titre enregistré. Aucun fichier n'est renommé."
+msgstr "Title saved. No file is renamed."
 
 #, python-brace-format
 msgid "Titres ou notes changés : {n}"

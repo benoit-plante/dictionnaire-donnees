@@ -14,8 +14,8 @@ from pathlib import Path
 
 from ddict import overview, tracked
 from ddict.i18n import N_, _
-from ddict.project import PROJECT_SUFFIX, ProjectError, load_project, ondisk, save_project
-from ddict.project.title import TitleError, set_title
+from ddict.project import PROJECT_SUFFIX, ProjectError, ondisk
+from ddict.project.title import TitleError, rename
 
 EXIT_ERROR = 2
 PROJECTS_ACTIONS = {
@@ -129,17 +129,13 @@ def _rename(path: Path, text: str | None, clear: bool) -> int:
         print(_("Donnez un titre, ou --effacer, pas les deux."), file=sys.stderr)
         return EXIT_ERROR
     try:
-        project = load_project(path)
+        project = rename(path, "" if clear else text)  # refused if changed elsewhere (D-129)
     except ProjectError as error:
         print(_("Impossible de lire le projet : {detail}").format(detail=error), file=sys.stderr)
         return EXIT_ERROR
-    try:
-        changed = set_title(project, "" if clear else text)
     except TitleError as error:
         print(str(error), file=sys.stderr)
         return EXIT_ERROR
-    if changed:
-        save_project(project, path)  # refused if changed elsewhere since read (D-129)
     if project.title is None:
         print(_("Le projet n'a pas de titre : il porte le nom de son fichier. Aucun fichier "
                 "n'est renommé."))  # fmt: skip

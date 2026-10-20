@@ -240,8 +240,8 @@ Pour mémoire, ce qu'il faudrait, au cas où vous retiendriez la façon 2 ou 3 :
 
 ### 8.4 Où renommer (point 15)
 
-- **Dans le détail du projet** (« Mes projets ») : « Renommer » ouvre, sous le nom, un champ et « Enregistrer le titre » ; « Revenir au nom du fichier » l'efface. Le projet est lu, le titre posé, puis `save_project`, qui refuse si le fichier a changé depuis la lecture (D-129) ; le message de refus est celui de D-130.
-- **Une fois le projet ouvert** : un petit bouton crayon à côté du titre, en tête de la barre de gauche, qui ouvre le même champ dans une fenêtre surgissante (`st.popover`) ; enregistré par `c.save` (D-130), avec son rappel.
+- **Dans le détail du projet** (« Mes projets ») : « Renommer », avec les autres actions, ouvre une fenêtre surgissante avec le champ, « Enregistrer le titre » et « Revenir au nom du fichier ». `title.rename` lit le projet, pose le titre et l'enregistre par `save_project`, qui refuse si le fichier a changé depuis la lecture (D-129) ; un fichier changé ou occupé : rien n'est écrit, et l'accueil le dit.
+- **Une fois le projet ouvert** : un bouton « Renommer » sous le titre, en tête de la barre de gauche, avec « Ne plus suivre », qui ouvre le même champ dans une fenêtre surgissante (`st.popover`) ; enregistré par `c.save` (D-130), avec son rappel. Fait à l'étape D2 : un crayon seul à côté du titre passait sur sa propre ligne dès que le titre est long, d'où le bouton nommé.
 - **En ligne de commande** : `ddict projets renommer FICHIER "Titre"` (et `--effacer`), dans `cli_projects` à côté de `lister` ; simple avec un titre.
 - **Un projet ouvert dans une autre fenêtre** : l'outil ne peut pas le savoir (aucun verrou, par choix : D-130). Avec un titre, ce n'est pas un danger : l'autre fenêtre voit « Ce projet a été modifié ailleurs » à son prochain affichage, et rien de ce qu'elle décide n'écrase le titre sans prévenir. Le guide le dit.
 

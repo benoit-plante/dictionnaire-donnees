@@ -16,6 +16,7 @@ from ddict import settings, tracked
 from ddict.export.wording import dataset_title
 from ddict.i18n import N_, _
 from ddict.project import aside, permission
+from ddict.project.title import MAX_LENGTH, TitleError, set_title
 from ddict.project.title import name as project_name
 from ddict.review import logic, navigation, shutdown
 from ddict.review.ui import (
@@ -38,7 +39,7 @@ from ddict.review.ui import (
     verify_view,
 )
 from ddict.review.ui import common as c
-from ddict.workflow import tasks
+from ddict.workflow import project_stem, tasks
 
 
 def _messages_start():
@@ -96,6 +97,66 @@ def _follow_button() -> None:
             icon=":material/bookmark_add:",
             help=_("Le projet figurera dans « Mes projets », sur l'accueil."),
         )
+
+
+PROJECT_TITLE = "project-title"
+TITLE_LABEL = N_("Enregistrer le titre")
+
+
+def _save_title(text: str) -> None:
+    """The project's title (D-161), saved like any other decision (D-129, D-130)."""
+    project = c.project()
+    try:
+        changed = set_title(project, text)
+    except TitleError as error:
+        st.session_state.message = ("error", str(error), PROJECT_TITLE)
+        return
+    st.session_state[PROJECT_TITLE] = project.title or ""
+    if changed and c.save(PROJECT_TITLE, action=_(TITLE_LABEL)):
+        st.session_state.message = (
+            "success",
+            _("Titre enregistré. Aucun fichier n'est renommé."),
+            PROJECT_TITLE,
+        )
+
+
+def _title(project) -> None:
+    """At the top of the sidebar: the team's title, the database under it (D-161)."""
+    st.title(project.title or dataset_title(project))
+    if project.title:
+        st.caption(dataset_title(project))
+
+
+def _rename_button(project) -> None:
+    """ "Renommer": the project's title (D-161); the files keep their names."""
+    if PROJECT_TITLE not in st.session_state:
+        st.session_state[PROJECT_TITLE] = project.title or ""
+    with st.popover(_("Renommer"), icon=":material/edit:"):
+        st.text_input(
+            _("Titre du projet"),
+            key=PROJECT_TITLE,
+            max_chars=MAX_LENGTH,
+            placeholder=project_stem(c.project_path()),
+            help=_(
+                "Montré à la place du nom du fichier, ici et dans « Mes projets ». Jamais "
+                "envoyé à l'IA."
+            ),
+        )
+        st.caption(_("Le fichier garde son nom : {name}.").format(name=c.project_path().name))
+        st.button(
+            _(TITLE_LABEL),
+            key="project-title-save",
+            on_click=lambda: _save_title(st.session_state[PROJECT_TITLE]),
+            type="primary",
+        )
+        if project.title:
+            st.button(
+                _("Revenir au nom du fichier"),
+                key="project-title-clear",
+                on_click=_save_title,
+                args=("",),
+            )
+        c.show_message(PROJECT_TITLE)
 
 
 AI_ALLOWED = "ai-allowed"
@@ -265,12 +326,10 @@ def main() -> None:
     mode = _navigation(project, waiting)
     with st.sidebar:
         st.button(_("Accueil"), key="home", on_click=home_view.back_home, icon=":material/home:")
-        if project.title:  # v0.20.2 (D-161): the team's title, the database under it
-            st.title(project.title)
-            st.caption(dataset_title(project))
-        else:
-            st.title(dataset_title(project))
-        _follow_button()
+        _title(project)
+        with st.container(horizontal=True):
+            _rename_button(project)
+            _follow_button()
         _ai_permission(project)
         share = logic.codebook_progress(project)  # v0.16: never full on a new project
         st.progress(share, text=_("Codebook documenté à {p} %").format(p=round(100 * share)))
