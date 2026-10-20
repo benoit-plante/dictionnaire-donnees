@@ -203,9 +203,11 @@ def _quit() -> None:
         st.session_state[QUITTING] = True
 
 
-def _quit_button() -> None:
-    """At the bottom of the sidebar (v0.7.1, D-055): the way to stop the tool."""
-    st.divider()
+def _quit_button(divider: bool = True) -> None:
+    """At the bottom of the sidebar (v0.7.1, D-055): the way to stop the tool. Without a
+    divider right under the menu, which has its own line (D-160)."""
+    if divider:
+        st.divider()
     if st.session_state.get(QUIT_ASK):
         st.warning(_("Une saisie n'est pas enregistrée : elle sera perdue."))
         with st.container(horizontal=True):
@@ -314,10 +316,10 @@ def main() -> None:
     if not c.has_project():
         tab = _home_navigation()
         top = _messages_start()
-        home_view.page(tab)  # "Mes projets" puts its list in the sidebar, under the menu
+        listed = home_view.page(tab)  # "Mes projets" puts its list in the sidebar
         _messages_end(top)
         with st.sidebar:
-            _quit_button()
+            _quit_button(divider=listed)
         return
     project = c.project()
     st.set_page_config(page_title=project_name(project, c.project_path()))  # D-161

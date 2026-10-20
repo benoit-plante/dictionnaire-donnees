@@ -5,6 +5,10 @@ a change: the fictional sleep study, at 1400x900 (the window of the icon) and 90
 Since v0.20, the pages of "Concevoir" too, on the fictional designed questionnaire of the
 tests (`tests/projet_concu.py`): `1400x900\\design-01-design.png`...
 
+Since the new home page (D-160), its five tabs too, with both studies followed:
+`1400x900\\home-01-projets.png`..., and the detail of the designed study,
+`home-06-projets-concu.png`. Light only: the dark theme is set aside.
+
 A development tool, outside `pytest`: it starts the tool on this computer (127.0.0.1) and
 drives the Microsoft Edge already installed, through Playwright; no browser is downloaded,
 and nothing leaves this computer. Fictional data only: the study is copied into a
@@ -33,11 +37,13 @@ from playwright.sync_api import Page, sync_playwright
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
+from ddict import tracked  # noqa: E402
 from ddict.analysis import notebook as nb  # noqa: E402
 from ddict.cli import main as ddict  # noqa: E402
 from ddict.cli import review_command  # noqa: E402
 from ddict.project import load_project, save_project  # noqa: E402
 from ddict.review.navigation import DESIGN, PAGES  # noqa: E402
+from ddict.review.ui.home_view import TABS  # noqa: E402
 from ddict.workflow import add_questionnaire, profile_database  # noqa: E402
 
 EXAMPLES = ROOT / "exemples" / "bases-fictives"
@@ -60,7 +66,7 @@ def study(folder: Path) -> Path:
     return path
 
 
-def start(project: Path, config: Path) -> subprocess.Popen:
+def start(project: Path | None, config: Path) -> subprocess.Popen:
     command, env = review_command(project, PORT)
     env = {**env, "DDICT_CONFIG_DIR": str(config)}
     server = subprocess.Popen(command, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
@@ -112,15 +118,41 @@ def shoot(out: Path, modes, prefix: str = "") -> list[Path]:
     return taken
 
 
+def shoot_home(out: Path) -> list[Path]:
+    """The home page's tabs (D-160), then the detail of the designed study, chosen in the
+    list of "Mes projets" in the sidebar."""
+    taken = shoot(out, list(TABS), "home-")
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(channel="msedge")
+        for width, height in SIZES:
+            page = browser.new_page(viewport={"width": width, "height": height})
+            page.goto(f"http://{HOST}:{PORT}/projets")
+            settled(page)
+            chosen = page.locator('[data-testid="stSidebar"] button', has_text="Étude conçue")
+            chosen.first.click()  # Streamlit may keep a stale copy while it redraws
+            settled(page)
+            page.mouse.move(width // 2, 5)  # no tooltip over the list
+            page.mouse.click(width // 2, 5)
+            page.wait_for_timeout(1000)
+            target = out / f"{width}x{height}" / f"home-{len(TABS) + 1:02d}-projets-concu.png"
+            page.screenshot(path=str(target), full_page=True)
+            taken.append(target)
+            page.close()
+        browser.close()
+    return taken
+
+
 def run(out: Path) -> list[Path]:
     work = Path(tempfile.mkdtemp(prefix="ddict-captures-"))
+    os.environ["DDICT_CONFIG_DIR"] = str(work / "config")  # the projects followed, below
     taken = []
     try:
         design = work / "conception"
         design.mkdir()
+        sleep, plan = study(work), designed(design)
         for project, modes, prefix in (
-            (study(work), [m for m in PAGES if m not in {p.mode for p in DESIGN}], ""),
-            (designed(design), [p.mode for p in DESIGN], "design-"),
+            (sleep, [m for m in PAGES if m not in {p.mode for p in DESIGN}], ""),
+            (plan, [p.mode for p in DESIGN], "design-"),
         ):
             server = start(project, work / "config")
             try:
@@ -128,6 +160,13 @@ def run(out: Path) -> list[Path]:
             finally:
                 server.terminate()
                 server.wait(timeout=30)
+        tracked.follow_all([sleep, plan])
+        server = start(None, work / "config")
+        try:
+            taken += shoot_home(out)
+        finally:
+            server.terminate()
+            server.wait(timeout=30)
         return taken
     finally:
         shutil.rmtree(work, ignore_errors=True)

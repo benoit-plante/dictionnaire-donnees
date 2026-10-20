@@ -1986,3 +1986,15 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   3. Les deux, le renommage des fichiers en option.
 - **Justification :** Demandé par l'auteur le 2026-10-20. Les fichiers déjà écrits se nomment entre eux dans leur contenu (chaque script R d'analyse fait `source("etude-metadonnees.R")`, le script du carnet prend son nom du lien du carnet, le paquet de dépôt range les fichiers par leur nom) : les renommer casserait ces renvois, sauf à réécrire des fichiers produits ; Windows n'a pas de renommage groupé, et un fichier ouvert dans Word ou verrouillé par OneDrive laisserait un projet à moitié renommé. Le dossier d'étude prévu définira le nom des fichiers d'une étude : un renommage des fichiers, s'il en faut un, se fera dans ce cadre.
 - **Références :** `docs/plan-accueil.md`, § 8 ; `src/ddict/project/title.py`.
+
+### D-162 — Le numéro de version de l'accueil et du titre
+
+- **Date :** 2026-10-20
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Une seule version, 0.20.2, réunit l'écart d'une variable (D-158, format 0.10.0), le retrait de l'essai (D-159), le nouvel accueil (D-160) et le titre d'un projet (D-161, format 0.11.0). Le format 0.10.0 n'ayant jamais été publié, une personne passe du format 0.9.0 au 0.11.0 en une fois ; un projet enregistré par la 0.20.2 ne s'ouvre plus avec la 0.20.1. L'étiquette et la publication de la version restent soumises à une demande de l'auteur.
+- **Options considérées :**
+  1. Une seule version, 0.20.2 (ce choix).
+  2. La 0.20.2 après le nouvel accueil (format 0.10.0), puis le titre en 0.20.3 (format 0.11.0), pour essayer l'accueil plus tôt.
+- **Justification :** Validé par l'auteur le 2026-10-20 avec le plan. La partie « Non publié » changeait déjà le format du projet (D-158) : la 0.20.2 ne pouvait plus être « sans changement de format ». Une seule version évite un format publié pour quelques heures, et un seul passage de format pour les équipes.
+- **Références :** `docs/plan-accueil.md`, § 10 ; `CHANGELOG.md`, 0.20.2.

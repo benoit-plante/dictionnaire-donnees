@@ -29,7 +29,9 @@ Double-click the **Dictionnaire de données** icon. After a few seconds, the too
 
 If the window cannot open (on a computer without the Edge engine, for example), the tool opens in your browser and works the same way; then stop it with **Quit the tool**.
 
-**Language**: at the top of the home page, **Français · English** chooses the language of the interface. The choice applies at once and is remembered on your computer. Choose **English**.
+**The home page** has its menu in the sidebar: **My projects** (section 19), **New project** (section 3), **Design a questionnaire** (section 20), **Open a project** (a project file, the recent projects, the search in a folder) and **Settings**, then **Quit the tool** at the bottom. Each tab has its own address: reloading the page keeps the tab open.
+
+**Language**: under **Settings**, **Français · English** chooses the language of the interface. The choice applies at once and is remembered on your computer. Choose **English**.
 
 ## 3. A first codebook, from the fictional database
 
@@ -37,7 +39,7 @@ The fictional database is a small invented study of sleep (200 fictional partici
 
 The steps below use the English version, as with your own data:
 
-1. On the home page, under **New project**, click **Choose a database…**. The Windows "Open" window appears (if you do not see it, look in the taskbar). Go to the tool's folder, then `exemples\bases-fictives`, and choose `sleep-study.sav`.
+1. On the home page, choose **New project** in the menu, then click **Choose a database…**. The Windows "Open" window appears (if you do not see it, look in the taskbar). Go to the tool's folder, then `exemples\bases-fictives`, and choose `sleep-study.sav`.
 2. Click **Create the project**. The tool reads the database and creates next to it the **project file**, `sleep-study.dd.json`. It holds everything the tool computed (types, missing values, categories, labels) and, later, your decisions; it does not hold the participants' individual answers. The data file is never changed.
 3. The **Database** page sums up what was read: number of variables and rows, sensitive variables, flags. It also shows the **language of the study** (that of its questionnaire and labels), guessed by the tool and which you can change: the model writes its proposals in this language. Here it is "English".
 4. In the sidebar, choose **Export**, then **Write the codebook and the report**. Two files appear next to the project: `sleep-study.xlsx` (the codebook, to open with Excel) and `sleep-study.md` (the same content as text). The **Open the folder** button shows them in File Explorer.
@@ -46,7 +48,7 @@ Your first codebook is done, without AI: everything in it was computed exactly f
 
 **The menu of the sidebar** (since 0.16) arranges the pages in three jobs: **Document** (Database, Questionnaire, Glossary, Variables, Groups, Names, Export), **Analyse** (Plan, Analyses, Notebook) and **Write** (Method, Verify), then **Settings** (AI). Each page shows what waits there ("Glossary (2)"), or ✓ when nothing waits. The **Codebook N% documented** bar measures what your team has decided, part by part (the detail is in the Summary tab of the Database page). The long pages are in **tabs**: Database (Summary, Description, Measure levels, Sensitive), a group (Items, Scoring, Instrument, Recodings), the result of an analysis (Result, Tables and figures, Files).
 
-Under the menu, the **to-do list** says what is waiting, in the recommended order ("Add the study questionnaire", "Acronyms to accept: 3"…), up to the article: the plan to freeze, the numbers to confirm in the notebook, the gaps of the Method, the draft to check. Each line is a button that leads to the right page. The **Home** button takes you back to the home page, where the table **My projects** comes first (section 19), then your **Recent projects**, with their folder and the date of their last change; each opens again in one click.
+Under the menu, the **to-do list** says what is waiting, in the recommended order ("Add the study questionnaire", "Acronyms to accept: 3"…), up to the article: the plan to freeze, the numbers to confirm in the notebook, the gaps of the Method, the draft to check. Each line is a button that leads to the right page. The **Home** button takes you back to the home page, on **My projects**, with the project you leave already shown (section 19). Your **Recent projects**, with their folder and the date of their last change, are under **Open a project**; each opens again in one click.
 
 When a message points to another page ("The measure level is decided on the Database page", "acronyms… without a definition: anx"), a button comes with it and leads there, already filled in: **Define anx** opens the glossary with the acronym in its field.
 
@@ -160,7 +162,7 @@ It works the same with your file: SPSS (`.sav`), CSV (including those of Excel i
 - The tool never changes your data file.
 - Variables that look like identifiers, free text or dates of birth are found automatically: only their metadata is used, and counts below 5 are masked.
 - On a large database, the links proposed by the AI are often right, but not always: questions repeated word for word ("How often does this person support you?", once per person) are the hardest case. Check them before the labels.
-- The lists of recent and followed projects are kept on your computer (folder `%APPDATA%\ddict`) and hold only file paths; **Clear the list**, on the home page, empties the recent ones, and **Stop following** takes a followed project off its list.
+- The lists of recent and followed projects are kept on your computer (folder `%APPDATA%\ddict`) and hold only file paths; **Clear the list**, under **Open a project** on the home page, empties the recent ones, and **Stop following** takes a followed project off its list.
 
 **A raw SurveyMonkey export** (variables named `q0003_0004`, as `.sav`, `.xlsx` or `.csv`) is recognized: the **Database** page shows "SurveyMonkey export recognized.". The tool then reads the structure of the survey in the names: `q0003_0004` is the 4th item of the 3rd question. Each grid becomes a group, each check-all-that-apply question a "multiple response" group with its "other" variable, and a variable is linked to its question in the questionnaire when their texts agree. In an `.xlsx` or `.csv`, the second header row is never read as a participant. Codes whose label says "Don't know" or "Prefer not to answer" are proposed as missing codes, for the team to confirm.
 
@@ -345,28 +347,35 @@ A trial on the open AMATUS database and its published article is described (in F
 
 ## 19. Follow several projects
 
-Since 0.17, the home page begins with the table **My projects**: one row per followed project, the latest changed at the top. Nothing is sent outside your computer; the table reads the project files and the notebooks, never the databases.
+The home page opens on **My projects**: the list of the projects followed, in the sidebar under the menu, the latest changed at the top, and, in the window, the **detail** of the project chosen. Nothing is sent outside your computer; the home page reads the project files and the notebooks, never the databases.
 
-| Column | What it says |
+**The list.** Each project shows its name and its phase: **Document** while nothing is analysed, **Analyse** as soon as the plan has a hypothesis or the notebook an analysis, **Write** as soon as the article's draft exists; **Design** and **Collecting** for a questionnaire designed in the tool (section 20). A project that does not open says so instead of its phase: **Not found**, **Unreadable** or **Newer version**. A click shows the project's detail, **without opening it**.
+
+**The detail** of a project:
+
+| Part | What it says |
 |---|---|
-| Project | The project file's name, and its folder in small print |
-| Phase | **Document** while nothing is analysed; **Analyse** as soon as the plan has a hypothesis or the notebook an analysis; **Write** as soon as the article's draft exists |
+| Under the name | The path of the project file, and its last change (or that of its notebook) |
+| Phases | All the phases in order, the project's in bold: where it stands, and what comes next |
 | Codebook | The same percentage as the open project's bar |
-| Waiting | The number of tasks, and the first one ("4 · Acronyms to accept: 3"); "—" when nothing waits |
-| Plan | "in progress (2 hypotheses)", "frozen on 2026-10-18", "frozen, 1 amendment" |
+| Waiting | Each task ("Acronyms to accept: 3"), with its button: it opens the project on the page where the task is settled |
+| Analysis plan | "in progress (2 hypotheses)", "frozen on 2026-10-18", "frozen, 1 amendment" |
 | Notebook | The analyses retained, those **to confirm** (a new calculation waits for your agreement) and those **to recompute** (a decision changed since they were computed: open the notebook to find out whether their figures change) |
-| Database | "found" when a file of that name is next to the project; the tool checks it is the right one when the project is opened |
-| Changed | The last change of the project or of its notebook |
+| Database | Its name, "found" when a file of that name is next to the project; the tool checks it is the right one when the project is opened |
+| Questionnaire | Its name, found next to the project or not, or "Designed in the tool" |
+| Files produced | Those the tool wrote next to the project (codebook, reports, analyses, scripts…); only the files' names are read |
 
-**Open a project**: a click on its name opens it where something waits ("Acronyms to accept" opens the glossary), otherwise on the first page of its phase.
+**The actions**, under the name: **Open** opens the project where something waits, otherwise on the first page of its phase; **Rename** (below); **Open the folder** shows it in File Explorer; **Stop following** takes the project off the list, without ever touching its file or its notebook.
 
-**Which projects are followed.** A project created from the home page, or by `ddict profile`, is followed at once. To follow another one: **Follow this project** next to a recent project, or in the sidebar of the open project. To find several at once: **Look for projects in a folder…**, under the table, then choose the folder. The tool looks in that folder and its subfolders, 4 levels down, without opening any file (a OneDrive file "available online only" is not downloaded); it passes over hidden and system folders. Nothing is checked at first: check those you want to follow, then **Follow these N projects**.
+**Rename a project.** A project first bears its file's name (`sleep-study.dd.json` gives "sleep-study"). **Rename**, in the detail, or under the title of an open project, at the top of the sidebar, gives it a **title**: "Sleep and anxiety, 2026 cohort", one line, 120 characters at most. The title is shown everywhere instead of the file's name: in the list, in the detail, at the top of the open project's sidebar, in the window's tab and by `ddict projects list`. **No file is renamed**: the project file, the database, the notebook and the files produced keep their names, and the detail always shows the file's path. The title is never sent to the AI and goes into no file produced. **Back to the file's name** clears it. If the project was changed elsewhere while you renamed it (another tab, another person), the title is not saved, and the tool says so. A project with a title no longer opens with a version of the tool before 0.20.2.
 
-**The ⋮ menu** at the end of a row: **Stop following** takes the project off the table; its file is never touched, nor its notebook. A project moved or renamed stays in the table, greyed, "Not found": **Find it again…** opens the "Open" window, where you show where it is now. The old file being gone, the tool cannot check it is the same project: it says which database the chosen project was made from, for you to judge.
+**Which projects are followed.** A project created from the home page, or by `ddict profile`, is followed at once. To follow another one: **Follow this project** next to a recent project (under **Open a project**), or in the sidebar of the open project. To find several at once: **Open a project**, then **Look for projects in a folder…**, and choose the folder. The tool looks in that folder and its subfolders, 4 levels down, without opening any file (a OneDrive file "available online only" is not downloaded); it passes over hidden and system folders. Nothing is checked at first: check those you want to follow, then **Follow these N projects**.
 
-**The same project open twice**: in two tabs, by two people on a shared folder, or by the interface and the command line. The tool never overwrites a decision taken elsewhere. If the project changed since you opened it, a banner says so, and your last decision is not saved; it is recalled (the page, the button, what you had typed). **Reload the project** reads the project as it is now; your decision stays shown, "Decision to make again", for you to make again if it still holds. Nothing is merged for you. The notebook is protected the same way.
+**A project moved or renamed in File Explorer** stays in the list, "Not found": its detail offers **Find it again…**, which opens the "Open" window, where you show where it is now. The old file being gone, the tool cannot check it is the same project: it says which database the chosen project was made from, for you to judge.
 
-On the command line: `ddict projects list` prints the table; `ddict projects follow study.dd.json` and `ddict projects remove study.dd.json`; `ddict projects search "C:\Users\you\Documents\Studies"` lists the projects found, and `--follow` adds them all.
+**The same project open twice**: in two tabs, by two people on a shared folder, or by the interface and the command line. The tool never overwrites a decision taken elsewhere. If the project changed since you opened it, a banner says so, and your last decision is not saved; it is recalled (the page, the button, what you had typed). **Reload the project** reads the project as it is now; your decision stays shown, "Decision to make again", for you to make again if it still holds. Nothing is merged for you. The notebook is protected the same way. A title given from the home page while the project is open elsewhere counts as a change made elsewhere: the other window says so at its next display, and nothing decided there overwrites the title without warning.
+
+On the command line: `ddict projects list` prints the list; `ddict projects follow study.dd.json` and `ddict projects remove study.dd.json`; `ddict projects rename study.dd.json "Title"`, and `--clear`; `ddict projects search "C:\Users\you\Documents\Studies"` lists the projects found, and `--follow` adds them all.
 
 ## 20. Design a questionnaire, before the collection
 
@@ -429,7 +438,8 @@ ddict paper sleep-study.dd.json              # the article draft and the R maste
 ddict recode cut sleep-study.dd.json age --name age_class --cuts 30 45 --reason "…"
 ddict verify sleep-study.dd.json manuscript.docx   # the figures of a Word manuscript
 ddict deposit sleep-study.dd.json            # the reproduction package, without the database
-ddict projects list                          # the followed projects, as the home page's table
+ddict projects list                          # the followed projects, as the home page's list
+ddict projects rename sleep-study.dd.json "Sleep and anxiety, 2026 cohort"   # a title
 ddict projects search "C:\Users\you\Documents\Studies" --follow   # follow those of a folder
 ddict advise sleep-study.dd.json "Compare the sleep of women and men."
 ddict evaluate --model claude-haiku-5-5       # model bench (billed)

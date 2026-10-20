@@ -220,8 +220,9 @@ def go_to_tab(tab: str) -> None:
     st.session_state[TAB] = tab
 
 
-def page(tab: str) -> None:
-    """The tab of the home page shown in the window (D-160)."""
+def page(tab: str) -> bool:
+    """The tab of the home page shown in the window (D-160); whether it put the projects
+    followed in the sidebar."""
     if i18n.language() == "en":  # v0.5: a trial (D-034)
         st.caption(
             "The English interface is a trial version: its translation has not yet been "
@@ -234,13 +235,14 @@ def page(tab: str) -> None:
             "envoyé ailleurs."
         )
     )
-    {
+    listed = {
         "projets": _projects,
         "nouveau": _new_section,
         "concevoir": _design_section,
         "ouvrir": _open_section,
         "reglages": _settings_section,
     }[tab]()
+    return bool(listed)
 
 
 def _settings_section() -> None:
@@ -748,7 +750,7 @@ def _questionnaire_text(row: overview.ProjectRow) -> str:
     return _("{name} — introuvable à côté du projet").format(name=row.questionnaire)
 
 
-def _projects() -> None:
+def _projects() -> bool:
     """The projects followed (D-160): the list in the sidebar, the latest changed first, and
     the detail of the one chosen in the window; nothing is read but the project and its
     notebook, never its database."""
@@ -769,7 +771,7 @@ def _projects() -> None:
             icon=":material/manage_search:",
         )
         c.show_message("home-unfollow")
-        return
+        return False
     rows = overview.rows(followed)
     shown = _chosen(rows)
     with st.sidebar:
@@ -778,6 +780,7 @@ def _projects() -> None:
         c.show_message(key)
     with st.container(border=True):
         _detail(shown)
+    return True
 
 
 def _recent() -> None:

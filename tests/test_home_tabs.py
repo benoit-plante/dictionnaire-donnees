@@ -10,7 +10,7 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 from accueil import tab
-from ddict import settings
+from ddict import settings, tracked
 from ddict.review import navigation
 from ddict.review.ui import home_view
 from ddict.workflow import profile_database
@@ -115,3 +115,19 @@ def test_back_from_a_project_on_mes_projets(tmp_path):
     app.sidebar.button(key="home").click().run()  # "Accueil"
     assert not app.exception, app.exception
     assert app.title[0].value == "Mes projets"
+
+
+@pytest.mark.allow_hosts(["127.0.0.1"])
+def test_one_line_only_between_the_menu_and_quit(tmp_path):
+    """The menu draws its own line: a divider over "Quitter l'outil" only under the list of
+    the projects followed, never right under the menu (two lines, a gap between them)."""
+    app = _home()
+    assert not app.sidebar.divider  # no project followed: nothing under the menu
+    base = tmp_path / "etude-sommeil.sav"
+    shutil.copy(EXAMPLES / "etude-sommeil.sav", base)
+    _project, path = profile_database(base)
+    tracked.follow(path)
+    app.run()
+    assert len(app.sidebar.divider) == 1  # under the list
+    for name in ("nouveau", "concevoir", "ouvrir", "reglages"):
+        assert not tab(app, name).sidebar.divider

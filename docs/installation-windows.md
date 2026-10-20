@@ -27,7 +27,9 @@ Double-cliquez sur l'icône **Dictionnaire de données**. Après quelques second
 
 Si la fenêtre ne peut pas s'ouvrir (sur un ordinateur sans le moteur d'Edge, par exemple), l'outil s'ouvre dans votre navigateur et fonctionne de la même façon ; arrêtez-le alors avec **Quitter l'outil**.
 
-**Langue** : en haut de l'accueil, **Français · English** choisit la langue de l'interface. Le choix s'applique aussitôt et reste mémorisé sur votre ordinateur.
+**L'accueil** a son menu dans la barre latérale : **Mes projets** (section 19), **Nouveau projet** (section 3), **Concevoir un questionnaire** (section 20), **Ouvrir un projet** (un fichier projet, les projets récents, la recherche dans un dossier) et **Réglages**, puis **Quitter l'outil** en bas. Chaque onglet a sa propre adresse : un rechargement de la page garde l'onglet ouvert.
+
+**Langue** : sous **Réglages**, **Français · English** choisit la langue de l'interface. Le choix s'applique aussitôt et reste mémorisé sur votre ordinateur.
 
 ## 3. Premier codebook, à partir de la base fictive
 
@@ -35,7 +37,7 @@ La base fictive est une petite étude inventée sur le sommeil (200 participants
 
 Pour le faire, comme avec vos propres données :
 
-1. Sur l'accueil, sous **Nouveau projet**, cliquez sur **Choisir une base…**. La fenêtre « Ouvrir » de Windows apparaît (si vous ne la voyez pas, regardez dans la barre des tâches). Allez dans le dossier de l'outil, puis `exemples\bases-fictives`, et choisissez `etude-sommeil.sav`.
+1. Sur l'accueil, choisissez **Nouveau projet** dans le menu, puis cliquez sur **Choisir une base…**. La fenêtre « Ouvrir » de Windows apparaît (si vous ne la voyez pas, regardez dans la barre des tâches). Allez dans le dossier de l'outil, puis `exemples\bases-fictives`, et choisissez `etude-sommeil.sav`.
 2. Cliquez sur **Créer le projet**. L'outil lit la base et crée à côté d'elle le **fichier projet**, `etude-sommeil.dd.json`. Il contient tout ce que l'outil a calculé (types, manquants, modalités, étiquettes) et, plus tard, vos décisions ; il ne contient pas les réponses individuelles des participants. Le fichier de données n'est jamais modifié.
 3. La page **Base** résume ce qui a été lu : nombre de variables et de lignes, variables sensibles, signalements. Elle indique aussi la **langue de l'étude** (celle du questionnaire et des libellés), devinée par l'outil et modifiable : le modèle écrit ses propositions dans cette langue.
 4. Dans la barre latérale, choisissez **Export**, puis **Écrire le codebook et le rapport**. Deux fichiers apparaissent à côté du projet : `etude-sommeil.xlsx` (le codebook, à ouvrir avec Excel) et `etude-sommeil.md` (le même contenu en texte). Le bouton **Ouvrir le dossier** les montre dans l'Explorateur.
@@ -44,7 +46,7 @@ Votre premier codebook est fait, sans IA : tout ce qu'il contient a été calcul
 
 **Le menu de la barre latérale** (depuis la 0.16) range les pages en trois métiers : **Documenter** (Base, Questionnaire, Glossaire, Variables, Groupes, Noms, Export), **Analyser** (Plan, Analyses, Carnet) et **Rédiger** (Méthode, Vérifier), puis **Réglages** (IA). Chaque page dit ce qui y attend (« Glossaire (2) ») ou ✓ quand rien n'y attend. La barre **Codebook documenté à N %** mesure ce que votre équipe a décidé, partie par partie (le détail est dans l'onglet Résumé de la page Base). Les pages longues sont en **onglets** : Base (Résumé, Description, Niveaux de mesure, Sensibles), un groupe (Items, Cotation, Instrument, Recodages), le résultat d'une analyse (Résultat, Tableaux et figures, Fichiers).
 
-Sous le menu, le **tableau de bord** dit ce qui attend, dans l'ordre recommandé (« Ajouter le questionnaire de l'étude », « Sigles à valider : 3 »…), jusqu'à l'article : le plan à figer, les chiffres à confirmer au carnet, les trous de la Méthode, l'ébauche à vérifier. Chaque ligne est un bouton qui mène à la bonne page. Le bouton **Accueil** ramène à l'accueil, où le tableau **Mes projets** vient en tête (section 19), puis vos **projets récents**, avec leur dossier et la date de leur dernière modification ; chacun se rouvre en un clic.
+Sous le menu, le **tableau de bord** dit ce qui attend, dans l'ordre recommandé (« Ajouter le questionnaire de l'étude », « Sigles à valider : 3 »…), jusqu'à l'article : le plan à figer, les chiffres à confirmer au carnet, les trous de la Méthode, l'ébauche à vérifier. Chaque ligne est un bouton qui mène à la bonne page. Le bouton **Accueil** ramène à l'accueil, sur **Mes projets**, avec le projet que vous quittez déjà montré (section 19). Vos **projets récents**, avec leur dossier et la date de leur dernière modification, sont sous **Ouvrir un projet** ; chacun se rouvre en un clic.
 
 Quand un message renvoie à une autre page (« Le niveau de mesure se décide sur la page Base », « Sigles… sans définition : anx »), un bouton l'accompagne et y mène, déjà rempli : **Définir anx** ouvre le glossaire avec le sigle dans son champ.
 
@@ -159,7 +161,7 @@ La démarche est la même avec votre fichier : SPSS (`.sav`), CSV (y compris ceu
 - **Les colonnes dont vous n'avez pas besoin.** Une colonne sensible inutile (adresse IP, courriel, nom) se retire de la base avant de créer le projet, dans SPSS ou R : moins de données personnelles, moins de risques. Pour une colonne sans intérêt pour l'étude (une colonne technique de la plateforme, une question retirée), la fiche de la variable, page **Variables**, propose **Écarter du codebook**, avec sa raison : la variable reste dans la base, mais quitte le codebook (où une section « Variables écartées » donne son nom et sa raison), le contexte d'analyse, les listes à documenter et les choix des analyses ; la copie documentée garde sa colonne, telle que le fichier la décrit. Une variable qui sert encore (dans un groupe, une règle d'exclusion, un recodage, le plan ou le carnet) n'est pas écartée : l'outil dit où elle sert. Le filtre **Écartées** les retrouve, et **Remettre dans le codebook** annule.
 - Les variables qui ressemblent à des identifiants, à du texte libre ou à des dates de naissance sont repérées automatiquement : seules leurs métadonnées sont utilisées, et les effectifs de moins de 5 sont masqués.
 - Sur une grande base, les rattachements proposés par l'IA sont souvent justes, mais pas toujours : les questions répétées à l'identique (« À quelle fréquence cette personne vous apporte du soutien ? », une fois par personne) sont le cas le plus difficile. Vérifiez-les avant les libellés.
-- Les listes des projets récents et des projets suivis sont gardées sur votre ordinateur (dossier `%APPDATA%\ddict`) et ne contiennent que des chemins de fichiers ; **Effacer la liste**, sur l'accueil, vide celle des récents, et **Ne plus suivre** retire un projet suivi.
+- Les listes des projets récents et des projets suivis sont gardées sur votre ordinateur (dossier `%APPDATA%\ddict`) et ne contiennent que des chemins de fichiers ; **Effacer la liste**, sous **Ouvrir un projet** sur l'accueil, vide celle des récents, et **Ne plus suivre** retire un projet suivi.
 
 **Un export brut de SurveyMonkey** (variables nommées `q0003_0004`, en `.sav`, `.xlsx` ou `.csv`) est reconnu : la page **Base** affiche « Export SurveyMonkey reconnu. ». L'outil lit alors la structure du sondage dans les noms : `q0003_0004` est le 4ᵉ énoncé de la 3ᵉ question. Chaque grille devient un groupe, chaque question à cocher un groupe « réponses multiples » avec sa variable « autre », et une variable est rattachée à sa question du questionnaire quand leurs textes concordent. Dans un `.xlsx` ou un `.csv`, la deuxième ligne d'en-tête n'est jamais lue comme un participant. Les codes dont l'étiquette dit « Ne sais pas » ou « Préfère ne pas répondre » sont proposés comme codes manquants, à confirmer par l'équipe.
 
@@ -344,28 +346,35 @@ Un essai sur la base ouverte AMATUS et son article publié est décrit dans [`es
 
 ## 19. Suivre plusieurs projets
 
-Depuis la 0.17, l'accueil commence par le tableau **Mes projets** : une ligne par projet suivi, le plus récemment modifié en haut. Rien n'y est envoyé hors de votre ordinateur ; le tableau lit les fichiers projet et les carnets, jamais les bases.
+L'accueil s'ouvre sur **Mes projets** : la liste des projets suivis, dans la barre latérale sous le menu, le plus récemment modifié en haut, et, dans la fenêtre, le **détail** du projet choisi. Rien n'y est envoyé hors de votre ordinateur ; l'accueil lit les fichiers projet et les carnets, jamais les bases.
 
-| Colonne | Ce qu'elle dit |
+**La liste.** Chaque projet y dit son nom et sa phase : **Documenter** tant que rien n'est analysé, **Analyser** dès qu'une hypothèse est au plan ou une analyse au carnet, **Rédiger** dès que l'ébauche d'article existe ; **Concevoir** et **En collecte** pour un questionnaire conçu dans l'outil (section 20). Un projet qui ne s'ouvre pas le dit à la place de sa phase : **Introuvable**, **Illisible** ou **Version plus récente**. Un clic montre le détail du projet, **sans l'ouvrir**.
+
+**Le détail** d'un projet :
+
+| Partie | Ce qu'elle dit |
 |---|---|
-| Projet | Le nom du fichier projet, et son dossier en petit |
-| Phase | **Documenter** tant que rien n'est analysé ; **Analyser** dès qu'une hypothèse est au plan ou une analyse au carnet ; **Rédiger** dès que l'ébauche d'article existe |
+| Sous le nom | Le chemin du fichier projet, et sa dernière modification (ou celle de son carnet) |
+| Phases | Toutes les phases dans l'ordre, celle du projet en gras : où il en est, et ce qui vient |
 | Codebook | Le même pourcentage que la barre du projet ouvert |
-| En attente | Le nombre de tâches, et la première (« 4 · Sigles à valider : 3 ») ; « — » si rien n'attend |
-| Plan | « en cours (2 hypothèses) », « figé le 2026-10-18 », « figé, 1 amendement » |
+| En attente | Chaque tâche (« Sigles à valider : 3 »), avec son bouton : il ouvre le projet sur la page où elle se règle |
+| Plan d'analyse | « en cours (2 hypothèses) », « figé le 2026-10-18 », « figé, 1 amendement » |
 | Carnet | Les analyses retenues, celles **à confirmer** (un nouveau calcul attend votre accord) et celles **à recalculer** (une décision a changé depuis leur calcul : ouvrez le carnet pour savoir si leurs chiffres changent) |
-| Base | « trouvée » si un fichier de ce nom est à côté du projet ; l'outil vérifie que c'est la bonne à l'ouverture |
-| Modifié | La dernière modification du projet ou de son carnet |
+| Base | Son nom, « trouvée » si un fichier de ce nom est à côté du projet ; l'outil vérifie que c'est la bonne à l'ouverture |
+| Questionnaire | Son nom, trouvé à côté du projet ou non, ou « Conçu dans l'outil » |
+| Fichiers produits | Ceux que l'outil a écrits à côté du projet (codebook, rapports, analyses, scripts…) ; seul le nom des fichiers est lu |
 
-**Ouvrir un projet** : un clic sur son nom l'ouvre là où quelque chose attend (« Sigles à valider » ouvre le glossaire), sinon sur la première page de sa phase.
+**Les actions**, sous le nom : **Ouvrir** ouvre le projet là où quelque chose attend, sinon sur la première page de sa phase ; **Renommer** (plus bas) ; **Ouvrir le dossier** le montre dans l'Explorateur ; **Ne plus suivre** retire le projet de la liste, sans jamais toucher à son fichier ni à son carnet.
 
-**Quels projets sont suivis.** Un projet créé depuis l'accueil, ou par `ddict profiler`, est suivi d'office. Pour en suivre un autre : **Suivre ce projet** à côté d'un projet récent, ou dans la barre latérale du projet ouvert. Pour en retrouver plusieurs d'un coup : **Chercher les projets dans un dossier…**, sous le tableau, puis choisir le dossier. L'outil cherche dans ce dossier et ses sous-dossiers, sur 4 niveaux, sans ouvrir aucun fichier (un fichier OneDrive « disponible en ligne seulement » n'est pas téléchargé) ; il passe les dossiers cachés ou système. Rien n'est coché au départ : cochez ceux que vous voulez suivre, puis **Suivre ces N projets**.
+**Renommer un projet.** Un projet porte d'abord le nom de son fichier (`etude-sommeil.dd.json` donne « etude-sommeil »). **Renommer**, dans le détail, ou sous le titre d'un projet ouvert, en haut de la barre latérale, lui donne un **titre** : « Sommeil et anxiété, cohorte 2026 », une ligne, 120 caractères au plus. Le titre se montre partout à la place du nom du fichier : dans la liste, dans le détail, en tête de la barre latérale du projet ouvert, dans l'onglet de la fenêtre et par `ddict projets lister`. **Aucun fichier n'est renommé** : le fichier projet, la base, le carnet et les fichiers produits gardent leur nom, et le détail montre toujours le chemin du fichier. Le titre n'est jamais envoyé à l'IA et n'entre dans aucun fichier produit. **Revenir au nom du fichier** l'efface. Si le projet a été modifié ailleurs pendant que vous le renommiez (un autre onglet, une autre personne), le titre n'est pas enregistré, et l'outil le dit. Un projet qui a un titre ne s'ouvre plus avec une version de l'outil antérieure à la 0.20.2.
 
-**Le menu ⋮** au bout d'une ligne : **Ne plus suivre** retire le projet du tableau ; son fichier n'est jamais touché, ni son carnet. Un projet déplacé ou renommé reste dans le tableau, grisé, « Introuvable » : **Le retrouver…** ouvre la fenêtre « Ouvrir », où vous montrez où il est maintenant. L'ancien fichier n'existant plus, l'outil ne peut pas vérifier que c'est le même projet : il dit sur quelle base le projet choisi a été fait, pour que vous jugiez.
+**Quels projets sont suivis.** Un projet créé depuis l'accueil, ou par `ddict profiler`, est suivi d'office. Pour en suivre un autre : **Suivre ce projet** à côté d'un projet récent (sous **Ouvrir un projet**), ou dans la barre latérale du projet ouvert. Pour en retrouver plusieurs d'un coup : **Ouvrir un projet**, puis **Chercher les projets dans un dossier…**, et choisir le dossier. L'outil cherche dans ce dossier et ses sous-dossiers, sur 4 niveaux, sans ouvrir aucun fichier (un fichier OneDrive « disponible en ligne seulement » n'est pas téléchargé) ; il passe les dossiers cachés ou système. Rien n'est coché au départ : cochez ceux que vous voulez suivre, puis **Suivre ces N projets**.
 
-**Le même projet ouvert deux fois** : dans deux onglets, par deux personnes sur un dossier partagé, ou par l'interface et la ligne de commande. L'outil n'écrase jamais une décision prise ailleurs. Si le projet a changé depuis que vous l'avez ouvert, un bandeau le dit, et votre dernière décision n'est pas enregistrée ; elle est rappelée (la page, le bouton, ce que vous aviez tapé). **Recharger le projet** lit le projet tel qu'il est maintenant ; votre décision reste affichée, « Décision à refaire », pour que vous la refassiez si elle tient toujours. Rien n'est fusionné à votre place. Le carnet est protégé de la même façon.
+**Un projet déplacé ou renommé dans l'Explorateur** reste dans la liste, « Introuvable » : son détail propose **Le retrouver…**, qui ouvre la fenêtre « Ouvrir », où vous montrez où il est maintenant. L'ancien fichier n'existant plus, l'outil ne peut pas vérifier que c'est le même projet : il dit sur quelle base le projet choisi a été fait, pour que vous jugiez.
 
-En ligne de commande : `ddict projets lister` imprime le tableau ; `ddict projets suivre etude.dd.json` et `ddict projets retirer etude.dd.json` ; `ddict projets chercher "C:\Users\vous\Documents\Études"` liste les projets trouvés, et `--suivre` les ajoute tous.
+**Le même projet ouvert deux fois** : dans deux onglets, par deux personnes sur un dossier partagé, ou par l'interface et la ligne de commande. L'outil n'écrase jamais une décision prise ailleurs. Si le projet a changé depuis que vous l'avez ouvert, un bandeau le dit, et votre dernière décision n'est pas enregistrée ; elle est rappelée (la page, le bouton, ce que vous aviez tapé). **Recharger le projet** lit le projet tel qu'il est maintenant ; votre décision reste affichée, « Décision à refaire », pour que vous la refassiez si elle tient toujours. Rien n'est fusionné à votre place. Le carnet est protégé de la même façon. Un titre donné depuis l'accueil pendant que le projet est ouvert ailleurs compte comme une modification faite ailleurs : l'autre fenêtre le dit à son prochain affichage, et rien de ce qu'on y décide n'écrase le titre sans prévenir.
+
+En ligne de commande : `ddict projets lister` imprime la liste ; `ddict projets suivre etude.dd.json` et `ddict projets retirer etude.dd.json` ; `ddict projets renommer etude.dd.json "Titre"`, et `--effacer` ; `ddict projets chercher "C:\Users\vous\Documents\Études"` liste les projets trouvés, et `--suivre` les ajoute tous.
 
 ## 20. Concevoir un questionnaire, avant la collecte
 
@@ -429,7 +438,8 @@ ddict article etude-sommeil.dd.json           # l'ébauche d'article et le scrip
 ddict recoder decouper etude-sommeil.dd.json age --nom age_classe --seuils 30 45 --raison "…"
 ddict verifier etude-sommeil.dd.json manuscrit.docx   # les chiffres d'un manuscrit Word
 ddict deposer etude-sommeil.dd.json          # le paquet de reproduction, sans la base
-ddict projets lister                          # les projets suivis, comme le tableau de l'accueil
+ddict projets lister                          # les projets suivis, comme la liste de l'accueil
+ddict projets renommer etude-sommeil.dd.json "Sommeil et anxiété, cohorte 2026"   # un titre
 ddict projets chercher "C:\Users\vous\Documents\Études" --suivre   # suivre ceux d'un dossier
 ddict conseiller etude-sommeil.dd.json "Comparer le sommeil des femmes et des hommes."
 ddict evaluer --modele claude-haiku-5-5       # banc d'essai d'un modèle (facturé)

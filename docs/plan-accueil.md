@@ -1,6 +1,6 @@
 # Plan : l'accueil et le nom d'un projet
 
-> Statut : **validé par l'auteur le 2026-10-20, sauf le thème sombre (partie A), mis de côté** : le § 5 garde son analyse pour plus tard, sans étape ni décision. Décisions D-159 à D-162 (§ 10), adoptées avec les recommandations ; le thème sombre prendra un numéro à sa reprise. Même cap que les v0.16 et v0.17 : ni le calcul, ni la porte de confidentialité, ni l'IA, ni les fichiers produits ne changent. Une seule exception, proposée en D-161 : un champ facultatif dans le fichier projet, pour son titre.
+> Statut : **fait (étapes B1 à E1), version 0.20.2 ; validé par l'auteur le 2026-10-20, sauf le thème sombre (partie A), mis de côté** : le § 5 garde son analyse pour plus tard, sans étape ni décision. Décisions D-159 à D-162 (§ 10), adoptées avec les recommandations ; le thème sombre prendra un numéro à sa reprise. Même cap que les v0.16 et v0.17 : ni le calcul, ni la porte de confidentialité, ni l'IA, ni les fichiers produits ne changent. Une seule exception, proposée en D-161 : un champ facultatif dans le fichier projet, pour son titre.
 
 ## 1. Pourquoi
 
