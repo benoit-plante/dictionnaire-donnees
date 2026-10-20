@@ -82,8 +82,10 @@ COLUMNS = _words(
     "time_limit_warning_message time_limit_warning_style use_dropdown value_range_allows_missing"
 )
 # What LimeSurvey takes as a code. A question's code: letters and digits, a letter first
-# (observed: "aides_sommeil" became "aidessommeil"). The lengths are those of its database
-# (questions.title, answers.code), to be confirmed by the real import.
+# (observed: "aides_sommeil" became "aidessommeil"). The lengths, checked on LimeSurvey
+# Cloud 7.6 on 2026-10-20: a question's code of 21 characters stops the import with a
+# database error; a choice's code of 6 is dropped without a word; options coded by digits
+# only ("1") are kept.
 QUESTION_CODE = re.compile(r"[A-Za-z][A-Za-z0-9]{0,19}")
 ITEM_CODE = re.compile(r"[A-Za-z0-9]{1,20}")
 ANSWER_CODE = re.compile(r"[A-Za-z0-9]{1,5}")
@@ -324,7 +326,7 @@ def write(project: Project, folder: Path) -> Path:
 
 def import_steps(project: Project) -> list[str]:
     """The import into LimeSurvey Cloud 7.6, step by step, as done in the trial of
-    2026-10-19; corrected after the author's own import."""
+    2026-10-19, and checked by the import of a file the tool wrote, 2026-10-20."""
     found = summary(project)
     return [
         _("Dans LimeSurvey, ouvrez la liste des questionnaires."),
@@ -333,7 +335,7 @@ def import_steps(project: Project) -> list[str]:
             "Dans « Importer un questionnaire », choisissez le fichier {name} (laissez "
             "« Importer sur le groupe de questionnaires par défaut »)."
         ).format(name=file_name(project)),
-        _("Cliquez sur « Importer »."),
+        _("Cliquez sur « Importer un questionnaire »."),
         _(
             "Le rapport d'importation doit annoncer {groups} groupes, {questions} questions, "
             "{subquestions} sous-questions et {answers} réponses, sans avertissement. Un "
@@ -346,6 +348,8 @@ def import_steps(project: Project) -> list[str]:
         ),
         _(
             "Ouvrez l'aperçu du questionnaire dans LimeSurvey et relisez-le : seul LimeSurvey "
-            "montre ce que verront les personnes qui répondent."
+            "montre ce que verront les personnes qui répondent. LimeSurvey ajoute de lui-même "
+            "un choix « Sans réponse » aux questions à choix et aux grilles qui ne sont pas "
+            "obligatoires."
         ),
     ]

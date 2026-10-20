@@ -36,6 +36,9 @@ DECIDED = (
 KEPT_LISTS = ("issues", "thresholds", "references", "ai_signals")
 NUMBERS = {"integer", "decimal", "boolean"}
 DATES = {"date", "datetime"}
+# A text column holding codes of digits and others ("1", "-oth-"), as LimeSurvey's .sav
+# writes a single choice with "other" (the real export of 2026-10-20).
+TEXTS = {"text", "mixed"}
 
 
 class AlreadyThere(ValueError):
@@ -127,6 +130,8 @@ def _family(kind: str) -> str:
         return "number"
     if kind in DATES:
         return "date"
+    if kind in TEXTS:
+        return "text"
     return kind
 
 
@@ -169,6 +174,10 @@ def conformity(project: Project) -> Conformity:
         for label in entry.file.value_labels:
             code = _code(label.code)
             text = planned_codes.get(code)
+            # LimeSurvey's .sav labels the "other" answer "Other", in English, whatever the
+            # language of the survey: not a difference the team made.
+            if code == design.OTHER_ANSWER:
+                continue
             if text is not None and not texts_agree(text, label.label):
                 differ.append((code, text, label.label))
         if differ:

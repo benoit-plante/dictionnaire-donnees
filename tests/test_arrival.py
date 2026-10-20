@@ -155,3 +155,25 @@ def test_the_base_page(ready):
     assert arrival.report_path(path).is_file()
     texts = " ".join(m.value for m in app.markdown)
     assert "Variables prévues absentes de la base" in texts and "`Q4_SQ003`" in texts
+
+
+def test_what_limesurvey_s_sav_writes_of_an_other_answer(tmp_path):
+    """The real export of 2026-10-20: a single choice with "other" is a text column of codes
+    "1" and "-oth-", which pandas calls "mixed", and "-oth-" is labelled "Other", in English.
+    Neither is a difference from the questionnaire."""
+    project = designed()
+    design.add_question(
+        project,
+        design.Draft(kind="single", text="Où dormez-vous ?", section="S2",
+                     options=(design.Item("Chez moi", "1"),
+                              design.Item("Ailleurs, précisez", other=True))),
+    )  # fmt: skip
+    path = tmp_path / "Étude conçue.dd.json"
+    save_project(project, path)
+    data = pd.DataFrame({"Q6": ["1", "-oth-", "1", "1", "-oth-", "1"],
+                         "Q6_other": ["", "Chez un ami", "", "", "Au chalet", ""]})  # fmt: skip
+    base = tmp_path / "reponses.sav"
+    pyreadstat.write_sav(data, str(base), variable_value_labels={
+        "Q6": {"1": "Chez moi", "-oth-": "Other"}})  # fmt: skip
+    found = arrival.receive(load_project(path), base)
+    assert "Q6" not in found.labels and "Q6" not in found.types
