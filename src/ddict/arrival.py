@@ -37,7 +37,7 @@ KEPT_LISTS = ("issues", "thresholds", "references", "ai_signals")
 NUMBERS = {"integer", "decimal", "boolean"}
 DATES = {"date", "datetime"}
 # A text column holding codes of digits and others ("1", "-oth-"), as LimeSurvey's .sav
-# writes a single choice with "other" (the real export of 2026-10-20).
+# writes a single choice with "other" (the real export of 2026-10-19).
 TEXTS = {"text", "mixed"}
 
 

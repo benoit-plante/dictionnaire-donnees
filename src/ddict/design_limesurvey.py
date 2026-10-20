@@ -83,7 +83,7 @@ COLUMNS = _words(
 )
 # What LimeSurvey takes as a code. A question's code: letters and digits, a letter first
 # (observed: "aides_sommeil" became "aidessommeil"). The lengths, checked on LimeSurvey
-# Cloud 7.6 on 2026-10-20: a question's code of 21 characters stops the import with a
+# Cloud 7.6 on 2026-10-19: a question's code of 21 characters stops the import with a
 # database error; a choice's code of 6 is dropped without a word; options coded by digits
 # only ("1") are kept.
 QUESTION_CODE = re.compile(r"[A-Za-z][A-Za-z0-9]{0,19}")
@@ -326,7 +326,7 @@ def write(project: Project, folder: Path) -> Path:
 
 def import_steps(project: Project) -> list[str]:
     """The import into LimeSurvey Cloud 7.6, step by step, as done in the trial of
-    2026-10-19, and checked by the import of a file the tool wrote, 2026-10-20."""
+    2026-10-19, and checked by the import of a file the tool wrote, 2026-10-19."""
     found = summary(project)
     return [
         _("Dans LimeSurvey, ouvrez la liste des questionnaires."),

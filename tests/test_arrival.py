@@ -158,7 +158,7 @@ def test_the_base_page(ready):
 
 
 def test_what_limesurvey_s_sav_writes_of_an_other_answer(tmp_path):
-    """The real export of 2026-10-20: a single choice with "other" is a text column of codes
+    """The real export of 2026-10-19: a single choice with "other" is a text column of codes
     "1" and "-oth-", which pandas calls "mixed", and "-oth-" is labelled "Other", in English.
     Neither is a difference from the questionnaire."""
     project = designed()

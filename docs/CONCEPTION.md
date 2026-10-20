@@ -680,7 +680,7 @@ Plan : [`plan-v0.18.md`](plan-v0.18.md), décisions D-134 à D-139. La version c
 
 ## 25. Concevoir le questionnaire (v0.20, v0.21)
 
-Plan : [`plan-v0.20.md`](plan-v0.20.md), décisions D-143 à D-155. Le module passe après la v0.19 (dossier d'étude). Deux versions : la v0.20, sans sources ni IA ; la v0.21, les sources, la vérification mot pour mot et l'IA (D-143, D-144 et D-147 s'y appliquent). Le principe : **l'IA recopie, le calcul vérifie, une personne décide.**
+Plan : [`plan-v0.20.md`](plan-v0.20.md), décisions D-143 à D-155. Publié en 0.20.0 le 2026-10-19, avant le dossier d'étude prévu en v0.19, qui prendra un numéro plus tard (le numéro 0.19 est sauté). Deux versions : la v0.20, sans sources ni IA ; la v0.21, les sources, la vérification mot pour mot et l'IA (D-143, D-144 et D-147 s'y appliquent). Le principe : **l'IA recopie, le calcul vérifie, une personne décide.**
 
 - **Le projet sans base** (D-145) : format 0.9.0, `source` et `profile` facultatifs, `design` pour un projet de conception. Un projet 0.8.0 s'ouvre tel quel, même codebook et même empreinte.
 - **Le questionnaire structuré** (D-146) : le modèle `Question` étendu (sections, consigne, obligatoire, codes, « autre », provenance, texte d'affichage), identifiants jamais redonnés ; le code d'une question est son radical, les items inversés et l'instrument sont ceux du groupe que crée la grille. Les variables prévues en découlent par une seule fonction, avec leurs noms de D-048 ; le dictionnaire de données s'exporte avant la collecte, et le plan d'analyse s'y fige (D-153).
