@@ -716,6 +716,9 @@ msgstr "No review point."
 msgid "Aucun point à voir."
 msgstr "Nothing to look at."
 
+msgid "Aucun pour l'instant."
+msgstr "None yet."
+
 msgid "Aucun projet dans ce dossier ni dans ses sous-dossiers (4 niveaux)."
 msgstr "No project in this folder or its subfolders (4 levels)."
 
@@ -1683,6 +1686,10 @@ msgid "Contexte d'analyse : {path}"
 msgstr "Analysis context: {path}"
 
 #, python-brace-format
+msgid "Conçu dans l'outil : {name}"
+msgstr "Designed in the tool: {name}"
+
+#, python-brace-format
 msgid "Copie : {path}"
 msgstr "Copy: {path}"
 
@@ -2009,13 +2016,6 @@ msgstr "Give the origin of the data and their state when the plan was written."
 msgid "Documenter"
 msgstr "Document"
 
-msgid ""
-"Documenter tant que rien n'est analysé ; Analyser dès qu'une hypothèse est au plan ou une analyse"
-" au carnet ; Rédiger dès que l'ébauche d'article existe."
-msgstr ""
-"Document while nothing is analysed; Analyse as soon as the plan has a hypothesis or the notebook "
-"an analysis; Write as soon as the article's draft exists."
-
 msgid "Documents Word"
 msgstr "Word documents"
 
@@ -2248,6 +2248,10 @@ msgstr "Codebook fingerprint: {fingerprint}."
 
 msgid "En attente"
 msgstr "Waiting"
+
+#, python-brace-format
+msgid "En attente ({n})"
+msgstr "Waiting ({n})"
 
 msgid ""
 "En attente de la base : cette page s'ouvrira quand les réponses de la collecte seront arrivées. "
@@ -2541,6 +2545,10 @@ msgstr "Files"
 msgid "Fichiers de commandes"
 msgstr "Command files"
 
+#, python-brace-format
+msgid "Fichiers produits à côté du projet ({n})"
+msgstr "Files produced next to the project ({n})"
+
 msgid "Fichiers projet"
 msgstr "Project files"
 
@@ -2755,8 +2763,15 @@ msgstr "At least one cut is needed."
 msgid "Il faut deux variables de date et d'heure : le début et la fin."
 msgstr "Two date and time variables are needed: the start and the end."
 
+msgid "Illisible"
+msgstr "Unreadable"
+
 msgid "Importer dans LimeSurvey, pas à pas"
 msgstr "Importing into LimeSurvey, step by step"
+
+#, python-brace-format
+msgid "Impossible d'ouvrir le dossier : {detail}"
+msgstr "The folder cannot be opened: {detail}"
 
 #, python-brace-format
 msgid "Impossible d'écrire le rapport : {detail}."
@@ -2844,6 +2859,9 @@ msgstr "Interface at {url} (this computer only)."
 
 msgid "Interrompu. Les blocs terminés sont enregistrés ; relancez pour continuer."
 msgstr "Interrupted. The finished blocks are saved; run again to continue."
+
+msgid "Introuvable"
+msgstr "Not found"
 
 msgid "Introuvable : le fichier n'est plus à cet endroit."
 msgstr "Not found: the file is no longer at this place."
@@ -3171,9 +3189,6 @@ msgstr "The scoring requires a documented source (manual, article)."
 #, python-brace-format
 msgid "La cotation suit {source}."
 msgstr "Scoring follows {source}."
-
-msgid "La dernière modification du projet ou de son carnet."
-msgstr "The last change of the project or of its notebook."
 
 msgid "La définition est vide ; utilisez « Rejeter »."
 msgstr "The definition is empty; use \"Reject\"."
@@ -3596,9 +3611,6 @@ msgstr ""
 "The model, e.g. claude-haiku-5-5 (default: the one of the AI settings, \"AI\" page of the "
 "interface)."
 
-msgid "Le même chiffre que la barre de la barre latérale du projet."
-msgstr "The same figure as the bar in the project's sidebar."
-
 #, python-brace-format
 msgid ""
 "Le navigateur les enregistre dans votre dossier de téléchargements. Un codebook se partage "
@@ -3621,9 +3633,6 @@ msgstr "The name of a family has 1 to 30 characters."
 
 msgid "Le nom de la nouvelle variable."
 msgstr "The name of the new variable."
-
-msgid "Le nombre de tâches, et la première."
-msgstr "The number of tasks, and the first one."
 
 #, python-brace-format
 msgid "Le nombre minimal d'items répondus dépasse le nombre d'items ({n})."
@@ -3705,8 +3714,11 @@ msgstr "The project no longer appears in “My projects”, on the home page. Th
 msgid "Le projet ouvert"
 msgstr "The open project"
 
-msgid "Le projet quitte ce tableau ; son fichier n'est pas touché."
-msgstr "The project leaves this table; its file is not touched."
+msgid "Le projet quitte « Mes projets » ; son fichier n'est pas touché."
+msgstr "The project leaves “My projects”; its file is not touched."
+
+msgid "Le projet s'ouvre là où quelque chose attend."
+msgstr "The project opens where something is waiting."
 
 #, python-brace-format
 msgid "Le projet {name} a été modifié ailleurs pendant la commande (l'interface est-elle ouverte ?)."
@@ -4962,6 +4974,9 @@ msgstr "Not in the group: {names}"
 msgid "Pas de tableau ni de figure APA pour cette analyse."
 msgstr "No APA table nor figure for this analysis."
 
+msgid "Pas encore : le questionnaire est en conception."
+msgstr "Not yet: the questionnaire is being designed."
+
 msgid "Pas encore de base : chaque hypothèse deviendra une analyse du carnet à l'arrivée de la base."
 msgstr ""
 "No database yet: each hypothesis will become an analysis of the notebook when the database "
@@ -4976,6 +4991,9 @@ msgid ""
 msgstr ""
 "No database yet: the command files, the preparation script and the documented copy apply to the "
 "database; they will be written once it has arrived."
+
+msgid "Pas encore de carnet"
+msgstr "No notebook yet"
 
 #, python-brace-format
 msgid "Pas un fichier projet (.dd.json) existant : {path}"
@@ -5289,18 +5307,18 @@ msgstr "Project created: {path}"
 #, python-brace-format
 msgid ""
 "Projet retrouvé : {name}, fait à partir de la base {base}. Si ce n'est pas le bon, retirez-le "
-"avec « Ne plus suivre » dans le menu « ⋮ » de sa ligne."
+"avec « Ne plus suivre », dans son détail."
 msgstr ""
 "Project found again: {name}, made from the database {base}. If it is not the right one, take it "
-"off with “Stop following” in the “⋮” menu of its row."
+"off with “Stop following”, in its detail."
 
 #, python-brace-format
 msgid ""
 "Projet retrouvé : {name}, un questionnaire conçu dans l'outil, sans base encore. Si ce n'est pas "
-"le bon, retirez-le avec « Ne plus suivre » dans le menu « ⋮ » de sa ligne."
+"le bon, retirez-le avec « Ne plus suivre », dans son détail."
 msgstr ""
 "Project found again: {name}, a questionnaire designed in the tool, with no database yet. If it is"
-" not the right one, take it off with “Stop following” in the “⋮” menu of its row."
+" not the right one, take it off with “Stop following”, in its detail."
 
 #, python-brace-format
 msgid "Projet suivi : {path}"
@@ -5311,6 +5329,9 @@ msgstr "Project, documented copy or table of names"
 
 msgid "Projets récents"
 msgstr "Recent projects"
+
+msgid "Projets suivis"
+msgstr "Projects followed"
 
 #, python-brace-format
 msgid "Projets trouvés dans {folder}"
@@ -6735,13 +6756,6 @@ msgstr "Too many requests for this key: try again in a minute."
 msgid "Trous de la Méthode à combler (groupes) : {n}"
 msgstr "Gaps to fill in the Method (groups): {n}"
 
-msgid ""
-"Trouvée : un fichier de ce nom est à côté du projet. Le tableau ne lit pas la base ; l'outil "
-"vérifie que c'est la bonne à l'ouverture."
-msgstr ""
-"Found: a file of this name is next to the project. The table does not read the database; the tool"
-" checks it is the right one when the project is opened."
-
 msgid "Tukey"
 msgstr "Tukey"
 
@@ -6777,9 +6791,6 @@ msgstr ""
 #, python-brace-format
 msgid "Un carnet {name} est apparu pendant la commande."
 msgstr "A notebook {name} appeared while the command ran."
-
-msgid "Un clic sur le nom ouvre le projet là où quelque chose attend."
-msgstr "A click on the name opens the project where something waits."
 
 #, python-brace-format
 msgid ""
@@ -7256,6 +7267,9 @@ msgstr ""
 
 msgid "Version marquée comme envoyée."
 msgstr "Version marked as sent."
+
+msgid "Version plus récente"
+msgstr "Newer version"
 
 msgid "Versions"
 msgstr "Versions"
@@ -9217,6 +9231,18 @@ msgid "{name} sert encore : {uses}. Retirez-la d'abord."
 msgstr "{name} is still in use: {uses}. Remove it there first."
 
 #, python-brace-format
+msgid "{name} — introuvable à côté du projet"
+msgstr "{name} — not found next to the project"
+
+#, python-brace-format
+msgid "{name} — trouvé à côté du projet"
+msgstr "{name} — found next to the project"
+
+#, python-brace-format
+msgid "{name} — trouvée à côté du projet"
+msgstr "{name} — found next to the project"
+
+#, python-brace-format
 msgid "{name} — {folder}"
 msgstr "{name} — {folder}"
 
@@ -9487,6 +9513,10 @@ msgstr "{outcome} by {group}: F({df1}, {df2}) = {f}, {p}, η² = {eta}, ω² = {
 #, python-brace-format
 msgid "{outcome} selon {group} : H({df}) = {h}, {p}, ε² = {e} (n = {n})."
 msgstr "{outcome} by {group}: H({df}) = {h}, {p}, ε² = {e} (n = {n})."
+
+#, python-brace-format
+msgid "{path} · modifié le {date}"
+msgstr "{path} · changed on {date}"
 
 #, python-brace-format
 msgid "{place} cite {name}"
@@ -9764,15 +9794,6 @@ msgstr "At the end (k6_1_t2)"
 
 msgid "À nommer"
 msgstr "To name"
-
-msgid ""
-"À recalculer : l'empreinte du codebook a changé depuis le dernier calcul de ces analyses. Leurs "
-"chiffres ont peut-être changé, peut-être pas : ouvrez le carnet pour le savoir. À confirmer : un "
-"nouveau calcul attend votre confirmation."
-msgstr ""
-"To recompute: the codebook's fingerprint changed since these analyses were last computed. Their "
-"figures may have changed, or not: open the notebook to find out. To confirm: a new calculation "
-"waits for your confirmation."
 
 msgid "À réviser"
 msgstr "To review"

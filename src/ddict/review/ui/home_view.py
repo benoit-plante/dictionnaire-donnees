@@ -9,6 +9,7 @@ file is written next to it.
 
 from __future__ import annotations
 
+import os
 from datetime import date, datetime
 from pathlib import Path
 
@@ -366,16 +367,16 @@ def _find_again(old: Path) -> None:
     if not tracked.replace(old, chosen):
         _message("error", tracked.not_written(), key)
         return
+    _choose(Path(chosen))  # the detail shows it, where the missing one was
     if project.source is None:  # designed before its collection (v0.20)
         text = _(
             "Projet retrouvé : {name}, un questionnaire conçu dans l'outil, sans base encore. "
-            "Si ce n'est pas le bon, retirez-le avec « Ne plus suivre » dans le menu « ⋮ » de "
-            "sa ligne."
+            "Si ce n'est pas le bon, retirez-le avec « Ne plus suivre », dans son détail."
         ).format(name=Path(chosen).name)
     else:
         text = _(
             "Projet retrouvé : {name}, fait à partir de la base {base}. Si ce n'est pas le "
-            "bon, retirez-le avec « Ne plus suivre » dans le menu « ⋮ » de sa ligne."
+            "bon, retirez-le avec « Ne plus suivre », dans son détail."
         ).format(name=Path(chosen).name, base=project.source.name)
     _message("success", text, key)
 
@@ -468,54 +469,213 @@ def _search_panel() -> None:
         c.show_message("home-follow-found")
 
 
-WIDTHS = [1.9, 1.15, 1, 2.3, 1.5, 1.8, 1.15, 1.2, 0.45]
-GAP = "xsmall"  # nine columns: a word as long as "Documenter" holds on one line at 1400 px
+CHOSEN = "home-chosen"  # the project shown in "Mes projets", by its path (D-160)
+ICONS = {
+    overview.DESIGN: ":material/edit_note:",
+    overview.COLLECT: ":material/schedule:",
+    overview.DOCUMENT: ":material/description:",
+    overview.ANALYSE: ":material/query_stats:",
+    overview.WRITE: ":material/article:",
+}
+SEPARATOR = " \N{SINGLE RIGHT-POINTING ANGLE QUOTATION MARK} "  # between the phases
+PROBLEMS = {
+    "missing": N_("Introuvable"),
+    "unreadable": N_("Illisible"),
+    "newer": N_("Version plus récente"),
+}
 
 
-def short_folder(folder: Path) -> str:
-    """The last two folders of a path, the whole path being in the name's help: a long
-    path would take ten lines of the table."""
-    parts = folder.parts
-    return "…\\" + "\\".join(parts[-2:]) if len(parts) > 3 else str(folder)
+def _choose(path: Path) -> None:
+    st.session_state[CHOSEN] = str(path)
 
 
-def _headers() -> None:
-    headers = [
-        (_("Projet"), _("Un clic sur le nom ouvre le projet là où quelque chose attend.")),
-        (
-            _("Phase"),
-            _(
-                "Documenter tant que rien n'est analysé ; Analyser dès qu'une hypothèse est au "
-                "plan ou une analyse au carnet ; Rédiger dès que l'ébauche d'article existe."
-            ),
-        ),
-        (_("Codebook"), _("Le même chiffre que la barre de la barre latérale du projet.")),
-        (_("En attente"), _("Le nombre de tâches, et la première.")),
-        (_("Plan"), None),
-        (
-            _("Carnet"),
-            _(
-                "À recalculer : l'empreinte du codebook a changé depuis le dernier calcul de ces "
-                "analyses. Leurs chiffres ont peut-être changé, peut-être pas : ouvrez le carnet "
-                "pour le savoir. À confirmer : un nouveau calcul attend votre confirmation."
-            ),
-        ),
-        (
-            _("Base"),
-            _(
-                "Trouvée : un fichier de ce nom est à côté du projet. Le tableau ne lit pas la "
-                "base ; l'outil vérifie que c'est la bonne à l'ouverture."
-            ),
-        ),
-        (_("Modifié"), _("La dernière modification du projet ou de son carnet.")),
-    ]
-    for column, (title, help_text) in zip(st.columns(WIDTHS, gap=GAP), headers, strict=False):
-        column.caption(f"**{title}**", help=help_text)
+def back_home() -> None:
+    """Close the project; "Mes projets" shows it, where one left it."""
+    path = c.project_path()
+    c.close_project()
+    _choose(path)
+
+
+def _chosen(rows: list[overview.ProjectRow]) -> overview.ProjectRow:
+    """The project shown: the one chosen, else the latest changed."""
+    wanted = st.session_state.get(CHOSEN)
+    key = ondisk.key(Path(wanted)) if wanted else None
+    return next((r for r in rows if ondisk.key(r.path) == key), rows[0])
+
+
+def _project_list(rows: list[overview.ProjectRow], shown: overview.ProjectRow) -> None:
+    """The projects followed, in the sidebar under the menu (D-160): name and phase, or what
+    is wrong; a click shows the project, without opening it."""
+    st.caption("**" + _("Projets suivis") + "**")
+    for index, row in enumerate(rows):
+        state = _(PROBLEMS[row.problem]) if row.problem else overview.phase_text(row)
+        st.button(
+            f"{row.name}  \n{state}",
+            key=f"home-project-{index}",
+            on_click=_choose,
+            args=(row.path,),
+            icon=":material/warning:" if row.problem else ICONS.get(row.phase),
+            type="primary" if row.path == shown.path else "secondary",
+            width="stretch",
+            help=str(row.path),
+        )
+
+
+def _open_folder(folder: Path) -> None:
+    """Show the project's folder in Windows' file manager."""
+    try:
+        os.startfile(folder)  # Windows only (D-081)
+    except OSError as error:
+        _message(
+            "error",
+            _("Impossible d'ouvrir le dossier : {detail}").format(detail=error),
+            "home-folder",
+        )
+
+
+def _open_task(row: overview.ProjectRow, index: int) -> None:
+    """Open the project on the page of one of its tasks."""
+    task = row.tasks[index]
+    c.open_project(row.path)
+    c.go_to_task(task.mode, task.filter)
+
+
+def _phases(row: overview.ProjectRow) -> str:
+    """The phases in order, the project's in bold: where it is, and what comes next; the
+    two phases of a design (D-154) for a project designed in the tool."""
+    phases = overview.PHASES if row.designed else overview.PHASES[2:]
+    return SEPARATOR.join(f"**{_(p)}**" if p == row.phase else _(p) for p in phases)
+
+
+def _bold(text: str) -> None:
+    st.markdown("**" + text + "**")
+
+
+def _folder_button(row: overview.ProjectRow) -> None:
+    st.button(
+        _("Ouvrir le dossier"),
+        key="home-folder",
+        on_click=_open_folder,
+        args=(row.path.parent,),
+        icon=":material/folder:",
+    )
+
+
+def _unfollow_button(row: overview.ProjectRow) -> None:
+    st.button(
+        _("Ne plus suivre"),
+        key="home-unfollow",
+        on_click=_unfollow,
+        args=(row.path,),
+        icon=":material/bookmark_remove:",
+        help=_("Le projet quitte « Mes projets » ; son fichier n'est pas touché."),
+    )
+
+
+def _problem(row: overview.ProjectRow) -> None:
+    """A project not found, unreadable or written by a newer tool: what is known of it."""
+    st.warning(overview.waiting_text(row))
+    st.caption(str(row.path))
+    with st.container(horizontal=True):
+        if row.problem == "missing":
+            st.button(
+                _("Le retrouver…"),
+                key="home-find",
+                on_click=_find_again,
+                args=(row.path,),
+                icon=":material/search:",
+                type="primary",
+                help=_("Montrez où est maintenant ce fichier projet."),
+            )
+        else:
+            _folder_button(row)
+        _unfollow_button(row)
+
+
+def _tasks(row: overview.ProjectRow) -> None:
+    if not row.tasks:
+        _bold(_("Rien en attente."))
+        return
+    _bold(_("En attente ({n})").format(n=len(row.tasks)))
+    with st.container(gap=None):
+        for index, task in enumerate(row.tasks):
+            st.button(
+                task.text.format(n=task.count),
+                key=f"home-task-{index}",
+                on_click=_open_task,
+                args=(row, index),
+                icon=":material/arrow_forward:",
+                type="tertiary",
+            )
+
+
+def _detail(row: overview.ProjectRow) -> None:
+    """What the project is, read from its files without its database (plan-accueil, § 7.3)."""
+    st.subheader(row.name)
+    if row.problem:
+        _problem(row)
+        return
+    st.caption(
+        _("{path} · modifié le {date}").format(path=row.path, date=overview.modified_text(row))
+    )
+    with st.container(horizontal=True):
+        st.button(
+            _("Ouvrir"),
+            key="home-open-chosen",
+            on_click=_take_up,
+            args=(row,),
+            icon=":material/folder_open:",
+            type="primary",
+            help=_("Le projet s'ouvre là où quelque chose attend."),
+        )
+        _folder_button(row)
+        _unfollow_button(row)
+    st.markdown(_phases(row))
+    share = row.codebook or 0
+    st.progress(share, text=_("Codebook documenté à {p} %").format(p=round(100 * share)))
+    _tasks(row)
+    left, right = st.columns(2)
+    with left:
+        _bold(_("Plan d'analyse"))
+        st.write(overview.plan_text(row))
+        _bold(_("Base"))
+        st.write(_base_text(row))
+    with right:
+        _bold(_("Carnet"))
+        st.write(_("Pas encore de carnet") if row.notebook is None else overview.notebook_text(row))
+        _bold(_("Questionnaire"))
+        st.write(_questionnaire_text(row))
+    files = overview.produced(row)
+    title = _("Fichiers produits à côté du projet ({n})").format(n=len(files))
+    with st.expander(title, expanded=bool(files)):
+        if files:
+            st.markdown("\n".join(f"- {name}" for name in files))
+        else:
+            st.write(_("Aucun pour l'instant."))
+
+
+def _base_text(row: overview.ProjectRow) -> str:
+    if row.source is None:
+        return _("Pas encore : le questionnaire est en conception.")
+    if row.base:
+        return _("{name} — trouvée à côté du projet").format(name=row.source)
+    return _("{name} — introuvable à côté du projet").format(name=row.source)
+
+
+def _questionnaire_text(row: overview.ProjectRow) -> str:
+    if row.questionnaire is None:
+        return _("Aucun")
+    if row.designed:
+        return _("Conçu dans l'outil : {name}").format(name=row.questionnaire)
+    if row.questionnaire_found:
+        return _("{name} — trouvé à côté du projet").format(name=row.questionnaire)
+    return _("{name} — introuvable à côté du projet").format(name=row.questionnaire)
 
 
 def _projects() -> None:
-    """The projects followed (v0.17, § 7 of plan-v0.17): where each is, read from its files
-    without its database, the latest changed first; a click on its name takes it up."""
+    """The projects followed (D-160): the list in the sidebar, the latest changed first, and
+    the detail of the one chosen in the window; nothing is read but the project and its
+    notebook, never its database."""
     followed = tracked.load()
     if not followed:
         st.write(
@@ -532,48 +692,16 @@ def _projects() -> None:
             args=("ouvrir",),
             icon=":material/manage_search:",
         )
+        c.show_message("home-unfollow")
         return
-    _headers()
-    for index, row in enumerate(overview.rows(followed)):
-        cells = st.columns(WIDTHS, gap=GAP, vertical_alignment="center")
-        with cells[0]:
-            st.button(
-                row.name,
-                key=f"home-project-{index}",
-                on_click=_take_up,
-                args=(row,),
-                disabled=row.problem is not None,
-                icon=":material/folder_open:",
-                help=str(row.path),
-            )
-            st.caption(short_folder(row.path.parent))
-        texts = (
-            overview.phase_text, overview.codebook_text, overview.waiting_text,
-            overview.plan_text, overview.notebook_text, overview.base_text,
-            overview.modified_text,
-        )  # fmt: skip
-        for cell, text in zip(cells[1:8], texts, strict=True):
-            cell.write(text(row))
-        with cells[8].popover("", icon=":material/more_vert:"):
-            st.button(
-                _("Ne plus suivre"),
-                key=f"home-unfollow-{index}",
-                on_click=_unfollow,
-                args=(row.path,),
-                icon=":material/bookmark_remove:",
-                help=_("Le projet quitte ce tableau ; son fichier n'est pas touché."),
-            )
-            if row.problem == "missing":
-                st.button(
-                    _("Le retrouver…"),
-                    key=f"home-find-{index}",
-                    on_click=_find_again,
-                    args=(row.path,),
-                    icon=":material/search:",
-                    help=_("Montrez où est maintenant ce fichier projet."),
-                )
-    c.show_message("home-unfollow")
-    c.show_message("home-find")
+    rows = overview.rows(followed)
+    shown = _chosen(rows)
+    with st.sidebar:
+        _project_list(rows, shown)
+    for key in ("home-unfollow", "home-find", "home-folder"):
+        c.show_message(key)
+    with st.container(border=True):
+        _detail(shown)
 
 
 def _recent() -> None:

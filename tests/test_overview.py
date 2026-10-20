@@ -232,3 +232,48 @@ def test_thirty_projects_in_less_than_two_seconds(made, tmp_path):
     start = time.perf_counter()
     assert overview.rows(paths) == first
     assert time.perf_counter() - start < took / 5
+
+
+# --- The detail of a project (plan-accueil, step C3, D-160). ---
+
+
+def test_the_questionnaire(made, tmp_path):
+    moitie, concu = overview.row(made["moitie"]), overview.row(made["concu"])
+    assert overview.row(made["neuf"]).questionnaire is None
+    assert (moitie.questionnaire, moitie.designed) == ("questionnaire-sommeil.pdf", False)
+    assert moitie.questionnaire_found is False  # stages: never copied next to the project
+    assert concu.designed and concu.questionnaire and concu.questionnaire_found is None
+    folder = tmp_path / "copie"
+    shutil.copytree(made["moitie"].parent, folder)
+    shutil.copy(stages.EXAMPLES / "questionnaire-sommeil.pdf", folder)
+    assert overview.row(folder / made["moitie"].name).questionnaire_found is True
+
+
+def test_the_files_produced_next_to_the_project(made, tmp_path):
+    folder = tmp_path / "Études 2026" / "Équipe"
+    shutil.copytree(made["carnet"].parent, folder)
+    path = folder / made["carnet"].name
+    for name in (
+        "etude-analyses.xlsx", "etude-analyses-travail.md", "etude-analyses-analyse-2.docx",
+        "etude-analyses-analyse-12-graphiques.xlsx", "etude-analyses-article.docx",
+        "etude-analyses-article-verification.md", "etude-analyses-depot.zip",
+        "etude-analyses-metadonnees.R", "etude-analyses-documente.sav",
+        "etude-analyses-notes.docx",  # the team's: not the tool's
+        "etude-analyses-analyse-x.docx",  # not a number
+        "etude-analyses.xlsx.tmp",  # an interrupted save
+        "autre-etude.xlsx",
+    ):  # fmt: skip
+        (folder / name).write_bytes(b"x")
+    (folder / "etude-analyses.dd-envois").mkdir()
+    assert overview.produced(overview.row(path)) == [
+        "etude-analyses-analyse-12-graphiques.xlsx", "etude-analyses-analyse-2.docx",
+        "etude-analyses-article-verification.md", "etude-analyses-article.docx",
+        "etude-analyses-carnet.json", "etude-analyses-depot.zip",
+        "etude-analyses-documente.sav", "etude-analyses-metadonnees.R",
+        "etude-analyses-travail.md", "etude-analyses.dd-envois\\", "etude-analyses.xlsx",
+    ]  # fmt: skip
+
+
+def test_no_file_produced_for_a_folder_gone(made):
+    assert overview.produced(overview.row(made["introuvable"])) == []
+    assert overview.produced(overview.ProjectRow(Path("Z:/absent/etude.dd.json"), None)) == []

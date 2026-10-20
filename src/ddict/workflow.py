@@ -596,9 +596,13 @@ def export_name_table(project: Project, project_path: Path) -> Path | None:
     "etude-correspondance.csv", the reference of the next wave."""
     if not any(e.name != naming.final_name(e) for e in aside.kept(project)):
         return None
-    path = project_path.with_name(project_stem(project_path) + "-correspondance.csv")
+    path = name_table_path(project_path)
     waves.write_name_table(project, path)
     return path
+
+
+def name_table_path(project_path: Path) -> Path:
+    return project_path.with_name(project_stem(project_path) + "-correspondance.csv")
 
 
 def context_paths(project_path: Path) -> tuple[Path, Path]:

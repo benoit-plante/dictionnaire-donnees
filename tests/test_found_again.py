@@ -57,19 +57,17 @@ def test_replace_in_the_list(tmp_path):
 def test_moved_then_found_again(moved, monkeypatch):
     old, new = moved
     app = _home()
-    texts = [m.value for m in app.markdown]
-    assert "Introuvable : le fichier n'est plus à cet endroit." in texts
-    assert app.button(key="home-project-0").disabled
+    assert app.warning[0].value == "Introuvable : le fichier n'est plus à cet endroit."
     before = new.read_bytes()
     _choose(monkeypatch, new)
-    app.button(key="home-find-0").click().run()
+    app.button(key="home-find").click().run()
     assert not app.exception, app.exception
     assert tracked.load() == [new]
-    assert not app.button(key="home-project-0").disabled
-    assert any(m.value.startswith("4 · ") for m in app.markdown)  # the row complete again
-    assert any(m.value == "trouvée" for m in app.markdown)
+    assert not app.warning  # the detail complete again
+    assert app.sidebar.button(key="home-project-0").label.endswith("Documenter")
+    assert "etude-sommeil.sav — trouvée à côté du projet" in [m.value for m in app.markdown]
     assert any("fait à partir de la base etude-sommeil.sav" in s.value for s in app.success)
-    assert not [b for b in app.button if b.key == "home-find-0"]
+    assert not [b for b in app.button if b.key == "home-find"]
     assert new.read_bytes() == before
     assert not old.exists()
 
@@ -84,7 +82,7 @@ def test_nothing_changes_without_a_readable_project(moved, monkeypatch, which):
               "broken": broken}[which]  # fmt: skip
     _choose(monkeypatch, chosen)
     app = _home()
-    app.button(key="home-find-0").click().run()
+    app.button(key="home-find").click().run()
     assert not app.exception, app.exception
     assert tracked.load() == [old]
     assert any("rien n'est changé" in e.value for e in app.error)
@@ -96,16 +94,16 @@ def test_found_again_where_it_was_already_followed(moved, monkeypatch):
     tracked.follow(new)
     _choose(monkeypatch, new)
     app = _home()
-    app.button(key=f"home-find-{len(tracked.load()) - 1}").click().run()
+    app.sidebar.button(key="home-project-1").click().run()  # the one not found: last
+    app.button(key="home-find").click().run()
     assert tracked.load() == [new]
-    assert [b.label for b in app.button if (b.key or "").startswith("home-project-")] == [
-        "etude-sommeil"
-    ]  # fmt: skip
+    labels = [b.label for b in app.sidebar.button if (b.key or "").startswith("home-project-")]
+    assert [label.split()[0] for label in labels] == ["etude-sommeil"]
 
 
 @pytest.mark.allow_hosts(["127.0.0.1"])
 def test_a_project_not_found_no_longer_followed(moved):
     app = _home()
-    app.button(key="home-unfollow-0").click().run()
+    app.button(key="home-unfollow").click().run()
     assert tracked.load() == []
     assert moved[1].is_file()

@@ -251,18 +251,18 @@ def main() -> None:
         _stopped()
     if not c.has_project():
         tab = _home_navigation()
+        top = _messages_start()
+        home_view.page(tab)  # "Mes projets" puts its list in the sidebar, under the menu
+        _messages_end(top)
         with st.sidebar:
             _quit_button()
-        top = _messages_start()
-        home_view.page(tab)
-        _messages_end(top)
         return
     project = c.project()
     c.watch(project)  # v0.17 (D-130): changed elsewhere since it was read
     waiting = tasks(project, c.project_path(), notebook_view.dashboard_state(project))
     mode = _navigation(project, waiting)
     with st.sidebar:
-        st.button(_("Accueil"), key="home", on_click=c.close_project, icon=":material/home:")
+        st.button(_("Accueil"), key="home", on_click=home_view.back_home, icon=":material/home:")
         st.title(dataset_title(project))
         _follow_button()
         _ai_permission(project)

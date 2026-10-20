@@ -10,6 +10,8 @@ from keep their date and size.
 
 from __future__ import annotations
 
+import os
+import re
 import threading
 from dataclasses import dataclass, replace
 from datetime import datetime
@@ -56,6 +58,11 @@ class ProjectRow:
     to_recompute: int = 0
     source: str | None = None  # the database's file name
     base: bool | None = None  # a file of that name next to the project
+    # The questionnaire (plan-accueil, § 7.3): its file name, or the name of the one designed
+    # in the tool (`designed`), which is no file; found next to the project, like the base.
+    questionnaire: str | None = None
+    designed: bool = False
+    questionnaire_found: bool | None = None
 
     @property
     def name(self) -> str:
@@ -156,6 +163,8 @@ def _read(path: Path, stats: list) -> ProjectRow:
         frozen=plan.frozen.date[:10] if plan.frozen else None,
         amendments=len(plan.amendments) if plan.frozen else 0,
         source=project.source.name if project.source is not None else None,
+        questionnaire=project.questionnaire.file_name if project.questionnaire else None,
+        designed=project.design is not None,
         **row,
     )
 
@@ -180,11 +189,13 @@ def row(path: Path | str) -> ProjectRow:
         found = _read(path, stats)
         with _LOCK:
             _CACHE[key] = (tuple(stats), found)
-    if found.source is None:
-        return found
     # Looked at each time, never opened: the tool checks it is the right database when the
     # project is opened.
-    return replace(found, base=path.with_name(found.source).is_file())
+    if found.source is not None:
+        found = replace(found, base=path.with_name(found.source).is_file())
+    if found.questionnaire is not None and not found.designed:
+        found = replace(found, questionnaire_found=path.with_name(found.questionnaire).is_file())
+    return found
 
 
 def rows(paths: list[Path]) -> list[ProjectRow]:
@@ -196,6 +207,65 @@ def rows(paths: list[Path]) -> list[ProjectRow]:
 def clear_cache() -> None:
     with _LOCK:
         _CACHE.clear()
+
+
+def _known(path: Path, source: str | None) -> set[str]:
+    """The names of the files the tool writes next to this project, from the functions that
+    name them; the analyses ("-analyse-3.docx") are matched apart, by their number."""
+    from ddict.analysis.deposit import deposit_path
+    from ddict.analysis.notebook_export import results_paths
+    from ddict.analysis.prereg import preregistration_paths
+    from ddict.arrival import report_path
+    from ddict.export.documented import default_copy_path
+    from ddict.workflow import (
+        context_paths,
+        exchange_dir,
+        export_paths,
+        name_table_path,
+        preparation_paths,
+        syntax_paths,
+        wave_report_path,
+    )
+
+    results = results_paths(path)
+    found = [
+        nb.notebook_path(path),
+        deposit_path(path),
+        *results.values(),
+        *report_paths(results["docx"]).values(),
+        *preregistration_paths(path).values(),
+        *export_paths(path, "final"),
+        *export_paths(path, "work"),
+        *context_paths(path),
+        *syntax_paths(path).values(),
+        *preparation_paths(path).values(),
+        name_table_path(path),
+        wave_report_path(path),
+        exchange_dir(path),
+        report_path(path),
+    ]
+    if source is not None:
+        found.append(default_copy_path(path.with_name(source)))
+    return {p.name.casefold() for p in found}
+
+
+def produced(row: ProjectRow) -> list[str]:
+    """The files the tool wrote next to this project, by their names (plan-accueil, § 7.3):
+    one reading of the folder's list, no file opened (a OneDrive file "online only" is not
+    downloaded); for the project shown only. A folder ends with "\\"."""
+    known = _known(row.path, row.source)
+    analysis = re.compile(re.escape(project_stem(row.path).casefold()) + r"-analyse-\d+[.-]")
+    found = []
+    try:
+        with os.scandir(row.path.parent) as entries:
+            for entry in entries:
+                name = entry.name.casefold()
+                if name.endswith(".tmp") or not (name in known or analysis.match(name)):
+                    continue
+                found.append(entry.name + ("\\" if entry.is_dir() else ""))
+    except OSError:
+        return []
+    return sorted(found, key=str.casefold)
 
 
 # --- The row as text: the table's cells and `ddict projets lister`. ---
