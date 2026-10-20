@@ -196,6 +196,7 @@ Un projet introuvable, illisible ou trop récent montre ce qu'on sait (chemin, m
 |---|---|---|
 | Tableau des projets suivis, ouvrir un projet à sa première tâche | Mes projets (liste + détail ; « Ouvrir » au détail) | `home-project-{i}` **sélectionne** au lieu d'ouvrir ; `home-open-chosen` ouvre |
 | Ne plus suivre | Mes projets (détail) | `home-unfollow` (sans index : un seul détail) |
+| — | Mes projets (détail) : ouvrir le dossier du projet, ouvrir le projet à l'une de ses tâches (nouveau) | `home-folder`, `home-task-{i}` |
 | Retrouver un projet déplacé | Mes projets (détail d'un projet introuvable) | `home-find` |
 | Chercher les projets dans un dossier, suivre ceux trouvés | Ouvrir un projet (et un bouton depuis « Mes projets » vide) | `home-search`, `home-found-*`, `home-follow-found` : inchangées |
 | Projets récents, les suivre, effacer la liste | Ouvrir un projet | `home-recent-{i}`, `home-follow-{i}`, `home-clear` : inchangées |
@@ -206,7 +207,7 @@ Un projet introuvable, illisible ou trop récent montre ce qu'on sait (chemin, m
 | Avertissement de l'anglais | En tête de chaque onglet | — |
 | Essayer l'outil | **Retiré** (partie B) | `home-trial*` disparaissent |
 
-Messages : les textes d'aujourd'hui restent mot pour mot, sauf les deux qui renvoient au « menu ⋮ de sa ligne » (« Si ce n'est pas le bon, retirez-le avec « Ne plus suivre »… ») et l'en-tête du tableau, qui disparaît. Tests touchés : `tests/test_home_projects.py` (le clic sélectionne, l'ouverture passe par le détail), `tests/test_home.py` (choisir l'onglet par `home_tab`), `tests/test_tracked.py` (essai retiré).
+Messages : les textes d'aujourd'hui restent mot pour mot, sauf les deux qui renvoient au « menu ⋮ de sa ligne » (« Si ce n'est pas le bon, retirez-le avec « Ne plus suivre »… ») et l'en-tête du tableau, qui disparaît. Fait à l'étape C2 : la phrase « Aucun projet suivi… » renvoie à « Ouvrir un projet » au lieu de « ci-dessous ». Vérifié à l'étape C4 par `tests/test_home_functions.py` : chaque fonction est dans son onglet, et dans celui-là seulement. Tests touchés : `tests/test_home_projects.py` (le clic sélectionne, l'ouverture passe par le détail), `tests/test_home.py` (choisir l'onglet par `home_tab`), `tests/test_tracked.py` (essai retiré).
 
 ### 7.5 La maquette avant le code (point 12)
 
