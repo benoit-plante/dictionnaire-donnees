@@ -724,10 +724,10 @@ msgstr "No project followed. Follow one with “ddict projects follow <project>�
 
 msgid ""
 "Aucun projet suivi. Un projet créé ici est suivi d'office ; un projet récent peut l'être avec « "
-"Suivre ce projet », et ceux d'un dossier se cherchent ci-dessous."
+"Suivre ce projet », et ceux d'un dossier se cherchent dans « Ouvrir un projet »."
 msgstr ""
 "No project followed. A project created here is followed at once; a recent project can be, with "
-"“Follow this project”, and those of a folder can be looked for below."
+"“Follow this project”, and those of a folder can be looked for in “Open a project”."
 
 msgid "Aucun préfixe proposé pour ce groupe."
 msgstr "No prefix proposed for this group."
@@ -1201,6 +1201,9 @@ msgstr ""
 
 msgid "Chercher les fichiers projet d'un dossier et de ses sous-dossiers (4 niveaux), sans les ouvrir."
 msgstr "Look for the project files of a folder and its subfolders (4 levels), without opening them."
+
+msgid "Chercher les projets d'un dossier"
+msgstr "Look for the projects of a folder"
 
 msgid "Chercher les projets dans un dossier…"
 msgstr "Look for projects in a folder…"
@@ -5123,6 +5126,13 @@ msgstr ""
 "changed; apply them to a copy of your data."
 
 msgid ""
+"Pour cet ordinateur. Les textes écrits par l'équipe ne sont jamais traduits : la langue de "
+"l'étude se choisit dans chaque projet."
+msgstr ""
+"For this computer. What the team writes is never translated: the study's language is chosen in "
+"each project."
+
+msgid ""
 "Pour choisir un modèle en connaissance de cause : sur les bases fictives de l'outil, dont on "
 "connaît les bonnes réponses, le banc mesure les rattachements justes, les libellés qui inventent "
 "peut-être (citation, seuil, nom d'instrument, sens d'un sigle, étendue, sens de codes) et la "
@@ -6778,6 +6788,9 @@ msgid ""
 msgstr ""
 "A save was interrupted (on {date}): the file {name} was left. {kept} is the last one saved in "
 "full; the file {name} can be deleted."
+
+msgid "Un fichier projet"
+msgstr "A project file"
 
 #, python-brace-format
 msgid "Un fichier projet {name} est apparu pendant la commande."

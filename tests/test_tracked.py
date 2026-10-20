@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 from streamlit.testing.v1 import AppTest
 
+from accueil import tab
 from ddict import recents, tracked
 from ddict.cli import main
 from ddict.workflow import profile_database
@@ -116,7 +117,7 @@ def test_ddict_profiler_follows_the_new_project(base):
 
 @pytest.mark.allow_hosts(["127.0.0.1"])
 def test_a_new_project_is_followed_then_no_longer(base):
-    app = _home()
+    app = tab(_home(), "nouveau")
     app.text_input(key="home-database").input(str(base)).run()
     app.button(key="home-create").click().run()
     assert not app.exception, app.exception
@@ -136,7 +137,7 @@ def test_a_new_project_is_followed_then_no_longer(base):
 def test_follow_a_recent_project(base):
     _project, path = profile_database(base)
     recents.add(path)
-    app = _home()
+    app = tab(_home(), "ouvrir")
     app.button(key="home-follow-0").click().run()
     assert not app.exception, app.exception
     assert tracked.load() == [path]

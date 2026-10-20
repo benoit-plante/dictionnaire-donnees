@@ -143,7 +143,7 @@ Le journal des décisions garde D-125 tel quel ; **D-159** dit qu'il est remplac
 
 **Les onglets** : Mes projets (par défaut), Nouveau projet, Concevoir un questionnaire, Ouvrir un projet, Réglages. « Quitter l'outil » reste en bas de la barre, sous le menu. Un bouton d'un onglet qui mène à un autre (« Chercher les projets dans un dossier… » quand aucun projet n'est suivi) passe par le même mécanisme que `c.go_to` (une clé `goto`, `st.switch_page`). L'onglet ouvert reste après une action : les boutons rappellent la page où ils sont.
 
-**L'avertissement sur l'anglais** reste en tête de chaque onglet quand l'interface est en anglais (il dit que la traduction n'est pas relue : il doit se voir, pas seulement dans les réglages). Le titre « Dictionnaire de données » et la phrase « Tout se passe sur cet ordinateur… » passent en tête de la barre de gauche, au-dessus du menu.
+**L'avertissement sur l'anglais** reste en tête de chaque onglet quand l'interface est en anglais (il dit que la traduction n'est pas relue : il doit se voir, pas seulement dans les réglages). La phrase « Tout se passe sur cet ordinateur… » est en tête de chaque onglet, sous son titre : Streamlit met toujours son menu en haut de la barre de gauche, rien ne peut aller au-dessus (vu à la maquette).
 
 ### 7.2 Mes projets : une liste et un détail (point 9)
 
@@ -165,7 +165,7 @@ A. Liste dans la fenêtre (recommandée)          B. Liste dans la barre de gauc
 └────────────┴─────────────────────────────┘    └────────────┴─────────────────────────────┘
 ```
 
-**Recommandation : A, la liste dans la fenêtre**, comme vous le pensiez. Trois raisons : à 900 × 600, Streamlit replie la barre de gauche, et une liste qui y vivrait disparaîtrait avec elle ; la barre de gauche garde le même rôle dans l'accueil et dans un projet (le menu) ; une liste de vingt projets n'allonge pas la barre au point de cacher « Quitter l'outil ». Proportions : un tiers pour la liste, deux tiers pour le détail ; en dessous de 640 px, Streamlit empile les deux.
+**Choix de l'auteur après la maquette (étape C1) : B, la liste dans la barre de gauche**, sous le menu, avec « Projets suivis » pour titre ; le détail prend toute la fenêtre. J'avais d'abord recommandé A en croyant que Streamlit replie la barre de gauche à 900 × 600 : il ne le fait pas, et la colonne de liste de A y coupait les noms (« Sommeil et a… »), alors que la barre de B les montre entiers. « Quitter l'outil » reste sous la liste.
 
 La liste : un bouton par projet, la dernière modification d'abord (l'ordre d'aujourd'hui, `overview.rows`) ; sur sa ligne, le nom et la phase, et une icône d'attention pour un fichier introuvable, illisible ou écrit par une version plus récente (le texte exact au détail). Un clic montre le détail, sans ouvrir le projet. Le projet choisi est gardé dans la séance (`home-chosen`) ; au départ, le premier de la liste ; en revenant d'un projet par « Accueil », ce projet-là.
 
@@ -266,7 +266,7 @@ Chaque étape : tests écrits avec le code, catalogue anglais à jour, `ruff` et
 | N° | Décision | Ma recommandation |
 |---|---|---|
 | **D-159** | **Retirer l'essai** (remplace D-125) | Retirer la section, `trial.py`, ses tests et `DDICT_TRIAL_DIR` ; retirer `etude-sommeil.sav` du paquet ; **garder `questionnaire-sommeil.pdf`**, dont le banc se sert ; ne pas toucher aux dossiers d'essai existants. |
-| **D-160** | **La structure de l'accueil** | `st.navigation` avec cinq pages (Mes projets, Nouveau projet, Concevoir un questionnaire, Ouvrir un projet, Réglages), « Quitter l'outil » en bas ; la liste des projets **dans la fenêtre**, à gauche du détail ; le détail du § 7.3, les fichiers produits calculés pour le projet choisi seulement. |
+| **D-160** | **La structure de l'accueil** | `st.navigation` avec cinq pages (Mes projets, Nouveau projet, Concevoir un questionnaire, Ouvrir un projet, Réglages), « Quitter l'outil » en bas ; la liste des projets **dans la barre de gauche**, sous le menu (choix de l'auteur après la maquette), le détail dans la fenêtre ; le détail du § 7.3, les fichiers produits calculés pour le projet choisi seulement. |
 | **D-161** | **Renommer = un titre** | Un titre facultatif dans le projet, format **0.11.0**, montré dans l'interface et la ligne de commande, jamais dans les fichiers produits ni envoyé au modèle, hors de l'empreinte ; **aucun fichier renommé** ; le renommage des fichiers remis au dossier d'étude. |
 | **D-162** | **Le numéro de version** | La partie « Non publié » change déjà le format (D-158, 0.10.0) : la 0.20.2 ne sera pas « sans changement de format », quoi qu'on fasse. Je propose **une seule version, 0.20.2**, avec D-158, les parties B, C et D et le format 0.11.0 (le format 0.10.0 n'ayant jamais été publié, une personne passe de 0.9.0 à 0.11.0 en une fois). Autre voie : publier la 0.20.2 après la partie C (format 0.10.0), puis le titre en 0.20.3 (format 0.11.0), pour essayer l'accueil plus tôt. |
 

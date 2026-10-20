@@ -2,6 +2,7 @@
 
 ## Non publié
 
+- **L'accueil en onglets** (D-160) : la barre de gauche devient le menu de l'accueil (Mes projets, Nouveau projet, Concevoir un questionnaire, Ouvrir un projet, Réglages) ; les projets récents et la recherche dans un dossier sont sous « Ouvrir un projet », la langue sous « Réglages ». Un rechargement garde l'onglet ouvert.
 - **« Essayer l'outil » retiré de l'accueil** (D-159, remplace D-125) : un dossier `Documents\Dictionnaire de données - essai` déjà créé reste là, et son projet s'ouvre comme un autre. `etude-sommeil.sav` n'est plus dans le paquet installé ; il reste dans `exemplesases-fictives`.
 - **Écarter une variable du codebook** (D-158, format du projet 0.10.0) : sur la fiche d'une variable, avec sa raison ; elle reste dans la base et dans le projet, mais quitte le codebook (une section « Variables écartées » la nomme, avec sa raison), le contexte d'analyse (le Data Package garde la colonne, sans rien en dire), les compteurs à documenter, les noms proposés, les choix des analyses, des règles d'exclusion et des recodages, et les messages à l'IA. Refusé tant qu'elle sert, chaque usage dit. Filtre **Écartées** ; **Remettre dans le codebook**. Un projet 0.10.0 ne s'ouvre plus avec la 0.20.1.
 - **Revoir** : un « Garder le projet » de la comparaison avec LimeSurvey se défait par **Revoir**, sans fermer l'outil (vu au second essai de l'auteur, 2026-10-20).

@@ -9,7 +9,6 @@ at once. The views are in `review/ui/`.
 from __future__ import annotations
 
 from datetime import date
-from urllib.parse import urlparse
 
 import streamlit as st
 
@@ -187,17 +186,8 @@ def _place(project, mode: str, chosen: str | None) -> c.Place:
     return c.Place(mode, None, page)
 
 
-def _root_page(project, modes: list[str]) -> str:
-    """The page at the root address: the session's "mode", the first page otherwise. Never
-    the page the address asks for by name: Streamlit serves the root page at the root only,
-    and a reload on "/base" would say "Page not found"."""
-    current = st.session_state.get("mode")
-    if current not in modes:
-        current = navigation.first(project)
-    asked = urlparse(st.context.url or "").path.rstrip("/").rsplit("/", 1)[-1]
-    if asked != current:
-        return current
-    return next(m for m in modes if m != current)
+def _root_page(current: str, modes: list[str]) -> str:
+    return navigation.root(current, modes, st.context.url)
 
 
 def _navigation(project, waiting):
@@ -207,7 +197,9 @@ def _navigation(project, waiting):
     counts = navigation.waiting(waiting)
     phases = navigation.sections(project)  # v0.20 (D-149): "Concevoir" for a designed one
     shown_pages = [info for infos in phases.values() for info in infos]
-    root = _root_page(project, [info.mode for info in shown_pages])
+    modes = [info.mode for info in shown_pages]
+    current = st.session_state.get("mode")
+    root = _root_page(current if current in modes else navigation.first(project), modes)
     pages = {
         info.mode: st.Page(
             lambda: None,  # the page is drawn below, with the sidebar it needs
@@ -231,22 +223,38 @@ def _navigation(project, waiting):
     return mode
 
 
+def _home_navigation() -> str:
+    """The tabs of the home page in the sidebar (D-160), never the project's pages: the
+    session's "home_tab" names the tab at the root address, as "mode" does for a project;
+    a button asking for another tab (`home_view.go_to_tab`) opens it with `st.switch_page`."""
+    tabs = list(home_view.TABS)
+    current = st.session_state.get(home_view.TAB)
+    root = _root_page(current if current in tabs else home_view.FIRST_TAB, tabs)
+    pages = {
+        tab: st.Page(lambda: None, title=_(title), icon=icon, url_path=tab, default=tab == root)
+        for tab, (title, icon) in home_view.TABS.items()
+    }
+    shown = st.navigation(list(pages.values()), position="sidebar")
+    tab = next(t for t, page in pages.items() if page.url_path == shown.url_path)
+    goto = st.session_state.pop(c.GOTO, None)
+    if goto in pages and goto != tab:
+        st.switch_page(pages[goto])
+    st.session_state[home_view.TAB] = tab
+    shown.run()
+    return tab
+
+
 def main() -> None:
     settings.apply()  # read at each run: a change on the home page applies at once
     st.set_page_config(page_title=_("Révision du dictionnaire"), layout="wide")
     if st.session_state.get(QUITTING):
         _stopped()
     if not c.has_project():
-        # The home page is a page of its own, without the project's (v0.16): the menu of the
-        # project's pages would stay on screen otherwise.
-        st.navigation(
-            [st.Page(lambda: None, title=_("Accueil"), url_path="accueil", default=True)],
-            position="hidden",
-        ).run()
+        tab = _home_navigation()
         with st.sidebar:
             _quit_button()
         top = _messages_start()
-        home_view.page()
+        home_view.page(tab)
         _messages_end(top)
         return
     project = c.project()

@@ -113,6 +113,7 @@ def test_concevoir_un_questionnaire_from_the_home_page(tmp_path):
     folder.mkdir()
     app = AppTest.from_file(APP, default_timeout=60)
     app.session_state["project_path"] = ""  # no project: the home page
+    app.session_state["home_tab"] = "concevoir"  # D-160
     app.run()
     app.button(key="home-design-create").click().run()
     assert "Choisissez d'abord le dossier" in app.error[0].value

@@ -4,6 +4,7 @@ navigation: what waits there, or a tick when nothing waits. Without Streamlit.""
 from __future__ import annotations
 
 from dataclasses import dataclass
+from urllib.parse import urlparse
 
 from ddict.i18n import N_, _
 from ddict.project.model import Project
@@ -106,3 +107,14 @@ def title(project: Project, mode: str, counts: dict[str, int]) -> str:
     mark = state(project, mode, counts)
     name = _(PAGES[mode].title)
     return f"{name} {mark}" if mark else name
+
+
+def root(current: str, modes: list[str], url: str | None) -> str:
+    """The page served at the root address: `current` (the session's page, else the first
+    one). Never the page the address asks for by name: Streamlit serves the root page at the
+    root only, and a reload on "/base" would say "Page not found" (v0.16). For the project's
+    pages and the home page's tabs alike (D-160)."""
+    asked = urlparse(url or "").path.rstrip("/").rsplit("/", 1)[-1]
+    if asked != current:
+        return current
+    return next(m for m in modes if m != current)

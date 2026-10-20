@@ -1,5 +1,6 @@
-"""The home page (v0.3): the projects followed (v0.17), recent projects, a new project from a
-database, a project to open.
+"""The home page (v0.3), in tabs chosen in the sidebar (D-160): the projects followed
+(v0.17), a new project from a database, a questionnaire to design (v0.20), a project to open
+(a file, the recent projects, the projects of a folder), the settings of this computer.
 
 Files are chosen with the system's "Open" window (D-020), or by pasting their path. The
 database is read here, on this computer, exactly as `ddict profiler` does: the project
@@ -15,7 +16,7 @@ import streamlit as st
 
 from ddict import i18n, overview, recents, settings, tracked
 from ddict.design import DesignError
-from ddict.i18n import _
+from ddict.i18n import N_, _
 from ddict.io import ReadError
 from ddict.project import ProjectError, load_project, ondisk
 from ddict.review.ui import common as c
@@ -130,7 +131,6 @@ def _create_design() -> None:
 
 
 def _design_section() -> None:
-    st.header(_("Concevoir un questionnaire"))
     st.write(
         _(
             "Pour une étude qui n'a pas encore de questionnaire : construisez-le dans l'outil, "
@@ -201,24 +201,59 @@ def _language() -> None:
     )
 
 
-def page() -> None:
-    _language()
+TAB = "home_tab"  # the tab shown (D-160): tests choose it, as "mode" chooses a project's page
+# The tabs of the home page, in the sidebar (D-160): their address, title and icon.
+TABS = {
+    "projets": (N_("Mes projets"), ":material/folder_special:"),
+    "nouveau": (N_("Nouveau projet"), ":material/add_circle:"),
+    "concevoir": (N_("Concevoir un questionnaire"), ":material/edit_note:"),
+    "ouvrir": (N_("Ouvrir un projet"), ":material/folder_open:"),
+    "reglages": (N_("Réglages"), ":material/settings:"),
+}
+FIRST_TAB = "projets"
+
+
+def go_to_tab(tab: str) -> None:
+    """Open another tab of the home page, as `c.go_to` opens a project's page."""
+    st.session_state[c.GOTO] = tab
+    st.session_state[TAB] = tab
+
+
+def page(tab: str) -> None:
+    """The tab of the home page shown in the window (D-160)."""
     if i18n.language() == "en":  # v0.5: a trial (D-034)
         st.caption(
             "The English interface is a trial version: its translation has not yet been "
             "reviewed by a native speaker. Please report anything unclear."
         )
-    st.title(_("Dictionnaire de données"))
+    st.title(_(TABS[tab][0]))
     st.caption(
         _(
             "Tout se passe sur cet ordinateur : les fichiers sont lus ici, et rien n'est "
             "envoyé ailleurs."
         )
     )
+    {
+        "projets": _projects,
+        "nouveau": _new_section,
+        "concevoir": _design_section,
+        "ouvrir": _open_section,
+        "reglages": _settings_section,
+    }[tab]()
 
-    _projects()  # v0.17: taking up one's work first
-    _recent()
-    st.header(_("Nouveau projet"))
+
+def _settings_section() -> None:
+    st.subheader("Langue · Language")
+    _language()
+    st.caption(
+        _(
+            "Pour cet ordinateur. Les textes écrits par l'équipe ne sont jamais traduits : la "
+            "langue de l'étude se choisit dans chaque projet."
+        )
+    )
+
+
+def _new_section() -> None:
     st.write(
         _(
             "Choisissez la base de données : SPSS (.sav), CSV, Stata (.dta), SAS (.sas7bdat) "
@@ -257,9 +292,10 @@ def page() -> None:
             args=(True,),
         )
 
-    _design_section()
 
-    st.header(_("Ouvrir un projet"))
+def _open_section() -> None:
+    """A project file, the recent projects, the projects of a folder (D-160)."""
+    st.subheader(_("Un fichier projet"))
     st.button(
         _("Choisir un fichier projet…"),
         key=f"browse-{PROJECT}",
@@ -274,6 +310,9 @@ def page() -> None:
         on_click=lambda: _open(_path(PROJECT), "home-open"),
     )
     c.show_message("home-open")
+    _recent()
+    st.subheader(_("Chercher les projets d'un dossier"))
+    _search_panel()
 
 
 def _modified(path: Path) -> str:
@@ -477,17 +516,22 @@ def _headers() -> None:
 def _projects() -> None:
     """The projects followed (v0.17, § 7 of plan-v0.17): where each is, read from its files
     without its database, the latest changed first; a click on its name takes it up."""
-    st.header(_("Mes projets"))
     followed = tracked.load()
     if not followed:
         st.write(
             _(
                 "Aucun projet suivi. Un projet créé ici est suivi d'office ; un projet récent "
                 "peut l'être avec « Suivre ce projet », et ceux d'un dossier se cherchent "
-                "ci-dessous."
+                "dans « Ouvrir un projet »."
             )
         )
-        _search_panel()
+        st.button(
+            _("Chercher les projets dans un dossier…"),
+            key="home-go-search",
+            on_click=go_to_tab,
+            args=("ouvrir",),
+            icon=":material/manage_search:",
+        )
         return
     _headers()
     for index, row in enumerate(overview.rows(followed)):
@@ -530,7 +574,6 @@ def _projects() -> None:
                 )
     c.show_message("home-unfollow")
     c.show_message("home-find")
-    _search_panel()
 
 
 def _recent() -> None:
@@ -540,7 +583,7 @@ def _recent() -> None:
     found = [p for p in recents.load() if ondisk.key(p) not in followed]  # v0.17: once
     if not found:
         return
-    st.header(_("Projets récents"))
+    st.subheader(_("Projets récents"))
     for index, path in enumerate(found):
         name, where, when, follow = st.columns([2, 4, 1.4, 1.6], vertical_alignment="center")
         with name:

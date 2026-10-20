@@ -99,13 +99,14 @@ def test_the_choice_is_kept_on_this_computer(monkeypatch):
 def test_home_page_switches_without_restarting():
     app = AppTest.from_file(APP, default_timeout=30)
     app.session_state["project_path"] = ""
+    app.session_state["home_tab"] = "reglages"  # D-160: the language is in "Réglages"
     app.run()
-    assert app.title[0].value == "Dictionnaire de données"
+    assert app.title[0].value == "Réglages"
     app.button_group(key="interface-language").set_value("en").run()
     assert not app.exception, app.exception
-    assert app.title[0].value == "Data dictionary"
+    assert app.title[0].value == "Settings"
     assert settings.interface_language() == "en"
     app.run()  # kept on the next run
-    assert app.title[0].value == "Data dictionary"
+    assert app.title[0].value == "Settings"
     app.button_group(key="interface-language").set_value("fr").run()
-    assert app.title[0].value == "Dictionnaire de données"
+    assert app.title[0].value == "Réglages"

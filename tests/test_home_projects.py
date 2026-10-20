@@ -9,6 +9,7 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 import projets_stades as stages
+from accueil import tab
 from ddict import overview, recents, tracked
 
 APP = str(Path(__file__).resolve().parent.parent / "src" / "ddict" / "review" / "app.py")
@@ -39,7 +40,7 @@ def _names(app) -> list[str]:
 @pytest.mark.allow_hosts(["127.0.0.1"])
 def test_without_a_project_followed_a_sentence_and_no_table():
     app = _home()
-    assert app.header[0].value == "Mes projets"
+    assert app.title[0].value == "Mes projets"
     assert any("Aucun projet suivi" in m.value for m in app.markdown)
     assert _names(app) == []
 
@@ -49,7 +50,7 @@ def test_the_table_at_the_top_latest_first(made):
     for path in made.values():
         tracked.follow(path)
     app = _home()
-    assert app.header[0].value == "Mes projets"
+    assert app.title[0].value == "Mes projets"
     expected = overview.rows(list(made.values()))
     assert _names(app) == [r.name for r in expected]
     texts = [m.value for m in app.markdown]
@@ -89,15 +90,14 @@ def test_no_longer_followed_from_the_table(made):
 
 
 @pytest.mark.allow_hosts(["127.0.0.1"])
-def test_the_recent_projects_below_without_those_followed(made):
+def test_the_recent_projects_without_those_followed(made):
     recents.add(made["neuf"])
     recents.add(made["plan"])
     tracked.follow(made["plan"])
-    app = _home()
-    headers = [h.value for h in app.header]
-    assert headers.index("Mes projets") < headers.index("Projets récents")
+    app = tab(_home(), "ouvrir")  # D-160: under "Ouvrir un projet"
     recent = [b.label for b in app.button if (b.key or "").startswith("home-recent-")]
     assert recent == ["etude-sommeil.dd.json"]
     app.button(key="home-follow-0").click().run()  # followed: into the table
     assert [b for b in app.button if (b.key or "").startswith("home-recent-")] == []
+    tab(app, "projets")
     assert sorted(_names(app)) == ["etude-analyses", "etude-sommeil"]

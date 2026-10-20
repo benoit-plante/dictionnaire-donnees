@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 from streamlit.testing.v1 import AppTest
 
+from accueil import tab
 from ddict import cli, recents
 from ddict.project import load_project
 from ddict.review.ui import dialog
@@ -112,7 +113,8 @@ def home():
 
 @pytest.mark.allow_hosts(["127.0.0.1"])
 def test_new_project_from_a_pasted_path(home, base):
-    assert home.title[0].value == "Dictionnaire de données"
+    assert home.title[0].value == "Mes projets"  # D-160: the first tab
+    tab(home, "nouveau")
     home.text_input(key="home-database").input(f'"{base}"').run()  # quotes from Explorer
     home.button(key="home-create").click().run()
     assert not home.exception, home.exception
@@ -125,6 +127,7 @@ def test_new_project_from_a_pasted_path(home, base):
 def test_existing_project_is_opened_not_replaced(home, base):
     _project, output = profile_database(base)
     before = output.read_text(encoding="utf-8")
+    tab(home, "nouveau")
     home.text_input(key="home-database").input(str(base)).run()
     home.button(key="home-create").click().run()
     assert any("existe déjà" in e.value for e in home.error)
@@ -135,6 +138,7 @@ def test_existing_project_is_opened_not_replaced(home, base):
 
 @pytest.mark.allow_hosts(["127.0.0.1"])
 def test_problems_are_explained(home, tmp_path):
+    tab(home, "nouveau")
     home.button(key="home-create").click().run()
     assert "Choisissez d'abord une base" in home.error[0].value
     broken = tmp_path / "abime.sav"
@@ -142,6 +146,7 @@ def test_problems_are_explained(home, tmp_path):
     home.text_input(key="home-database").input(str(broken)).run()
     home.button(key="home-create").click().run()
     assert "Impossible de lire la base" in home.error[0].value
+    tab(home, "ouvrir")
     home.text_input(key="home-project").input(str(tmp_path / "absent.dd.json")).run()
     home.button(key="home-open").click().run()
     assert "introuvable" in home.error[0].value
@@ -150,9 +155,11 @@ def test_problems_are_explained(home, tmp_path):
 @pytest.mark.allow_hosts(["127.0.0.1"])
 def test_browse_fills_the_field(home, base, monkeypatch):
     monkeypatch.setattr(dialog, "choose", lambda kind: str(base))
+    tab(home, "nouveau")
     home.button(key="browse-home-database").click().run()
     assert home.text_input(key="home-database").value == str(base)
     monkeypatch.setattr(dialog, "choose", lambda kind: None)
+    tab(home, "ouvrir")
     home.button(key="browse-home-project").click().run()
     assert "Aucun fichier choisi" in home.error[0].value
 
@@ -161,11 +168,12 @@ def test_browse_fills_the_field(home, base, monkeypatch):
 def test_recent_projects_and_back_home(home, base):
     _project, output = profile_database(base)
     recents.add(output)
-    home.run()
+    tab(home, "ouvrir")
     home.button(key="home-recent-0").click().run()
     assert home.sidebar.title[0].value == "etude-sommeil.sav"
     home.sidebar.button(key="home").click().run()  # "Accueil"
-    assert home.title[0].value == "Dictionnaire de données"
+    assert home.title[0].value == "Mes projets"  # the project's page is not kept
+    tab(home, "ouvrir")
     home.button(key="home-clear").click().run()
     assert recents.load() == []
     assert load_project(output).source.name == "etude-sommeil.sav"  # nothing else touched

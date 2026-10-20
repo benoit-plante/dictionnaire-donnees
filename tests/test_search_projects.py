@@ -12,6 +12,7 @@ from pathlib import Path
 import pytest
 from streamlit.testing.v1 import AppTest
 
+from accueil import tab
 from ddict import tracked
 from ddict.review.ui import dialog
 
@@ -114,8 +115,7 @@ def _home(monkeypatch, chosen) -> AppTest:
     monkeypatch.setattr(dialog, "choose", lambda kind: None if chosen is None else str(chosen))
     app = AppTest.from_file(APP, default_timeout=60)
     app.session_state["project_path"] = ""
-    app.run()
-    assert not app.exception, app.exception
+    tab(app, "ouvrir")  # D-160: under "Ouvrir un projet"
     app.button(key="home-search").click().run()
     assert not app.exception, app.exception
     return app

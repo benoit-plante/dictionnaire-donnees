@@ -86,6 +86,7 @@ def test_add_questionnaire(folder):
 def test_from_home_to_glossary(folder):
     app = AppTest.from_file(APP, default_timeout=30)
     app.session_state["project_path"] = ""
+    app.session_state["home_tab"] = "nouveau"  # D-160
     app.run()
     app.text_input(key="home-database").input(str(folder / "etude-sommeil.sav")).run()
     app.button(key="home-create").click().run()
