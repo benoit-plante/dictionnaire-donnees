@@ -20,10 +20,11 @@ from datetime import date
 from ddict import naming
 from ddict.i18n import N_, _
 from ddict.privacy.classify import classify_planned
-from ddict.project import measure
+from ddict.project import measure, skip
 from ddict.project.build import GROUP_PARTS
 from ddict.project.decisions import is_accepted
 from ddict.project.model import (
+    Condition,
     Design,
     FileMetadata,
     GridRow,
@@ -37,6 +38,7 @@ from ddict.project.model import (
     QuestionOption,
     Section,
     Settings,
+    Term,
     TrackedValue,
     ValueLabel,
     VariableEntry,
@@ -400,6 +402,7 @@ def modify_question(project: Project, question_id: str, draft: Draft) -> Changes
         questions = questionnaire(project).questions
         index = questions.index(old)
         new = _question(project, question_id, draft)
+        _keep(old, new)
         if new.section == old.section:
             questions[index] = new
         else:
@@ -408,6 +411,18 @@ def modify_question(project: Project, question_id: str, draft: Draft) -> Changes
             questions.insert(last[-1] + 1 if last else len(questions), new)
 
     return _change(project, change)
+
+
+def _keep(old: Question, new: Question) -> None:
+    """What the editor's draft does not carry (v0.21): the question's condition, its random
+    order and its attention checks, as long as its kind admits them."""
+    new.condition = old.condition
+    new.shuffle = old.shuffle and new.kind in SHUFFLED
+    new.attention = old.attention if new.kind == "single" else None
+    if new.kind == "grid":
+        kept = {row.row_id: row.attention for row in old.rows}
+        for row in new.rows:
+            row.attention = kept.get(row.row_id)
 
 
 def remove_question(project: Project, question_id: str) -> Changes:
@@ -458,6 +473,99 @@ def decide_code(
     return _change(project, change)
 
 
+# --- Conditions, random order, attention checks (v0.21, D-165, D-166, D-170). ---
+
+# The kinds of question whose statements, choices or options can be shown in random order.
+SHUFFLED = ("single", "checkbox", "grid")
+
+
+def _owner(project: Project, owner: str) -> Section | Question:
+    if owner.startswith("S"):
+        return _section(project, owner)
+    return find(project, owner)
+
+
+def set_condition(project: Project, owner: str, condition: Condition | None) -> Changes:
+    """When a section ("S2") or a question ("Q4") is asked; None: always. Refused with the
+    reasons of `skip.problems`; what is allowed but doubtful is the review's."""
+
+    def change() -> None:
+        found = questionnaire(project)
+        target = _owner(project, owner)
+        if condition is None:
+            target.condition = None
+            return
+        ready = skip.normalized(found, condition)
+        problems = skip.problems(found, owner, ready)
+        if problems:
+            raise DesignError(problems)
+        target.condition = ready
+
+    return _change(project, change)
+
+
+def set_shuffle(project: Project, owner: str, shuffle: bool) -> Changes:
+    """A section's questions, or a question's statements, choices or options, in random
+    order, drawn for each person (D-166)."""
+
+    def change() -> None:
+        target = _owner(project, owner)
+        if isinstance(target, Question) and shuffle and target.kind not in SHUFFLED:
+            raise DesignError(
+                [
+                    _(
+                        "Seuls les énoncés d'une grille, les choix d'une question et les options "
+                        "à cocher se présentent dans un ordre aléatoire."
+                    )
+                ]
+            )
+        target.shuffle = shuffle
+
+    return _change(project, change)
+
+
+def set_attention(project: Project, item: str, correct: list[str] | None) -> Changes:
+    """A single choice ("Q4") or a grid's statement ("Q7.r3") as an attention check, with the
+    codes of its right answers (D-170); None: no longer one. A statement that is one leaves
+    the members of its grid's group (it enters no score)."""
+
+    def change() -> None:
+        question = find(project, item.partition(".")[0])
+        if item == question.question_id:
+            if question.kind != "single":
+                raise DesignError(
+                    [
+                        _(
+                            "Seule une question à choix unique ou un énoncé de grille peut être "
+                            "un item de contrôle."
+                        )
+                    ]
+                )
+            holder: Question | GridRow = question
+        else:
+            row = next((r for r in question.rows if r.row_id == item), None)
+            if row is None:
+                raise DesignError([_("Énoncé inconnu : {id}.").format(id=item)])
+            holder = row
+        if correct is None:
+            holder.attention = None
+            return
+        codes = list(dict.fromkeys(skip.code_text(c) for c in correct))
+        if not codes:
+            raise DesignError([_("Donnez au moins une bonne réponse.")])
+        known = skip.choices(question)
+        wrong = [
+            _("{value} n'est pas un choix de {target}.").format(value=c, target=item)
+            for c in codes
+            if c not in known
+        ]
+        if wrong:
+            raise DesignError(wrong)
+        holder.attention = codes
+
+    return _change(project, change)
+
+
 def citations(project: Project, question_id: str) -> list[str]:
     """What, beyond the questionnaire, holds a decision on the question's variables: what the
     page says before removing it."""
@@ -470,6 +578,9 @@ def citations(project: Project, question_id: str) -> list[str]:
             found.append(
                 _("le groupe {id} a une cotation ou un nom d'instrument").format(id=group.group_id)
             )
+    if project.questionnaire is not None:  # v0.21: the conditions left without their target
+        for owner in skip.citing(project.questionnaire, question_id):
+            found.append(_("la condition de {id} vise cette question").format(id=owner))
     return found
 
 
@@ -745,10 +856,54 @@ def plan_variables(project: Project) -> Changes:
     # Not cited elsewhere: a name decided for a variable now gone is let go with it.
     project.variables = kept
     _rename_in_groups(project, changes.renamed)
+    _plan_conditions(project)
     _plan_groups(project)
     measure.propose(project)
     naming.propose(project)  # after the groups: a grid's names take its prefix
     return changes
+
+
+def _on_variables(
+    conditions: list[Condition], entries: dict[str | None, VariableEntry]
+) -> list[Condition] | None:
+    """The conditions on the names of the variables tested, a choice's code as the variable
+    holds it (1, not "1"). None when a target is gone: nothing is carried until the condition
+    is corrected, which the review says."""
+    found = []
+    for condition in conditions:
+        terms = []
+        for term in condition.terms:
+            entry = entries.get(term.target)
+            if entry is None:
+                return None
+            value = term.value
+            if entry.planned is not None and entry.planned.type == "integer":
+                value = [_integer(v) for v in value] if isinstance(value, list) else _integer(value)
+            terms.append(Term(target=entry.name, operator=term.operator, value=value))
+        found.append(Condition(combine=condition.combine, terms=terms))
+    return found
+
+
+def _integer(value):
+    text = skip.code_text(value) if value is not None else ""
+    return int(text) if text.lstrip("-").isdigit() else value
+
+
+def _plan_conditions(project: Project) -> None:
+    """Each planned variable carries its question's effective condition (D-168, "computed",
+    a fact like its question); one typed by a person or read in a file stays."""
+    found = questionnaire(project)
+    questions = {q.question_id: q for q in found.questions}
+    entries = {e.question.value: e for e in project.variables}
+    for entry in project.variables:
+        if entry.asked_if is not None and entry.asked_if.origin != "computed":
+            continue
+        question = questions.get(_question_of(entry) or "")
+        conditions = skip.effective(found, question) if question else []
+        carried = _on_variables(conditions, entries) if conditions else None
+        entry.asked_if = (
+            TrackedValue[list[Condition]](value=carried, origin="computed") if carried else None
+        )
 
 
 def _plan_groups(project: Project) -> None:
@@ -758,9 +913,11 @@ def _plan_groups(project: Project) -> None:
     groups = {g.question: g for g in project.groups if g.question is not None}
     found = [g for g in project.groups if g.question is None]
     for question in questionnaire(project).questions:
-        if question.kind == "grid":
-            members = [names[r.row_id] for r in question.rows if r.row_id in names]
-            kind, attached, part = "scale", [], GROUP_PARTS[0]
+        if question.kind == "grid":  # an attention check is attached, never a member
+            rows = [r for r in question.rows if r.row_id in names]
+            members = [names[r.row_id] for r in rows if not r.attention]
+            attached = [names[r.row_id] for r in rows if r.attention]
+            kind, part = "scale", GROUP_PARTS[0]
         elif question.kind == "checkbox":
             members = [
                 names[o.option_id] for o in question.options if not o.other and o.option_id in names

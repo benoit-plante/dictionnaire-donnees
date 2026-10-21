@@ -36,8 +36,14 @@ msgstr "; {n} grid items"
 msgid " et "
 msgstr " and "
 
+msgid " et si "
+msgstr " and if "
+
 msgid " ou "
 msgstr " or "
+
+msgid " ou si "
+msgstr " or if "
 
 #, python-brace-format
 msgid " écarts entre {score} et {existing}, déjà dans la base."
@@ -1168,8 +1174,16 @@ msgstr "These variables cannot be read as dates."
 msgid "Ces étiquettes n'attendent plus de décision dans ce groupe : {names}."
 msgstr "These labels no longer wait for a decision in this group: {names}."
 
+#, python-brace-format
+msgid "Cet opérateur ne convient pas à {target}."
+msgstr "This operator does not suit {target}."
+
 msgid "Cette condition demande une valeur."
 msgstr "This condition needs a value."
+
+#, python-brace-format
+msgid "Cette section s'adresse aux personnes {clauses}"
+msgstr "This section is for people {clauses}"
 
 msgid "Cette valeur n'attend plus de décision."
 msgstr "This value no longer waits for a decision."
@@ -2035,6 +2049,9 @@ msgstr "Give at least one answer choice."
 
 msgid "Donnez au moins un énoncé à la grille."
 msgstr "Give the grid at least one item."
+
+msgid "Donnez au moins une bonne réponse."
+msgstr "Give at least one right answer."
 
 msgid "Donnez la raison : elle figurera dans le codebook."
 msgstr "Give the reason: it will appear in the codebook."
@@ -5167,6 +5184,10 @@ msgid "Position"
 msgstr "Position"
 
 #, python-brace-format
+msgid "Posée si {condition}"
+msgstr "Asked if {condition}"
+
+#, python-brace-format
 msgid ""
 "Pour Anthropic : {model} par défaut, choisi d'après le banc (le moins coûteux), ou claude-"
 "sonnet-5-5."
@@ -6313,6 +6334,9 @@ msgstr "Cuts, increasing (a class goes from its cut included to the next one exc
 msgid "Seule une grille a des énoncés."
 msgstr "Only a grid has items."
 
+msgid "Seule une question à choix unique ou un énoncé de grille peut être un item de contrôle."
+msgstr "Only a single-choice question or a grid's statement can be an attention check."
+
 msgid "Seule une section sans question se retire."
 msgstr "Only a section without questions can be removed."
 
@@ -6371,6 +6395,11 @@ msgstr ""
 "Only their metadata is used: no statistics on their values, and nothing of them is sent to the "
 "model."
 
+msgid ""
+"Seuls les énoncés d'une grille, les choix d'une question et les options à cocher se présentent "
+"dans un ordre aléatoire."
+msgstr "Only a grid's statements, a question's choices and options to tick can be shown in random order."
+
 #, python-brace-format
 msgid ""
 "Si vous avez aussi l'export .sav de ce sondage, préférez-le : il garde les codes des réponses et "
@@ -6378,6 +6407,10 @@ msgid ""
 msgstr ""
 "If you also have the .sav export of this survey, prefer it: it keeps the answer codes and their "
 "labels, which the {format} export replaces with text."
+
+#, python-brace-format
+msgid "Si {clauses}"
+msgstr "If {clauses}"
 
 msgid "Sigle"
 msgstr "Acronym"
@@ -7029,6 +7062,9 @@ msgstr "A pair joins two different variables."
 
 msgid "Une passation plus courte que SECONDES ; exige --source."
 msgstr "An administration shorter than SECONDS; requires --source."
+
+msgid "Une question ne peut pas dépendre d'elle-même."
+msgstr "A question cannot depend on itself."
 
 msgid "Une question ouverte ou un texte d'affichage n'a pas de choix."
 msgstr "An open question or a displayed text has no choices."
@@ -7703,6 +7739,10 @@ msgid "donne le sens d'un sigle absent du glossaire"
 msgstr "gives the meaning of an acronym missing from the glossary"
 
 #, python-brace-format
+msgid "dont la réponse à la question {n} {answer}"
+msgstr "whose answer to question {n} {answer}"
+
+#, python-brace-format
 msgid "doublon sur {names}, la première réponse gardée"
 msgstr "duplicate on {names}, the first answer kept"
 
@@ -7737,6 +7777,26 @@ msgstr "recorded"
 
 msgid "entier"
 msgstr "integer"
+
+#, python-brace-format
+msgid "est inférieure à {value}"
+msgstr "is less than {value}"
+
+#, python-brace-format
+msgid "est supérieure à {value}"
+msgstr "is greater than {value}"
+
+#, python-brace-format
+msgid "est {value}"
+msgstr "is {value}"
+
+#, python-brace-format
+msgid "est {value} ou moins"
+msgstr "is {value} or less"
+
+#, python-brace-format
+msgid "est {value} ou plus"
+msgstr "is {value} or more"
 
 msgid "et"
 msgstr "and"
@@ -7897,6 +7957,10 @@ msgstr "the interaction between {x} and {w}"
 
 msgid "la Méthode (M)"
 msgstr "the Method (M)"
+
+#, python-brace-format
+msgid "la condition de {id} vise cette question"
+msgstr "the condition of {id} names this question"
 
 #, python-brace-format
 msgid "la corrélation entre {a} et {b}"
@@ -8104,6 +8168,10 @@ msgstr "same value labels"
 #, python-brace-format
 msgid "n = {n}"
 msgstr "n = {n}"
+
+#, python-brace-format
+msgid "n'est pas {value}"
+msgstr "is not {value}"
 
 msgid "nature"
 msgstr "kind"
@@ -8348,6 +8416,22 @@ msgstr "questionnaire designed in the tool"
 
 msgid "questions de recherche"
 msgstr "research questions"
+
+#, python-brace-format
+msgid "qui ont coché {option} à la question {n}"
+msgstr "who ticked {option} in question {n}"
+
+#, python-brace-format
+msgid "qui ont répondu autre chose que {said} {where}"
+msgstr "who answered something other than {said} {where}"
+
+#, python-brace-format
+msgid "qui ont répondu {said} {where}"
+msgstr "who answered {said} {where}"
+
+#, python-brace-format
+msgid "qui ont répondu {where}"
+msgstr "who gave an answer {where}"
 
 msgid "r partiel"
 msgstr "partial r"
@@ -8780,6 +8864,26 @@ msgstr "variant of {id}: {detail}"
 msgid "vide"
 msgstr "empty"
 
+#, python-brace-format
+msgid "votre réponse à la question {n} {answer}"
+msgstr "your answer to question {n} {answer}"
+
+#, python-brace-format
+msgid "vous avez coché {option} à la question {n}"
+msgstr "you ticked {option} in question {n}"
+
+#, python-brace-format
+msgid "vous avez répondu autre chose que {said} {where}"
+msgstr "you answered something other than {said} {where}"
+
+#, python-brace-format
+msgid "vous avez répondu {said} {where}"
+msgstr "you answered {said} {where}"
+
+#, python-brace-format
+msgid "vous avez répondu {where}"
+msgstr "you gave an answer {where}"
+
 msgid "vraie valeur"
 msgstr "real value"
 
@@ -8910,6 +9014,10 @@ msgstr "{endpoint} did not answer in time."
 #, python-brace-format
 msgid "{field} : choix non permis."
 msgstr "{field}: choice not allowed."
+
+#, python-brace-format
+msgid "{first} ou {last}"
+msgstr "{first} or {last}"
 
 #, python-brace-format
 msgid "{group} ({k} items)"
@@ -9662,6 +9770,26 @@ msgid "{start} et {end} ne se lisent pas comme des dates."
 msgstr "{start} and {end} cannot be read as dates."
 
 #, python-brace-format
+msgid "{subject} : {option} coché"
+msgstr "{subject}: {option} ticked"
+
+#, python-brace-format
+msgid "{subject} a une réponse"
+msgstr "{subject} has an answer"
+
+#, python-brace-format
+msgid "{target} attend un nombre."
+msgstr "{target} expects a number."
+
+#, python-brace-format
+msgid ""
+"{target} ne peut pas servir de condition : visez une question à choix, un énoncé de grille, une "
+"option à cocher, un nombre ou un texte."
+msgstr ""
+"{target} cannot be used in a condition: name a choice question, a grid's statement, an option to "
+"tick, a number or a text."
+
+#, python-brace-format
 msgid ""
 "{title} : arrêté. Les blocs terminés sont enregistrés ; relancez pour continuer là où le travail "
 "s'est arrêté."
@@ -9698,6 +9826,10 @@ msgstr "{value} ({label}, {n} people)"
 #, python-brace-format
 msgid "{value} ({n} personnes)"
 msgstr "{value} ({n} people)"
+
+#, python-brace-format
+msgid "{value} n'est pas un choix de {target}."
+msgstr "{value} is not a choice of {target}."
 
 #, python-brace-format
 msgid "{what} manquant"
@@ -9798,6 +9930,10 @@ msgstr "“{name}” is no longer followed; its file is not touched."
 #, python-brace-format
 msgid "« {note} »"
 msgstr "“{note}”"
+
+#, python-brace-format
+msgid "« {text} »"
+msgstr "“{text}”"
 
 #, python-brace-format
 msgid "« {token} » lu comme vide ({n})"
@@ -9996,6 +10132,10 @@ msgstr "Elements decided by the team, out of those that apply."
 msgid "Énoncé"
 msgstr "Item"
 
+#, python-brace-format
+msgid "Énoncé inconnu : {id}."
+msgstr "Unknown statement: {id}."
+
 msgid "Énoncés de la grille (code, texte)"
 msgstr "Items of the grid (code, text)"
 
@@ -10081,6 +10221,14 @@ msgstr "to decide"
 
 msgid "à jour"
 msgstr "up to date"
+
+#, python-brace-format
+msgid "à l'énoncé {row} de la question {n}"
+msgstr "to the statement {row} of question {n}"
+
+#, python-brace-format
+msgid "à la question {n}"
+msgstr "to question {n}"
 
 msgid "à nommer"
 msgstr "to name"

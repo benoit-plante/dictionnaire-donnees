@@ -323,10 +323,11 @@ class VariableEntry(Strict):
     planned: Planned | None = None
     # Left out of the codebook by the team (v0.20.2, D-158); `ddict.project.aside`.
     set_aside: SetAside | None = None
-    # When it is asked (v0.21, D-168), on variables by their original names: typed by a
-    # person ("human"), computed from the designed questionnaire ("computed"), or read in a
-    # LimeSurvey file ("questionnaire", proposed until a person accepts it).
-    asked_if: TrackedValue[Condition] | None = None
+    # When it is asked (v0.21, D-168), on variables by their original names: conditions that
+    # must all hold (a section's, then its question's); typed by a person ("human"), computed
+    # from the designed questionnaire ("computed"), or read in a LimeSurvey file
+    # ("questionnaire", proposed until a person accepts it).
+    asked_if: TrackedValue[list[Condition]] | None = None
 
     @model_validator(mode="after")
     def _known(self) -> VariableEntry:

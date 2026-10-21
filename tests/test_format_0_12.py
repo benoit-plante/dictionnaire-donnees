@@ -91,8 +91,8 @@ def test_a_full_0_12_0_project_saves_byte_for_byte(tmp_path):
     q2.condition = Condition(terms=[Term(target=q1.question_id, operator="eq", value="1")])
     project.questionnaire.sections[1].shuffle = True
     project.settings.blank_codes = BlankCodes(not_applicable=-8, missing=-9)
-    project.variables[0].asked_if = TrackedValue[Condition](
-        value=Condition(combine="any", terms=[Term(target="x", operator="answered")]),
+    project.variables[0].asked_if = TrackedValue[list[Condition]](
+        value=[Condition(combine="any", terms=[Term(target="x", operator="answered")])],
         origin="human",
     )
     project.exclusions.rules.append(
@@ -167,11 +167,11 @@ def test_a_variable_condition_counts_once_accepted():
     before = fingerprint.fingerprint(project)
     entry = project.variables[3]
     condition = Condition(terms=[Term(target=project.variables[2].name, operator="answered")])
-    entry.asked_if = TrackedValue[Condition](
-        value=condition, origin="questionnaire", status="proposed"
+    entry.asked_if = TrackedValue[list[Condition]](
+        value=[condition], origin="questionnaire", status="proposed"
     )
     assert fingerprint.fingerprint(project) == before  # read in a .lss, waiting
-    entry.asked_if = TrackedValue[Condition](value=condition, origin="human")
+    entry.asked_if = TrackedValue[list[Condition]](value=[condition], origin="human")
     typed = fingerprint.fingerprint(project)
     assert typed != before
     entry.asked_if = None
