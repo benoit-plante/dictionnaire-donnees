@@ -1752,19 +1752,14 @@ msgid "Condition"
 msgstr "Condition"
 
 #, python-brace-format
-msgid ""
-"Condition en boucle : la question dépend d'elle-même, par sa section ou par une autre question "
-"({targets}) ; elle ne serait jamais posée."
-msgstr ""
-"Condition in a loop: the question depends on itself, through its section or another question "
-"({targets}); it would never be asked."
-
-#, python-brace-format
 msgid "Condition enregistrée pour : {names}."
 msgstr "Condition saved for: {names}."
 
 msgid "Condition jamais vraie : la question ne serait jamais posée."
 msgstr "Condition never true: the question would never be asked."
+
+msgid "Condition jamais vraie : la section ne serait jamais posée."
+msgstr "Condition never true: the section would never be asked."
 
 #, python-brace-format
 msgid "Condition non remplie : {reason}"
@@ -2088,6 +2083,14 @@ msgstr ""
 "Analyses written and checked in advance, computed in the tool on your database, with the accepted"
 " decisions: missing codes removed, new names, reversed items, scores. Your file is never changed,"
 " and nothing is sent outside your computer."
+
+#, python-brace-format
+msgid ""
+"Des conditions visent des questions facultatives ({targets}) : une réponse laissée vide les rend "
+"fausses. C'est peut-être voulu."
+msgstr ""
+"Conditions name optional questions ({targets}): an answer left empty makes them false. This may "
+"be intended."
 
 msgid ""
 "Des items de contrôle et leurs bonnes réponses, p. ex. « climat_SQ007=4 controle=1 » ; avec "
@@ -3457,19 +3460,11 @@ msgstr "The condition names what has been removed since ({targets}): correct it.
 
 #, python-brace-format
 msgid ""
-"La condition vise une question facultative ({targets}) : une réponse laissée vide la rend fausse."
-" C'est peut-être voulu."
+"La condition vise une question qui vient après ({targets}) : elle n'a pas encore de réponse à ce "
+"moment ; {then}."
 msgstr ""
-"The condition names an optional question ({targets}): an answer left empty makes it false. This "
-"may be intended."
-
-#, python-brace-format
-msgid ""
-"La condition vise une question qui vient après ({targets}) : elle n'a pas encore de réponse, la "
-"question ne serait jamais posée."
-msgstr ""
-"The condition names a question that comes later ({targets}): it has no answer yet, the question "
-"would never be asked."
+"The condition names a question that comes later ({targets}): it has no answer yet at that point; "
+"{then}."
 
 #, python-brace-format
 msgid "La copie n'a pas pu être écrite : {detail}. Rien n'a été gardé."
@@ -6124,9 +6119,9 @@ msgstr "Research questions"
 
 #, python-brace-format
 msgid ""
-"Questions en ordre aléatoire dans une section qui contient {what} : il se retrouverait à "
-"n'importe quelle place."
-msgstr "Questions in random order in a section that holds {what}: it would end up in any place."
+"Questions en ordre aléatoire dans une section qui contient {what} : l'ordre aléatoire ne "
+"garderait pas {place}."
+msgstr "Questions in random order in a section that holds {what}: the random order would not keep {place}."
 
 msgid "Questions filtrées"
 msgstr "Filtered questions"
@@ -7565,6 +7560,14 @@ msgstr ""
 msgid "Une condition vise ce qui a été retiré : {target}."
 msgstr "A condition names what has been removed: {target}."
 
+#, python-brace-format
+msgid ""
+"Une condition vise une question facultative ({targets}) : une réponse laissée vide la rend "
+"fausse. C'est peut-être voulu."
+msgstr ""
+"A condition names an optional question ({targets}): an answer left empty makes it false. This may"
+" be intended."
+
 msgid "Une corrélation"
 msgstr "A correlation"
 
@@ -8234,6 +8237,9 @@ msgstr "what group {group} measures"
 msgid "ce qui sera fait si les conditions ne sont pas remplies"
 msgstr "what will be done if assumptions are violated"
 
+msgid "cette partie de la condition serait toujours fausse"
+msgstr "this part of the condition would always be false"
+
 msgid "changée, à confirmer"
 msgstr "changed, to confirm"
 
@@ -8638,9 +8644,15 @@ msgstr "the difference between the two measures"
 msgid "la provenance des textes tirés d'une source (questions : {n})"
 msgstr "the provenance of the texts taken from a source (questions: {n})"
 
+msgid "la question ne serait jamais posée"
+msgstr "the question would never be asked"
+
 #, python-brace-format
 msgid "la règle d'exclusion {id}"
 msgstr "exclusion rule {id}"
+
+msgid "la section ne serait jamais posée"
+msgstr "the section would never be asked"
 
 msgid "la structure"
 msgstr "the structure"
@@ -8698,6 +8710,9 @@ msgstr "the reversed items"
 
 msgid "les règles générales"
 msgstr "the general rules"
+
+msgid "leur place"
+msgstr "their place"
 
 msgid "libellés"
 msgstr "labels"
@@ -9202,6 +9217,9 @@ msgstr "succeeded"
 msgid "s'écarte du choix sûr du calcul : comparez avec la première question de la liste"
 msgstr "departs from the computation's sure choice: compare with the first question of the list"
 
+msgid "sa place"
+msgstr "its place"
+
 msgid "sans origine"
 msgstr "no origin"
 
@@ -9219,6 +9237,10 @@ msgstr "secondary"
 #, python-brace-format
 msgid "section {n}"
 msgstr "section {n}"
+
+#, python-brace-format
+msgid "section « {title} »"
+msgstr "section “{title}”"
 
 msgid "sens attendu modifié"
 msgstr "expected direction changed"

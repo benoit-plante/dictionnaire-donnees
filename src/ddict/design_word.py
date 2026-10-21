@@ -363,10 +363,8 @@ def _points(document, project: Project, tool: str) -> None:
         if not found:
             _plain(document, _("Aucun point de relecture."))
             return
-        number = {n.question.question_id: n.number for _s, q in numbered(project) for n in q}
         for point in found:
-            where = number.get(point.question)
-            label = _("question {n}").format(n=where) if where else point.question
+            label = design_points.where(project, point)
             kept = " " + _("(gardé tel quel)") if design_points.is_kept(project, point) else ""
             _plain(document, f"• {label} : {point.text}{kept}")
 

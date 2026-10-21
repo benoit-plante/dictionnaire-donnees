@@ -246,9 +246,8 @@ def test_an_attention_check_set_and_removed():
     design.set_attention(project, "Q7.r2", [4, "4"])
     grid = design.find(project, "Q7")
     assert grid.rows[1].attention == ["4"]
-    group = next(g for g in project.groups if g.question == "Q7")
-    assert group.members.value == ["climat_SQ001"]  # it enters no score
-    assert group.attached == ["climat_SQ002"]
+    # It enters no score: the grid is left with one item, which makes no group.
+    assert not any(g.question == "Q7" for g in project.groups)
     design.set_attention(project, "Q5", ["1", "2"])
     assert design.find(project, "Q5").attention == ["1", "2"]
     design.set_attention(project, "Q7.r2", None)

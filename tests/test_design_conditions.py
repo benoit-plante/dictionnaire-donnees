@@ -80,14 +80,47 @@ def test_a_condition_on_a_question_that_comes_after():
     design.set_condition(project, "Q2", when(term("Q3", "eq", "1")))
     point = next(p for p in design_points.points(project) if p.code == "condition_forward")
     assert point.question == "Q2"
-    assert "question 3" in point.text
+    with i18n.using("fr"):
+        assert "question 3" in point.text
+        assert point.text.endswith("la question ne serait jamais posée.")
+    assert "condition_never" not in codes(project, "Q2")  # said once, by the term
 
 
-def test_a_section_filtered_on_its_own_question_is_a_cycle():
+def test_a_section_filtered_on_its_own_question_is_never_asked():
+    """No more "loop": the section's term names a question not yet answered when the
+    section begins. Its questions, never asked with it, are not each a point."""
     project = famille()
-    design.set_condition(project, "S1", when(term("Q3", "eq", "1")))
-    assert "condition_cycle" in codes(project, "Q3")
-    assert "condition_forward" not in codes(project, "S1")
+    design.set_condition(project, "S2", when(term("Q9", "answered")))
+    point = next(p for p in design_points.points(project) if p.code == "condition_forward")
+    assert point.question == "S2"
+    with i18n.using("fr"):
+        assert point.text.endswith("la section ne serait jamais posée.")
+    assert not [p for p in design_points.points(project) if p.code == "condition_never"]
+
+
+def test_an_or_that_can_still_hold_is_no_never():
+    """The trial of the Word (step 5): the section asked if "Vélo" is ticked (a question of
+    the section itself) or if "Homme"; question 10, of the section, asked if question 4 has
+    an answer. A man is asked the section, and question 10: only the term is always false."""
+    project = famille()
+    design.set_condition(
+        project, "S2", when(term("Q10.o2", "checked"), term("Q1", "eq", "2"), combine="any")
+    )
+    design.set_condition(project, "Q10", when(term("Q4", "answered")))
+    point = next(p for p in design_points.points(project) if p.code == "condition_forward")
+    assert point.question == "S2"
+    with i18n.using("fr"):
+        assert "(question 10)" in point.text
+        assert point.text.endswith("cette partie de la condition serait toujours fausse.")
+    assert not {"condition_never", "section_never"} & set(codes(project))
+    assert codes(project, "Q10") == []
+
+
+def test_a_section_never_true_without_a_term_ahead():
+    project = famille()
+    design.set_condition(project, "S2", when(term("Q2", "ge", 18), term("Q2", "lt", 18)))
+    assert "section_never" in codes(project, "S2")
+    assert "condition_never" not in codes(project)
 
 
 def test_a_target_removed_since():
@@ -149,14 +182,33 @@ def test_a_question_under_one_never_asked_is_never_asked():
 
 
 def test_a_condition_on_an_optional_question():
+    """Said once for the questionnaire, on the first optional target, where it is settled."""
     project = famille()
     design.set_condition(project, "Q4", when(term("Q3", "eq", "1")))
-    assert "condition_optional" in codes(project, "Q4")
+    assert codes(project, "Q3") == ["condition_optional"]
+    assert "condition_optional" not in codes(project, "Q4")
+    design.set_condition(project, "Q6", when(term("Q5", "eq", "1")))
+    design.set_condition(project, "Q9", when(term("Q2", "ge", 18)))
+    found = [p for p in design_points.points(project) if "optional" in p.code]
+    assert [(p.code, p.question) for p in found] == [("conditions_optional", "Q2")]
+    with i18n.using("fr"):
+        assert found[0].text.startswith("Des conditions visent des questions facultatives "
+                                         "(questions 2, 3, 5) : ")  # fmt: skip
     question = design.find(project, "Q3")
     options = tuple(Item(o.text, o.code, item_id=o.option_id) for o in question.options)
     draft = Draft(kind="single", text=question.text, section="S1", required=True, options=options)
     design.modify_question(project, "Q3", draft)
-    assert "condition_optional" not in codes(project, "Q4")
+    found = [p for p in design_points.points(project) if "optional" in p.code]
+    with i18n.using("fr"):
+        assert "(questions 2, 5)" in found[0].text
+
+
+def test_a_point_on_a_section_says_its_title():
+    project = famille()
+    design.set_condition(project, "S2", when(term("Q3", "eq", "1")))
+    point = next(p for p in design_points.points(project) if p.code == "section_without_display")
+    with i18n.using("fr"):
+        assert design_points.where(project, point) == "section « Votre quartier »"
 
 
 def test_a_filtered_section_without_a_displayed_text():
@@ -174,10 +226,25 @@ def test_random_order_of_a_section_that_holds_what_has_a_place():
     design.set_condition(project, "Q9", when(term("Q8", "answered")))
     point = next(p for p in design_points.points(project) if p.code == "shuffle_section_mixed")
     assert point.question == "S2" and "condition" in point.detail["what"]
+    with i18n.using("fr"):
+        assert point.text.endswith("l'ordre aléatoire ne garderait pas sa place.")
     design.set_attention(project, "Q7.r2", ["4"])
     design.add_question(project, Draft(kind="display", text="Merci.", section="S2"))
     point = next(p for p in design_points.points(project) if p.code == "shuffle_section_mixed")
-    assert point.detail["what"].count(",") == 2  # the three
+    with i18n.using("fr"):
+        assert point.detail["what"].count(",") == 1 and " et une question" in point.text
+        assert point.text.endswith("l'ordre aléatoire ne garderait pas leur place.")
+
+
+def test_a_grid_left_with_one_item_is_no_group():
+    """Its other statement an attention check: no group of one item ("1 items")."""
+    project = famille()
+    assert any(g.question == "Q7" for g in project.groups)
+    design.set_attention(project, "Q7.r2", ["4"])
+    assert not any(g.question == "Q7" for g in project.groups)
+    assert all(e.group_id.value is None for e in project.variables if e.name.startswith("climat"))
+    design.set_attention(project, "Q7.r2", None)
+    assert any(g.question == "Q7" for g in project.groups)
 
 
 def test_random_order_of_choices_with_a_refusal():

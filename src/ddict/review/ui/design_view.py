@@ -988,7 +988,7 @@ def review_page(project: Project) -> None:
     if closed:
         with st.expander(_("Points gardés tels quels ({n})").format(n=len(closed))):
             for point in closed:
-                st.write(f"{numbers.get(point.question, '?')}. {point.text}")
+                st.write(f"{design_points.where(project, point).capitalize()} : {point.text}")
 
 
 def _duration(project: Project) -> None:

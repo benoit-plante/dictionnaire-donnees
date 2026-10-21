@@ -928,6 +928,8 @@ def _plan_groups(project: Project) -> None:
             kind, part = "multiple_response", GROUP_PARTS[1]
         else:
             continue
+        if len(members) < 2:  # one item (its other statements attention checks): no group
+            continue
         group = groups.get(question.question_id)
         if group is None:
             group = Group(

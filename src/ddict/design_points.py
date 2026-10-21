@@ -54,11 +54,7 @@ TEXTS = Texts(
         # v0.21 (§ 5.5 of the plan): conditions, random order, attention checks.
         "condition_forward": N_(
             "La condition vise une question qui vient après ({targets}) : elle n'a pas encore "
-            "de réponse, la question ne serait jamais posée."
-        ),
-        "condition_cycle": N_(
-            "Condition en boucle : la question dépend d'elle-même, par sa section ou par une "
-            "autre question ({targets}) ; elle ne serait jamais posée."
+            "de réponse à ce moment ; {then}."
         ),
         "condition_target_gone": N_(
             "La condition vise ce qui a été retiré depuis ({targets}) : corrigez-la."
@@ -68,17 +64,22 @@ TEXTS = Texts(
             "jamais vraie."
         ),
         "condition_never": N_("Condition jamais vraie : la question ne serait jamais posée."),
+        "section_never": N_("Condition jamais vraie : la section ne serait jamais posée."),
         "condition_optional": N_(
-            "La condition vise une question facultative ({targets}) : une réponse laissée vide "
+            "Une condition vise une question facultative ({targets}) : une réponse laissée vide "
             "la rend fausse. C'est peut-être voulu."
+        ),
+        "conditions_optional": N_(
+            "Des conditions visent des questions facultatives ({targets}) : une réponse laissée "
+            "vide les rend fausses. C'est peut-être voulu."
         ),
         "section_without_display": N_(
             "Section filtrée sans texte d'affichage : un texte qui dit à qui elle s'adresse "
             "aide la personne à suivre."
         ),
         "shuffle_section_mixed": N_(
-            "Questions en ordre aléatoire dans une section qui contient {what} : il se "
-            "retrouverait à n'importe quelle place."
+            "Questions en ordre aléatoire dans une section qui contient {what} : l'ordre "
+            "aléatoire ne garderait pas {place}."
         ),
         "shuffle_refusal": N_(
             "Choix en ordre aléatoire avec un choix de non-réponse ({choice}) : il serait mêlé "
@@ -100,6 +101,11 @@ WHAT = Texts(
         "filter": N_("une question qui sert de condition à une autre de la section"),
         "optional": N_("facultatif"),
         "conditioned": N_("sous une condition"),
+        "its_place": N_("sa place"),
+        "their_place": N_("leur place"),
+        "never_question": N_("la question ne serait jamais posée"),
+        "never_section": N_("la section ne serait jamais posée"),
+        "term_false": N_("cette partie de la condition serait toujours fausse"),
     }
 )
 # A range written in a choice: "18-25", "18 à 25", "de 18 à 25 ans", "18–25".
@@ -279,28 +285,31 @@ def _depends(found: Questionnaire, question: Question) -> set[str]:
     }  # fmt: skip
 
 
-def _in_cycle(found: Questionnaire, question: Question) -> bool:
-    by_id = {q.question_id: q for q in found.questions}
-    seen: set[str] = set()
-    waiting = list(_depends(found, question))
-    while waiting:
-        current = waiting.pop()
-        if current == question.question_id:
-            return True
-        if current in seen or current not in by_id:
-            continue
-        seen.add(current)
-        waiting += _depends(found, by_id[current])
-    return False
+def _ahead(found: Questionnaire):
+    """A function: whether a section's or a question's condition names a question not yet
+    answered when it is read: the question itself or one after it, or for a section one of
+    its own questions or after them. Such a term is always false; a condition "in a loop"
+    always holds one."""
+    order = {q.question_id: n for n, q in enumerate(found.questions)}
+    first: dict[str, int] = {}
+    for question in found.questions:
+        first.setdefault(question.section or "", order[question.question_id])
+
+    def ahead(owner: str, target: Question) -> bool:
+        if owner in order:
+            return order[target.question_id] >= order[owner]
+        return order[target.question_id] >= first.get(owner, len(order))
+
+    return ahead
 
 
-def _term_never(found: Questionnaire, term: Term, asked) -> bool:
-    """A term that cannot hold whatever the answers: on a question never asked, or on codes
-    none of which is a choice."""
+def _term_never(found: Questionnaire, owner: str, term: Term, asked, ahead) -> bool:
+    """A term that cannot hold whatever the answers: on a question not yet answered or never
+    asked, or on codes none of which is a choice."""
     target = skip.target_of(found, term.target)
     if target is None:
         return False  # gone: its own point
-    if not asked(target.question):
+    if ahead(owner, target.question) or not asked(target.question):
         return True
     if target.nature == "choice" and term.operator in ("eq", "in"):
         codes = skip.choices(target.question)
@@ -357,33 +366,53 @@ def _all_never(found: Questionnaire, condition: Condition) -> bool:
     return False
 
 
-def _never_asked(found: Questionnaire):
-    """A function: whether a question can never be asked (its effective condition never
-    holds), the questions it depends on looked at first; a cycle is its own point."""
-    memo: dict[str, bool] = {}
+def _never(found: Questionnaire, owner: str, condition: Condition, asked, ahead) -> bool:
+    each = [_term_never(found, owner, t, asked, ahead) for t in condition.terms]
+    if condition.combine == "all":
+        return any(each) or _all_never(found, condition)
+    return all(each)
 
-    def asked(question: Question) -> bool:
+
+class _Asked:
+    """Whether a section or a question can ever be asked (its condition, and its section's,
+    can hold), the questions it depends on looked at first. A term on a question not yet
+    answered is false without looking further, so there is no loop to follow."""
+
+    def __init__(self, found: Questionnaire) -> None:
+        self.found = found
+        self.ahead = _ahead(found)
+        self.sections = {s.section_id: s for s in found.sections}
+        self.memo: dict[str, bool] = {}
+
+    def section(self, section_id: str) -> bool:
+        section = self.sections.get(section_id)
+        if section is None or section.condition is None:
+            return True
+        if section_id not in self.memo:
+            self.memo[section_id] = True  # while looking
+            never = _never(self.found, section_id, section.condition, self, self.ahead)
+            self.memo[section_id] = not never
+        return self.memo[section_id]
+
+    def __call__(self, question: Question) -> bool:
         key = question.question_id
-        if key in memo:
-            return memo[key]
-        memo[key] = True  # while looking: a cycle does not make it "never"
-        never = False
-        for condition in skip.effective(found, question):
-            each = [_term_never(found, t, asked) for t in condition.terms]
-            if (condition.combine == "all" and (any(each) or _all_never(found, condition))) or (
-                condition.combine == "any" and all(each)
-            ):
-                never = True
-        memo[key] = not never
-        return memo[key]
-
-    return asked
+        if key not in self.memo:
+            self.memo[key] = True  # while looking
+            never = not self.section(question.section or "")
+            if not never and question.condition is not None:
+                never = _never(self.found, key, question.condition, self, self.ahead)
+            self.memo[key] = not never
+        return self.memo[key]
 
 
-def _condition_points(found: Questionnaire, owner: str, condition: Condition, rank, place):
-    """The points of one section's or question's own condition."""
+def _condition_points(
+    found: Questionnaire, owner: str, condition: Condition, asked: _Asked, never: bool
+) -> list[Point]:
+    """The points of one section's or question's own condition. `never`: it is never asked,
+    said with its terms on a question not yet answered when it has some, else in a point of
+    its own. The optional targets are said once for the questionnaire (`_optional`)."""
     found_points = []
-    gone, values, later, optional = [], [], [], []
+    gone, values, later = [], [], []
     for term in condition.terms:
         target = skip.target_of(found, term.target)
         if target is None:
@@ -394,38 +423,47 @@ def _condition_points(found: Questionnaire, owner: str, condition: Condition, ra
             values += [
                 skip.code_text(v) for v in skip.values_of(term) if skip.code_text(v) not in codes
             ]
-        if rank(target.question) >= place:
+        if asked.ahead(owner, target.question):
             later.append(term.target)
-        if not target.question.required:
-            optional.append(term.target)
+    section = owner in asked.sections
     if gone:
         found_points.append(Point("condition_target_gone", owner, {"targets": ", ".join(gone)}))
     if values:
         found_points.append(Point("condition_value_gone", owner, {"values": ", ".join(values)}))
     if later:
-        found_points.append(Point("condition_forward", owner, {"targets": _said(found, later)}))
-    if optional:
-        found_points.append(Point("condition_optional", owner, {"targets": _said(found, optional)}))
+        then = "term_false"
+        if never:
+            then = "never_section" if section else "never_question"
+        detail = {"targets": _said(found, later), "then": _(WHAT[then])}
+        found_points.append(Point("condition_forward", owner, detail))
+    elif never:
+        found_points.append(Point("section_never" if section else "condition_never", owner, {}))
     return found_points
+
+
+def _optional(found: Questionnaire) -> list[Point]:
+    """The optional questions that conditions name, in one point on the first of them, where
+    it is settled: made required, or kept as is."""
+    conditions = [s.condition for s in found.sections] + [q.condition for q in found.questions]
+    named = {t.target.partition(".")[0] for c in conditions if c is not None for t in c.terms}
+    optional = [q.question_id for q in found.questions if q.question_id in named
+                and not q.required]  # fmt: skip
+    if not optional:
+        return []
+    code = "condition_optional" if len(optional) == 1 else "conditions_optional"
+    return [Point(code, optional[0], {"targets": _said(found, optional)})]
 
 
 def _conditions(project: Project) -> list[Point]:
     found = design.questionnaire(project)
-    order = {q.question_id: n for n, q in enumerate(found.questions)}
-    section_rank = {s.section_id: n for n, s in enumerate(found.sections)}
-    asked = _never_asked(found)
+    asked = _Asked(found)
     points_found: list[Point] = []
     for section in found.sections:
         mine = [q for q in found.questions if q.section == section.section_id]
         if section.condition is not None:
-            # Later: in a section after it; a target in the section itself is a cycle, said on
-            # its questions.
+            never = not asked.section(section.section_id)
             points_found += _condition_points(
-                found,
-                section.section_id,
-                section.condition,
-                lambda q: section_rank.get(q.section or "", 0),
-                section_rank[section.section_id] + 1,
+                found, section.section_id, section.condition, asked, never
             )
             if not any(q.kind == "display" for q in mine):
                 points_found.append(Point("section_without_display", section.section_id, {}))
@@ -439,21 +477,16 @@ def _conditions(project: Project) -> list[Point]:
             if any(_depends(found, q) & (ids - {q.question_id}) for q in mine):
                 what.append(_(WHAT["filter"]))
             if what:
-                points_found.append(
-                    Point("shuffle_section_mixed", section.section_id, {"what": ", ".join(what)})
-                )
+                listed = ", ".join(what[:-1]) + _(" et ") + what[-1] if len(what) > 1 else what[0]
+                place = _(WHAT["their_place" if len(what) > 1 else "its_place"])
+                detail = {"what": listed, "place": place}
+                points_found.append(Point("shuffle_section_mixed", section.section_id, detail))
     for question in found.questions:
         qid = question.question_id
+        # In a section never asked, a question is never asked either: said once, on it.
+        never = asked.section(question.section or "") and not asked(question)
         if question.condition is not None:
-            points_found += _condition_points(
-                found, qid, question.condition, lambda q: order[q.question_id], order[qid]
-            )
-        if _in_cycle(found, question):
-            points_found.append(
-                Point("condition_cycle", qid, {"targets": _said(found, _depends(found, question))})
-            )
-        elif skip.effective(found, question) and not asked(question):
-            points_found.append(Point("condition_never", qid, {}))
+            points_found += _condition_points(found, qid, question.condition, asked, never)
         if question.shuffle and question.kind == "single":
             refusal = [o.text for o in question.options if is_missing_label(o.text)]
             if refusal:
@@ -472,7 +505,7 @@ def _conditions(project: Project) -> list[Point]:
             wrong = sorted({c for check in checks for c in check if c not in codes})
             if wrong:
                 points_found.append(Point("attention_gone", qid, {"codes": ", ".join(wrong)}))
-    return points_found
+    return points_found + _optional(found)
 
 
 def points(project: Project, *, kept: bool = False) -> list[Point]:
@@ -548,6 +581,16 @@ def keep(project: Project, point: Point, now: str) -> None:
         KeptPoint(code=point.code, target=point.question, fingerprint=stamp, date=now[:10])
     )  # fmt: skip
     project.design.kept = others
+
+
+def where(project: Project, point: Point) -> str:
+    """Where a point is, as a person reads it: « question 7 », « section « Votre quartier » »."""
+    found = design.questionnaire(project)
+    for section in found.sections:
+        if section.section_id == point.question:
+            return _("section « {title} »").format(title=section.title or section.section_id)
+    number = skip.numbers(found).get(point.question)
+    return _("question {n}").format(n=number) if number else point.question
 
 
 def by_question(project: Project) -> dict[str, list[Point]]:

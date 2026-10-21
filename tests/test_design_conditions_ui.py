@@ -201,7 +201,7 @@ def test_random_order_and_attention_checks_in_the_form(path):
     project = load_project(path)
     grid = design.find(project, "Q7")
     assert grid.shuffle and grid.rows[1].attention == ["4"]
-    assert next(g for g in project.groups if g.question == "Q7").attached == ["climat_SQ002"]
+    assert not any(g.question == "Q7" for g in project.groups)  # one item left: no group
     assert "Item de contrôle « est sûr. » : bonnes réponses 4." in [x.value for x in app.caption]
     _run(app, app.button(key="design-Q5-edit").click())
     _run(app, app.text_input(key="design-q-Q5-1-attention").set_value("1, 2"))
