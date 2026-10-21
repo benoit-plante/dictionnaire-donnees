@@ -268,9 +268,11 @@ def rule_text(rule: ExclusionRule) -> str:
         )
     if isinstance(rule, StraightliningRule):
         return _("tous les items de {group} à la même valeur").format(group=rule.group)
-    return _("doublon sur {names}, la première réponse gardée").format(
-        names=", ".join(rule.variables)
-    )
+    if isinstance(rule, DuplicateRule):
+        return _("doublon sur {names}, la première réponse gardée").format(
+            names=", ".join(rule.variables)
+        )
+    raise ValueError(f"exclusion rule not written yet: {rule.kind}")  # v0.21, step 10
 
 
 # How a person may write an operator: its code, its symbol, or a French word.

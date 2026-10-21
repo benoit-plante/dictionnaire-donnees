@@ -51,7 +51,7 @@ NEW_ITEM = ("code", "other", "provenance")
 
 
 def test_the_format_is_0_9_0():
-    assert SCHEMA_VERSION == "0.11.0"
+    assert SCHEMA_VERSION == "0.12.0"
 
 
 # --- A designed project, with no database ----------------------------------------------------
@@ -220,7 +220,7 @@ def test_a_project_of_v0_19_opens_as_it_is(sleep, tmp_path):
     path = tmp_path / "ancien.dd.json"
     path.write_text(_as_v019(sleep), encoding="utf-8", newline="\n")
     old = load_project(path)
-    assert old.schema_version == "0.11.0"
+    assert old.schema_version == "0.12.0"
     assert dumps(old) == dumps(sleep)  # nothing lost, nothing else changed
     assert fingerprint.fingerprint(old) == fingerprint.fingerprint(sleep)
     assert render_markdown(old) == render_markdown(sleep)

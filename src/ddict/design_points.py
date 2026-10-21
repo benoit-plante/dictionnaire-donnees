@@ -79,8 +79,9 @@ class Point:
 
 
 def fingerprint(question: Question) -> str:
-    """What a point looked at: the whole question, as the project holds it."""
-    text = json.dumps(question.model_dump(mode="json"), sort_keys=True, ensure_ascii=False)
+    """What a point looked at: the whole question, as the project holds it (the fields added
+    since 0.11.0 only when filled, D-172)."""
+    text = json.dumps(design.question_content(question), sort_keys=True, ensure_ascii=False)
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 

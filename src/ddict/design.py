@@ -129,12 +129,34 @@ def questionnaire(project: Project) -> Questionnaire:
     return found
 
 
+# The fields added since 0.11.0 (v0.21, D-172), with their empty value: what a fingerprint
+# leaves out while they are empty, so that a questionnaire without any keeps its fingerprint,
+# its publications and its kept review points.
+_SINCE_0_12 = {"condition": None, "shuffle": False, "attention": None}
+
+
+def _without_empty(data: dict) -> dict:
+    return {k: v for k, v in data.items() if k not in _SINCE_0_12 or v != _SINCE_0_12[k]}
+
+
+def section_content(section: Section) -> dict:
+    return _without_empty(section.model_dump(mode="json"))
+
+
+def question_content(question: Question) -> dict:
+    """A question as its fingerprints see it: whole, the fields added since 0.11.0 only when
+    filled (D-172)."""
+    data = _without_empty(question.model_dump(mode="json"))
+    data["rows"] = [_without_empty(row) for row in data["rows"]]
+    return data
+
+
 def content_fingerprint(found: Questionnaire) -> str:
     """The SHA-256 of what the questionnaire says (its sections and questions), whatever its
     name: what the codebook's fingerprint and a publication keep (D-150)."""
     data = {
-        "sections": [s.model_dump(mode="json") for s in found.sections],
-        "questions": [q.model_dump(mode="json") for q in found.questions],
+        "sections": [section_content(s) for s in found.sections],
+        "questions": [question_content(q) for q in found.questions],
     }
     text = json.dumps(data, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
     return hashlib.sha256(text.encode("utf-8")).hexdigest()

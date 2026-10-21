@@ -424,7 +424,7 @@ def _spss_exclusions(project: Project, scores: list[Score]) -> list[str]:
         elif isinstance(rule, StraightliningRule):
             items = ", ".join(_group_items(project, rule.group))
             conditions.append(f"NMISS({items}) = 0 AND MIN({items}) = MAX({items})")
-        else:  # DuplicateRule: the first answer of each key, in the order of the file
+        elif isinstance(rule, DuplicateRule):  # the first answer of each key, in file order
             keys = [final[n] for n in rule.variables]
             complete = " AND ".join(
                 f"RTRIM({n}) <> ''" if text else f"NOT MISSING({n})" for n, text in keys
@@ -440,6 +440,8 @@ def _spss_exclusions(project: Project, scores: list[Score]) -> list[str]:
                 "DELETE VARIABLES ddict_complet ddict_premier.",
             ]
             conditions.append(f"{flag} = 1")
+        else:  # the attention checks come with v0.21, step 10
+            raise ValueError(f"exclusion rule not written yet: {rule.kind}")
     lines.append("COMPUTE ddict_exclusion = 0.")
     for number, (rule, condition) in enumerate(zip(rules, conditions, strict=True), start=1):
         lines += [
@@ -639,7 +641,7 @@ def _r_exclusions(project: Project, scores: list[Score]) -> list[str]:
                 "rowSums(is.na(ddict_grille)) == 0 & "
                 "apply(ddict_grille, 1, function(r) all(r == r[1]))"
             )
-        else:  # DuplicateRule: the first answer of each key, in the order of the file
+        elif isinstance(rule, DuplicateRule):  # the first answer of each key, in file order
             keys = ", ".join(_r_values(*final[n]) for n in rule.variables)
             lines += [
                 f"ddict_cles <- data.frame({keys})",
@@ -649,6 +651,8 @@ def _r_exclusions(project: Project, scores: list[Score]) -> list[str]:
                 "duplicated(ddict_cles[ddict_complet, , drop = FALSE])",
             ]
             condition = "ddict_double"
+        else:  # the attention checks come with v0.21, step 10
+            raise ValueError(f"exclusion rule not written yet: {rule.kind}")
         lines += [
             f"# {_rule_label(rule)}",
             f"ddict_exclusion[ddict_exclusion == 0 & ({condition})] <- {number}L",

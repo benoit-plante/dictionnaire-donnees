@@ -101,7 +101,7 @@ def test_the_project_keeps_the_rule_never_the_column(base, tmp_path):
     path = tmp_path / "etude-suivi.dd.json"
     save_project(project, path)
     saved = json.loads(path.read_text(encoding="utf-8"))
-    assert saved["schema_version"] == "0.11.0"
+    assert saved["schema_version"] == "0.12.0"
     assert saved["recodes"]["next_id"] == 3
     assert saved["recodes"]["rules"][0] == {"id": "R1", **SEXE_2, "level": "nominal",
                                             "missing_values": []}  # fmt: skip

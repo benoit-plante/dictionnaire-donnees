@@ -68,13 +68,13 @@ def test_set_and_take_off(path):
 
 
 def test_written_after_the_version_and_read_again(path):
-    assert SCHEMA_VERSION == "0.11.0"
+    assert SCHEMA_VERSION == "0.12.0"
     project = load_project(path)
     set_title(project, WITNESS)
     save_project(project, path)
     data = json.loads(path.read_text(encoding="utf-8"))
     assert list(data)[:2] == ["schema_version", "title"]
-    assert data["title"] == WITNESS and data["schema_version"] == "0.11.0"
+    assert data["title"] == WITNESS and data["schema_version"] == "0.12.0"
     assert load_project(path).title == WITNESS
     assert sorted(p.name for p in path.parent.iterdir()) == [
         "etude-sommeil.dd.json", "etude-sommeil.sav", "questionnaire-sommeil.pdf"
@@ -87,7 +87,7 @@ def test_a_0_10_0_project_reads_as_it_is(path):
     del data["title"]
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     old = load_project(path)
-    assert old.title is None and old.schema_version == "0.11.0"
+    assert old.title is None and old.schema_version == "0.12.0"
 
 
 def test_a_0_11_0_project_is_newer_for_the_tool_before(path, monkeypatch):

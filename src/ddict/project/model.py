@@ -34,7 +34,11 @@ from pydantic import (
 # reason, not by default; a 0.9.0 file reads as it is.
 # 0.11.0 (v0.20.2, D-161): the project's title, given by a person, none by default; a
 # 0.10.0 file reads as it is, without one.
-SCHEMA_VERSION = "0.11.0"
+# 0.12.0 (v0.21, D-165 to D-172): the conditions of the questions and sections, their random
+# order, the attention checks, a variable's condition, the codes of the not applicable and
+# of the missing, the "attention" exclusion rule; all with a default, a 0.11.0 file reads as
+# it is.
+SCHEMA_VERSION = "0.12.0"
 
 Code = int | float | str
 # "questionnaire": computed from the questionnaire under a strict rule, and like an AI value
@@ -245,6 +249,42 @@ class SetAside(Strict):
     date: str
 
 
+# --- Skip logic (v0.21, D-165): when a question is asked. ---
+
+# A term's target is a question ("Q3"), a grid's statement ("Q7.r2") or a checkbox's option
+# ("Q10.o2"); in a variable's condition (D-168), a variable by its original name.
+TermOperator = Literal["eq", "ne", "in", "not_in", "lt", "le", "gt", "ge", "checked", "answered"]
+ONE_VALUE = ("eq", "ne", "lt", "le", "gt", "ge")
+NO_VALUE = ("checked", "answered")
+
+
+class Term(Strict):
+    """A target, an operator its nature admits, a value chosen among its answers (or a
+    number). A term on an empty answer, or on a question not asked, is false."""
+
+    target: NonEmptyText
+    operator: TermOperator
+    value: Code | list[Code] | None = None
+
+    @model_validator(mode="after")
+    def _values(self) -> Term:
+        if self.operator in NO_VALUE and self.value is not None:
+            raise ValueError(f"'{self.operator}' takes no value")
+        if self.operator in ("in", "not_in") and not (isinstance(self.value, list) and self.value):
+            raise ValueError(f"'{self.operator}' takes a list of values")
+        if self.operator in ONE_VALUE and (self.value is None or isinstance(self.value, list)):
+            raise ValueError(f"'{self.operator}' takes one value")
+        return self
+
+
+class Condition(Strict):
+    """Terms joined all by "and" or all by "or"; a section's and a question's are joined by
+    "and" (the effective condition)."""
+
+    combine: Literal["all", "any"] = "all"
+    terms: list[Term] = Field(min_length=1, max_length=10)
+
+
 class VariableEntry(Strict):
     name: str
     position: int
@@ -283,6 +323,10 @@ class VariableEntry(Strict):
     planned: Planned | None = None
     # Left out of the codebook by the team (v0.20.2, D-158); `ddict.project.aside`.
     set_aside: SetAside | None = None
+    # When it is asked (v0.21, D-168), on variables by their original names: typed by a
+    # person ("human"), computed from the designed questionnaire ("computed"), or read in a
+    # LimeSurvey file ("questionnaire", proposed until a person accepts it).
+    asked_if: TrackedValue[Condition] | None = None
 
     @model_validator(mode="after")
     def _known(self) -> VariableEntry:
@@ -410,6 +454,21 @@ class AiPermission(Strict):
     since: str | None = None  # "2026-10-19"
 
 
+class BlankCodes(Strict):
+    """The codes the preparation scripts write in an empty cell (v0.21, D-167): one for a
+    question not asked, one for a question asked and not answered. Chosen by the team, none
+    by default; never written in the documented copy."""
+
+    not_applicable: Code | None = None
+    missing: Code | None = None
+
+    @model_validator(mode="after")
+    def _distinct(self) -> BlankCodes:
+        if self.not_applicable is not None and self.not_applicable == self.missing:
+            raise ValueError("the not applicable and the missing need two codes")
+        return self
+
+
 class Settings(Strict):
     min_cell_count: int = Field(default=5, ge=1)
     max_observed_values: int = Field(default=20, ge=1)
@@ -417,6 +476,7 @@ class Settings(Strict):
     language: Literal["fr", "en"] = "fr"
     naming: NamingSettings = NamingSettings()
     ai: AiPermission = AiPermission()
+    blank_codes: BlankCodes = BlankCodes()  # v0.21 (D-167)
 
 
 class Provenance(Strict):
@@ -453,6 +513,8 @@ class GridRow(Strict):
     text: str
     code: str | None = None  # the subquestion's code (v0.20)
     provenance: Provenance | None = None
+    # v0.21 (D-170): an attention check, with the codes of its right answers.
+    attention: list[str] | None = Field(default=None, min_length=1)
 
 
 # "display": a text shown to the participant, with no answer and no variable; only in a
@@ -479,6 +541,12 @@ class Question(Strict):
     answer: Literal["short", "long", "number", "date"] | None = None  # an open question's
     layout: Literal["radio", "dropdown"] | None = None  # a single choice's
     provenance: Provenance | None = None
+    # v0.21, in a designed or LimeSurvey questionnaire: when it is asked (D-165); its
+    # statements (grid), choices (single) or options (checkbox) in random order (D-166);
+    # a single choice that is an attention check, with the codes of its right answers (D-170).
+    condition: Condition | None = None
+    shuffle: bool = False
+    attention: list[str] | None = Field(default=None, min_length=1)
 
     @model_validator(mode="after")
     def _shaped(self) -> Question:
@@ -488,6 +556,12 @@ class Question(Strict):
             raise ValueError("only a single choice is shown as a list or buttons")
         if self.kind == "display" and (self.options or self.rows or self.required):
             raise ValueError("a displayed text has no answer")
+        if self.shuffle and self.kind not in ("single", "checkbox", "grid"):
+            raise ValueError("only statements, choices or options are shown in random order")
+        if self.attention is not None and self.kind != "single":
+            raise ValueError("only a single choice is an attention check (or a grid's statement)")
+        if any(row.attention for row in self.rows) and self.kind != "grid":
+            raise ValueError("only a grid's statement is an attention check")
         return self
 
 
@@ -497,6 +571,8 @@ class Section(Strict):
     section_id: str  # "S2"
     title: str = ""
     instruction: str | None = None
+    condition: Condition | None = None  # v0.21 (D-165), for each of its questions
+    shuffle: bool = False  # v0.21 (D-166): its questions in random order
 
 
 class QuestionnaireText(Strict):
@@ -645,8 +721,43 @@ class DuplicateRule(Strict):
     source: str | None = None
 
 
+class AttentionCheck(Strict):
+    """An attention check by its variable (original name) and its right answers."""
+
+    variable: str
+    correct: list[Code] = Field(min_length=1)
+
+
+class AttentionRule(Strict):
+    """v0.21 (D-170): failed at least `min_failed` of the attention checks; an item left
+    empty is a failure or ignored, as the team chooses (no default); an item not asked is
+    never a failure."""
+
+    id: str
+    kind: Literal["attention"] = "attention"
+    checks: list[AttentionCheck] = Field(min_length=1)
+    min_failed: int = Field(default=1, ge=1)
+    empty: Literal["failed", "ignored"]
+    reason: NonEmptyText
+    source: str | None = None
+
+    @model_validator(mode="after")
+    def _counted(self) -> AttentionRule:
+        names = [c.variable for c in self.checks]
+        if len(set(names)) != len(names):
+            raise ValueError("each attention check once")
+        if self.min_failed > len(self.checks):
+            raise ValueError("more failures required than there are checks")
+        return self
+
+
 ExclusionRule = Annotated[
-    ConditionRule | CompletenessRule | DurationRule | StraightliningRule | DuplicateRule,
+    ConditionRule
+    | CompletenessRule
+    | DurationRule
+    | StraightliningRule
+    | DuplicateRule
+    | AttentionRule,
     Field(discriminator="kind"),
 ]
 

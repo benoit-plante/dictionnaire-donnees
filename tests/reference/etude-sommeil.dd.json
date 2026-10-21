@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.11.0",
+  "schema_version": "0.12.0",
   "title": null,
   "source": {
     "name": "etude-sommeil.sav",
@@ -25,6 +25,10 @@
     "ai": {
       "allowed": false,
       "since": null
+    },
+    "blank_codes": {
+      "not_applicable": null,
+      "missing": null
     }
   },
   "variables": [
@@ -154,7 +158,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "courriel",
@@ -283,7 +288,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "date_passation",
@@ -409,7 +415,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "date_naissance",
@@ -538,7 +545,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "age",
@@ -666,7 +674,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "genre",
@@ -835,7 +844,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "vague",
@@ -974,7 +984,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "sommeil_q1",
@@ -1147,7 +1158,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "sommeil_q2",
@@ -1320,7 +1332,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "sommeil_q3",
@@ -1502,7 +1515,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "sommeil_q4",
@@ -1675,7 +1689,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "sommeil_q5",
@@ -1848,7 +1863,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "sommeil_q6",
@@ -2021,7 +2037,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "sommeil_q7",
@@ -2194,7 +2211,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "sommeil_q8",
@@ -2367,7 +2385,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "anx1",
@@ -2545,7 +2564,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "anx2",
@@ -2723,7 +2743,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "anx3",
@@ -2901,7 +2922,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "anx4",
@@ -3079,7 +3101,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "heures_sommeil",
@@ -3205,7 +3228,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "heures_sommeil_2",
@@ -3333,7 +3357,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "nb_reveils",
@@ -3497,7 +3522,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "aide_medicament",
@@ -3631,7 +3657,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "aide_naturel",
@@ -3765,7 +3792,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "aide_tcc",
@@ -3899,7 +3927,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "aide_aucune",
@@ -4033,7 +4062,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "anx5",
@@ -4211,7 +4241,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "anx6",
@@ -4389,7 +4420,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "anx7",
@@ -4567,7 +4599,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "satisfaction_globale",
@@ -4764,7 +4797,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "taille_cm",
@@ -4892,7 +4926,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "q_retiree",
@@ -5020,7 +5055,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "langue_maison",
@@ -5177,7 +5213,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     },
     {
       "name": "commentaire",
@@ -5306,7 +5343,8 @@
       "notes": null,
       "ai_signals": [],
       "planned": null,
-      "set_aside": null
+      "set_aside": null,
+      "asked_if": null
     }
   ],
   "groups": [

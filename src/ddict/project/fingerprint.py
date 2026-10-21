@@ -6,7 +6,9 @@ values, the team's decisions (suspect codes, sourced ranges and thresholds, note
 groups, the accepted glossary, the questionnaire the question texts come from and, since
 v0.12, the exclusion rules (only when there are some: a project without rules keeps its
 fingerprint), and since v0.15 the recodings, likewise; since v0.20.2 (D-158), the reason
-of a variable set aside, only for one set aside. Not in it:
+of a variable set aside, only for one set aside; since v0.21 (D-172), a variable's accepted
+condition and the codes of the not applicable and of the missing, only when there are some
+(the conditions of a designed questionnaire are in its own fingerprint). Not in it:
 proposals waiting or rejected, dates, model calls, settings, statistics computed on the
 data. Exports show its first 12 characters.
 """
@@ -62,6 +64,9 @@ def _variable(entry: VariableEntry) -> dict:
     }
     if entry.set_aside is not None:  # a variable kept keeps its fingerprint
         found["set_aside"] = entry.set_aside.reason
+    # v0.21 (D-172): a variable's condition, only an accepted one, only when there is one.
+    if entry.asked_if is not None and is_accepted(entry.asked_if):
+        found["asked_if"] = _dump(entry.asked_if.value)
     return found
 
 
@@ -101,6 +106,9 @@ def decided_content(project: Project) -> dict:
         content["exclusions"] = [r.model_dump(mode="json") for r in project.exclusions.rules]
     if project.recodes.rules:  # v0.15: only when there are some, as the exclusions
         content["recodes"] = [r.model_dump(mode="json") for r in project.recodes.rules]
+    codes = project.settings.blank_codes  # v0.21 (D-172): only when chosen
+    if codes.not_applicable is not None or codes.missing is not None:
+        content["blank_codes"] = codes.model_dump(mode="json")
     return content
 
 

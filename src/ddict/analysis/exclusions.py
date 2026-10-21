@@ -16,6 +16,7 @@ from ddict.project.exclusions import members
 from ddict.project.model import (
     CompletenessRule,
     ConditionRule,
+    DuplicateRule,
     DurationRule,
     ExclusionRule,
     Project,
@@ -107,11 +108,13 @@ def hits(project: Project, data: pd.DataFrame, rule: ExclusionRule) -> pd.Series
     elif isinstance(rule, StraightliningRule):
         items = data[[names[n] for n in members(_group(project, rule.group))]]
         found = items.notna().all(axis=1) & (items.nunique(axis=1) == 1)
-    else:  # DuplicateRule
+    elif isinstance(rule, DuplicateRule):
         columns = [names[n] for n in rule.variables]
         complete = ~pd.concat([blank(data[c]) for c in columns], axis=1).any(axis=1)
         repeated = data.loc[complete, columns].duplicated(keep="first")
         found = repeated.reindex(data.index, fill_value=False)
+    else:  # the attention checks come with v0.21, step 10
+        raise ValueError(f"exclusion rule not computed yet: {rule.kind}")
     return pd.Series(np.asarray(found, dtype=bool), index=data.index)
 
 

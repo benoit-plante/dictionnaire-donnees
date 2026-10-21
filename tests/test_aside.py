@@ -23,7 +23,7 @@ def project(fictional_files):
 
 
 def test_set_aside_and_back(project, tmp_path):
-    assert SCHEMA_VERSION == "0.11.0"
+    assert SCHEMA_VERSION == "0.12.0"
     aside.set_aside(project, "q_retiree", "Question retirée de l'étude.", TODAY)
     entry = project.variable("q_retiree")
     assert aside.is_aside(entry) and entry.set_aside.reason == "Question retirée de l'étude."
@@ -34,7 +34,7 @@ def test_set_aside_and_back(project, tmp_path):
     data = json.loads(path.read_text(encoding="utf-8"))
     saved = next(v for v in data["variables"] if v["name"] == "q_retiree")
     assert saved["set_aside"] == {"reason": "Question retirée de l'étude.", "date": TODAY}
-    assert data["schema_version"] == "0.11.0"
+    assert data["schema_version"] == "0.12.0"
     again = load_project(path)
     assert aside.restore(again, "q_retiree") is True
     assert aside.restore(again, "q_retiree") is False  # not set aside any more
@@ -66,7 +66,7 @@ def test_a_0_9_0_project_reads_as_it_is(project, tmp_path):
         entry.pop("set_aside", None)
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     old = load_project(path)
-    assert old.schema_version == "0.11.0" and not aside.aside(old)
+    assert old.schema_version == "0.12.0" and not aside.aside(old)
 
 
 def test_a_variable_in_use_is_refused_each_use_said(project):

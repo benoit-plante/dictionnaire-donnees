@@ -1,5 +1,11 @@
 # Changements
 
+## Non publié
+
+Filtres, ordre aléatoire et non applicable (plan : `docs/plan-v0.21.md`, D-163 à D-172 ; feuille de route du cycle de recherche : `docs/feuille-de-route-cycle.md`).
+
+- **Le format du projet 0.12.0** (D-172) : la condition d'une question et d'une section, l'ordre aléatoire, les items de contrôle d'attention, la condition d'une variable, les codes du non applicable et du manquant, la règle d'exclusion des items de contrôle ; rien n'est encore offert dans l'interface. Un projet 0.11.0 s'ouvre tel quel, avec le même codebook et les mêmes empreintes ; un questionnaire conçu garde son empreinte, ses versions envoyées et ses points de relecture gardés. Un projet enregistré par cette version ne s'ouvre plus avec la 0.20.2.
+
 ## 0.20.2 — 2026-10-20
 
 Un nouvel accueil et un titre pour chaque projet (plan : `docs/plan-accueil.md`, D-159 à D-162), et les variables écartées du codebook (D-158). Pour l'accueil et le titre, ni le calcul, ni la porte de confidentialité, ni l'IA, ni les fichiers produits ne changent. Le format du projet passe de 0.9.0 à 0.11.0 en une fois (le format 0.10.0 n'a jamais été publié) : un projet enregistré par la 0.20.2 ne s'ouvre plus avec la 0.20.1. Le thème sombre est mis de côté.
