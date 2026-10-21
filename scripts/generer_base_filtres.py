@@ -19,6 +19,8 @@ attention check, 5 at both, 3 who left the second empty; 5 who ticked no transpo
 quick completions.
 
 Run: uv run python scripts/generer_base_filtres.py [folder]   (default: exemples/bases-fictives/)
+For the manual scenario: uv run python scripts/generer_base_filtres.py --projet <folder>
+writes the designed project there, with the two bases next to it.
 """
 
 from __future__ import annotations
@@ -496,6 +498,24 @@ def write_all(folder: Path) -> list[Path]:
     return written
 
 
+def write_project(folder: Path) -> Path:
+    """The designed project, for the manual scenario (a .dd.json stays off the repository),
+    with the base next to it."""
+    import shutil
+
+    from ddict.project import save_project
+
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / "Familles et travail.dd.json"
+    save_project(project(), path)
+    for name in (f"reponses-{STEM}.sav", f"reponses-{STEM}-surveymonkey.sav"):
+        shutil.copy(OUT / name, folder / name)
+    return path
+
+
 if __name__ == "__main__":
-    for written in write_all(Path(sys.argv[1]) if len(sys.argv) > 1 else OUT):
-        print(written)
+    if len(sys.argv) > 2 and sys.argv[1] == "--projet":
+        print(write_project(Path(sys.argv[2])))
+    else:
+        for written in write_all(Path(sys.argv[1]) if len(sys.argv) > 1 else OUT):
+            print(written)

@@ -755,7 +755,7 @@
     }
   ],
   "_ddict": {
-    "tool": "dictionnaire-donnees 0.20.2",
+    "tool": "dictionnaire-donnees 0.21.0",
     "codebook_fingerprint": "e32f2238c27fb02e707f9a5736f926b0181175b5fc269a5986b4789f30a3934e",
     "language": "fr",
     "statistics": false,

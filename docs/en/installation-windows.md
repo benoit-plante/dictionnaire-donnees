@@ -391,7 +391,7 @@ For a study without data yet: the questionnaire is built in the tool, and the da
 
 - **The Word**, in two versions: **for the ethics committee** (what a person answering will read, without names, codes or provenance) and **working** (with each question's codes, kind and LimeSurvey type, its variables, the provenance, the groups and the review points). The footer gives the version, the date of the last change and the questionnaire's fingerprint: the same questionnaire gives the same file.
 - **The file for LimeSurvey** (`… - LimeSurvey.txt`, the tab-separated structure), checked on LimeSurvey Cloud 7.6. Before giving it, the tool says what it holds and what stays in the tool (provenance, reversed items, scoring, instruments). What LimeSurvey would refuse (a code not starting with a letter, a brace, a duplicate code) blocks the file and leads to the review.
-- **Import into LimeSurvey**, step by step (folded in the page): in the list of surveys, the **+** menu, then **Import**; choose the file; **Import survey**; the import report should announce the number of groups, questions, subquestions and answers the page gives, without warning. Then read LimeSurvey's preview: only LimeSurvey shows what the people answering will see. No branching, random order or quota: they are set in LimeSurvey.
+- **Import into LimeSurvey**, step by step (folded in the page): in the list of surveys, the **+** menu, then **Import**; choose the file; **Import survey**; the import report should announce the number of groups, questions, subquestions and answers the page gives, without warning. Then read LimeSurvey's preview: only LimeSurvey shows what the people answering will see. The conditions and the random order are written in it (section 21); a quota is set in LimeSurvey.
 - **Mark as sent** (to the ethics committee, or published in LimeSurvey, with the date and an optional note): the project keeps a copy. Changing it afterwards stays allowed; the page says at the top that LimeSurvey or the committee is to be updated, and each version sent shows what changed since.
 - **Compare LimeSurvey's re-export**: export the structure again from LimeSurvey (`.lss` or `.txt`) and give it: the tool compares it with the project by the codes of the questions (question added, removed, same text under another code, text changed word by word, choice recoded…). Nothing changes without you: **Take into the project** or **Keep the project** (LimeSurvey is then to be corrected).
 - **The preview**: the questionnaire roughly as a person answering will see it; **Show the names** adds the codes.
@@ -400,9 +400,33 @@ For a study without data yet: the questionnaire is built in the tool, and the da
 
 On the command line: `ddict questionnaire create "C:\Users\you\Documents\Studies" --name "Sleep study"` creates the project; `ddict questionnaire word <project>` writes both Words next to the project; `ddict questionnaire limesurvey <project>` writes the file for LimeSurvey and prints the import steps; `ddict profile <database> --project <project>` reads the database that arrives.
 
+## 21. Filters, random order and not applicable
+
+Since version 0.21. A **filtered** question is asked only of the people whose earlier answer meets a condition ("How many children?", asked if "Do you have children?" = Yes). A person who was not asked it is **not applicable**: never a missing value, neither in the computation nor in the sentences.
+
+**Set a condition, in a designed questionnaire.** In a question's form, the block **Asked if**: lines (the question named, the operator, the value), joined by "all the lines (and)" or "at least one line (or)"; the codes of the choices named show under the table. A section's condition is set the same way in **Change**, under its title: it holds for each of its questions. An answer left empty meets no line. The tool refuses what makes no sense (a question that depends on itself, "greater than" on a choice, a code that is not a choice); the list says each condition in words: "Asked if Q3 (enfants) = 1 (Oui)".
+
+**Random order**: a box in a question's form (its choices, its options to tick, a grid's statements) and in a section's **Change** (its questions), drawn for each person. The "Other" option stays at the end.
+
+**Attention checks** ("For this statement, choose Somewhat agree"): the right answers of a single-choice question, or a column of the table of a grid's statements. A check statement enters no score.
+
+**The review** gives first the **estimated duration** of administration ("about 11 to 14 minutes"), with its formula: the words read, at 195 words per minute in French and 228 in English (texts read aloud, IReST: the duration is rather overestimated), and 3, 10 or 60 seconds per answer, the tool's own marks that the pilot will calibrate. It also says what is wrong: a condition on a question that comes later, a condition never true, a code that is no longer a choice, a filtered section without a displayed text, a random order with "Prefer not to answer"…
+
+**Publish.** Both Words give the duration first, each condition in words before its question ("If you answered “Yes” to question 3:") and under a section's title, and each random order; the working Word adds the condition for the team, the attention checks and the formula of the duration. The file for LimeSurvey writes the conditions and the random order; the step-by-step import adds checking the survey logic and going through each branch in "Preview survey". The attention checks stay in the tool. The comparison of a re-export says a condition changed in LimeSurvey, in words on both sides, or a condition the tool does not read (only the form it writes is read back; any other is kept as it is, never guessed).
+
+**When the database arrives**, the conformity report gives, for each filtered variable, how many people were asked it, were not asked it (not applicable) and left it empty, and the **answers under a false condition** (a condition changed during the collection, a database merged by hand); counts only, "< 5" under the threshold. The computation reads the answers as recorded: "Prefer not to answer" (9), even declared missing, is a choice, and meets "≠ Yes".
+
+**For a database without a designed questionnaire** (a SurveyMonkey export, a `.sav` already there): the block **Asked if** of a variable's page, with its counts and **The same condition for** (a grid's statements at once). A condition never names the value of an identifier or a free text, only "has an answer". A LimeSurvey structure read for a database already there proposes its conditions, to **Accept** or **Reject**.
+
+**Downstream.** The completeness of a group counts among the items asked; "missing", in an exclusion rule, means asked and left empty; Table 1 counts a filtered question among the people who were asked it ("asked of 160 people; 5 did not answer"); the note of each analysis and the page "Plan" say it; the Method presents the filtered questions, the attention checks and a scale's random order. On the page "Méthode", the signal **Attention checks** (how many failed at least one, all, how many left one empty) and **Make it a rule**, which fills the form: choose whether a check left empty counts as a failure or is ignored (no choice by default), then **Add the rule**.
+
+**The codes of the blanks for SPSS and R.** Page "Export", **Codes of the blanks in the preparation scripts**: one code for the not applicable, one for the missing (−8 and −9, for example; none by default). The preparation script writes them in the empty cells of the questionnaire's numeric variables, declares them missing and labels them; never in the documented copy. A code a variable already uses (a choice, a value, a missing code) is refused.
+
+On the command line: `ddict conditions list <project>` (with the counts, when the database is next to it), `ddict conditions set <project> --variable nbenfants --term enfants = 1` (`--or` for "or"; in PowerShell, `<` and `>` between quotes), `ddict conditions remove | accept | reject <project> --variable …`; `ddict codes blanks <project> --not-applicable -8 --missing -9` (or `--clear`); `ddict exclusions add <project> --attention climat_SQ007=4 controle=1 --empty ignored --reason "…"` (`--failures 2` to require two failures).
+
 ## Update or uninstall
 
-- **Update**: download and extract the new archive, then double-click its `installer.bat`. If the tool is open, the installer offers to close it (answer `y`): it cannot replace it while it runs. Your project files are kept. A project opened with version 0.8 no longer opens with an older version (its format changed); the reverse works. Likewise, a project saved by version 0.18 (which notes in it whether it may be sent to the AI) no longer opens with 0.17.
+- **Update**: download and extract the new archive, then double-click its `installer.bat`. If the tool is open, the installer offers to close it (answer `y`): it cannot replace it while it runs. Your project files are kept. A project opened with version 0.8 no longer opens with an older version (its format changed); the reverse works. Likewise, a project saved by version 0.18 (which notes in it whether it may be sent to the AI) no longer opens with 0.17, and a project saved by 0.21 (its conditions) no longer opens with 0.20.2.
 - **Uninstall**: double-click `desinstaller.bat`, in the tool's folder. It removes the tool and its icons, without touching your projects, codebooks or data; it asks before clearing the lists of recent and followed projects with the AI settings, then, separately, the API key of Windows' Credential Manager. uv stays installed.
 
 ## For those who prefer the command line
@@ -441,6 +465,8 @@ ddict deposit sleep-study.dd.json            # the reproduction package, without
 ddict projects list                          # the followed projects, as the home page's list
 ddict projects rename sleep-study.dd.json "Sleep and anxiety, 2026 cohort"   # a title
 ddict projects search "C:\Users\you\Documents\Studies" --follow   # follow those of a folder
+ddict conditions set study-t2.dd.json --variable q0004 --term q0003 = 1   # asked if
+ddict codes blanks sleep-study.dd.json --not-applicable -8 --missing -9   # for SPSS and R
 ddict advise sleep-study.dd.json "Compare the sleep of women and men."
 ddict evaluate --model claude-haiku-5-5       # model bench (billed)
 ```

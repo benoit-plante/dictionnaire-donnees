@@ -1,8 +1,8 @@
 # Changements
 
-## Non publié
+## 0.21.0 — 2026-10-21
 
-Filtres, ordre aléatoire et non applicable (plan : `docs/plan-v0.21.md`, D-163 à D-172 ; feuille de route du cycle de recherche : `docs/feuille-de-route-cycle.md`).
+Filtres, ordre aléatoire et non applicable (plan : `docs/plan-v0.21.md`, D-163 à D-172 ; feuille de route du cycle de recherche : `docs/feuille-de-route-cycle.md`). Le format du projet passe à 0.12.0 : un projet enregistré par la 0.21 ne s'ouvre plus avec la 0.20.2. Un projet sans condition donne les mêmes fichiers qu'avant, à la ligne de la version près. **À vérifier par l'auteur** : l'importation réelle dans LimeSurvey Cloud 7.6 (`docs/essais/2026-10-21-limesurvey-filtres.md`), le rendu des deux Word, et le scénario manuel (étapes 103 à 113).
 
 - **Le format du projet 0.12.0** (D-172) : la condition d'une question et d'une section, l'ordre aléatoire, les items de contrôle d'attention, la condition d'une variable, les codes du non applicable et du manquant, la règle d'exclusion des items de contrôle ; rien n'est encore offert dans l'interface. Un projet 0.11.0 s'ouvre tel quel, avec le même codebook et les mêmes empreintes ; un questionnaire conçu garde son empreinte, ses versions envoyées et ses points de relecture gardés. Un projet enregistré par cette version ne s'ouvre plus avec la 0.20.2.
 - **Filtres, ordre aléatoire et items de contrôle dans l'éditeur du questionnaire** (D-165, D-166, D-170) : un bloc **Posée si** dans le formulaire d'une question et dans « Modifier » d'une section (des lignes question visée, opérateur, valeur, reliées par « et » ou par « ou », avec les codes des choix visés sous le tableau) ; une case d'ordre aléatoire pour les choix, les options, les énoncés d'une grille et les questions d'une section ; les bonnes réponses d'un item de contrôle (une question à choix unique, ou une colonne du tableau des énoncés d'une grille). La liste dit la condition en clair (« Posée si Q3 (enfants) = 1 (Oui) »). Les variables prévues portent la condition de leur question ; un énoncé de contrôle sort des membres de sa grille.
@@ -16,7 +16,8 @@ Filtres, ordre aléatoire et non applicable (plan : `docs/plan-v0.21.md`, D-163 
 - **Les codes du non applicable et du manquant** pour SPSS et R, choisis sur la page « Export » ou par `ddict codes vides` : le script de préparation les écrit dans les cellules vides, les déclare manquants et les étiquette. Vérifié dans PSPP et dans R.
 - **La règle d'exclusion des items de contrôle** (D-170) : « échec à au moins 1 des 2 items de contrôle », un item laissé vide compté comme un échec ou ignoré (sans choix d'office), un item non posé jamais un échec ; le signal de la page « Méthode » (combien ont échoué à au moins un item, à tous, combien en ont laissé un vide) et « En faire une règle », qui remplit le formulaire sans rien appliquer ; `ddict exclusions ajouter --attention`. Dans les scripts SPSS et R, le diagramme de flux et le préenregistrement comme toute règle. Vérifié dans PSPP et dans R.
 - Sur la page « Plan », une hypothèse qui porte sur une variable filtrée dit à qui elle a été posée.
-- Une base fictive filtrée et son corrigé (`scripts/generer_base_filtres.py`).
+- Une base fictive filtrée et son corrigé (`scripts/generer_base_filtres.py`, et `--projet <dossier>` pour le projet du scénario manuel).
+- Guides : la section « Filtres, ordre aléatoire et non applicable », en français et en anglais ; le scénario manuel gagne les étapes 103 à 113 ; `scripts/captures.py` photographie les pages « Concevoir » sur le questionnaire fictif filtré.
 
 ## 0.20.2 — 2026-10-20
 

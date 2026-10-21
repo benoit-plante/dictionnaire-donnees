@@ -2,8 +2,9 @@
 a change: the fictional sleep study, at 1400x900 (the window of the icon) and 900x600
 (its smallest size).
 
-Since v0.20, the pages of "Concevoir" too, on the fictional designed questionnaire of the
-tests (`tests/projet_concu.py`): `1400x900\\design-01-design.png`...
+Since v0.20, the pages of "Concevoir" too, on a fictional designed questionnaire of the
+tests (since v0.21, `tests/projet_filtres.py`, with filters, random orders and attention
+checks):`1400x900\\design-01-design.png`...
 
 Since the new home page (D-160), its five tabs too, with both studies followed:
 `1400x900\\home-01-projets.png`..., and the detail of the designed study,
@@ -92,7 +93,7 @@ def settled(page: Page) -> None:
 def designed(folder: Path) -> Path:
     """The fictional questionnaire designed in the tool, before its collection (v0.20)."""
     sys.path.insert(0, str(ROOT / "tests"))
-    from projet_concu import project
+    from projet_filtres import project  # v0.21: with filters, random orders, checks
 
     path = folder / "Étude conçue.dd.json"
     save_project(project(), path)
