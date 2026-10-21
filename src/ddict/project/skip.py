@@ -45,7 +45,7 @@ class Target:
     item: str | None = None  # the text of the statement or of the option
 
 
-def _target(found: Questionnaire, target: str) -> Target | None:
+def target_of(found: Questionnaire, target: str) -> Target | None:
     """The question, statement or option a term names; None for one that cannot be tested:
     unknown, a whole grid or checkbox question, a displayed text, an "other" option."""
     question_id = target.partition(".")[0]
@@ -80,7 +80,7 @@ def code_text(value) -> str:
     return str(value).strip()
 
 
-def _number(value) -> float | None:
+def as_number(value) -> float | None:
     if isinstance(value, bool):
         return None
     if isinstance(value, int | float):
@@ -91,7 +91,7 @@ def _number(value) -> float | None:
         return None
 
 
-def _values(term: Term) -> list:
+def values_of(term: Term) -> list:
     if term.value is None:
         return []
     return term.value if isinstance(term.value, list) else [term.value]
@@ -108,12 +108,12 @@ def normalized(found: Questionnaire, condition: Condition) -> Condition:
     as a number (18, 2.5); what cannot be read is left as it is, for `problems` to say."""
     terms = []
     for term in condition.terms:
-        target = _target(found, term.target)
+        target = target_of(found, term.target)
         value = term.value
         if target is not None and target.nature == "choice" and value is not None:
             value = [code_text(v) for v in value] if isinstance(value, list) else code_text(value)
         elif target is not None and target.nature == "number" and value is not None:
-            number = _number(value)
+            number = as_number(value)
             if number is not None:
                 value = int(number) if number.is_integer() else number
         terms.append(Term(target=term.target, operator=term.operator, value=value))
@@ -129,7 +129,7 @@ def problems(found: Questionnaire, owner: str, condition: Condition) -> list[str
         if term.target == own[0] or (len(own) > 1 and term.target.startswith(own[1])):
             found_problems.append(_("Une question ne peut pas dépendre d'elle-même."))
             continue
-        target = _target(found, term.target)
+        target = target_of(found, term.target)
         if target is None:
             found_problems.append(
                 _(
@@ -145,7 +145,7 @@ def problems(found: Questionnaire, owner: str, condition: Condition) -> list[str
             continue
         if target.nature == "choice":
             codes = choices(target.question)
-            for value in _values(term):
+            for value in values_of(term):
                 if code_text(value) not in codes:
                     found_problems.append(
                         _("{value} n'est pas un choix de {target}.").format(
@@ -153,8 +153,8 @@ def problems(found: Questionnaire, owner: str, condition: Condition) -> list[str
                         )
                     )
         elif target.nature == "number":
-            for value in _values(term):
-                if _number(value) is None:
+            for value in values_of(term):
+                if as_number(value) is None:
                     found_problems.append(
                         _("{target} attend un nombre.").format(target=term.target)
                     )
@@ -203,7 +203,7 @@ def _quoted(text: str) -> str:
 
 
 def _number_text(value) -> str:
-    number = _number(value)
+    number = as_number(value)
     if number is None:
         return str(value)
     return i18n.decimal(str(int(number) if number.is_integer() else number))
@@ -219,7 +219,7 @@ def _either(texts: list[str]) -> str:
 def _committee_term(found: Questionnaire, term: Term, section: bool) -> str:
     """One term, for the committee: in the language of the study, with the question's number
     and its words, never a code nor a name."""
-    target = _target(found, term.target)
+    target = target_of(found, term.target)
     if target is None:
         return term.target  # gone since; the review says it
     number = numbers(found).get(target.question.question_id)
@@ -229,7 +229,7 @@ def _committee_term(found: Questionnaire, term: Term, section: bool) -> str:
         else _("à la question {n}").format(n=number)
     )
     codes = choices(target.question)
-    said = _either([_quoted(codes.get(code_text(v), code_text(v))) for v in _values(term)])
+    said = _either([_quoted(codes.get(code_text(v), code_text(v))) for v in values_of(term)])
     if term.operator == "answered":
         return (_("qui ont répondu {where}") if section else _("vous avez répondu {where}")).format(
             where=where
@@ -255,7 +255,7 @@ def _committee_term(found: Questionnaire, term: Term, section: bool) -> str:
                 else _("vous avez répondu autre chose que {said} {where}")
             )
         return text.format(said=said, where=where)
-    value = _number_text(_values(term)[0])
+    value = _number_text(values_of(term)[0])
     answer = {
         "eq": _("est {value}"),
         "ne": _("n'est pas {value}"),
@@ -306,7 +306,7 @@ def _labelled(value, labels: Mapping[str, str]) -> str:
 
 
 def _team_term(term: Term, subject: str, labels: Mapping[str, str], item: str | None) -> str:
-    values = [_labelled(v, labels) for v in _values(term)]
+    values = [_labelled(v, labels) for v in values_of(term)]
     if term.operator == "answered":
         return _("{subject} a une réponse").format(subject=subject)
     if term.operator == "checked":
@@ -314,7 +314,7 @@ def _team_term(term: Term, subject: str, labels: Mapping[str, str], item: str | 
     if term.operator in ("in", "not_in"):
         symbol = "∈" if term.operator == "in" else "∉"
         return f"{subject} {symbol} {{{', '.join(values)}}}"
-    value = values[0] if labels else _number_text(_values(term)[0])
+    value = values[0] if labels else _number_text(values_of(term)[0])
     return f"{subject} {SYMBOLS[term.operator]} {value}"
 
 
@@ -342,7 +342,7 @@ def team_text(project: Project, conditions: Condition | Sequence[Condition]) -> 
     for condition in conditions:
         terms = []
         for term in condition.terms:
-            target = _target(found, term.target)
+            target = target_of(found, term.target)
             if target is None:
                 terms.append(term.target)
                 continue
@@ -404,13 +404,13 @@ def _holds(data: pd.DataFrame, term: Term) -> pd.Series:
     numbers_ = pd.to_numeric(column, errors="coerce")
     if term.operator in ("eq", "ne", "in", "not_in"):
         hit = pd.Series(False, index=data.index)
-        for value in _values(term):
+        for value in values_of(term):
             hit |= texts == code_text(value)
-            number = _number(value)
+            number = as_number(value)
             if number is not None:
                 hit |= numbers_ == number
         return answered & (hit if term.operator in ("eq", "in") else ~hit)
-    number = _number(_values(term)[0])
+    number = as_number(values_of(term)[0])
     compare = {"lt": numbers_.lt, "le": numbers_.le, "gt": numbers_.gt, "ge": numbers_.ge}
     return answered & compare[term.operator](number).fillna(False).astype(bool)
 

@@ -297,8 +297,19 @@ msgstr "**Duplicates** (an answer that repeats an earlier one)"
 msgid "**Durée de passation**"
 msgstr "**Duration of administration**"
 
+#, python-brace-format
+msgid "**Durée estimée** : {duration}."
+msgstr "**Estimated duration**: {duration}."
+
 msgid "**Grilles en ligne droite** (tous les items à la même valeur)"
 msgstr "**Grids in a straight line** (every item at the same value)"
+
+msgid "**Posée si**"
+msgstr "**Asked if**"
+
+#, python-brace-format
+msgid "**Section** {title}"
+msgstr "**Section** {title}"
 
 msgid "+1 ÉT"
 msgstr "+1 SD"
@@ -364,11 +375,20 @@ msgstr "32, Stata's limit, suits SPSS, R and Stata."
 msgid ":material/edit: Modifications non enregistrées."
 msgstr ":material/edit: Changes not saved."
 
+msgid "<"
+msgstr "<"
+
 msgid "< plus petit que"
 msgstr "< less than"
 
+msgid "="
+msgstr "="
+
 msgid "= égal à"
 msgstr "= equal to"
+
+msgid ">"
+msgstr ">"
 
 msgid "> plus grand que"
 msgstr "> greater than"
@@ -532,6 +552,9 @@ msgstr "Go to the question"
 
 msgid "Aller à la relecture"
 msgstr "Go to the review"
+
+msgid "Aller à la section"
+msgstr "Go to the section"
 
 msgid "Alpha de Cronbach observé"
 msgstr "Observed Cronbach's alpha"
@@ -1221,6 +1244,14 @@ msgstr ""
 "Each acronym will be accepted with the meaning shown here, the one in its field, corrected or "
 "not. Untick those that do not fit."
 
+#, python-brace-format
+msgid "Chemin le plus court (aucune question filtrée posée) : {terms}."
+msgstr "Shortest path (no filtered question asked): {terms}."
+
+#, python-brace-format
+msgid "Chemin le plus long (toutes posées) : {terms}."
+msgstr "Longest path (all asked): {terms}."
+
 msgid "Chercher les fichiers projet d'un dossier et de ses sous-dossiers (4 niveaux), sans les ouvrir."
 msgstr "Look for the project files of a folder and its subfolders (4 levels), without opening them."
 
@@ -1368,6 +1399,14 @@ msgstr "Choice"
 msgid "Choix de réponse (code, texte ; cochez « Autre » pour l'option à préciser)"
 msgstr "Answer choices (code, text; tick “Other” for the option to specify)"
 
+#, python-brace-format
+msgid ""
+"Choix en ordre aléatoire avec un choix de non-réponse ({choice}) : il serait mêlé aux autres. Le "
+"« Sans réponse » de LimeSurvey, lui, reste à la fin."
+msgstr ""
+"Choices in random order with a non-response choice ({choice}): it would be mixed with the others."
+" LimeSurvey's “No answer” stays at the end."
+
 msgid "Choix justes du calcul défaits"
 msgstr "Right choices of the computation undone"
 
@@ -1499,6 +1538,10 @@ msgstr ""
 "Codes confirmed by the team not written, as SPSS accepts only 3 missing codes: {names}. Those of "
 "the file are kept."
 
+#, python-brace-format
+msgid "Codes de la question {n} : {codes}"
+msgstr "Codes of question {n}: {codes}"
+
 msgid "Codes manquants déclarés"
 msgstr "Declared missing codes"
 
@@ -1612,6 +1655,17 @@ msgid "Condition"
 msgstr "Condition"
 
 #, python-brace-format
+msgid ""
+"Condition en boucle : la question dépend d'elle-même, par sa section ou par une autre question "
+"({targets}) ; elle ne serait jamais posée."
+msgstr ""
+"Condition in a loop: the question depends on itself, through its section or another question "
+"({targets}); it would never be asked."
+
+msgid "Condition jamais vraie : la question ne serait jamais posée."
+msgstr "Condition never true: the question would never be asked."
+
+#, python-brace-format
 msgid "Condition non remplie : {reason}"
 msgstr "Condition not met: {reason}"
 
@@ -1620,6 +1674,9 @@ msgstr "Condition on a score"
 
 msgid "Condition sur une variable"
 msgstr "Condition on a variable"
+
+msgid "Conditions à remplir"
+msgstr "Conditions to meet"
 
 msgid "Conditions à vérifier quand la base sera ouverte."
 msgstr "Conditions to be checked when the database is open."
@@ -2126,6 +2183,14 @@ msgstr "Duration: choose the start and the end among {names}."
 #, python-brace-format
 msgid "Durée : {start} et {end} ne se lisent pas comme des dates."
 msgstr "Duration: {start} and {end} cannot be read as dates."
+
+#, python-brace-format
+msgid ""
+"Durée = mots lus ÷ vitesse de lecture + temps de réponse ({closed} s par réponse fermée, {short} "
+"s par réponse courte, nombre ou date, {long} s par réponse longue)."
+msgstr ""
+"Duration = words read ÷ reading speed + answering time ({closed} s per closed answer, {short} s "
+"per short answer, number or date, {long} s per long answer)."
 
 msgid "Durée de passation"
 msgstr "Duration of administration"
@@ -2900,6 +2965,31 @@ msgstr "Not found: the file is no longer at this place."
 msgid "Inverser les items marqués « inv » avant tout score, selon la cotation de leur groupe."
 msgstr "Reverse the items marked \"inv\" before any score, as their group's scoring says."
 
+msgid "Item de contrôle"
+msgstr "Attention check"
+
+msgid "Item de contrôle : bonnes réponses"
+msgstr "Attention check: right answers"
+
+msgid "Item de contrôle : bonnes réponses (codes ; vide : ce n'est pas un item de contrôle)"
+msgstr "Attention check: right answers (codes; empty: not an attention check)"
+
+#, python-brace-format
+msgid "Item de contrôle : bonnes réponses {codes}."
+msgstr "Attention check: right answers {codes}."
+
+#, python-brace-format
+msgid "Item de contrôle dont une bonne réponse n'est plus un choix ({codes}) : il serait toujours échoué."
+msgstr "Attention check whose right answer is no longer a choice ({codes}): it would always be failed."
+
+#, python-brace-format
+msgid "Item de contrôle {why} : un vide ou une question non posée brouillent l'échec."
+msgstr "Attention check {why}: an empty answer or a question not asked blurs the failure."
+
+#, python-brace-format
+msgid "Item de contrôle « {row} » : bonnes réponses {codes}."
+msgstr "Attention check “{row}”: right answers {codes}."
+
 #, python-brace-format
 msgid "Item probablement inversé (corrélation avec le reste de l'échelle : {r})"
 msgstr "Item probably reversed (correlation with the rest of the scale: {r})"
@@ -3166,6 +3256,30 @@ msgid "La clé est refusée (ou absente). Enregistrez-la de nouveau : ddict ia c
 msgstr "The key is refused (or missing). Record it again: ddict ai key."
 
 #, python-brace-format
+msgid "La condition attend un code qui n'est plus un choix ({values}) : elle ne serait jamais vraie."
+msgstr "The condition expects a code that is no longer a choice ({values}): it would never be true."
+
+#, python-brace-format
+msgid "La condition vise ce qui a été retiré depuis ({targets}) : corrigez-la."
+msgstr "The condition names what has been removed since ({targets}): correct it."
+
+#, python-brace-format
+msgid ""
+"La condition vise une question facultative ({targets}) : une réponse laissée vide la rend fausse."
+" C'est peut-être voulu."
+msgstr ""
+"The condition names an optional question ({targets}): an answer left empty makes it false. This "
+"may be intended."
+
+#, python-brace-format
+msgid ""
+"La condition vise une question qui vient après ({targets}) : elle n'a pas encore de réponse, la "
+"question ne serait jamais posée."
+msgstr ""
+"The condition names a question that comes later ({targets}): it has no answer yet, the question "
+"would never be asked."
+
+#, python-brace-format
 msgid "La copie n'a pas pu être écrite : {detail}. Rien n'a été gardé."
 msgstr "The copy could not be written: {detail}. Nothing was kept."
 
@@ -3238,6 +3352,9 @@ msgstr "Family {family} included {k} hypotheses; one could be tested."
 #, python-brace-format
 msgid "La famille {family} comptait {k} hypothèses ; {n} ont pu être testées."
 msgstr "Family {family} included {k} hypotheses; {n} could be tested."
+
+msgid "La formule"
+msgstr "The formula"
 
 msgid "La justification de la taille d'échantillon, en texte."
 msgstr "The sample size rationale, as text."
@@ -4044,6 +4161,9 @@ msgstr "The choices have changed since the last analysis: run it again."
 msgid "Les codes de la colonne « Manquants » sont des valeurs manquantes : les exclure de tout calcul."
 msgstr "The codes of the \"Missing\" column are missing values: leave them out of every computation."
 
+msgid "Les codes des bonnes réponses ; vide : ce n'est pas un item de contrôle."
+msgstr "The codes of the right answers; empty: not an attention check."
+
 msgid ""
 "Les codes manquants suspects (999, -9…) : lister, dire si c'est un code manquant ou une vraie "
 "valeur, annuler."
@@ -4248,6 +4368,11 @@ msgstr "The APA tables and figures, with the titles and notes of the page."
 msgid "Les tailles d'effet seront données avec leur intervalle de confiance à 95 %."
 msgstr "Effect sizes will be given with their 95% confidence interval."
 
+msgid "Les temps de réponse sont des repères de l'outil, sans source publiée : le pilote les recalibrera."
+msgstr ""
+"The answering times are the tool's own marks, with no published source: the pilot will calibrate "
+"them."
+
 #, python-brace-format
 msgid "Les tests de {ids} étaient unilatéraux, dans le sens attendu."
 msgstr "The tests of {ids} were one-sided, in the expected direction."
@@ -4347,11 +4472,32 @@ msgstr "Straight line, {group} ({k} items): {count} people."
 msgid "Ligne {i} : {ps}."
 msgstr "Row {i}: {ps}."
 
+#, python-brace-format
+msgid "Ligne {n} : choisissez la question visée."
+msgstr "Line {n}: choose the question named."
+
+#, python-brace-format
+msgid "Ligne {n} : choisissez un opérateur."
+msgstr "Line {n}: choose an operator."
+
+#, python-brace-format
+msgid "Ligne {n} : donnez au moins un code."
+msgstr "Line {n}: give at least one code."
+
+#, python-brace-format
+msgid "Ligne {n} : donnez une valeur."
+msgstr "Line {n}: give a value."
+
 msgid "Lignes"
 msgstr "Rows"
 
 msgid "Lignes complètes"
 msgstr "Complete rows"
+
+msgid ""
+"Lignes de la condition (question visée, opérateur, valeur ; plusieurs codes séparés par des "
+"virgules)"
+msgstr "Lines of the condition (question named, operator, value; several codes separated by commas)"
 
 msgid "LimeSurvey dit la même chose que le projet."
 msgstr "LimeSurvey says the same as the project."
@@ -4931,9 +5077,18 @@ msgstr "Unknown option: {option}."
 msgid "Options ou énoncés"
 msgstr "Options or items"
 
+msgid "Opérateur"
+msgstr "Operator"
+
 #, python-brace-format
 msgid "Opérateur inconnu : {operator}."
 msgstr "Unknown operator: {operator}."
+
+msgid "Ordre aléatoire"
+msgstr "Random order"
+
+msgid "Ordre aléatoire."
+msgstr "Random order."
 
 msgid "Origine"
 msgstr "Origin"
@@ -5182,6 +5337,9 @@ msgstr "Positive"
 
 msgid "Position"
 msgstr "Position"
+
+msgid "Posée si"
+msgstr "Asked if"
 
 #, python-brace-format
 msgid "Posée si {condition}"
@@ -5530,6 +5688,18 @@ msgstr "Prepared by dictionnaire-donnees {version} on {date}."
 msgid "Présentation"
 msgstr "Display"
 
+msgid "Présenter les choix dans un ordre aléatoire"
+msgstr "Show the choices in random order"
+
+msgid "Présenter les options dans un ordre aléatoire"
+msgstr "Show the options in random order"
+
+msgid "Présenter les énoncés dans un ordre aléatoire"
+msgstr "Show the statements in random order"
+
+msgid "Présenter ses questions dans un ordre aléatoire"
+msgstr "Show its questions in random order"
+
 msgid "Prévu par le questionnaire"
 msgstr "Planned by the questionnaire"
 
@@ -5594,6 +5764,9 @@ msgstr "Question removed"
 msgid "Question retirée."
 msgstr "Question removed."
 
+msgid "Question visée"
+msgstr "Question named"
+
 msgid ""
 "Question à cocher (groupe « réponses multiples ») : une case vide est une option non cochée, sauf"
 " si toutes les cases de la question sont vides (question sans réponse)."
@@ -5613,6 +5786,10 @@ msgid ""
 msgstr ""
 "Questionnaire (.pdf, .txt, a platform's .xlsx export, a LimeSurvey structure .lss or .txt); or, "
 "with “creer”, the project's folder; with “word” or “limesurvey”, the project file."
+
+#, python-brace-format
+msgid "Questionnaire : {terms}."
+msgstr "Questionnaire: {terms}."
 
 msgid "Questionnaire de l'étude"
 msgstr "Study questionnaire"
@@ -5643,8 +5820,17 @@ msgstr ""
 "Questions adapted from {source}, under the {licence} licence; abridged, with answers prefilled by"
 " dictionnaire-donnees {version}."
 
+msgid "Questions de la section en ordre aléatoire."
+msgstr "The section's questions in random order."
+
 msgid "Questions de recherche"
 msgstr "Research questions"
+
+#, python-brace-format
+msgid ""
+"Questions en ordre aléatoire dans une section qui contient {what} : il se retrouverait à "
+"n'importe quelle place."
+msgstr "Questions in random order in a section that holds {what}: it would end up in any place."
 
 msgid "Questions trouvées"
 msgstr "Questions found"
@@ -6234,6 +6420,9 @@ msgstr "Without them, the context holds metadata only, no data."
 msgid "Sans la base, la comparaison se fait aux valeurs gardées dans le carnet."
 msgstr "Without the database, the comparison is with the values kept in the notebook."
 
+msgid "Sans ligne, toujours posée. Une réponse laissée vide ne remplit aucune ligne."
+msgstr "Without a line, always asked. An answer left empty meets no line."
+
 msgid "Sans nom, sans code, sans provenance : ce que lira une personne qui répond."
 msgstr "No name, no code, no provenance: what a person answering will read."
 
@@ -6269,6 +6458,11 @@ msgstr "Section"
 
 msgid "Section ajoutée."
 msgstr "Section added."
+
+msgid ""
+"Section filtrée sans texte d'affichage : un texte qui dit à qui elle s'adresse aide la personne à"
+" suivre."
+msgstr "Filtered section without a displayed text: a text saying whom it is for helps the person follow."
 
 #, python-brace-format
 msgid "Section inconnue : {id}."
@@ -6761,6 +6955,9 @@ msgstr "\"Other\" text: {names}."
 msgid "Textes différents du questionnaire"
 msgstr "Texts that differ from the questionnaire"
 
+msgid "Tiré pour chaque personne ; l'option « Autre » reste à la fin."
+msgstr "Drawn for each person; the “Other” option stays at the end."
+
 #, python-brace-format
 msgid "Tirée de {source} : {parts}. Raison : {reason}"
 msgstr "Derived from {source}: {parts}. Reason: {reason}"
@@ -6991,6 +7188,9 @@ msgid ""
 msgstr ""
 "A key is obtained in Anthropic's console (console.anthropic.com). Set a spending limit there: "
 "each request is billed on this key."
+
+msgid "Une condition a au plus 10 lignes."
+msgstr "A condition has at most 10 lines."
 
 msgid "Une condition sur le score d'un groupe : GROUPE OPÉRATEUR VALEUR."
 msgstr "A condition on a group's score: GROUP OPERATOR VALUE."
@@ -7375,6 +7575,14 @@ msgstr "Versions sent"
 msgid "Violation des conditions"
 msgstr "Violated assumptions"
 
+#, python-brace-format
+msgid ""
+"Vitesse de lecture : {speed} mots par minute, textes standardisés lus à voix haute (IReST, "
+"{source}) ; une lecture silencieuse est plus rapide, la durée est donc plutôt surestimée."
+msgstr ""
+"Reading speed: {speed} words per minute, standardized texts read aloud (IReST, {source}); silent "
+"reading is quicker, so the duration is rather overestimated."
+
 msgid "Voir ce qui serait envoyé"
 msgstr "See what would be sent"
 
@@ -7493,6 +7701,9 @@ msgid ""
 "maître."
 msgstr "`scripts/`: the command files (SPSS and R), the preparation script and the R master script."
 
+msgid "a une réponse"
+msgstr "has an answer"
+
 msgid "absent de la liste"
 msgstr "not in the list"
 
@@ -7516,6 +7727,9 @@ msgstr "after accessing the data, before analysing them"
 
 msgid "après une première analyse des données"
 msgstr "after a first analysis of the data"
+
+msgid "au moins une ligne (ou)"
+msgstr "at least one line (or)"
 
 #, python-brace-format
 msgid "au moins {n} items répondus, sinon manquant"
@@ -7778,6 +7992,20 @@ msgstr "recorded"
 msgid "entier"
 msgstr "integer"
 
+msgid "environ une minute"
+msgstr "about one minute"
+
+#, python-brace-format
+msgid "environ {low} à {high} minutes"
+msgstr "about {low} to {high} minutes"
+
+#, python-brace-format
+msgid "environ {n} minutes"
+msgstr "about {n} minutes"
+
+msgid "est cochée"
+msgstr "is ticked"
+
 #, python-brace-format
 msgid "est inférieure à {value}"
 msgstr "is less than {value}"
@@ -7810,6 +8038,9 @@ msgstr "exploratory"
 
 msgid "exporté pour toutes les variables rattachées"
 msgstr "exported for all linked variables"
+
+msgid "facultatif"
+msgstr "optional"
 
 msgid "faible (le moins coûteux)"
 msgstr "low (the least costly)"
@@ -8342,6 +8573,9 @@ msgstr "not the same number of options as in the database"
 msgid "pas le même nombre d'énoncés que dans la base"
 msgstr "not the same number of items as in the database"
 
+msgid "pas parmi"
+msgstr "not among"
+
 #, python-brace-format
 msgid "passation de moins de {seconds} s, de {start} à {end}"
 msgstr "administration shorter than {seconds} s, from {start} to {end}"
@@ -8416,6 +8650,10 @@ msgstr "questionnaire designed in the tool"
 
 msgid "questions de recherche"
 msgstr "research questions"
+
+#, python-brace-format
+msgid "questions {list}"
+msgstr "questions {list}"
 
 #, python-brace-format
 msgid "qui ont coché {option} à la question {n}"
@@ -8581,6 +8819,9 @@ msgstr "source"
 msgid "source : {source}{page}"
 msgstr "source: {source}{page}"
 
+msgid "sous une condition"
+msgstr "under a condition"
+
 #, python-brace-format
 msgid "sous-groupe : {condition}"
 msgstr "subgroup: {condition}"
@@ -8684,6 +8925,9 @@ msgstr "column headings run together"
 msgid "tous les items de {group} à la même valeur"
 msgstr "every item of {group} at the same value"
 
+msgid "toutes les lignes (et)"
+msgstr "all the lines (and)"
+
 msgid "traitement des valeurs manquantes modifié"
 msgstr "handling of missing values changed"
 
@@ -8727,6 +8971,9 @@ msgstr "a positive coefficient"
 msgid "un identifiant"
 msgstr "an identifier"
 
+msgid "un item de contrôle"
+msgstr "an attention check"
+
 msgid "un participant"
 msgstr "a participant"
 
@@ -8744,6 +8991,9 @@ msgstr "a recoding"
 
 msgid "un score calculé"
 msgstr "a computed score"
+
+msgid "un texte d'affichage"
+msgstr "a displayed text"
 
 msgid "une"
 msgstr "one"
@@ -8783,6 +9033,9 @@ msgstr "a repeated observation"
 
 msgid "une paire de variables"
 msgstr "a pair of variables"
+
+msgid "une question qui sert de condition à une autre de la section"
+msgstr "a question used in the condition of another in the section"
 
 msgid "une règle d'exclusion"
 msgstr "an exclusion rule"
@@ -9504,6 +9757,14 @@ msgid "{n} modalités ; il en faut au moins {low}"
 msgstr "{n} categories; at least {low} are needed"
 
 #, python-brace-format
+msgid "{n} mot lu"
+msgstr "{n} word read"
+
+#, python-brace-format
+msgid "{n} mots lus"
+msgstr "{n} words read"
+
+#, python-brace-format
 msgid "{n} niveaux enregistrés."
 msgstr "{n} levels saved."
 
@@ -9592,6 +9853,30 @@ msgstr "{n} links removed: they pointed to the former questionnaire. Run ddict l
 #, python-brace-format
 msgid "{n} retenues"
 msgstr "{n} retained"
+
+#, python-brace-format
+msgid "{n} réponse courte"
+msgstr "{n} short answer"
+
+#, python-brace-format
+msgid "{n} réponse fermée"
+msgstr "{n} closed answer"
+
+#, python-brace-format
+msgid "{n} réponse longue"
+msgstr "{n} long answer"
+
+#, python-brace-format
+msgid "{n} réponses courtes"
+msgstr "{n} short answers"
+
+#, python-brace-format
+msgid "{n} réponses fermées"
+msgstr "{n} closed answers"
+
+#, python-brace-format
+msgid "{n} réponses longues"
+msgstr "{n} long answers"
 
 #, python-brace-format
 msgid "{n} sigles acceptés."
@@ -10136,8 +10421,8 @@ msgstr "Item"
 msgid "Énoncé inconnu : {id}."
 msgstr "Unknown statement: {id}."
 
-msgid "Énoncés de la grille (code, texte)"
-msgstr "Items of the grid (code, text)"
+msgid "Énoncés de la grille (code, texte ; un item de contrôle a ses bonnes réponses)"
+msgstr "Statements of the grid (code, text; an attention check has its right answers)"
 
 msgid "Équipe"
 msgstr "Team"
@@ -10301,11 +10586,20 @@ msgstr "labels taken from the question's options, order checked by the team"
 msgid "−1 ÉT"
 msgstr "−1 SD"
 
+msgid "≠"
+msgstr "≠"
+
 msgid "≠ différent de"
 msgstr "≠ different from"
 
+msgid "≤"
+msgstr "≤"
+
 msgid "≤ plus petit ou égal à"
 msgstr "≤ less than or equal to"
+
+msgid "≥"
+msgstr "≥"
 
 msgid "≥ plus grand ou égal à"
 msgstr "≥ greater than or equal to"

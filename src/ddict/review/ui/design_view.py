@@ -9,14 +9,17 @@ the tables too; every save goes through `c.save` and its check (D-129, D-130).
 
 from __future__ import annotations
 
+import re
+
 import pandas as pd
 import streamlit as st
 
-from ddict import design, design_points, design_word, naming
+from ddict import design, design_duration, design_points, design_word, naming
 from ddict.design import DesignError, Draft, Item
 from ddict.i18n import N_, Texts, _
+from ddict.project import skip
 from ddict.project.decisions import is_accepted
-from ddict.project.model import Project, Provenance, Question
+from ddict.project.model import Condition, Project, Provenance, Question, Term
 from ddict.review import navigation
 from ddict.review.ui import common as c
 from ddict.review.ui.questionnaire_view import KIND_NAMES
@@ -39,6 +42,24 @@ ANSWERS = Texts(
 )
 LAYOUTS = Texts({"radio": N_("boutons"), "dropdown": N_("liste déroulante")})
 PROVENANCES = design_word.PROVENANCES
+# v0.21 (D-165): the operators of a term, as the table of a condition shows them.
+OPERATOR_NAMES = Texts(
+    {
+        "eq": N_("="),
+        "ne": N_("≠"),
+        "in": N_("parmi"),
+        "not_in": N_("pas parmi"),
+        "lt": N_("<"),
+        "le": N_("≤"),
+        "gt": N_(">"),
+        "ge": N_("≥"),
+        "checked": N_("est cochée"),
+        "answered": N_("a une réponse"),
+    }
+)
+COMBINES = Texts({"all": N_("toutes les lignes (et)"), "any": N_("au moins une ligne (ou)")})
+TERM_COLUMNS = ["target", "operator", "value"]
+TARGET_EXCERPT = 40
 
 
 def _excerpt(text: str) -> str:
@@ -110,41 +131,64 @@ def _prefix(question_id: str) -> str:
     return f"design-q-{question_id}-{st.session_state.get(f'design-form-{question_id}', 0)}-"
 
 
-def _rows(items, *, other: bool) -> list[dict]:
+def _rows(items, *, other: bool, attention: bool = False) -> list[dict]:
     return [
         {
             "id": i.option_id if hasattr(i, "option_id") else i.row_id,
             "code": i.code or "",
             "text": i.text,
             **({"other": bool(getattr(i, "other", False))} if other else {}),
+            **({"attention": ", ".join(i.attention or [])} if attention else {}),
         }
         for i in items
     ]
 
 
-def _columns(other: bool) -> list[str]:
-    return ["id", "code", "text", *(["other"] if other else [])]
+def _columns(other: bool, attention: bool = False) -> list[str]:
+    return [
+        "id",
+        "code",
+        "text",
+        *(["other"] if other else []),
+        *(["attention"] if attention else []),
+    ]
 
 
-def _table(key: str, fresh, label: str, *, other: bool) -> None:
+def _table(
+    key: str,
+    fresh,
+    label: str,
+    *,
+    other: bool = False,
+    attention: bool = False,
+    columns: list[str] | None = None,
+    config: dict | None = None,
+) -> None:
     """A table of choices or items. Its rows as typed are a list in the session, followed by
     `c.field` (so that what is typed and not saved is a draft, D-124). The editor stays the
     same while the form is open, on the rows it started from (`-base`): a new editor at each
     change would lose a cell being typed. Started again (a page left and back, a draft taken
     back), it starts from the list."""
     c.field(key, fresh, label=label)
-    columns = _columns(other)
     editor = f"{key}-editor"
     if editor not in st.session_state:
         st.session_state[f"{key}-base"] = st.session_state[key]
-    frame = pd.DataFrame(st.session_state[f"{key}-base"], columns=columns)
-    config = {
-        "id": None,  # hidden: the item keeps its id, so its variable keeps its decisions
-        "code": st.column_config.TextColumn(_("Code"), width="small"),
-        "text": st.column_config.TextColumn(_("Texte"), width="large"),
-    }
-    if other:
-        config["other"] = st.column_config.CheckboxColumn(_("Autre"), width="small")
+    if columns is None:
+        columns = _columns(other, attention)
+        config = {
+            "id": None,  # hidden: the item keeps its id, so its variable keeps its decisions
+            "code": st.column_config.TextColumn(_("Code"), width="small"),
+            "text": st.column_config.TextColumn(_("Texte"), width="large"),
+        }
+        if other:
+            config["other"] = st.column_config.CheckboxColumn(_("Autre"), width="small")
+        if attention:
+            config["attention"] = st.column_config.TextColumn(
+                _("Item de contrôle : bonnes réponses"),
+                help=_("Les codes des bonnes réponses ; vide : ce n'est pas un item de contrôle."),
+            )
+    rows = [_row(r, columns) for r in st.session_state[f"{key}-base"]]  # a cell never NaN
+    frame = pd.DataFrame(rows, columns=columns)
     st.write(label)
     st.data_editor(
         frame,
@@ -176,11 +220,15 @@ def merged(rows: list[dict], edits: dict, columns: list[str]) -> list[dict]:
     found += [{c: r.get(c) for c in columns} for r in edits.get("added_rows", [])]
     deleted = {int(i) for i in edits.get("deleted_rows", [])}
     found = [r for i, r in enumerate(found) if i not in deleted]
-    return [
-        {"id": r.get("id"), "code": r.get("code") or "", "text": r.get("text") or "",
-         **({"other": bool(r.get("other"))} if "other" in columns else {})}
-        for r in found
-    ]  # fmt: skip
+    return [_row(r, columns) for r in found]
+
+
+def _row(row: dict, columns: list[str]) -> dict:
+    """A row as the drafts compare it: an id or None, a box ticked or not, else a text."""
+    return {
+        c: row.get(c) if c == "id" else bool(row.get(c)) if c == "other" else row.get(c) or ""
+        for c in columns
+    }
 
 
 def _merge(key: str, columns: list[str]) -> None:
@@ -197,6 +245,7 @@ def _fresh(question: Question | None, project: Project) -> dict:
             "kind": "single", "section": section, "text": "", "instruction": "", "code": "",
             "required": False, "answer": "short", "layout": "radio", "provenance": "team",
             "source": "", "page": None, "options": [], "rows": [],
+            "terms": [], "combine": "all", "shuffle": False, "attention": "",
         }  # fmt: skip
     provenance = question.provenance
     stem = naming.stem(project, question.question_id)
@@ -213,8 +262,169 @@ def _fresh(question: Question | None, project: Project) -> dict:
         "source": (provenance.source or "") if provenance else "",
         "page": provenance.page if provenance else None,
         "options": _rows(question.options, other=True),
-        "rows": _rows(question.rows, other=False),
+        "rows": _rows(question.rows, other=False, attention=True),
+        "terms": condition_rows(project, question.condition),
+        "combine": question.condition.combine if question.condition else "all",
+        "shuffle": question.shuffle,
+        "attention": ", ".join(question.attention or []),
     }
+
+
+# --- A condition as a table (v0.21, D-165). ---
+
+
+def _short(text: str) -> str:
+    return text if len(text) <= TARGET_EXCERPT else text[: TARGET_EXCERPT - 1].rstrip() + "…"
+
+
+def target_labels(project: Project) -> dict[str, str]:
+    """What a term may name, as the table shows it ("3. Avez-vous des enfants ?", "7. Votre
+    quartier… — est sûr.") and its id: a choice, a number or a text, a grid's statement, an
+    option to tick."""
+    found = design.questionnaire(project)
+    numbers = skip.numbers(found)
+    labels: dict[str, str] = {}
+
+    def add(label: str, target: str) -> None:
+        labels[label if label not in labels else f"{label} ({target})"] = target
+
+    for question in found.questions:
+        number = numbers.get(question.question_id)
+        if number is None:
+            continue
+        head = f"{number}. {_short(question.text)}"
+        if question.kind in ("single", "open"):
+            add(head, question.question_id)
+        elif question.kind == "grid":
+            for row in question.rows:
+                add(f"{head} — {_short(row.text)}", row.row_id)
+        elif question.kind == "checkbox":
+            for option in question.options:
+                if not option.other:
+                    add(f"{head} — {_short(option.text)}", option.option_id)
+    return labels
+
+
+def _value_text(term: Term) -> str:
+    values = skip.values_of(term)
+    return ", ".join(skip.code_text(v) for v in values)
+
+
+def condition_rows(project: Project, condition: Condition | None) -> list[dict]:
+    """A condition as the rows of its table; a target gone since shows its id."""
+    if condition is None:
+        return []
+    by_id = {target: label for label, target in target_labels(project).items()}
+    return [
+        {
+            "target": by_id.get(term.target, term.target),
+            "operator": _(OPERATOR_NAMES[term.operator]),
+            "value": _value_text(term),
+        }
+        for term in condition.terms
+    ]
+
+
+def condition_from(project: Project, rows: list[dict], combine: str) -> Condition | None:
+    """The condition the table says; None when it is empty (always asked). What cannot be a
+    term is refused with its line; what the questionnaire refuses, `design.set_condition`
+    says."""
+    labels = target_labels(project)
+    operators = {_(OPERATOR_NAMES[k]): k for k in OPERATOR_NAMES}
+    terms, problems = [], []
+    for number, row in enumerate(rows, start=1):
+        target = (row.get("target") or "").strip()
+        operator = operators.get((row.get("operator") or "").strip())
+        value = (row.get("value") or "").strip()
+        if not (target or row.get("operator") or value):
+            continue
+        if not target:
+            problems.append(_("Ligne {n} : choisissez la question visée.").format(n=number))
+            continue
+        if operator is None:
+            problems.append(_("Ligne {n} : choisissez un opérateur.").format(n=number))
+            continue
+        found: str | list[str] | None = None
+        if operator in ("in", "not_in"):
+            found = [v.strip() for v in re.split(r"[,;]", value) if v.strip()]
+            if not found:
+                problems.append(_("Ligne {n} : donnez au moins un code.").format(n=number))
+                continue
+        elif operator not in ("checked", "answered"):
+            if not value:
+                problems.append(_("Ligne {n} : donnez une valeur.").format(n=number))
+                continue
+            found = value
+        terms.append(Term(target=labels.get(target, target), operator=operator, value=found))
+    if problems:
+        raise DesignError(problems)
+    if not terms:
+        return None
+    if len(terms) > 10:
+        raise DesignError([_("Une condition a au plus 10 lignes.")])
+    return Condition(combine=combine if combine in ("all", "any") else "all", terms=terms)
+
+
+def codes(text: str | None) -> list[str] | None:
+    """Codes typed "4" or "4, 5"; None when there is none."""
+    found = [v.strip() for v in re.split(r"[,;]", text or "") if v.strip()]
+    return found or None
+
+
+def _condition_block(project: Project, key: str, fresh_rows, fresh_combine) -> None:
+    """The block "Posée si": its lines, joined by "and" or "or", and the codes of the choices
+    the lines name, to type them."""
+    st.markdown(":material/filter_alt: " + _("**Posée si**"))
+    st.caption(_("Sans ligne, toujours posée. Une réponse laissée vide ne remplit aucune ligne."))
+    labels = target_labels(project)
+    typed = st.session_state.get(f"{key}terms") or fresh_rows()
+    options = list(labels) + [
+        r["target"] for r in typed if r.get("target") and r["target"] not in labels
+    ]
+    st.radio(
+        _("Conditions à remplir"),
+        list(COMBINES),
+        key=c.field(f"{key}combine", fresh_combine, label=_("Posée si")),
+        format_func=COMBINES.__getitem__,
+        horizontal=True,
+    )
+    _table(
+        f"{key}terms",
+        fresh_rows,
+        _(
+            "Lignes de la condition (question visée, opérateur, valeur ; plusieurs codes "
+            "séparés par des virgules)"
+        ),
+        columns=TERM_COLUMNS,
+        config={
+            "target": st.column_config.SelectboxColumn(
+                _("Question visée"), options=options, width="large"
+            ),
+            "operator": st.column_config.SelectboxColumn(
+                _("Opérateur"),
+                options=[_(OPERATOR_NAMES[k]) for k in OPERATOR_NAMES],
+                width="small",
+            ),
+            "value": st.column_config.TextColumn(_("Valeur"), width="small"),
+        },
+    )
+    found = design.questionnaire(project)
+    shown = []
+    for row in st.session_state.get(f"{key}terms") or []:
+        target = skip.target_of(found, labels.get(row.get("target") or "", ""))
+        if (
+            target is not None
+            and target.nature == "choice"
+            and target.question.question_id not in shown
+        ):
+            shown.append(target.question.question_id)
+            choices = skip.choices(target.question)
+            st.caption(
+                _("Codes de la question {n} : {codes}").format(
+                    n=skip.numbers(found).get(target.question.question_id),
+                    codes=", ".join(f"{k} = {v}" for k, v in choices.items()),
+                )
+            )
 
 
 def _value(question_id: str, name: str):
@@ -244,7 +454,9 @@ def _draft(question_id: str) -> Draft:
                 provenance=provenance,
                 item_id=r.get("id") or None,
             )
-            for r in _rows_now(_prefix(question_id) + name, _columns(name == "options"))
+            for r in _rows_now(
+                _prefix(question_id) + name, _columns(name == "options", name == "rows")
+            )
             if (r["text"] or "").strip()
         )
 
@@ -273,12 +485,36 @@ def _save_question(project: Project, question_id: str) -> None:
     draft = _draft(question_id)
     if draft.provenance and draft.provenance.source == "?":
         raise DesignError([_("Nommez la source du texte (« Manuel, p. 4 »).")])
+    # v0.21: read before a new question gets its id, refused before anything changes.
+    prefix = _prefix(question_id)
+    condition = condition_from(
+        project,
+        _rows_now(prefix + "terms", TERM_COLUMNS),
+        _value(question_id, "combine") or "all",
+    )
+    shuffle = bool(_value(question_id, "shuffle")) and draft.kind in design.SHUFFLED
+    attention = codes(_value(question_id, "attention")) if draft.kind == "single" else None
+    checks = [
+        codes(r.get("attention"))
+        for r in _rows_now(prefix + "rows", _columns(False, attention=True))
+        if (r.get("text") or "").strip()
+    ] if draft.kind == "grid" else []  # fmt: skip
     if question_id == NEW:
         question_id = design.add_question(project, draft)
     else:
         design.modify_question(project, question_id, draft)
     if typed and typed != _fresh(design.find(project, question_id), project)["code"]:
         design.decide_code(project, question_id, "write", now=c.now(), value=typed)
+    question = design.find(project, question_id)
+    if condition != question.condition:
+        design.set_condition(project, question_id, condition)
+    if shuffle != question.shuffle:
+        design.set_shuffle(project, question_id, shuffle)
+    if attention != question.attention:
+        design.set_attention(project, question_id, attention)
+    for row, check in zip(design.find(project, question_id).rows, checks, strict=False):
+        if check != row.attention:
+            design.set_attention(project, row.row_id, check)
 
 
 def _form(project: Project, question_id: str) -> None:
@@ -367,8 +603,8 @@ def _form(project: Project, question_id: str) -> None:
             _table(
                 prefix + "rows",
                 lambda: _fresh_now(question_id, "rows"),
-                _("Énoncés de la grille (code, texte)"),
-                other=False,
+                _("Énoncés de la grille (code, texte ; un item de contrôle a ses bonnes réponses)"),
+                attention=True,
             )
             _table(
                 prefix + "options",
@@ -376,6 +612,28 @@ def _form(project: Project, question_id: str) -> None:
                 _("Colonnes de la grille : les choix de réponse (code, texte)"),
                 other=False,
             )
+        if kind in design.SHUFFLED:
+            st.checkbox(
+                {
+                    "single": _("Présenter les choix dans un ordre aléatoire"),
+                    "checkbox": _("Présenter les options dans un ordre aléatoire"),
+                    "grid": _("Présenter les énoncés dans un ordre aléatoire"),
+                }[kind],
+                key=field("shuffle", _("Ordre aléatoire")),
+                help=_("Tiré pour chaque personne ; l'option « Autre » reste à la fin."),
+            )
+        if kind == "single":
+            st.text_input(
+                _("Item de contrôle : bonnes réponses (codes ; vide : ce n'est pas un item de "
+                  "contrôle)"),
+                key=field("attention", _("Item de contrôle")),
+            )  # fmt: skip
+        _condition_block(
+            project,
+            prefix,
+            lambda: _fresh_now(question_id, "terms"),
+            lambda: _fresh_now(question_id, "combine"),
+        )
         save, cancel, _space = st.columns([1, 1, 3])
         save.button(
             _("Enregistrer"),
@@ -419,6 +677,8 @@ def _question_line(
         if provenance:
             parts.append(provenance)
         st.markdown(" — ".join(parts))
+        for line in _settings(project, question):
+            st.caption(line)
         for point in problems:  # the review's points (D3), settled in the form or kept
             st.markdown(f":material/warning: {point.text}")
         key = f"design-{question.question_id}"
@@ -461,6 +721,46 @@ def _question_line(
             )
 
 
+def _settings(project: Project, question: Question) -> list[str]:
+    """What the question's condition, random order and attention checks say (v0.21)."""
+    found = []
+    if question.condition is not None:
+        found.append(skip.team_text(project, question.condition))
+    if question.shuffle:
+        found.append(_("Ordre aléatoire."))
+    if question.attention:
+        found.append(
+            _("Item de contrôle : bonnes réponses {codes}.").format(
+                codes=", ".join(question.attention)
+            )
+        )
+    for row in question.rows:
+        if row.attention:
+            found.append(
+                _("Item de contrôle « {row} » : bonnes réponses {codes}.").format(
+                    row=_short(row.text), codes=", ".join(row.attention)
+                )
+            )
+    return found
+
+
+def _save_section(project: Project, section_id: str) -> None:
+    key = f"design-{section_id}-"
+    condition = condition_from(
+        project,
+        _rows_now(key + "terms", TERM_COLUMNS),
+        st.session_state.get(key + "combine") or "all",
+    )
+    design.modify_section(
+        project, section_id, st.session_state[key + "title"], st.session_state[key + "instruction"]
+    )
+    section = next(s for s in design.questionnaire(project).sections if s.section_id == section_id)
+    if condition != section.condition:
+        design.set_condition(project, section_id, condition)
+    if bool(st.session_state.get(key + "shuffle")) != section.shuffle:
+        design.set_shuffle(project, section_id, bool(st.session_state.get(key + "shuffle")))
+
+
 def _section_controls(project: Project, section, rank: int, total: int) -> None:
     key = f"design-{section.section_id}"
     title_key = c.field(f"{key}-title", lambda s=section.section_id: _section(s).title,
@@ -476,19 +776,28 @@ def _section_controls(project: Project, section, rank: int, total: int) -> None:
     down.button(_("Descendre"), key=f"{key}-down", icon=":material/arrow_downward:",
                 disabled=rank == total, on_click=act,
                 args=(design.move_section, section.section_id, rank + 1))  # fmt: skip
+    shuffle_key = c.field(
+        f"{key}-shuffle",
+        lambda s=section.section_id: _section(s).shuffle,
+        label=_("Ordre aléatoire"),
+    )
     with edit.popover(_("Modifier"), icon=":material/edit:"):
         st.text_input(_("Titre de la section"), key=title_key)
         st.text_area(_("Consigne de la section (facultative)"), key=instruction_key)
+        st.checkbox(_("Présenter ses questions dans un ordre aléatoire"), key=shuffle_key)
+        _condition_block(
+            project,
+            f"{key}-",
+            lambda s=section.section_id: condition_rows(c.project(), _section(s).condition),
+            lambda s=section.section_id: (
+                _section(s).condition.combine if _section(s).condition else "all"
+            ),
+        )
         st.button(
             _("Enregistrer la section"),
             key=f"{key}-save",
             on_click=act,
-            args=(
-                lambda p, s: design.modify_section(
-                    p, s, st.session_state[title_key], st.session_state[instruction_key]
-                ),
-                section.section_id,
-            ),
+            args=(_save_section, section.section_id),
         )
     with remove.popover(_("Retirer"), icon=":material/delete:"):
         st.caption(_("Seule une section sans question se retire."))
@@ -574,6 +883,10 @@ def page(project: Project) -> None:
         st.subheader(titles[section.section_id])
         if section.instruction:
             st.write(section.instruction)
+        if section.condition is not None:
+            st.caption(skip.team_text(project, section.condition))
+        if section.shuffle:
+            st.caption(_("Questions de la section en ordre aléatoire."))
         _section_controls(project, section, rank, len(sections))
         if not questions:
             st.caption(_("Aucune question dans cette section."))
@@ -599,7 +912,9 @@ def page(project: Project) -> None:
 def _go_to_point(point) -> None:
     """The place where a point is settled: the question open in its form, the page "Noms",
     or the group of an instrument."""
-    if point.page == "design":
+    if point.page == "design" and point.question.startswith("S"):  # a section's (v0.21)
+        c.go_to("design", **{SECTION_FILTER: point.question})
+    elif point.page == "design":
         counter = f"design-form-{point.question}"
         c.go_to("design", **{OPEN: point.question, SECTION_FILTER: ALL,
                              counter: st.session_state.get(counter, 0) + 1})  # fmt: skip
@@ -623,19 +938,31 @@ def review_page(project: Project) -> None:
             "question change."
         )
     )
+    _duration(project)
     c.show_message("design-review")
     found = design_points.points(project)
     if not found:
         st.success(_("Aucun point à voir."))
     numbers = {q.question_id: n for n, q in enumerate(design.questionnaire(project).questions, 1)}
+    sections = {s.section_id: s for s in design.questionnaire(project).sections}
     for index, point in enumerate(found):
-        question = design.find(project, point.question)
         with st.container(border=True):
-            st.markdown(f"**{numbers.get(point.question, '?')}.** {_excerpt(question.text)}")
+            if point.question in sections:
+                title = sections[point.question].title or _("Section sans titre")
+                st.markdown(_("**Section** {title}").format(title=title))
+            else:
+                question = design.find(project, point.question)
+                st.markdown(f"**{numbers.get(point.question, '?')}.** {_excerpt(question.text)}")
             st.write(point.text)
             go, keep, _space = st.columns([1, 1, 2])
             go.button(
-                _("Aller à la question") if point.page == "design" else _("Ouvrir la page"),
+                (
+                    _("Aller à la section")
+                    if point.question in sections
+                    else _("Aller à la question")
+                )
+                if point.page == "design"
+                else _("Ouvrir la page"),
                 key=f"design-review-go-{index}",
                 icon=":material/arrow_forward:",
                 on_click=_go_to_point,
@@ -658,6 +985,17 @@ def review_page(project: Project) -> None:
         with st.expander(_("Points gardés tels quels ({n})").format(n=len(closed))):
             for point in closed:
                 st.write(f"{numbers.get(point.question, '?')}. {point.text}")
+
+
+def _duration(project: Project) -> None:
+    """The estimated duration, with its formula and its terms (D-171)."""
+    if not design.questionnaire(project).questions:
+        return
+    found = design_duration.estimate(project)
+    st.markdown(_("**Durée estimée** : {duration}.").format(duration=design_duration.text(found)))
+    with st.expander(_("La formule")):
+        for line in design_duration.formula(found):
+            st.write(line)
 
 
 def opened_question() -> str | None:
