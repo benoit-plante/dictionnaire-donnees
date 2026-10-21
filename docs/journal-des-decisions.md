@@ -1998,3 +1998,129 @@ Ce journal consigne, dans l'ordre chronologique, les décisions qui structurent 
   2. La 0.20.2 après le nouvel accueil (format 0.10.0), puis le titre en 0.20.3 (format 0.11.0), pour essayer l'accueil plus tôt.
 - **Justification :** Validé par l'auteur le 2026-10-20 avec le plan. La partie « Non publié » changeait déjà le format du projet (D-158) : la 0.20.2 ne pouvait plus être « sans changement de format ». Une seule version évite un format publié pour quelques heures, et un seul passage de format pour les équipes.
 - **Références :** `docs/plan-accueil.md`, § 10 ; `CHANGELOG.md`, 0.20.2.
+
+### D-163 — Un second niveau d'envoi : les résultats à publier
+
+- **Date :** 2026-10-20
+- **Statut :** adoptée
+- **Remplace :** D-134 (en partie : « pas même agrégé », pour les documents activés de ce niveau seulement)
+- **Décision :** Un second niveau d'envoi vers l'IA, « résultats à publier », s'ajoute au niveau des métadonnées (D-136, inchangée pour ses quatre usages). Il est activé document par document (la Discussion, un résumé vulgarisé, un retour aux participants, une affiche…), pour un projet qui permet déjà l'IA (D-138), toujours désactivé par défaut ; chaque activation garde sa date et une raison facultative (« comité consulté le … »), et se retire. Il ne transmet que les statistiques qui figureront dans l'article : celles que l'outil écrit lui-même dans l'ébauche, à partir des analyses retenues et confirmées du carnet, avec les phrases, tableaux et notes qui les portent ; jamais un tableau brut, une valeur observée d'une variable, un minimum ou un maximum, un texte libre, un identifiant, une figure ou ses points, ni une analyse non retenue, et rien tant qu'un chiffre du carnet attend sa confirmation. Toute cellule de moins de 5 (le seuil réglable de D-006) est masquée : un effectif, un pourcentage dérivé, une case de tableau croisé, une étape du diagramme de flux, et toute statistique calculée sur moins de 5 personnes ; une cellule qui se retrouverait par soustraction est masquée aussi. Le message est montré mot pour mot dans « Ce qui part » avant chaque envoi et gardé dans le dossier des envois. L'outil produit par le calcul une fiche pour le comité d'éthique (Word, français et anglais). Ce que l'IA rend est une proposition (règle 5) ; tout nombre de sa réponse doit figurer dans ce qui est parti, sinon il est signalé et la proposition ne peut être acceptée telle quelle.
+- **Options considérées :**
+  1. Un second niveau, activé document par document, limité aux statistiques de l'ébauche (ce choix).
+  2. Le niveau des métadonnées seulement (D-136) : l'IA rédige autour de renvois (`{{A3.t}}`) sans voir les chiffres.
+  3. Un niveau ouvert à tous les agrégats du profil, comme le banc (codes observés, proportions).
+- **Justification :** Décidé par l'auteur le 2026-10-20 ; le masquage secondaire, les statistiques sur moins de 5 personnes, les figures et les chiffres non confirmés ajoutés après ses objections, acceptées le même jour. Une Discussion, un résumé vulgarisé ou un retour aux participants ne s'écrivent pas sans les résultats ; ces statistiques sont destinées à être publiées, et rien n'en part qui ne serait pas dans l'article. L'option 2 donne des textes qui ne peuvent pas dire ce que les chiffres montrent. L'option 3 ferait partir ce que l'article ne publiera jamais. L'activation par document laisse au comité d'éthique un périmètre exact à approuver.
+- **Conséquences :** Le nom est « résultats à publier », jamais « niveau 2 » (le niveau 2 du banc reste interdit). La règle 3 du `CLAUDE.md`, la règle 2 et le principe 5 de la conception sont reformulés comme le propose la feuille de route du cycle (§ 13.2), avec une ligne du tableau des garanties, **au début de la v0.27**, quand le code existe ; d'ici là, rien ne change dans l'outil. Une seule fonction construit les messages de ce niveau, à partir de l'ébauche, jamais de la base ; tout chiffre de la réponse est cherché dans ce qui est parti, en plus des statistiques lues par le vérificateur ; un nombre dérivé est signalé même juste. Tests à chaînes témoins du § 13.3.
+- **Références :** `docs/feuille-de-route-cycle.md`, § 11 et 13 ; D-006, D-089, D-100, D-117, D-118, D-134, D-136, D-138.
+
+### D-164 — La numérotation des versions
+
+- **Date :** 2026-10-20
+- **Statut :** adoptée
+- **Remplace :** D-143, D-144 et D-147 (en partie : le numéro de version où elles s'appliquent, la v0.24 au lieu de la v0.21)
+- **Décision :** Les versions sont numérotées dans l'ordre où elles sont publiées, sans numéro réservé d'avance : 0.21 filtres, ordre aléatoire et non applicable ; 0.22 taille d'échantillon et puissance ; 0.23 dossier d'étude (l'ancienne v0.19) ; 0.24 sources, vérification mot pour mot et extraction d'un instrument (l'ancienne v0.21, où s'appliquent D-143, D-144 et D-147) ; puis 0.25 à 0.32 selon la feuille de route du cycle.
+- **Options considérées :**
+  1. L'ordre de publication, sans numéro réservé (ce choix).
+  2. Garder 0.21 pour les sources et sauter des numéros quand une version passe avant une autre.
+- **Justification :** Validé par l'auteur le 2026-10-20 avec la feuille de route. Le numéro 0.19, réservé puis sauté, a déjà demandé une explication dans chaque document ; numéroter à la publication évite de recommencer.
+- **Conséquences :** La conception (§ 12, § 25) renvoie désormais à la v0.24 pour les sources ; les entrées passées et les plans des versions publiées ne sont pas modifiés.
+- **Références :** `docs/feuille-de-route-cycle.md`, § 3 et 4.
+
+### D-165 — La forme d'une condition
+
+- **Date :** 2026-10-20
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Une question ou une section d'un questionnaire conçu peut porter une condition : de 1 à 10 termes (une cible désignée par son identifiant, `Q3`, `Q7.r2` ou `Q10.o2` ; un opérateur que la nature de la cible admet, parmi `eq`, `ne`, `in`, `not_in`, `lt`, `le`, `gt`, `ge`, `checked`, `answered` ; une valeur choisie parmi les choix de la cible, ou un nombre), reliés tous par « et » ou tous par « ou ». La condition effective d'une question est celle de sa section et la sienne. Un terme sur une réponse vide ou sur une question non posée est faux, quel que soit l'opérateur. Ni parenthèses, ni « ou » entre plusieurs « et », ni « sans réponse », ni « non coché » dans cette version. Jamais un texte libre à interpréter.
+- **Options considérées :**
+  1. Une liste de termes à un seul connecteur, section et question combinées par « et » (ce choix).
+  2. Des groupes de termes « et » reliés par « ou ».
+  3. Une expression libre, comme celles de LimeSurvey.
+- **Justification :** Validé par l'auteur le 2026-10-20. La plupart des questionnaires de psychologie n'utilisent que « si Q = valeur », parfois deux termes ; la condition de section donne déjà un second niveau. Les identifiants ne sont jamais redonnés : un code changé ne casse pas la condition. La règle du vide est celle que l'outil écrit pour LimeSurvey, qui ne distingue pas dans une expression une question non posée d'une question laissée sans réponse.
+- **Références :** `docs/plan-v0.21.md`, § 5.1.
+
+### D-166 — Ce que couvre l'ordre aléatoire
+
+- **Date :** 2026-10-20
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** L'ordre aléatoire se déclare pour les questions d'une section, les énoncés d'une grille, les choix d'une question à choix unique et les options d'une question à cocher ; « Autre » reste à la fin. Il est écrit pour LimeSurvey (`random_group`, `subquestion_order`, `answer_order`), dit dans les deux Word, le codebook et la Méthode, et n'entre dans aucun calcul (noms, codes et colonnes inchangés). Pas l'ordre des sections, ni des colonnes d'une grille, ni le tirage d'un sous-ensemble.
+- **Options considérées :**
+  1. Questions d'une section, énoncés, choix et options (ce choix).
+  2. Aussi les sections et le tirage d'un sous-ensemble.
+- **Justification :** Validé par l'auteur le 2026-10-20. L'ordre aléatoire des groupes n'est pas documenté dans LimeSurvey ; une échelle se lit dans l'ordre de ses colonnes ; le tirage d'un sous-ensemble changerait le non applicable.
+- **Références :** `docs/plan-v0.21.md`, § 5.2.
+
+### D-167 — Le non applicable
+
+- **Date :** 2026-10-20
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Le non applicable est une nature de vide distincte du manquant : pour chaque personne et chaque variable d'une question filtrée, condition fausse et vide, non applicable ; condition vraie et vide, manquant ; condition fausse et réponse présente, anomalie, dite dans le rapport de conformité en agrégats (moins de 5 : « < 5 »). Il est recalculé en mémoire à chaque préparation à partir des conditions, sur les codes tels qu'enregistrés (avant le retrait des codes manquants), jamais gardé par personne. En aval, la complétude ne compte que les items posés, une condition d'exclusion n'est jamais remplie par un non applicable (`missing` veut dire « posée, sans réponse »), le Tableau 1, la description de l'échantillon, les analyses et la Méthode disent « posée à *n* personnes ». Deux codes facultatifs pour tout le projet, le non applicable et le manquant, choisis par l'équipe sans valeur proposée, écrits dans le script de préparation et le fichier de commandes (déclarés manquants et étiquetés), jamais dans la copie documentée ; un code déjà employé par une variable est refusé pour elle.
+- **Options considérées :**
+  1. Une nature calculée en mémoire, deux codes facultatifs choisis par l'équipe (ce choix).
+  2. Un code du non applicable écrit d'office (−8, −9).
+  3. Le non applicable gardé dans le projet, personne par personne.
+- **Justification :** Validé par l'auteur le 2026-10-20. Un code d'office serait une décision prise à la place de l'équipe, comme un seuil ; garder une nature par personne ferait entrer des données individuelles dans le projet (D-093). Évaluer après le retrait des codes manquants se tromperait : « Préfère ne pas répondre » (9) remplit « Q3 ≠ 1 » dans LimeSurvey.
+- **Références :** `docs/plan-v0.21.md`, § 5.8.
+
+### D-168 — Une condition déclarée à la main
+
+- **Date :** 2026-10-20
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Pour une base sans questionnaire conçu, une personne peut déclarer la condition d'une variable sur sa page (et la copier sur plusieurs variables), sur des variables désignées par leur nom d'origine ; elle porte son origine : `team` (tapée par une personne), `designed` (calculée à partir du questionnaire conçu) ou `lss` (lue dans un `.lss`, proposée jusqu'à son acceptation). Le même calcul suit. Jamais proposée par un calcul ni par l'IA ; une valeur de texte libre ou d'identifiant est refusée (seul « a une réponse » les vise).
+- **Options considérées :**
+  1. Sur la page de la variable, avec son origine (ce choix).
+  2. Seulement pour un questionnaire conçu.
+- **Justification :** Validé par l'auteur le 2026-10-20. Une base SurveyMonkey ou un `.sav` existant a aussi des questions filtrées ; sans condition, chaque question non posée y serait comptée comme manquante.
+- **Références :** `docs/plan-v0.21.md`, § 5.8.7.
+
+### D-169 — La lecture des conditions d'un `.lss`
+
+- **Date :** 2026-10-20
+- **Statut :** adoptée
+- **Remplace :** D-148 (en partie : les conditions, jusqu'ici jamais lues, le sont dans les formes que l'outil écrit)
+- **Décision :** Les conditions d'un `.lss` ou d'un texte à colonnes de LimeSurvey (colonne ou champ `relevance` des questions et des groupes) sont lues seulement dans la forme exacte que l'outil écrit (termes avec `.NAOK` et le test du vide, un seul connecteur, codes connus) ; `1` et le vide veulent dire « toujours posée ». Toute autre expression est refusée et listée, jamais devinée : la question est lue sans condition, avec un point à vérifier qui montre l'expression. Le tableau `conditions` de l'ancien éditeur n'est pas lu. Le réexport comparé dit une condition changée, une condition non lue et un ordre aléatoire changé.
+- **Options considérées :**
+  1. Une grammaire fermée, les formes écrites par l'outil (ce choix).
+  2. Un analyseur de l'ExpressionScript entier.
+- **Justification :** Validé par l'auteur le 2026-10-20. L'ExpressionScript est un langage entier (fonctions, variables de LimeSurvey, calculs) ; en lire une partie et deviner le reste ferait accepter une condition fausse sans le dire.
+- **Références :** `docs/plan-v0.21.md`, § 5.7.2.
+
+### D-170 — Les items de contrôle d'attention
+
+- **Date :** 2026-10-20
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Une question à choix unique ou un énoncé de grille peut être marqué item de contrôle, avec ses bonnes réponses (des codes de ses choix). Il est rattaché au groupe de sa grille hors des membres et n'entre dans aucun score, alpha, complétude ni ligne droite ; un groupe qui en contiendrait un est refusé. À l'arrivée de la base, une règle d'exclusion d'une sorte nouvelle, `attention` (les items et leurs bonnes réponses, le nombre d'échecs à partir duquel une personne est exclue, le sort d'un item laissé vide, « échec » ou « ignoré », choisi par l'équipe sans valeur par défaut), est proposée sur la page « Méthode », jamais appliquée seule (D-095). Un item non posé n'est jamais un échec.
+- **Options considérées :**
+  1. Une sorte nouvelle, `attention` (ce choix).
+  2. Une règle `condition` par item.
+- **Justification :** Validé par l'auteur le 2026-10-20. Une condition ne porte que sur une variable, n'est jamais remplie par un vide et n'a pas de « n'est pas parmi » ; « au moins 1 échec sur 2 items » demanderait deux règles qui se partagent les personnes, et le diagramme de flux les séparerait.
+- **Références :** `docs/plan-v0.21.md`, § 5.3.
+
+### D-171 — La durée estimée de passation
+
+- **Date :** 2026-10-20
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** La durée estimée est calculée sur le questionnaire : mots lus ÷ vitesse de lecture + temps de réponse. La vitesse est celle des textes standardisés IReST (Trauzettel-Klosinski et Dietz, 2012) : 195 mots par minute en français, 228 en anglais, mesurées à voix haute, donc prudentes pour une lecture silencieuse (la durée est plutôt surestimée). Les temps de réponse (3 s par réponse fermée, 10 s par réponse ouverte courte, nombre ou date, 60 s par réponse longue) sont des repères de l'outil, sans source primaire, dits comme tels partout. Le résultat est une fourchette, du chemin le plus court au plus long, arrondie à la minute. Montrée sur la page « Relecture » avec sa formule, dans le Word pour le comité et, en texte, à côté du seuil de durée de la page « Méthode », jamais reprise dans un seuil.
+- **Options considérées :**
+  1. Lecture sourcée et temps de réponse de l'outil, en fourchette (ce choix).
+  2. La lecture seule, sourcée (sous-estime).
+  3. Des temps de réponse tapés par l'équipe avec leur source.
+- **Justification :** Validé par l'auteur le 2026-10-20. Vérifié à l'étape 1 de la v0.21 : les valeurs de l'IReST sont celles du tableau de l'article, mais mesurées à voix haute, et non en lecture silencieuse comme le plan le disait ; Brysbaert (2019 : 238 mots par minute en lecture silencieuse d'un texte informatif en anglais) ne donne pas de valeur mesurée pour le français. Une valeur prudente convient à une durée annoncée au comité. Le pilote (v0.26) recalibrera les temps de réponse.
+- **Références :** `docs/plan-v0.21.md`, § 5.4 ; Trauzettel-Klosinski, S., et Dietz, K. (2012), *Investigative Ophthalmology & Visual Science*, 53(9), 5452-5461, https://doi.org/10.1167/iovs.11-8284.
+
+### D-172 — Le format 0.12.0 et l'empreinte
+
+- **Date :** 2026-10-20
+- **Statut :** adoptée
+- **Remplace :** —
+- **Décision :** Format du projet 0.12.0 : `Term` et `Condition` ; `condition` et `shuffle` des sections et des questions ; `attention` des questions et des énoncés ; `asked_if` d'une variable ; `blank_codes` des réglages ; la règle d'exclusion `attention`. Tous facultatifs : un projet 0.11.0 s'ouvre tel quel, même codebook et même empreinte ; un projet 0.12.0 est « écrit par une version plus récente » pour la 0.20.2. L'empreinte du codebook comprend les conditions déclarées sur les variables, les codes du non applicable et du manquant et la règle `attention`, seulement quand ils existent ; les conditions, l'ordre aléatoire et les items de contrôle d'un questionnaire conçu y entrent par l'empreinte du questionnaire, où un champ nouveau n'entre que rempli.
+- **Options considérées :**
+  1. Dans l'empreinte, seulement quand ils existent (ce choix).
+  2. Hors de l'empreinte du codebook.
+- **Justification :** Validé par l'auteur le 2026-10-20. Les conditions changent les dénominateurs, la complétude et les phrases : le carnet doit les voir. `design.content_fingerprint` sérialise chaque question entière : un champ nouveau vide changerait l'empreinte de tout questionnaire conçu et ferait dire « modifié depuis l'envoi » à chaque publication marquée.
+- **Références :** `docs/plan-v0.21.md`, § 4.2 et 5.9.
