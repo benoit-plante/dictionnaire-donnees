@@ -464,19 +464,95 @@ def asked(data: pd.DataFrame, conditions: Mapping[str, Sequence[Condition]]) -> 
 ANSWER, MISSING, NOT_APPLICABLE, ANOMALY = "answer", "missing", "not_applicable", "anomaly"
 
 
-def natures(data: pd.DataFrame, conditions: Mapping[str, Sequence[Condition]]) -> pd.DataFrame:
+def _ticked(column: pd.Series) -> pd.Series:
+    return _holds(pd.DataFrame({"box": column}), Term(target="box", operator="checked"))
+
+
+def natures(
+    data: pd.DataFrame,
+    conditions: Mapping[str, Sequence[Condition]],
+    boxes: Mapping[str, Sequence[str]] | None = None,
+) -> pd.DataFrame:
     """For each variable with conditions and each person: an answer, a missing answer (asked,
-    left empty), not applicable (not asked, empty) or an anomaly (an answer, not asked)."""
+    left empty), not applicable (not asked, empty) or an anomaly (an answer, not asked).
+
+    `boxes`: for an option to tick, the options of its question. An option left unticked is
+    an answer ("not ticked") when another box of the question is ticked; missing only when
+    none is, as the codebook says it."""
     was_asked = asked(data, conditions)
     found = {}
     for name in conditions:
-        present = ~_blank(data[name])
+        others = (boxes or {}).get(name)
+        if others:
+            present = _ticked(data[name])
+            answered = pd.concat([_ticked(data[o]) for o in others], axis=1).any(axis=1)
+        else:
+            present = answered = ~_blank(data[name])
         yes = was_asked[name]
         found[name] = pd.Series(
             [
-                (ANSWER if p else MISSING) if a else (ANOMALY if p else NOT_APPLICABLE)
-                for a, p in zip(yes, present, strict=True)
+                (ANSWER if q else MISSING) if a else (ANOMALY if p else NOT_APPLICABLE)
+                for a, p, q in zip(yes, present, answered, strict=True)
             ],
             index=data.index,
         )
     return pd.DataFrame(found, index=data.index)
+
+
+# --- On a project (v0.21, step 8). ---
+
+
+@dataclass(frozen=True)
+class Counts:
+    """For a variable with conditions: how many were asked it, how many not (not applicable),
+    how many were asked and did not answer, how many answered without being asked."""
+
+    asked: int
+    not_applicable: int
+    missing: int
+    anomalies: int
+
+
+def conditions_of(project: Project) -> dict[str, list[Condition]]:
+    """The accepted conditions of the variables the codebook keeps, by original name."""
+    from ddict.project import aside
+    from ddict.project.decisions import is_accepted
+
+    return {
+        e.name: list(e.asked_if.value)
+        for e in aside.kept(project)
+        if e.asked_if is not None and is_accepted(e.asked_if) and e.asked_if.value
+    }
+
+
+def boxes_of(project: Project) -> dict[str, list[str]]:
+    """Each option to tick (a member of a multiple-response group), with all its group's."""
+    found = {}
+    for group in project.groups:
+        if group.kind == "multiple_response" and group.members.value:
+            for name in group.members.value:
+                found[name] = list(group.members.value)
+    return found
+
+
+def counts(project: Project, table: pd.DataFrame) -> dict[str, Counts]:
+    """The four numbers of each variable with conditions, on the database as recorded."""
+    conditions = conditions_of(project)
+    known = set(table.columns)
+    conditions = {
+        n: c for n, c in conditions.items()
+        if n in known and all(t.target in known for cond in c for t in cond.terms)
+    }  # fmt: skip
+    if not conditions:
+        return {}
+    boxes = {n: [o for o in b if o in known] for n, b in boxes_of(project).items() if n in known}
+    found = natures(table, conditions, boxes)
+    return {
+        name: Counts(
+            asked=int(found[name].isin([ANSWER, MISSING]).sum()),
+            not_applicable=int((found[name] == NOT_APPLICABLE).sum()),
+            missing=int((found[name] == MISSING).sum()),
+            anomalies=int((found[name] == ANOMALY).sum()),
+        )
+        for name in conditions
+    }

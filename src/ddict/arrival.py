@@ -16,6 +16,12 @@ platform's own aside), codes observed outside the planned ones (the codes only, 
 counts), value labels that differ, a type other than the planned one, the variables found
 under another name, the texts of the base that differ from the questionnaire's (a question
 reworded in LimeSurvey). Nothing in the questionnaire is changed by it.
+
+Since v0.21 (D-167), with the database at hand: for each variable with a condition, how many
+were asked it, how many not (not applicable), how many were asked and left it empty, and how
+many answered under a false condition (anomalies). Counts only, a count under the threshold
+said "< 5" (D-006): never a person, a line or a value. A variable keeps the condition it had
+when the database arrived.
 """
 
 from __future__ import annotations
@@ -24,12 +30,14 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import pandas as pd
+
 from ddict import design, naming, platforms
 from ddict.design_limesurvey import OTHER_WORDS
 from ddict.i18n import _
 from ddict.io.load import read_database
 from ddict.privacy import MIN_CELL_COUNT
-from ddict.project import dataset, measure
+from ddict.project import dataset, measure, skip
 from ddict.project.build import build_project
 from ddict.project.decisions import PROPOSING_ORIGINS
 from ddict.project.model import Project, Question, TrackedValue, VariableEntry
@@ -79,6 +87,8 @@ def _merged(planned: VariableEntry, found: VariableEntry) -> VariableEntry:
             setattr(entry, name, list(getattr(planned, name)))
     entry.theoretical_range = planned.theoretical_range or entry.theoretical_range
     entry.notes = planned.notes or entry.notes
+    if planned.asked_if is not None:  # v0.21: the condition it had when the base arrived
+        entry.asked_if = planned.asked_if.model_copy(deep=True)
     return entry
 
 
@@ -88,7 +98,8 @@ def receive(
     """Read the database into the designed project; the conformity report after it."""
     if project.source is not None:
         raise AlreadyThere(project.source.name)
-    found = build_project(read_database(database), min_cell_count=min_cell_count)
+    data = read_database(database)
+    found = build_project(data, min_cell_count=min_cell_count)
     planned = {e.name.lower(): e for e in project.variables if e.planned is not None}
     variables = []
     for position, entry in enumerate(found.variables, start=1):
@@ -110,7 +121,7 @@ def receive(
     measure.propose(project)
     naming.propose(project)
     dataset.propose_structure(project)
-    return conformity(project)
+    return conformity(project, data.table)
 
 
 def _parts(label: str) -> tuple[str | None, str]:
@@ -208,12 +219,19 @@ class Conformity:
     types: dict[str, tuple[str, str]] = field(default_factory=dict)  # planned, observed
     renamed: dict[str, str] = field(default_factory=dict)  # planned name -> name in the base
     texts: list[tuple[str, str, str]] = field(default_factory=list)  # name, planned, in base
+    # v0.21: the variables with a condition, and their counts, when the base was at hand.
+    filtered: dict[str, skip.Counts] = field(default_factory=dict)
+    threshold: int = MIN_CELL_COUNT
+
+    @property
+    def anomalies(self) -> dict[str, int]:
+        return {n: c.anomalies for n, c in self.filtered.items() if c.anomalies}
 
     @property
     def empty(self) -> bool:
         return not (
             self.absent or self.extra or self.codes or self.labels or self.types
-            or self.renamed or self.texts
+            or self.renamed or self.texts or self.anomalies
         )  # fmt: skip
 
 
@@ -234,11 +252,14 @@ def _platform_names(project: Project) -> set[str]:
     return {n.lower() for v in platform.variables for n in v.names}
 
 
-def conformity(project: Project) -> Conformity:
-    """What the database says otherwise than the questionnaire planned."""
-    found = Conformity()
+def conformity(project: Project, table: pd.DataFrame | None = None) -> Conformity:
+    """What the database says otherwise than the questionnaire planned; with its table, the
+    counts of the variables with a condition (v0.21)."""
+    found = Conformity(threshold=project.settings.min_cell_count)
     if project.source is None or project.design is None:
         return found
+    if table is not None:
+        found.filtered = skip.counts(project, table)
     wanted = {w.name.lower(): w for w in design.wanted(project)}
     targets = {w.target: w for w in wanted.values()}
     questions = {q.question_id: q for q in design.questionnaire(project).questions}
@@ -308,8 +329,49 @@ def _code(code) -> str:
     return str(code)
 
 
+def count_text(n: int, threshold: int) -> str:
+    """A count as an export says it: under the threshold, "< 5" (D-006); none is 0."""
+    return f"< {threshold}" if 0 < n < threshold else str(n)
+
+
+def _filtered_lines(found: Conformity) -> list[str]:
+    """The sections of the variables with a condition (v0.21): counts only."""
+    if not found.filtered:
+        return []
+    n = found.threshold
+    lines = [
+        "## " + _("Questions filtrées"),
+        "",
+        "| " + " | ".join([_("Variable"), _("Posée à"), _("Non applicable"), _("Manquant")]) + " |",
+        "|---|---|---|---|",
+    ]
+    for name, counts in found.filtered.items():
+        cells = [
+            f"`{name}`",
+            *(count_text(c, n) for c in (counts.asked, counts.not_applicable, counts.missing)),
+        ]
+        lines.append("| " + " | ".join(cells) + " |")
+    lines.append("")
+    if found.anomalies:
+        lines += [
+            "## " + _("Réponses sous une condition fausse"),
+            "",
+            _(
+                "Des réponses à une question qui n'aurait pas dû être posée. La cause est "
+                "d'ordinaire connue de l'équipe : une condition changée en cours de collecte "
+                "(les versions marquées envoyées le disent), une base fusionnée à la main, une "
+                "condition mal recopiée. Rien n'est corrigé par l'outil."
+            ),
+            "",
+            *(f"- `{name}` : {count_text(c, n)}" for name, c in found.anomalies.items()),
+            "",
+        ]
+    return lines
+
+
 def report_markdown(project: Project, found: Conformity) -> str:
-    """The conformity report, metadata only: names, codes and labels, never a count."""
+    """The conformity report, metadata only: names, codes and labels; since v0.21, the counts
+    of the variables with a condition, a small count masked (D-006)."""
     title = design.questionnaire(project).file_name
     lines = [
         "# " + _("Conformité de la base au questionnaire"),
@@ -319,7 +381,7 @@ def report_markdown(project: Project, found: Conformity) -> str:
     ]
     if found.empty:
         lines += [_("La base dit ce que le questionnaire prévoyait."), ""]
-        return "\n".join(lines)
+        return "\n".join(lines + _filtered_lines(found))
     sections = [
         (_("Variables prévues absentes de la base"), [f"- `{n}`" for n in found.absent]),
         (_("Variables de la base que le questionnaire ne prévoyait pas"),
@@ -340,7 +402,7 @@ def report_markdown(project: Project, found: Conformity) -> str:
     for heading, items in sections:
         if items:
             lines += [f"## {heading}", "", *items, ""]
-    return "\n".join(lines)
+    return "\n".join(lines + _filtered_lines(found))
 
 
 def report_path(project_path: Path) -> Path:
@@ -353,6 +415,14 @@ def summary_text(found: Conformity) -> str:
     """One line for the command line and the page."""
     if found.empty:
         return _("Base lue : elle dit ce que le questionnaire prévoyait.")
+    if found.anomalies and not (
+        found.absent or found.extra or found.codes or found.labels or found.types
+        or found.renamed or found.texts
+    ):  # fmt: skip
+        return _(
+            "Base lue. Conformité au questionnaire — variables avec des réponses sous une "
+            "condition fausse : {n}."
+        ).format(n=len(found.anomalies))
     return _(
         "Base lue. Conformité au questionnaire — variables prévues absentes : {absent} ; "
         "non prévues : {extra} ; avec des codes hors des codes prévus : {codes} ; aux "

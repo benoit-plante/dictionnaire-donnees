@@ -73,6 +73,23 @@ def prepared_data(project: Project, where: str = "analysis") -> PreparedData | N
         return None
 
 
+def raw_table(project: Project):
+    """The database as recorded, read once per session, or None when it is not found: what
+    the counts of the filtered questions are computed on (v0.21). Says nothing."""
+    chosen = st.session_state.get(DATABASE)
+    try:
+        path = find_database(project, c.project_path(), Path(chosen) if chosen else None)
+    except DataError:
+        return None
+    read = st.session_state.get(TABLE)
+    if read is None or read[0] != str(path):
+        with st.spinner(_("Lecture de la base…")):
+            read = (str(path), read_database(path).table)
+        st.session_state[TABLE] = read
+        st.session_state.pop(PREPARED, None)
+    return read[1]
+
+
 def load_prepared(project: Project) -> PreparedData:
     """The data with the accepted decisions, kept in the session; raises DataError when the
     database is not found. Says nothing: the sidebar's dashboard uses it too (v0.16)."""

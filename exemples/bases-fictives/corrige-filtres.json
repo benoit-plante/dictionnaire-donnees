@@ -1,0 +1,222 @@
+{
+  "attention": {
+    "both_failed": 5,
+    "climat_SQ007_failed": 12,
+    "controle_empty": 3,
+    "controle_failed": 9
+  },
+  "climat_fewer_than_5": 6,
+  "n": 300,
+  "quick": 8,
+  "surveymonkey": {
+    "age": "q0002",
+    "bienetre_SQ001": "q0009_0001",
+    "bienetre_SQ002": "q0009_0002",
+    "bienetre_SQ003": "q0009_0003",
+    "bienetre_SQ004": "q0009_0004",
+    "bienetre_SQ005": "q0009_0005",
+    "bienetre_SQ006": "q0009_0006",
+    "bienetre_SQ007": "q0009_0007",
+    "bienetre_SQ008": "q0009_0008",
+    "climat_SQ001": "q0007_0001",
+    "climat_SQ002": "q0007_0002",
+    "climat_SQ003": "q0007_0003",
+    "climat_SQ004": "q0007_0004",
+    "climat_SQ005": "q0007_0005",
+    "climat_SQ006": "q0007_0006",
+    "climat_SQ007": "q0007_0007",
+    "commentaires": "q0011",
+    "consent": "q0001",
+    "controle": "q0010",
+    "emploi": "q0005",
+    "enfants": "q0003",
+    "id": "respondent_id",
+    "lecture": "q0013",
+    "nbenfants": "q0004",
+    "nuit": "q0008",
+    "sorties": "q0014",
+    "sport": "q0012",
+    "startdate": "date_created",
+    "submitdate": "date_modified",
+    "transport_SQ001": "q0006_0001",
+    "transport_SQ002": "q0006_0002",
+    "transport_SQ003": "q0006_0003",
+    "transport_other": "q0006_other"
+  },
+  "variables": {
+    "age": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 0,
+      "not_applicable": 10
+    },
+    "bienetre_SQ001": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 4,
+      "not_applicable": 10
+    },
+    "bienetre_SQ002": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 4,
+      "not_applicable": 10
+    },
+    "bienetre_SQ003": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 4,
+      "not_applicable": 10
+    },
+    "bienetre_SQ004": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 4,
+      "not_applicable": 10
+    },
+    "bienetre_SQ005": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 4,
+      "not_applicable": 10
+    },
+    "bienetre_SQ006": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 4,
+      "not_applicable": 10
+    },
+    "bienetre_SQ007": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 4,
+      "not_applicable": 10
+    },
+    "bienetre_SQ008": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 4,
+      "not_applicable": 10
+    },
+    "climat_SQ001": {
+      "anomalies": 7,
+      "asked": 210,
+      "missing": 0,
+      "not_applicable": 83
+    },
+    "climat_SQ002": {
+      "anomalies": 7,
+      "asked": 210,
+      "missing": 0,
+      "not_applicable": 83
+    },
+    "climat_SQ003": {
+      "anomalies": 7,
+      "asked": 210,
+      "missing": 0,
+      "not_applicable": 83
+    },
+    "climat_SQ004": {
+      "anomalies": 7,
+      "asked": 210,
+      "missing": 6,
+      "not_applicable": 83
+    },
+    "climat_SQ005": {
+      "anomalies": 7,
+      "asked": 210,
+      "missing": 6,
+      "not_applicable": 83
+    },
+    "climat_SQ006": {
+      "anomalies": 7,
+      "asked": 210,
+      "missing": 6,
+      "not_applicable": 83
+    },
+    "climat_SQ007": {
+      "anomalies": 7,
+      "asked": 210,
+      "missing": 2,
+      "not_applicable": 83
+    },
+    "commentaires": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 250,
+      "not_applicable": 10
+    },
+    "controle": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 3,
+      "not_applicable": 10
+    },
+    "emploi": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 0,
+      "not_applicable": 10
+    },
+    "enfants": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 6,
+      "not_applicable": 10
+    },
+    "lecture": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 0,
+      "not_applicable": 10
+    },
+    "nbenfants": {
+      "anomalies": 3,
+      "asked": 160,
+      "missing": 5,
+      "not_applicable": 137
+    },
+    "nuit": {
+      "anomalies": 0,
+      "asked": 146,
+      "missing": 0,
+      "not_applicable": 154
+    },
+    "sorties": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 0,
+      "not_applicable": 10
+    },
+    "sport": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 0,
+      "not_applicable": 10
+    },
+    "transport_SQ001": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 5,
+      "not_applicable": 10
+    },
+    "transport_SQ002": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 5,
+      "not_applicable": 10
+    },
+    "transport_SQ003": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 5,
+      "not_applicable": 10
+    },
+    "transport_other": {
+      "anomalies": 0,
+      "asked": 290,
+      "missing": 280,
+      "not_applicable": 10
+    }
+  }
+}

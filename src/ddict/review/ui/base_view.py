@@ -13,7 +13,7 @@ from ddict import arrival, i18n
 from ddict.export import wording as w
 from ddict.i18n import _, field_label, quoted
 from ddict.io.model import ReadError
-from ddict.project import aside
+from ddict.project import aside, skip
 from ddict.project.model import Project
 from ddict.review import levels, logic, study
 from ddict.review.logic import ReviewError
@@ -367,7 +367,10 @@ def _arrival(project: Project) -> None:
 
 
 def _conformity(project: Project) -> None:
-    found = arrival.conformity(project)
+    from ddict.review.ui.analyses_view import raw_table
+
+    table = raw_table(project) if skip.conditions_of(project) else None
+    found = arrival.conformity(project, table)
     c.show_message("base-conformity")
     with st.expander(_("Conformité au questionnaire"), expanded=not found.empty):
         text = arrival.report_markdown(project, found)

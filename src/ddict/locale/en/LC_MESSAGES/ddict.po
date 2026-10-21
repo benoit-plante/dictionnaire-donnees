@@ -987,6 +987,14 @@ msgstr "Database read: it says what the questionnaire planned."
 
 #, python-brace-format
 msgid ""
+"Base lue. Conformité au questionnaire — variables avec des réponses sous une condition fausse : "
+"{n}."
+msgstr ""
+"Database read. Conformity to the questionnaire — variables with answers under a false condition: "
+"{n}."
+
+#, python-brace-format
+msgid ""
 "Base lue. Conformité au questionnaire — variables prévues absentes : {absent} ; non prévues : "
 "{extra} ; avec des codes hors des codes prévus : {codes} ; aux étiquettes différentes : {labels} "
 "; d'un autre type : {types} ; retrouvées sous un autre nom : {renamed} ; textes différents : "
@@ -2004,6 +2012,15 @@ msgstr ""
 
 msgid "Des prédicteurs sont redondants (l'un se déduit exactement des autres) : retirez-en un."
 msgstr "Some predictors are redundant (one follows exactly from the others): remove one."
+
+msgid ""
+"Des réponses à une question qui n'aurait pas dû être posée. La cause est d'ordinaire connue de "
+"l'équipe : une condition changée en cours de collecte (les versions marquées envoyées le disent),"
+" une base fusionnée à la main, une condition mal recopiée. Rien n'est corrigé par l'outil."
+msgstr ""
+"Answers to a question that should not have been asked. The cause is usually known to the team: a "
+"condition changed during the collection (the versions marked as sent say it), a database merged "
+"by hand, a condition copied wrongly. The tool corrects nothing."
 
 msgid "Des termes du modèle se déduisent les uns des autres."
 msgstr "Terms of the model follow from one another."
@@ -4622,6 +4639,9 @@ msgstr "M (SD) or count (%)"
 msgid "Mann-Whitney (sans supposer la normalité)"
 msgstr "Mann-Whitney (without assuming normality)"
 
+msgid "Manquant"
+msgstr "Missing"
+
 msgid "Manquant déclaré"
 msgstr "Declared missing"
 
@@ -5016,6 +5036,9 @@ msgstr "Proposed names to validate: {n}"
 
 msgid "Non"
 msgstr "No"
+
+msgid "Non applicable"
+msgstr "Not applicable"
 
 msgid ""
 "Non cochée par défaut. Cochée, les boutons d'IA peuvent envoyer les métadonnées du projet "
@@ -5416,6 +5439,9 @@ msgstr "Asked if"
 #, python-brace-format
 msgid "Posée si {condition}"
 msgstr "Asked if {condition}"
+
+msgid "Posée à"
+msgstr "Asked of"
 
 #, python-brace-format
 msgid ""
@@ -5903,6 +5929,9 @@ msgid ""
 "Questions en ordre aléatoire dans une section qui contient {what} : il se retrouverait à "
 "n'importe quelle place."
 msgstr "Questions in random order in a section that holds {what}: it would end up in any place."
+
+msgid "Questions filtrées"
+msgstr "Filtered questions"
 
 msgid "Questions trouvées"
 msgstr "Questions found"
@@ -6433,6 +6462,9 @@ msgstr "Answers received"
 #, python-brace-format
 msgid "Réponses reçues : {start} ; exclues : {excluded} ; échantillon analysé : {analysed}."
 msgstr "Answers received: {start}; excluded: {excluded}; sample analysed: {analysed}."
+
+msgid "Réponses sous une condition fausse"
+msgstr "Answers under a false condition"
 
 msgid ""
 "Réservée aux personnes, avec une source documentée (manuel, article) ; jamais proposée par l'IA. "

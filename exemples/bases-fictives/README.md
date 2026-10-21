@@ -169,3 +169,21 @@ Pièges : le code 999 de l'âge, déclaré manquant (6 personnes gardées) ; l'i
 | Stress et sommeil liés (*r* = −,38), bien moins à charge constante (*r* partiel = −,12) | `stress`, `sommeil`, `charge` |
 
 Pièges : l'identifiant `id_participant` ; le code −9 déclaré manquant de `anxiete_t3` ; des personnes sans la deuxième ou la troisième mesure ; le sexe « Autre identité » à quelques personnes, pour les sous-groupes.
+
+## Base filtrée (v0.21)
+
+`questionnaire-filtres.txt` (le fichier pour LimeSurvey d'un questionnaire conçu dans l'outil, que la fonction `project()` du script construit), `reponses-filtres.sav` et `.csv` (300 réponses au format de LimeSurvey 7.6), `reponses-filtres-surveymonkey.sav` (les mêmes réponses sous les noms `qNNNN` de SurveyMonkey, sans condition) et le corrigé `corrige-filtres.json`, écrits par `scripts/generer_base_filtres.py` (graine fixe) : une étude fictive sur la famille et le travail, avec des questions filtrées, des ordres aléatoires et deux items de contrôle (`docs/plan-v0.21.md`, § 8). Le corrigé donne, pour chaque variable filtrée, combien de personnes l'ont reçue, combien ne l'ont pas reçue (non applicable), combien l'ont laissée vide et combien y ont répondu sans l'avoir reçue, comptés personne par personne sans le code de l'outil.
+
+| Cas planté | Nombre | Variables |
+|---|---|---|
+| Refus de consentement (toutes les sections suivantes non posées) | 10 | `consent` = 2 |
+| « Avez-vous des enfants ? » : Non, sans réponse, Préfère ne pas répondre (9, déclaré manquant) | 120, 6, 4 | `enfants` |
+| « Combien ? » posée et laissée vide | 5 | `nbenfants` |
+| Réponses sous une condition fausse : « Combien ? » sous Non ; la grille du travail sans emploi | 3 ; 7 | `nbenfants` ; `climat_SQ001` à `SQ007` |
+| Moins de 18 ans parmi les personnes à temps plein (« De nuit ? » non posée) | 4 | `age`, `nuit` |
+| 3 énoncés répondus sur 6 dans la grille du travail | 6 | `climat_SQ004` à `SQ006` |
+| Échecs aux items de contrôle : énoncé de la grille, question, les deux ; question laissée vide | 12, 9, 5 ; 3 | `climat_SQ007`, `controle` |
+| Aucun moyen de transport coché | 5 | `transport_SQ001` à `SQ003` |
+| Passation de moins de deux minutes | 8 | `startdate`, `submitdate` |
+
+Pièges : le code 9, choisi mais déclaré manquant, remplit la condition « ≠ 1 » comme dans LimeSurvey ; une case laissée vide n'est un manque que si aucune case de la question n'est cochée.
