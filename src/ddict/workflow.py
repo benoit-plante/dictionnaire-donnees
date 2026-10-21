@@ -20,7 +20,7 @@ from ddict.glossary import propose_from_questionnaire, undefined_acronyms
 from ddict.i18n import N_, Texts, _
 from ddict.io import read_database
 from ddict.privacy import MIN_CELL_COUNT
-from ddict.project import PROJECT_SUFFIX, aside, build_project, ondisk, save_project
+from ddict.project import PROJECT_SUFFIX, aside, asked, build_project, ondisk, save_project
 from ddict.project.decisions import is_accepted
 from ddict.project.model import Project, Questionnaire
 from ddict.questionnaire import language as study_language
@@ -210,6 +210,7 @@ def add_questionnaire(project: Project, path: Path | str, *, replace: bool = Fal
     propose_from_questionnaire(project)
     removed = drop_stale_links(project, previous) if previous is not None else 0
     propose_value_labels(project)
+    asked.propose_from_lss(project)  # v0.21: a LimeSurvey structure's conditions, proposed
     study_language.update(project)  # the questionnaire's language (v0.5)
     return removed
 

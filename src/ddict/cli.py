@@ -19,6 +19,7 @@ from pathlib import Path
 
 from ddict import __version__, settings, tracked
 from ddict.cli_ai import add_ai_parser, add_service_arguments, client_for_command
+from ddict.cli_conditions import add_conditions_parser
 from ddict.cli_decisions import add_decisions_parsers
 from ddict.cli_plan import add_plan_parser
 from ddict.cli_projects import add_projects_parser
@@ -1532,6 +1533,7 @@ def build_parser() -> argparse.ArgumentParser:
     add_ai_parser(commands)
     add_decisions_parsers(commands)
     add_recode_parser(commands)
+    add_conditions_parser(commands)
     add_verify_parser(commands)
     add_deposit_parser(commands)
 

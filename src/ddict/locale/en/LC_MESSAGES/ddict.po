@@ -470,6 +470,9 @@ msgstr "Accept the labels"
 msgid "Accepter les étiquettes de valeurs de ce groupe ({n})…"
 msgstr "Accept the value labels of this group ({n})…"
 
+msgid "Accepter une condition lue dans LimeSurvey."
+msgstr "Accept a condition read in LimeSurvey."
+
 msgid "Accueil"
 msgstr "Home"
 
@@ -823,6 +826,13 @@ msgstr "No key recorded for {endpoint}."
 
 msgid "Aucune clé saisie : rien n'est enregistré."
 msgstr "No key typed: nothing is recorded."
+
+msgid "Aucune condition déclarée."
+msgstr "No condition declared."
+
+#, python-brace-format
+msgid "Aucune condition proposée pour {name}."
+msgstr "No condition proposed for {name}."
 
 msgid "Aucune hypothèse : ajoutez-en une avec « ddict plan ajouter »."
 msgstr "No hypothesis: add one with “ddict plan add”."
@@ -1699,12 +1709,20 @@ msgstr ""
 "Condition in a loop: the question depends on itself, through its section or another question "
 "({targets}); it would never be asked."
 
+#, python-brace-format
+msgid "Condition enregistrée pour : {names}."
+msgstr "Condition saved for: {names}."
+
 msgid "Condition jamais vraie : la question ne serait jamais posée."
 msgstr "Condition never true: the question would never be asked."
 
 #, python-brace-format
 msgid "Condition non remplie : {reason}"
 msgstr "Condition not met: {reason}"
+
+#, python-brace-format
+msgid "Condition retirée pour : {names}."
+msgstr "Condition removed for: {names}."
 
 msgid "Condition sur un score"
 msgstr "Condition on a score"
@@ -2278,6 +2296,10 @@ msgid "Décision"
 msgstr "Decision"
 
 #, python-brace-format
+msgid "Décision enregistrée pour : {names}."
+msgstr "Decision saved for: {names}."
+
+#, python-brace-format
 msgid "Décision impossible : {detail}"
 msgstr "Decision impossible: {detail}"
 
@@ -2448,6 +2470,9 @@ msgstr "Save the range"
 
 msgid "Enregistrer la clé"
 msgstr "Record the key"
+
+msgid "Enregistrer la condition"
+msgstr "Save the condition"
 
 msgid "Enregistrer la cotation"
 msgstr "Save the scoring"
@@ -3477,6 +3502,9 @@ msgstr "The observed mean was higher in the {a} group."
 msgid "La moyenne observée était plus élevée pour {a}."
 msgstr "The observed mean was higher for {a}."
 
+msgid "La même condition pour"
+msgstr "The same condition for"
+
 #, python-brace-format
 msgid "La pente de {x} à chaque valeur de {w}, avec son IC 95 %."
 msgstr "The slope of {x} at each value of {w}, with its 95% CI."
@@ -3536,6 +3564,9 @@ msgstr "The corrected value is empty."
 
 msgid "La valeur est obligatoire."
 msgstr "The value is required."
+
+msgid "La variable ; à répéter."
+msgstr "The variable; to repeat."
 
 msgid "La variable source, par son nom (ou un score)."
 msgstr "The source variable, by its name (or a score)."
@@ -4121,6 +4152,10 @@ msgid "Le tableau des projets suivis : phase, codebook, en attente, plan, carnet
 msgstr "The table of the followed projects: phase, codebook, waiting, plan, notebook…"
 
 #, python-brace-format
+msgid "Le terme « {words} » attend une valeur."
+msgstr "The term “{words}” expects a value."
+
+#, python-brace-format
 msgid "Le test de {id} était unilatéral, dans le sens attendu."
 msgstr "The test of {id} was one-sided, in the expected direction."
 
@@ -4185,6 +4220,9 @@ msgstr ""
 
 msgid "Les autres analyses sont présentées comme exploratoires."
 msgstr "Other analyses are presented as exploratory."
+
+msgid "Les autres énoncés d'une grille, par exemple"
+msgstr "The other statements of a grid, for example"
 
 #, python-brace-format, python-format
 msgid "Les barres d'erreur représentent l'IC 95 % de β. {N} = {n}."
@@ -4256,6 +4294,9 @@ msgstr "Codes {codes} were treated as missing values."
 #, python-brace-format
 msgid "Les codes {codes} seront traités comme des valeurs manquantes."
 msgstr "Codes {codes} will be treated as missing values."
+
+msgid "Les conditions du projet."
+msgstr "The conditions of the project."
 
 msgid ""
 "Les corrélations partielles sont calculées à covariables constantes, par la corrélation des "
@@ -4450,6 +4491,9 @@ msgstr ""
 "The answering times are the tool's own marks, with no published source: the pilot will calibrate "
 "them."
 
+msgid "Les termes reliés par « ou » (par défaut : « et »)."
+msgstr "The terms joined by “or” (by default: “and”)."
+
 #, python-brace-format
 msgid "Les tests de {ids} étaient unilatéraux, dans le sens attendu."
 msgstr "The tests of {ids} were one-sided, in the expected direction."
@@ -4550,8 +4594,8 @@ msgid "Ligne {i} : {ps}."
 msgstr "Row {i}: {ps}."
 
 #, python-brace-format
-msgid "Ligne {n} : choisissez la question visée."
-msgstr "Line {n}: choose the question named."
+msgid "Ligne {n} : choisissez la question ou la variable visée."
+msgstr "Line {n}: choose the question or the variable named."
 
 #, python-brace-format
 msgid "Ligne {n} : choisissez un opérateur."
@@ -4575,6 +4619,11 @@ msgid ""
 "Lignes de la condition (question visée, opérateur, valeur ; plusieurs codes séparés par des "
 "virgules)"
 msgstr "Lines of the condition (question named, operator, value; several codes separated by commas)"
+
+msgid ""
+"Lignes de la condition (variable visée, opérateur, valeur ; plusieurs codes séparés par des "
+"virgules)"
+msgstr "Lines of the condition (variable named, operator, value; several codes separated by commas)"
 
 msgid "LimeSurvey dit la même chose que le projet."
 msgstr "LimeSurvey says the same as the project."
@@ -4622,6 +4671,10 @@ msgstr "List the rules and the hypotheses, with their conditions and deviations.
 
 msgid "Longueur maximale des noms"
 msgstr "Maximum length of the names"
+
+#, python-brace-format
+msgid "Lue dans LimeSurvey, à accepter : {condition}"
+msgstr "Read in LimeSurvey, to accept: {condition}"
 
 msgid ""
 "Lus dans les réponses du service ; la réflexion du modèle compte dans les jetons de sortie. Coût "
@@ -5427,6 +5480,9 @@ msgstr "Local port of the interface (default: 8501)."
 msgid "Port local de l'interface, quand ddict est lancé seul (défaut : 8501)."
 msgstr "Local port of the interface, when ddict is run alone (default: 8501)."
 
+msgid "Poser une condition."
+msgstr "Set a condition."
+
 msgid "Positif"
 msgstr "Positive"
 
@@ -5442,6 +5498,14 @@ msgstr "Asked if {condition}"
 
 msgid "Posée à"
 msgstr "Asked of"
+
+#, python-brace-format
+msgid ""
+"Posée à {asked} ; non applicable {na} ; posée sans réponse {missing} ; réponses sous une "
+"condition fausse {anomalies}."
+msgstr ""
+"Asked of {asked}; not applicable {na}; asked without an answer {missing}; answers under a false "
+"condition {anomalies}."
 
 #, python-brace-format
 msgid ""
@@ -5817,6 +5881,9 @@ msgstr ""
 "When the plan was written: before-creation, before-observation, before-access, before-analysis or"
 " after-analysis."
 
+msgid "Quand une variable est posée : lister, poser, retirer, accepter ou rejeter une condition."
+msgstr "When a variable is asked: list, set, remove, accept or reject a condition."
+
 msgid "Quelques minutes. Changer de page arrête la mesure."
 msgstr "A few minutes. Changing page stops the measure."
 
@@ -6132,6 +6199,9 @@ msgstr "Reject proposed levels."
 msgid "Rejeter les étiquettes"
 msgstr "Reject the labels"
 
+msgid "Rejeter une condition lue dans LimeSurvey."
+msgstr "Reject a condition read in LimeSurvey."
+
 msgid "Relecture"
 msgstr "Review"
 
@@ -6234,6 +6304,12 @@ msgstr "Remove this recoding"
 
 msgid "Retirer l'étendue"
 msgstr "Remove the range"
+
+msgid "Retirer la condition"
+msgstr "Remove the condition"
+
+msgid "Retirer la condition (la variable est toujours posée)."
+msgstr "Remove the condition (the variable is always asked)."
 
 msgid "Retirer la cotation"
 msgstr "Remove the scoring"
@@ -6993,6 +7069,10 @@ msgid "Tapé par l'équipe : la page n'en enregistre aucun d'office."
 msgstr "Typed by the team: the page never saves one by default."
 
 #, python-brace-format
+msgid "Terme illisible : {words}. Exemple : --terme enfants = 1"
+msgstr "Term not readable: {words}. Example: --term children = 1"
+
+#, python-brace-format
 msgid "Termes très liés entre eux (VIF > {v}) : {names}."
 msgstr "Terms strongly related to one another (VIF > {v}): {names}."
 
@@ -7277,6 +7357,14 @@ msgstr ""
 "A subgroup: variable, operator (eq, ne, lt, le, gt, ge, in) and value(s), e.g. sex eq 1; none to "
 "remove it (plan modify)."
 
+msgid ""
+"Un terme : la variable visée, l'opérateur (=, !=, parmi, pas-parmi, <, <=, >, >=, cochee, "
+"repondue), puis la valeur ou les codes ; à répéter. Sous PowerShell, mettez < et > entre "
+"guillemets."
+msgstr ""
+"A term: the variable named, the operator (=, !=, in, not_in, <, <=, >, >=, checked, answered), "
+"then the value or the codes; to repeat. In PowerShell, put < and > between quotes."
+
 msgid "Un test t"
 msgstr "A t test"
 
@@ -7384,6 +7472,14 @@ msgid "Une question ouverte ou un texte d'affichage n'a pas de choix."
 msgstr "An open question or a displayed text has no choices."
 
 msgid ""
+"Une question posée seulement si une réponse précédente remplit une condition : la personne à qui "
+"elle n'a pas été posée est « non applicable », jamais un manque. Une réponse laissée vide ne "
+"remplit aucune ligne."
+msgstr ""
+"A question asked only if an earlier answer meets a condition: a person who was not asked it is "
+"“not applicable”, never missing. An answer left empty meets no line."
+
+msgid ""
 "Une question « à vérifier » a été lue, mais sa mise en page est douteuse : l'outil ne propose pas"
 " d'étiquettes de valeurs à partir de ses colonnes. Un .txt copié depuis Word évite souvent le "
 "problème."
@@ -7414,6 +7510,9 @@ msgstr "A documented source is required."
 
 msgid "Une valeur est dans deux groupes."
 msgstr "A value is in two groups."
+
+msgid "Une variable qui reçoit la condition ; à répéter (les énoncés d'une grille)."
+msgstr "A variable that receives the condition; to repeat (the statements of a grid)."
 
 msgid "Une variable recodée se recode depuis sa propre source."
 msgstr "A recoded variable is recoded from its own source."
@@ -7578,6 +7677,10 @@ msgstr "Row variable (chi-square)."
 msgid "Variable entièrement vide"
 msgstr "Entirely empty variable"
 
+#, python-brace-format
+msgid "Variable inconnue : {name}."
+msgstr "Unknown variable: {name}."
+
 msgid "Variable sans question rattachée"
 msgstr "Variable without a question linked"
 
@@ -7586,6 +7689,9 @@ msgstr "Sensitive variable: no statistics on its values."
 
 msgid "Variable technique de la plateforme"
 msgstr "Technical variable of the platform"
+
+msgid "Variable visée"
+msgstr "Variable named"
 
 msgid "Variables"
 msgstr "Variables"
@@ -8445,6 +8551,9 @@ msgstr "longitudinal, one wave per file"
 msgid "lue comme un paragraphe, retrouvée par la structure de la base"
 msgstr "read as a paragraph, found by the structure of the database"
 
+msgid "lue dans LimeSurvey"
+msgstr "read in LimeSurvey"
+
 msgid "mai"
 msgstr "May"
 
@@ -8727,6 +8836,10 @@ msgstr "weight"
 msgid "posée si {condition}"
 msgstr "asked if {condition}"
 
+#, python-brace-format
+msgid "posée à {asked}, non applicable {na}, manquant {missing}, anomalies {anomalies}"
+msgstr "asked of {asked}, not applicable {na}, missing {missing}, anomalies {anomalies}"
+
 msgid "pour le comité d'éthique"
 msgstr "for the ethics committee"
 
@@ -8744,6 +8857,9 @@ msgstr "proposed"
 
 msgid "proposé par IA"
 msgstr "proposed by AI"
+
+msgid "proposée"
+msgstr "proposed"
 
 msgid "prédicteur"
 msgstr "predictor"
@@ -8844,6 +8960,9 @@ msgid "refusé"
 msgstr "refused"
 
 msgid "rejeté"
+msgstr "rejected"
+
+msgid "rejetée"
 msgstr "rejected"
 
 #, python-brace-format
@@ -9000,6 +9119,9 @@ msgstr "sample size reworded"
 msgid "tapé par l'équipe"
 msgstr "typed by the team"
 
+msgid "tapée par l'équipe"
+msgstr "typed by the team"
+
 msgid "test bilatéral"
 msgstr "two-sided test"
 
@@ -9059,6 +9181,9 @@ msgstr "taken from a source"
 #, python-brace-format
 msgid "tirée de {source} : {parts}. Raison : {reason}"
 msgstr "derived from {source}: {parts}. Reason: {reason}"
+
+msgid "tirée du questionnaire conçu"
+msgstr "taken from the designed questionnaire"
 
 msgid "titre"
 msgstr "title"
@@ -9760,6 +9885,12 @@ msgstr "{name}: “{value}” is not a number."
 
 #, python-brace-format
 msgid ""
+"{name} est un identifiant ou un texte libre : une condition ne nomme jamais sa valeur, seulement "
+"« a une réponse »."
+msgstr "{name} is an identifier or a free text: a condition never names its value, only “has an answer”."
+
+#, python-brace-format
+msgid ""
 "{name} est une analyse prévue par le plan : elle ne se retire pas du carnet. Ne la retenez plus, "
 "ou modifiez le plan."
 msgstr ""
@@ -9789,6 +9920,10 @@ msgstr "{name} is not a variable of this correlation."
 #, python-brace-format
 msgid "{name} n'est plus le fichier d'où vient le projet : son contenu a changé. Rien n'a été écrit."
 msgstr "{name} is no longer the file the project comes from: its content has changed. Nothing was written."
+
+#, python-brace-format
+msgid "{name} ne peut pas dépendre d'elle-même."
+msgstr "{name} cannot depend on itself."
 
 #, python-brace-format
 msgid "{name} parmi {values}"

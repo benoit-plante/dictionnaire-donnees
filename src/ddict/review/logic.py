@@ -252,6 +252,38 @@ def decide_issue(project: Project, name: str, index: int, action: Action, *, now
     entry.issues[index] = validate(issue, now=now) if action == "accept" else reject(issue, now=now)
 
 
+def set_asked_if(
+    project: Project, names: list[str], rows: list[dict], combine: str, *, now: str
+) -> None:
+    """A variable's condition as its table says it (v0.21, D-168), on these variables."""
+    from ddict.design import DesignError
+    from ddict.project import asked
+    from ddict.review.ui.design_view import condition_from
+
+    try:
+        labels = {e.name: e.name for e in project.variables}
+        condition = condition_from(project, rows, combine, labels)
+        asked.set_asked_if(project, names, [condition] if condition else None, now=now)
+    except (DesignError, asked.AskedError) as error:
+        raise ReviewError(" ".join(error.reasons)) from error
+
+
+def remove_asked_if(project: Project, name: str, *, now: str) -> None:
+    from ddict.project import asked
+
+    asked.set_asked_if(project, [name], None, now=now)
+
+
+def decide_asked_if(project: Project, name: str, action: Action, *, now: str) -> None:
+    """Accept or reject a condition read in a LimeSurvey file."""
+    from ddict.project import asked
+
+    try:
+        asked.decide(project, name, action, now=now)
+    except asked.AskedError as error:
+        raise ReviewError(" ".join(error.reasons)) from error
+
+
 def set_project_language(project: Project, language: str) -> None:
     """The language of the study: its questionnaire and labels (v0.5, D-032)."""
     if language not in i18n.LANGUAGES:

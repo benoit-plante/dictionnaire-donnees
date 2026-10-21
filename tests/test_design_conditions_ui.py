@@ -73,7 +73,7 @@ def test_a_condition_to_its_rows_and_back():
 @pytest.mark.parametrize(
     ("row", "reason"),
     [
-        ({"target": "", "operator": "=", "value": "1"}, "choisissez la question"),
+        ({"target": "", "operator": "=", "value": "1"}, "choisissez la question ou la variable"),
         ({"target": CHILDREN, "operator": "", "value": "1"}, "choisissez un opérateur"),
         ({"target": CHILDREN, "operator": "=", "value": ""}, "donnez une valeur"),
         ({"target": CHILDREN, "operator": "parmi", "value": " , "}, "au moins un code"),

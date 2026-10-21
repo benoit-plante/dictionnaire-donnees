@@ -325,11 +325,13 @@ def condition_rows(project: Project, condition: Condition | None) -> list[dict]:
     ]
 
 
-def condition_from(project: Project, rows: list[dict], combine: str) -> Condition | None:
+def condition_from(
+    project: Project, rows: list[dict], combine: str, labels: dict[str, str] | None = None
+) -> Condition | None:
     """The condition the table says; None when it is empty (always asked). What cannot be a
     term is refused with its line; what the questionnaire refuses, `design.set_condition`
-    says."""
-    labels = target_labels(project)
+    says. `labels`: what the table shows -> the target (v0.21, step 8: a variable's name)."""
+    labels = target_labels(project) if labels is None else labels
     operators = {_(OPERATOR_NAMES[k]): k for k in OPERATOR_NAMES}
     terms, problems = [], []
     for number, row in enumerate(rows, start=1):
@@ -339,7 +341,9 @@ def condition_from(project: Project, rows: list[dict], combine: str) -> Conditio
         if not (target or row.get("operator") or value):
             continue
         if not target:
-            problems.append(_("Ligne {n} : choisissez la question visée.").format(n=number))
+            problems.append(
+                _("Ligne {n} : choisissez la question ou la variable visée.").format(n=number)
+            )
             continue
         if operator is None:
             problems.append(_("Ligne {n} : choisissez un opérateur.").format(n=number))

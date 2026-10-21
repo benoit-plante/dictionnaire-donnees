@@ -590,6 +590,111 @@ def _set_aside(entry: VariableEntry) -> None:
         )
 
 
+def _asked_rows(name: str) -> list[dict]:
+    from ddict.review.ui.design_view import OPERATOR_NAMES, _value_text
+
+    entry = c.project().variable(name)
+    if entry.asked_if is None or not entry.asked_if.value:
+        return []
+    return [
+        {"target": term.target, "operator": _(OPERATOR_NAMES[term.operator]),
+         "value": _value_text(term)}
+        for term in entry.asked_if.value[0].terms
+    ]  # fmt: skip
+
+
+def _asked_if(project: Project, entry: VariableEntry) -> None:
+    """When the variable is asked (v0.21, D-168): declared by the team for a base without a
+    designed questionnaire, carried from the designed one, or read in LimeSurvey (to accept);
+    with how many were asked it, when the database is at hand."""
+    from ddict.project import skip
+    from ddict.project.decisions import is_accepted
+    from ddict.review.ui import design_view
+    from ddict.review.ui.analyses_view import raw_table
+
+    name = entry.name
+    tracked = entry.asked_if
+    with st.expander(_("Posée si"), expanded=tracked is not None):
+        if tracked is not None and tracked.value:
+            said = skip.variable_text(project, tracked.value)
+            if tracked.status == "proposed":
+                st.info(_("Lue dans LimeSurvey, à accepter : {condition}").format(condition=said))
+                left, right = st.columns(2)
+                with left:
+                    c.button(_("Accepter"), f"asked-accept-{name}", logic.decide_asked_if,
+                             name, "accept", timed=True)  # fmt: skip
+                with right:
+                    c.button(_("Rejeter"), f"asked-reject-{name}", logic.decide_asked_if,
+                             name, "reject", timed=True)  # fmt: skip
+            elif is_accepted(tracked):
+                st.markdown(said)
+            table = raw_table(project) if is_accepted(tracked) else None
+            counts = skip.counts(project, table).get(name) if table is not None else None
+            if counts is not None:
+                st.caption(
+                    _(
+                        "Posée à {asked} ; non applicable {na} ; posée sans réponse {missing} ; "
+                        "réponses sous une condition fausse {anomalies}."
+                    ).format(
+                        asked=counts.asked, na=counts.not_applicable, missing=counts.missing,
+                        anomalies=counts.anomalies,
+                    )
+                )  # fmt: skip
+        st.caption(
+            _(
+                "Une question posée seulement si une réponse précédente remplit une condition : "
+                "la personne à qui elle n'a pas été posée est « non applicable », jamais un "
+                "manque. Une réponse laissée vide ne remplit aucune ligne."
+            )
+        )
+        others = [e.name for e in project.variables if e.name != name and e.set_aside is None]
+        key = f"asked-{name}-"
+        st.radio(
+            _("Conditions à remplir"),
+            list(design_view.COMBINES),
+            key=c.field(
+                key + "combine",
+                lambda: (c.project().variable(name).asked_if.value[0].combine
+                         if c.project().variable(name).asked_if
+                         and c.project().variable(name).asked_if.value else "all"),
+                label=_("Posée si"),
+            ),
+            format_func=design_view.COMBINES.__getitem__,
+            horizontal=True,
+        )  # fmt: skip
+        design_view._table(
+            key + "terms",
+            lambda: _asked_rows(name),
+            _("Lignes de la condition (variable visée, opérateur, valeur ; plusieurs codes "
+              "séparés par des virgules)"),
+            columns=design_view.TERM_COLUMNS,
+            config={
+                "target": st.column_config.SelectboxColumn(
+                    _("Variable visée"), options=others, width="medium"),
+                "operator": st.column_config.SelectboxColumn(
+                    _("Opérateur"),
+                    options=[_(design_view.OPERATOR_NAMES[k]) for k in design_view.OPERATOR_NAMES],
+                    width="small"),
+                "value": st.column_config.TextColumn(_("Valeur"), width="small"),
+            },
+        )  # fmt: skip
+        also = key + "also"
+        st.multiselect(_("La même condition pour"), others, key=also,
+                       placeholder=_("Les autres énoncés d'une grille, par exemple"))  # fmt: skip
+        c.button(
+            _("Enregistrer la condition"),
+            f"asked-save-{name}",
+            logic.set_asked_if,
+            lambda: [name, *(st.session_state.get(also) or [])],
+            lambda: design_view._rows_now(key + "terms", design_view.TERM_COLUMNS),
+            c.state(key + "combine"),
+            timed=True,
+        )
+        if tracked is not None:
+            c.button(_("Retirer la condition"), f"asked-remove-{name}", logic.remove_asked_if,
+                     name, timed=True)  # fmt: skip
+
+
 def page(project: Project, entry: VariableEntry) -> None:
     label = w.label_text(entry, "work")
     st.header(entry.name + (f" — {label}" if label else ""))
@@ -646,6 +751,7 @@ def page(project: Project, entry: VariableEntry) -> None:
     st.divider()
     _privacy(entry)
     _sourced(entry)
+    _asked_if(project, entry)  # v0.21 (D-168)
     from ddict.review.ui import recode_view
 
     recode_view.panel(project, entry)  # v0.15 (D-120)
