@@ -2880,6 +2880,10 @@ msgstr "At least one cut is needed."
 msgid "Il faut deux variables de date et d'heure : le début et la fin."
 msgstr "Two date and time variables are needed: the start and the end."
 
+#, python-brace-format
+msgid "Il écrit {conditions} et {shuffled}."
+msgstr "It writes {conditions} and {shuffled}."
+
 msgid "Illisible"
 msgstr "Unreadable"
 
@@ -3468,11 +3472,11 @@ msgstr "The meaning of the threshold is required."
 
 msgid ""
 "La structure en texte à colonnes de LimeSurvey (.txt), vérifiée sur LimeSurvey Cloud 7.6 ; une "
-"autre version n'est pas garantie. Ni branchement, ni ordre aléatoire, ni quota : ils se règlent "
-"dans LimeSurvey."
+"autre version n'est pas garantie. Les conditions et l'ordre aléatoire y sont écrits ; aucun "
+"quota."
 msgstr ""
 "LimeSurvey's tab-separated structure (.txt), checked on LimeSurvey Cloud 7.6; another version is "
-"not guaranteed. No branching, random order or quota: they are set in LimeSurvey."
+"not guaranteed. The conditions and the random order are written in it; no quota."
 
 msgid "La taille d'échantillon tient en 2 000 caractères au plus."
 msgstr "The sample size takes 2,000 characters at most."
@@ -5152,6 +5156,15 @@ msgstr ""
 
 msgid "Ouvrez la base pour figer le plan : chaque hypothèse devient une analyse du carnet."
 msgstr "Open the database to finalise the plan: each hypothesis becomes an analysis of the notebook."
+
+msgid ""
+"Ouvrez la logique du questionnaire : aucune condition ne doit y paraître en rouge. Puis, dans « "
+"Prévisualiser le questionnaire » (pas l'aperçu d'un groupe), répondez de façon à passer par "
+"chaque branche : une question filtrée doit paraître ou disparaître comme le Word le dit."
+msgstr ""
+"Open the survey logic file: no condition may show in red. Then, in “Preview survey” (not the "
+"preview of a group), answer so as to go through each branch: a filtered question must appear or "
+"disappear as the Word says."
 
 msgid "Ouvrez le menu « + », puis choisissez « Importer »."
 msgstr "Open the “+” menu, then choose “Import”."
@@ -7239,6 +7252,10 @@ msgstr ""
 "A condition on a variable: VARIABLE OPERATOR [VALUE…], e.g. “age lt 18”, “consent eq 2”, “group "
 "missing”. Operators: eq, ne, lt, le, gt, ge, in (parmi), missing (manquant)."
 
+#, python-brace-format
+msgid "Une condition vise ce qui a été retiré : {target}."
+msgstr "A condition names what has been removed: {target}."
+
 msgid "Une corrélation"
 msgstr "A correlation"
 
@@ -8319,6 +8336,9 @@ msgstr "on {date}, for {target} ({summary}): {reason}"
 msgid "les décisions du dictionnaire (étiquettes, niveaux de mesure, noms)"
 msgstr "the dictionary's decisions (labels, measure levels, names)"
 
+msgid "les items de contrôle et leurs bonnes réponses (LimeSurvey n'a pas cette notion)"
+msgstr "the attention checks and their right answers (LimeSurvey has no such notion)"
+
 msgid "les items inversés"
 msgstr "the reversed items"
 
@@ -8814,6 +8834,10 @@ msgstr "score of {group}"
 
 msgid "secondaires"
 msgstr "secondary"
+
+#, python-brace-format
+msgid "section {n}"
+msgstr "section {n}"
 
 msgid "sens attendu modifié"
 msgstr "expected direction changed"
@@ -9745,6 +9769,14 @@ msgid "{n} choix ou énoncés sans code : les codes se décident avant la collec
 msgstr "{n} choices or items without a code: the codes are decided before the collection."
 
 #, python-brace-format
+msgid "{n} condition"
+msgstr "{n} condition"
+
+#, python-brace-format
+msgid "{n} conditions"
+msgstr "{n} conditions"
+
+#, python-brace-format
 msgid "{n} différences nulles écartées par le test de Wilcoxon."
 msgstr "{n} zero differences left out by the Wilcoxon test."
 
@@ -9851,6 +9883,14 @@ msgstr "{n} were excluded, for the following reasons, in this order: {reasons} (
 #, python-brace-format
 msgid "{n} options à cocher"
 msgstr "{n} checkbox options"
+
+#, python-brace-format
+msgid "{n} ordre aléatoire"
+msgstr "{n} random order"
+
+#, python-brace-format
+msgid "{n} ordres aléatoires"
+msgstr "{n} random orders"
 
 #, python-brace-format
 msgid ""
@@ -10191,6 +10231,10 @@ msgid ""
 msgstr ""
 "{where}: the item or option “{text}” has no code LimeSurvey accepts (letters and digits, 20 at "
 "most)."
+
+#, python-brace-format
+msgid "{where} : la condition vise ce qui a été retiré ({targets}) ; corrigez-la."
+msgstr "{where}: the condition names what has been removed ({targets}); correct it."
 
 #, python-brace-format
 msgid ""

@@ -4,10 +4,11 @@ the form LimeSurvey Cloud 7.6 exports it (docs/essais/2026-10-19-limesurvey-fict
 
 The common trunk only: single choice (buttons, drop-down list), checkboxes with "other",
 grid (array), short and long text, number, date, displayed text; required or not; sections
-as groups; one language, the study's. No branching, randomisation or quota. What LimeSurvey
-does not keep (provenance, reversed items, scoring, instrument) stays in the project, and the
-summary says so. A question that would stop the import, or import otherwise than designed,
-refuses the writing and sends to the review.
+as groups; one language, the study's. Since v0.21, the conditions of the sections and of the
+questions (D-165), in the form of `expression`, and the random orders (D-166); no quota. What
+LimeSurvey does not keep (provenance, reversed items, scoring, instrument, attention checks)
+stays in the project, and the summary says so. A question that would stop the import, or
+import otherwise than designed, refuses the writing and sends to the review.
 """
 
 from __future__ import annotations
@@ -20,7 +21,8 @@ from pathlib import Path
 
 from ddict import design, design_word
 from ddict.i18n import N_, Texts, _
-from ddict.project.model import Project, Question
+from ddict.project import skip
+from ddict.project.model import Condition, Project, Question, Term
 
 SUFFIX = ".txt"
 MIME = "text/tab-separated-values"
@@ -92,6 +94,12 @@ ANSWER_CODE = re.compile(r"[A-Za-z0-9]{1,5}")
 # Braces start an expression of LimeSurvey's Expression Manager: a text would be computed.
 EXPRESSION = re.compile(r"[{}]")
 OTHER_WORDS = {"autre", "other"}  # LimeSurvey's own word for the "other" option
+# The random orders (D-166), in the columns of LimeSurvey 7.6 (answer_order since 5.5.0,
+# subquestion_order since 6.16.0, random_group). The values are those of the documentation's
+# options ("Random"); the author's re-export of the trial fixes them (plan, § 5.7.4).
+RANDOM = "random"
+# The comparisons of an expression: LimeSurvey's ExpressionScript.
+OPERATORS = {"eq": "==", "ne": "!=", "lt": "<", "le": "<=", "gt": ">", "ge": ">="}
 
 
 class Unwritable(ValueError):
@@ -114,6 +122,8 @@ class Summary:
 
     groups: int = 0
     questions: int = 0
+    conditions: int = 0  # v0.21: sections and questions with a condition
+    shuffled: int = 0  # v0.21: random orders (sections and questions)
     required: int = 0
     subquestions: int = 0  # LimeSurvey's import report counts them apart
     answers: int = 0
@@ -185,17 +195,101 @@ def _problems(project: Project, number: int | None, question: Question) -> list[
     return found
 
 
+# --- Conditions as expressions (v0.21, § 5.7.1 of the plan). ---
+
+
+def _variable(project: Project, target: str) -> str | None:
+    """The name an expression gives to what a term names: the question's code ("enfants"),
+    a statement's or an option's ("climat_SQ002"); None for a target gone."""
+    found = skip.target_of(design.questionnaire(project), target)
+    if found is None:
+        return None
+    code = design.code(project, found.question)
+    if target == found.question.question_id:
+        return code
+    item = next(
+        (i for i in [*found.question.rows, *found.question.options] if target in (
+            getattr(i, "row_id", None), getattr(i, "option_id", None))),
+        None,
+    )  # fmt: skip
+    return f"{code}_{item.code}" if item is not None and item.code else None
+
+
+def _value(nature: str, value) -> str:
+    """A choice's code between quotes (a text); a number bare, so that 9 < 18 compares as
+    numbers, never as texts."""
+    if nature == "number":
+        number = skip.as_number(value)
+        return str(int(number) if number is not None and number.is_integer() else number)
+    return '"' + skip.code_text(value) + '"'
+
+
+def _term(project: Project, term: Term) -> str:
+    """One term, the empty answer tested first, `.NAOK` everywhere: a question not asked
+    reads as empty and makes the term false, never the whole expression (§ 4.3)."""
+    found = skip.target_of(design.questionnaire(project), term.target)
+    name = _variable(project, term.target)
+    if found is None or name is None:
+        raise Unwritable([_("Une condition vise ce qui a été retiré : {target}.").format(
+            target=term.target)])  # fmt: skip
+    read = f"{name}.NAOK"
+    if term.operator == "checked":
+        return f'({read} == "Y")'
+    if term.operator == "answered":
+        return f'({read} != "")'
+    values = [_value(found.nature, v) for v in skip.values_of(term)]
+    if term.operator == "in":
+        test = " or ".join(f"{read} == {v}" for v in values)
+        test = f"({test})" if len(values) > 1 else test
+    elif term.operator == "not_in":
+        test = " and ".join(f"{read} != {v}" for v in values)
+    else:
+        test = f"{read} {OPERATORS[term.operator]} {values[0]}"
+    return f'({read} != "" and {test})'
+
+
+def expression(project: Project, condition: Condition | None) -> str:
+    """A condition as LimeSurvey's relevance: "1" (always) without one."""
+    if condition is None:
+        return "1"
+    joined = " and " if condition.combine == "all" else " or "
+    return joined.join(_term(project, term) for term in condition.terms)
+
+
+def _condition_problems(project: Project, where: str, condition: Condition | None) -> list[str]:
+    if condition is None:
+        return []
+    gone = [t.target for t in condition.terms if _variable(project, t.target) is None]
+    if gone:
+        return [
+            _("{where} : la condition vise ce qui a été retiré ({targets}) ; corrigez-la.").format(
+                where=where, targets=", ".join(gone)
+            )
+        ]
+    return []
+
+
 def summary(project: Project) -> Summary:
     """What the file would hold, and what refuses it, computed before any writing."""
     found = Summary()
     codes: dict[str, str] = {}
     provenance = 0
-    for _section, questions in design_word.numbered(project):
+    for rank, (section, questions) in enumerate(design_word.numbered(project), start=1):
         found.groups += 1
+        found.conditions += section.condition is not None
+        found.shuffled += section.shuffle
+        found.problems += _condition_problems(
+            project, _("section {n}").format(n=rank), section.condition
+        )
         for item in questions:
             question = item.question
             found.questions += 1
             found.required += question.required
+            found.conditions += question.condition is not None
+            found.shuffled += question.shuffle
+            found.problems += _condition_problems(
+                project, _where(item.number, question), question.condition
+            )
             kind = design.limesurvey_type(question)
             found.kinds[kind] = found.kinds.get(kind, 0) + 1
             found.problems += _problems(project, item.number, question)
@@ -228,6 +322,11 @@ def summary(project: Project) -> Summary:
         found.left.append(_("la cotation des échelles"))
     if any(g.instrument_name is not None for g in designed):
         found.left.append(_("le nom des instruments et leur source"))
+    questions = design.questionnaire(project).questions
+    if any(q.attention or any(r.attention for r in q.rows) for q in questions):
+        found.left.append(
+            _("les items de contrôle et leurs bonnes réponses (LimeSurvey n'a pas cette notion)")
+        )
     found.left.append(_("les décisions du dictionnaire (étiquettes, niveaux de mesure, noms)"))
     return found
 
@@ -270,7 +369,8 @@ def text(project: Project) -> str:
     next_id = len(numbered) + 1
     for rank, (section, questions) in enumerate(numbered, start=1):
         name = section.title or _("Section {n}").format(n=rank)
-        row(**{"id": rank, "class": "G", "type/scale": rank, "name": name, "relevance": "1",
+        row(**{"id": rank, "class": "G", "type/scale": rank, "name": name,
+               "relevance": expression(project, section.condition),
                "text": _html(section.instruction), "language": language})  # fmt: skip
         for item in questions:
             question = item.question
@@ -279,7 +379,8 @@ def text(project: Project) -> str:
             other = next((o for o in question.options if o.other), None)
             cells = {
                 "id": qid, "class": "Q", "type/scale": kind,
-                "name": design.code(project, question), "relevance": "1",
+                "name": design.code(project, question),
+                "relevance": expression(project, question.condition),
                 "text": _html(question.text), "help": _html(question.instruction),
                 "language": language, "mandatory": "Y" if question.required else "N",
                 "encrypted": "N", "other": "Y" if other is not None else "N",
@@ -287,6 +388,11 @@ def text(project: Project) -> str:
             }  # fmt: skip
             if other is not None and other.text.strip().lower() not in OTHER_WORDS:
                 cells["other_replace_text"] = other.text
+            if question.shuffle:  # D-166: a list's choices, a grid's or boxes' subquestions
+                order = "answer_order" if question.kind == "single" else "subquestion_order"
+                cells[order] = RANDOM
+            if section.shuffle:  # the questions sharing a name are mixed among themselves
+                cells["random_group"] = section.section_id
             row(**cells)
             subquestions = question.rows if question.kind == "grid" else []
             if question.kind == "checkbox":
@@ -351,5 +457,17 @@ def import_steps(project: Project) -> list[str]:
             "montre ce que verront les personnes qui répondent. LimeSurvey ajoute de lui-même "
             "un choix « Sans réponse » aux questions à choix et aux grilles qui ne sont pas "
             "obligatoires."
+        ),
+        *(
+            [
+                _(
+                    "Ouvrez la logique du questionnaire : aucune condition ne doit y paraître "
+                    "en rouge. Puis, dans « Prévisualiser le questionnaire » (pas l'aperçu d'un "
+                    "groupe), répondez de façon à passer par chaque branche : une question "
+                    "filtrée doit paraître ou disparaître comme le Word le dit."
+                )
+            ]
+            if found.conditions or found.shuffled
+            else []
         ),
     ]

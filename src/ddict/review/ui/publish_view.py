@@ -158,8 +158,8 @@ def _limesurvey(project: Project) -> None:
     st.caption(
         _(
             "La structure en texte à colonnes de LimeSurvey (.txt), vérifiée sur LimeSurvey "
-            "Cloud 7.6 ; une autre version n'est pas garantie. Ni branchement, ni ordre "
-            "aléatoire, ni quota : ils se règlent dans LimeSurvey."
+            "Cloud 7.6 ; une autre version n'est pas garantie. Les conditions et l'ordre "
+            "aléatoire y sont écrits ; aucun quota."
         )
     )
     found = design_limesurvey.summary(project)
@@ -178,6 +178,18 @@ def _limesurvey(project: Project) -> None:
             groups=found.groups, questions=found.questions, kinds=kinds
         )
     )
+    if found.conditions or found.shuffled:  # v0.21
+        conditions = (_("{n} condition") if found.conditions <= 1 else _("{n} conditions")).format(
+            n=found.conditions
+        )
+        shuffled = (
+            _("{n} ordre aléatoire") if found.shuffled <= 1 else _("{n} ordres aléatoires")
+        ).format(n=found.shuffled)
+        st.markdown(
+            _("Il écrit {conditions} et {shuffled}.").format(
+                conditions=conditions, shuffled=shuffled
+            )
+        )
     st.markdown(_("Restent dans l'outil, que LimeSurvey n'aura pas :"))
     for line in found.left:
         st.markdown(f"- {line}")
