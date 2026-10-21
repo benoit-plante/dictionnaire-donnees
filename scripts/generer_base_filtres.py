@@ -316,6 +316,25 @@ def answer_key(people: list[dict]) -> dict:
             and p.get("emploi") in (1, 2)
             and sum(p.get(f"climat_SQ{k:03d}") is not None for k in range(1, 7)) < 5
         ),
+        # Table 1 (v0.21, step 9): whom a filtered question was asked, who answered it.
+        "table1": {
+            "nuit": {
+                "asked": sum(_asked(p, "nuit") for p in people),
+                "counts": {
+                    str(code): sum(p.get("nuit") == code for p in people) for code in (1, 2)
+                },
+            },
+            "nbenfants": {
+                "asked": sum(bool(_asked(p, "nbenfants")) for p in people),
+                "unanswered": sum(
+                    bool(_asked(p, "nbenfants")) and p.get("nbenfants") is None for p in people
+                ),
+            },
+        },
+        # A rule "nbenfants is missing": the asked who left it empty, never the not asked.
+        "nbenfants_missing": sum(
+            bool(_asked(p, "nbenfants")) and p.get("nbenfants") is None for p in people
+        ),
         "surveymonkey": surveymonkey_names(),
     }
 

@@ -3,7 +3,9 @@ the team's accepted decisions applied in the order of the command files and the
 preparation script (D-062): missing codes removed (declared in the file or confirmed by the
 team), final names, reversed items (`<item>_inv`), scores of the structured scorings,
 since v0.15 the recodings (D-120), and since v0.12 the exclusion rules (D-094): only the
-people they keep are analysed.
+people they keep are analysed. Since v0.21 (D-167), with the table, a mask of what was not
+asked (`not_applicable`), computed on the database as recorded, before the missing codes are
+taken out: a question not asked is never a missing value.
 
 The original file is never changed, and nothing of the data is written in the project
 (principle 2): the table lives in memory for the time of an analysis.
@@ -41,6 +43,10 @@ class PreparedData:
     scores: dict[str, str]  # score name -> group id
     reversed: dict[str, str]  # new variable -> final name of the item
     flow: exclusions.Flow | None = None  # v0.12: who the exclusion rules kept
+    # v0.21: for the variables with a condition (final names, and a score all of whose items
+    # were not asked), True where the person was not asked (not applicable, or an answer
+    # recorded under a false condition); the rows of `table`.
+    not_applicable: pd.DataFrame | None = None
 
 
 def code_key(code) -> str:
@@ -102,8 +108,12 @@ def subset_mask(table: pd.DataFrame, subset) -> pd.Series:
 
 def apply_subset(prepared: PreparedData, subset) -> PreparedData:
     """The data of a subgroup only, after the exclusion rules; the flow does not change."""
-    kept = prepared.table[subset_mask(prepared.table, subset)].reset_index(drop=True)
-    return PreparedData(kept, prepared.scores, prepared.reversed, prepared.flow)
+    mask = subset_mask(prepared.table, subset)
+    kept = prepared.table[mask].reset_index(drop=True)
+    na = prepared.not_applicable
+    if na is not None:
+        na = na[mask.to_numpy()].reset_index(drop=True)
+    return PreparedData(kept, prepared.scores, prepared.reversed, prepared.flow, na)
 
 
 def find_database(project: Project, project_path: Path, given: Path | None = None) -> Path:
@@ -175,16 +185,46 @@ def decided(project: Project, table: pd.DataFrame) -> tuple[pd.DataFrame, list, 
     return data, reversals, found_scores
 
 
+def not_applicable(project: Project, table: pd.DataFrame) -> pd.DataFrame | None:
+    """What was not asked to each person (v0.21, D-167), on the table as recorded, by final
+    name; a score all of whose items were not asked is not applicable. None without any
+    condition: nothing changes for such a project."""
+    from ddict.project import skip
+
+    conditions = skip.conditions_of(project)
+    known = set(table.columns)
+    conditions = {
+        n: c for n, c in conditions.items()
+        if n in known and all(t.target in known for cond in c for t in cond.terms)
+    }  # fmt: skip
+    if not conditions:
+        return None
+    boxes = {n: [o for o in b if o in known] for n, b in skip.boxes_of(project).items()}
+    natures = skip.natures(table, conditions, boxes)
+    names = w.names_of(project)
+    not_asked = (skip.NOT_APPLICABLE, skip.ANOMALY)
+    mask = pd.DataFrame({names[n]: natures[n].isin(not_asked).to_numpy() for n in conditions})
+    reversals, scores, _notes = plan(project)
+    original = {r.new: r.name for r in reversals}
+    for score in scores:
+        items = [original.get(i, i) for i in score.items]
+        if items and all(i in mask.columns for i in items):
+            mask[score.name] = mask[items].all(axis=1)
+    return mask
+
+
 def apply_decisions(project: Project, table: pd.DataFrame) -> PreparedData:
     """The accepted decisions applied to a table read from the database."""
     data, reversals, found_scores = decided(project, table)
-    rank = exclusions.ranks(project, data)
+    na = not_applicable(project, table)
+    rank = exclusions.ranks(project, data, na)
     kept = data[rank == 0].reset_index(drop=True)
     return PreparedData(
         kept,
         found_scores,
         {r.new: r.name for r in reversals},
         exclusions.flow(project, rank) if project.exclusions.rules else None,
+        None if na is None else na[(rank == 0).to_numpy()].reset_index(drop=True),
     )
 
 

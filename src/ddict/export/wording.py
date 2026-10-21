@@ -717,6 +717,19 @@ def asked_if_text(project: Project, entry: VariableEntry, kind: ExportKind) -> s
     return text + (f" [{_('proposé')}]" if found.pending else "")
 
 
+def asked_words(project: Project, final: str) -> str | None:
+    """A filtered variable's condition for the Method and the notes of the analyses, by its
+    final name, the labels without the codes: "enfants = Oui"; None when always asked."""
+    from ddict.project import skip
+
+    entry = next((e for e in project.variables if final_name(e) == final), None)
+    if entry is None or entry.asked_if is None or not is_accepted(entry.asked_if):
+        return None
+    if not entry.asked_if.value:
+        return None
+    return skip.variable_condition(project, entry.asked_if.value, names_of(project), codes=False)
+
+
 def presentation_text(project: Project, entry: VariableEntry) -> str:
     """How its question was presented, in a designed or LimeSurvey questionnaire: in random
     order, an attention check and its right answers."""

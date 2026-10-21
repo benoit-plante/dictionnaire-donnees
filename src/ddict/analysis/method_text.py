@@ -16,7 +16,7 @@ from ddict.analysis.method import Facts
 from ddict.analysis.report import versions
 from ddict.analysis.results import bounded, number
 from ddict.export import wording as w
-from ddict.i18n import _, semicolon
+from ddict.i18n import N_, _, semicolon
 from ddict.project import scoring as scorings
 from ddict.project.decisions import is_accepted
 from ddict.project.model import Group, Project
@@ -47,6 +47,18 @@ def _whole(value: float) -> str:
     return number(value, 0) if float(value).is_integer() else number(value)
 
 
+# Numbers below ten in words (APA), as `article_text` says them.
+_WORDS = (
+    N_("zéro"), N_("une"), N_("deux"), N_("trois"), N_("quatre"), N_("cinq"), N_("six"),
+    N_("sept"), N_("huit"), N_("neuf"),
+)  # fmt: skip
+
+
+def _spelled(n: int) -> str:
+    """ "deux" to "neuf", then digits: the attention checks (P1b, as PL3)."""
+    return _(_WORDS[n]) if 2 <= n < len(_WORDS) else str(n)
+
+
 def _percents(values: list[float]) -> list[str]:
     """One decimal for every share of a variable, none if all are whole: "50 % ; 50 %",
     but "56,9 % ; 42,0 % ; 1,1 %", never "42 %" next to "56,9 %"."""
@@ -63,6 +75,16 @@ def participants(project: Project, found: Facts, figure: int | None) -> Text:
     flow = found.flow
     reasons = {r.id: r.reason for r in project.exclusions.rules}
     parts = [marked(_("Au total, {n} personnes ont répondu au questionnaire."), n=str(flow.start))]
+    if found.attention:  # P1b (v0.21, D-170)
+        parts.append(
+            rich(
+                _("Le questionnaire comprenait un item de contrôle de l'attention.")
+                if found.attention == 1
+                else _("Le questionnaire comprenait {k} items de contrôle de l'attention.").format(
+                    k=_spelled(found.attention)
+                )
+            )
+        )
     # A rule that excludes nobody stays in the figure, not in the sentence.
     listed = [
         marked(
@@ -106,6 +128,16 @@ def participants(project: Project, found: Facts, figure: int | None) -> Text:
                         d.categories, percents, strict=True
                     )
                 ]
+                if d.asked is not None:  # P4, a filtered question (v0.21)
+                    items.append(
+                        marked(
+                            _("{label} (question posée à {asked} personnes : {shares})"),
+                            label=label,
+                            asked=str(d.asked),
+                            shares=_join(shares, semicolon()),
+                        )
+                    )
+                    continue
                 items.append(
                     marked(_("{label} ({shares})"), label=label, shares=_join(shares, semicolon()))
                 )
@@ -115,6 +147,11 @@ def participants(project: Project, found: Facts, figure: int | None) -> Text:
                     if d.n == flow.analysed
                     else _("{label} ({m} = {mean}, {sd} = {sdv}, {n} = {count})")
                 )
+                if d.asked is not None:  # P4, a filtered question (v0.21)
+                    template = _(
+                        "{label} ({m} = {mean}, {sd} = {sdv}, {n} = {count}, parmi les {asked} "
+                        "personnes à qui la question a été posée)"
+                    )
                 items.append(
                     marked(
                         template,
@@ -125,6 +162,7 @@ def participants(project: Project, found: Facts, figure: int | None) -> Text:
                         sdv=number(d.sd),
                         n=it("n"),
                         count=str(d.n),
+                        asked=str(d.asked),
                     )
                 )
         parts.append(
@@ -208,6 +246,12 @@ def _instrument(
             missing=(hole(_("étiquettes des extrémités")),),
         )
     parts = [first]
+    if _shuffled(project, group):  # I2b (v0.21, D-166)
+        parts.append(
+            rich(
+                _("Les items étaient présentés dans un ordre aléatoire, tiré pour chaque personne.")
+            )
+        )
     reversed_items = [names[n] for n in scorings.reversed_items(group, scoring)]
     if len(reversed_items) == 1:
         parts.append(
@@ -276,6 +320,14 @@ def _instrument(
     else:
         parts.append((hole(_("fidélité, trop peu de réponses complètes")),))
     return _sentences(parts)
+
+
+def _shuffled(project: Project, group: Group) -> bool:
+    """Whether the grid of a group was shown in random order (designed or LimeSurvey)."""
+    found = project.questionnaire
+    if found is None or group.question is None:
+        return False
+    return any(q.question_id == group.question and q.shuffle for q in found.questions)
 
 
 def scale_description(project: Project, group: Group) -> Text:
@@ -524,6 +576,29 @@ def analyses(found: Facts, script: str) -> Text:
             )
         )
     )
+    if found.filtered:  # A2b, A2c (v0.21, D-167)
+        parts.append(
+            rich(
+                _(
+                    "Certaines questions n'étaient posées qu'aux personnes dont les réponses "
+                    "précédentes remplissaient une condition (questions filtrées). Une "
+                    "question qui n'a pas été posée est dite non applicable : elle n'est "
+                    "jamais comptée comme une valeur manquante, et chaque analyse porte sur "
+                    "les personnes à qui ses questions ont été posées."
+                )
+            )
+        )
+        listed = [
+            _("{label} (posée si {condition})").format(label=_lower(label), condition=words)
+            for _name, label, words in found.filtered
+        ]
+        parts.append(
+            rich(
+                _("Les questions filtrées sont les suivantes : {questions}.").format(
+                    questions=semicolon().join(listed)
+                )
+            )
+        )
     for analysis, method, post_hoc in found.methods:
         parts += _method_sentences(analysis, method, post_hoc)
     parts.append(

@@ -305,8 +305,14 @@ def _labelled(value, labels: Mapping[str, str]) -> str:
     return f"{code} ({labels[code]})" if code in labels else code
 
 
-def _team_term(term: Term, subject: str, labels: Mapping[str, str], item: str | None) -> str:
-    values = [_labelled(v, labels) for v in values_of(term)]
+def _team_term(
+    term: Term, subject: str, labels: Mapping[str, str], item: str | None, codes: bool = True
+) -> str:
+    """`codes`: "1 (Oui)"; without, the label alone ("Oui"), for the Method."""
+    if codes:
+        values = [_labelled(v, labels) for v in values_of(term)]
+    else:
+        values = [labels.get(code_text(v), code_text(v)) for v in values_of(term)]
     if term.operator == "answered":
         return _("{subject} a une réponse").format(subject=subject)
     if term.operator == "checked":
@@ -358,7 +364,11 @@ def team_text(project: Project, conditions: Condition | Sequence[Condition]) -> 
 
 
 def variable_condition(
-    project: Project, conditions: Sequence[Condition], names: Mapping[str, str] | None = None
+    project: Project,
+    conditions: Sequence[Condition],
+    names: Mapping[str, str] | None = None,
+    *,
+    codes: bool = True,
 ) -> str:
     """A variable's conditions (`asked_if`) for the codebook, with the value labels in force:
     "enfants = 1 (Oui)"; `names`: the names the export shows (a renamed variable's)."""
@@ -374,7 +384,7 @@ def variable_condition(
             if term.operator in ("lt", "le", "gt", "ge"):
                 labels = {}
             subject = (names or {}).get(term.target, term.target)
-            terms.append(_team_term(term, subject, labels, None))
+            terms.append(_team_term(term, subject, labels, None, codes))
         texts.append(terms)
     return _joined(texts, [c.combine for c in conditions])
 

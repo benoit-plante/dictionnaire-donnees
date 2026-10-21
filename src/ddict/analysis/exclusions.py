@@ -2,6 +2,11 @@
 codes, the names, the reversed items and the scores; a person is counted by the first rule
 that excludes them only. The preparation scripts of SPSS and R do the same
 (`ddict.export.preparation`).
+
+Since v0.21 (D-167), with the mask of what was not asked: a question not asked never meets a
+condition, not even "missing", which means "asked and left empty"; the completeness of a
+group counts the items answered among those asked, and a person not asked the group is not
+excluded by it.
 """
 
 from __future__ import annotations
@@ -90,18 +95,33 @@ def seconds(data: pd.DataFrame, start: str, end: str, text_format: str | None) -
     return (moments(data[end], text_format) - moments(data[start], text_format)).dt.total_seconds()
 
 
-def hits(project: Project, data: pd.DataFrame, rule: ExclusionRule) -> pd.Series:
-    """The rows a rule excludes on its own, on the table with the decisions applied."""
+def _asked(not_applicable: pd.DataFrame | None, name: str, index) -> pd.Series:
+    """Whether each person was asked the variable (always, without a condition)."""
+    if not_applicable is None or name not in not_applicable.columns:
+        return pd.Series(True, index=index)
+    return pd.Series(~not_applicable[name].to_numpy(), index=index)
+
+
+def hits(
+    project: Project,
+    data: pd.DataFrame,
+    rule: ExclusionRule,
+    not_applicable: pd.DataFrame | None = None,
+) -> pd.Series:
+    """The rows a rule excludes on its own, on the table with the decisions applied; with
+    the mask of what was not asked (v0.21)."""
     names = w.names_of(project)
     if isinstance(rule, ConditionRule):
         if rule.recode is not None:  # v0.15
             name = next(r.name for r in project.recodes.rules if r.id == rule.recode)
         else:
             name = _score_names(project)[rule.score] if rule.score else names[rule.variable]
-        found = _condition(data[name], rule)
+        found = _condition(data[name], rule) & _asked(not_applicable, name, data.index)
     elif isinstance(rule, CompletenessRule):
         items = [names[n] for n in members(_group(project, rule.group))]
-        found = data[items].notna().sum(axis=1) < rule.min_answered
+        asked = pd.concat([_asked(not_applicable, i, data.index) for i in items], axis=1)
+        answered = (data[items].notna() & asked.to_numpy()).sum(axis=1)
+        found = asked.any(axis=1) & (answered < rule.min_answered)
     elif isinstance(rule, DurationRule):
         span = seconds(data, names[rule.start], names[rule.end], rule.text_format)
         found = (span >= 0) & (span < rule.min_seconds)
@@ -122,12 +142,14 @@ def _group(project: Project, group_id: str):
     return next(g for g in project.groups if g.group_id == group_id)
 
 
-def ranks(project: Project, data: pd.DataFrame) -> pd.Series:
+def ranks(
+    project: Project, data: pd.DataFrame, not_applicable: pd.DataFrame | None = None
+) -> pd.Series:
     """For each row, 0 when kept, otherwise the rank (1, 2...) of the first rule that
     excludes it: `ddict_exclusion` in the scripts."""
     rank = pd.Series(0, index=data.index, dtype=int)
     for number, rule in enumerate(project.exclusions.rules, start=1):
-        rank = rank.mask((rank == 0) & hits(project, data, rule), number)
+        rank = rank.mask((rank == 0) & hits(project, data, rule, not_applicable), number)
     return rank
 
 

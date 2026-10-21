@@ -7,6 +7,7 @@
   },
   "climat_fewer_than_5": 6,
   "n": 300,
+  "nbenfants_missing": 5,
   "quick": 8,
   "surveymonkey": {
     "age": "q0002",
@@ -42,6 +43,19 @@
     "transport_SQ002": "q0006_0002",
     "transport_SQ003": "q0006_0003",
     "transport_other": "q0006_other"
+  },
+  "table1": {
+    "nbenfants": {
+      "asked": 160,
+      "unanswered": 5
+    },
+    "nuit": {
+      "asked": 146,
+      "counts": {
+        "1": 72,
+        "2": 74
+      }
+    }
   },
   "variables": {
     "age": {

@@ -39,6 +39,7 @@ class Described:
     mean: float | None = None
     sd: float | None = None
     categories: tuple[tuple[object, str, float], ...] = ()  # code, label, percent
+    asked: int | None = None  # v0.21: a filtered variable, those it was asked
 
 
 @dataclass(frozen=True)
@@ -49,6 +50,9 @@ class Facts:
     missing: tuple[tuple[str, tuple[object, ...]], ...]  # final name, its missing codes
     methods: tuple[tuple[str, str, str], ...]  # analysis, method, post hoc, as used
     recodes: tuple[str, ...] = ()  # v0.15: the sentences of the recodings it speaks of
+    # v0.21 (D-167): the filtered variables it speaks of, final name, label, condition in words
+    filtered: tuple[tuple[str, str, str], ...] = ()
+    attention: int = 0  # v0.21 (D-170): the attention checks of the questionnaire
 
 
 def _flow(prepared: PreparedData) -> Flow:
@@ -59,6 +63,11 @@ def _flow(prepared: PreparedData) -> Flow:
 
 def _describe(project: Project, prepared: PreparedData, name: str, book: Codebook) -> Described:
     column = prepared.table[name]
+    na = prepared.not_applicable
+    asked = None
+    if na is not None and name in na.columns:  # v0.21: only those it was asked
+        column = column[~na[name].to_numpy()]
+        asked = len(column)
     level = book.levels.get(name)
     if name in prepared.scores:
         level = "scale"
@@ -69,10 +78,10 @@ def _describe(project: Project, prepared: PreparedData, name: str, book: Codeboo
         categories = tuple(
             (code, book.category(name, code), 100 * float(share)) for code, share in shares.items()
         )
-        return Described(name, label, len(present), categories=categories)
+        return Described(name, label, len(present), categories=categories, asked=asked)
     numbers = pd.to_numeric(present, errors="coerce").dropna()
     sd = float(numbers.std(ddof=1)) if len(numbers) > 1 else None
-    return Described(name, label, len(numbers), float(numbers.mean()), sd)
+    return Described(name, label, len(numbers), float(numbers.mean()), sd, asked=asked)
 
 
 def _used(project: Project, notebook: nb.Notebook) -> list[str]:
@@ -149,6 +158,28 @@ def _methods(notebook: nb.Notebook) -> tuple[tuple[str, str, str], ...]:
     return tuple(sorted(found, key=lambda m: (order.index(m[0]), m[1], m[2])))
 
 
+def _filtered(
+    project: Project, prepared: PreparedData, used: list[str], book: Codebook
+) -> tuple[tuple[str, str, str], ...]:
+    na = prepared.not_applicable
+    if na is None:
+        return ()
+    found = []
+    for name in used:
+        words = w.asked_words(project, name) if name in na.columns else None
+        if words:
+            found.append((name, book.label(name), words))
+    return tuple(found)
+
+
+def attention_items(project: Project) -> int:
+    """The attention checks of the questionnaire: a single choice, a grid's statement."""
+    found = project.questionnaire
+    if found is None:
+        return 0
+    return sum(bool(q.attention) + sum(bool(r.attention) for r in q.rows) for q in found.questions)
+
+
 def facts(project: Project, prepared: PreparedData, notebook: nb.Notebook) -> Facts:
     book = Codebook(project, prepared)
     described = []
@@ -165,6 +196,8 @@ def facts(project: Project, prepared: PreparedData, notebook: nb.Notebook) -> Fa
         _missing(project, used),
         _methods(notebook),
         _recodes(project, notebook, used),
+        _filtered(project, prepared, used + [d.name for d in described], book),
+        attention_items(project),
     )
 
 
@@ -182,6 +215,8 @@ def statistics(found: Facts) -> dict[str, float]:
             stats[f"v{i}_sd"] = d.sd
         for code, _label, percent in d.categories:
             stats[f"v{i}_pct_{code_key(code)}"] = percent
+        if d.asked is not None:  # v0.21: a new aggregate, kept at once (D-100)
+            stats[f"v{i}_asked"] = float(d.asked)
     for r in found.reliabilities:
         stats[f"alpha_n_{r.group}"] = float(r.n)
         if r.alpha is not None:

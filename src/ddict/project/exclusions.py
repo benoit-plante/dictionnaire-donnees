@@ -125,6 +125,19 @@ def _date(project: Project, name: str, text_format: str | None, found: list[str]
         found.append(_("Format de date inconnu : {format}.").format(format=text_format))
 
 
+def _conditions_of(project: Project, items: list[str]) -> set:
+    """The distinct conditions of these variables, as a comparison sees them."""
+    from ddict.questionnaire.relevance import canonical
+
+    found = set()
+    for name in items:
+        entry = project.variable(name)
+        tracked = entry.asked_if
+        conditions = tracked.value if tracked is not None and is_accepted(tracked) else []
+        found.add(tuple(canonical(c) for c in conditions or []))
+    return found
+
+
 def refusals(project: Project, rule: ExclusionRule) -> list[str]:
     """Why a rule cannot be kept; empty when it can."""
     found: list[str] = []
@@ -132,6 +145,14 @@ def refusals(project: Project, rule: ExclusionRule) -> list[str]:
         _condition(project, rule, found)
     elif isinstance(rule, CompletenessRule):
         items = _items(project, rule.group, found)
+        if items and len(_conditions_of(project, items)) > 1:  # v0.21 (D-167)
+            found.append(
+                _(
+                    "{group} : ses items ne sont pas posés aux mêmes personnes (des conditions "
+                    "différentes) ; une règle de complétude ne s'y applique pas dans cette "
+                    "version."
+                ).format(group=rule.group)
+            )
         if items and rule.min_answered > len(items):
             found.append(
                 _("{group} : {n} items exigés, mais le groupe en compte {k}.").format(

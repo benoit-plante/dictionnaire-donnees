@@ -349,12 +349,20 @@ def _table1(b: _Builder, book: Codebook, prepared: PreparedData, result: Analysi
     columns.append(_col(rich(_("Total") + " (", it("N"), f"{NBSP}={NBSP}{len(kept)})")))
     every = [part for _name, part in parts] + [kept]
     rows, missing, small = [], [], []
+    na = prepared.not_applicable  # v0.21 (D-167)
+    filtered = [n for n in variables if na is not None and n in na.columns]
     for name in variables:
         label = book.label(name)
+        # A filtered question: its percentages among those who answered it; its note says
+        # whom it was asked, never "missing" for those who were not.
+        asked = (~na[name]).loc[kept.index] if name in filtered else None
+        # A filtered question: only those it was asked (an answer under a false condition
+        # stays out of the table, and the note counts it).
+        shown = every if asked is None else [p[asked.loc[p.index].to_numpy()] for p in every]
         if book.levels.get(name) == "scale":
             cells = [
                 f"{apa(p[name].mean())} ({apa(p[name].std())})" if p[name].notna().any() else ""
-                for p in every
+                for p in shown
             ]
             rows.append(_row(rich(f"{label}, ", it("M"), " (", it(_("ÉT")), ")"), *cells))
         else:
@@ -367,16 +375,42 @@ def _table1(b: _Builder, book: Codebook, prepared: PreparedData, result: Analysi
                 rows.append(
                     _row(
                         category,
-                        *[count_pct(int((p[name] == code).sum()), len(p)) for p in every],
+                        *[
+                            count_pct(
+                                int((p[name] == code).sum()),
+                                int(p[name].notna().sum()) if asked is not None else len(p),
+                            )
+                            for p in shown
+                        ],
                         indent=1,
                     )
                 )
                 if counts[code] < SMALL:
                     small.append(f"{label} : {category}")
+        if asked is not None:
+            n_asked = int(asked.sum())
+            unanswered = int((asked & kept[name].isna()).sum())
+            text = _("{label} : question posée à {n} personnes").format(label=label, n=n_asked)
+            if unanswered:
+                text += _(" ; {n} sans réponse").format(n=unanswered)
+            outside = int((~asked & kept[name].notna()).sum())
+            if outside:
+                text += _(" ; {n} réponses sous une condition fausse, hors du tableau").format(
+                    n=outside
+                )
+            missing.append(text)
+            continue
         lost = int(kept[name].isna().sum())
         if lost:
             missing.append(_("{label} : {n} valeurs manquantes").format(label=label, n=lost))
     note = [_("Pourcentages calculés sur l'effectif de chaque colonne.")]
+    if any(book.levels.get(n) != "scale" for n in filtered):
+        note = [
+            _(
+                "Pourcentages calculés sur l'effectif de chaque colonne ; pour une question "
+                "filtrée, parmi les personnes qui y ont répondu."
+            )
+        ]
     if missing:
         note.insert(0, "; ".join(missing) + ".")
     if small:
@@ -1408,6 +1442,29 @@ def _rm_anova(b: _Builder, book: Codebook, prepared: PreparedData, result: Analy
     )
 
 
+def filtered_notes(project: Project, prepared: PreparedData, result: AnalysisResult) -> list[str]:
+    """For each filtered variable of the analysis (v0.21, D-167): "Nombre d'enfants : posée
+    seulement si enfants = Oui ; l'analyse porte sur les personnes à qui elle a été posée." """
+    from ddict.export import wording as w
+
+    na = prepared.not_applicable
+    if na is None:
+        return []
+    book = Codebook(project, prepared)
+    found = []
+    for names in result.chosen.values():
+        for name in names or []:
+            words = w.asked_words(project, name) if name in na.columns else None
+            if words:
+                found.append(
+                    _(
+                        "{label} : posée seulement si {condition} ; l'analyse porte sur les "
+                        "personnes à qui elle a été posée."
+                    ).format(label=book.label(name), condition=words)
+                )
+    return list(dict.fromkeys(found))
+
+
 BUILDERS = {
     "table1": _table1,
     "t_test": _t_test,
@@ -1445,6 +1502,11 @@ def describe(
             said = rich(
                 _("Sous-groupe : {condition}.").format(condition=result.subgroup_text) + " "
             )
+            tables = [replace(t, note=said + t.note) for t in tables]
+            figures = [replace(f, note=said + f.note) for f in figures]
+        filtered = filtered_notes(project, prepared, result)
+        if filtered and result.analysis != "table1":  # v0.21: Table 1 says it its own way
+            said = rich(" ".join(filtered) + " ")
             tables = [replace(t, note=said + t.note) for t in tables]
             figures = [replace(f, note=said + f.note) for f in figures]
         return ApaDocument(

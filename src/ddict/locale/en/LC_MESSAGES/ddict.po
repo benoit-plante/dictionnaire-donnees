@@ -30,6 +30,14 @@ msgid " ; "
 msgstr "; "
 
 #, python-brace-format
+msgid " ; {n} réponses sous une condition fausse, hors du tableau"
+msgstr "; {n} answers under a false condition, left out of the table"
+
+#, python-brace-format
+msgid " ; {n} sans réponse"
+msgstr "; {n} did not answer"
+
+#, python-brace-format
 msgid " ; {n} énoncés de grille"
 msgstr "; {n} grid items"
 
@@ -1210,6 +1218,16 @@ msgstr "Anthropic's by default. For a university's AI server, the address it giv
 
 msgid "Centrer le prédicteur et le modérateur"
 msgstr "Centre the predictor and the moderator"
+
+msgid ""
+"Certaines questions n'étaient posées qu'aux personnes dont les réponses précédentes remplissaient"
+" une condition (questions filtrées). Une question qui n'a pas été posée est dite non applicable :"
+" elle n'est jamais comptée comme une valeur manquante, et chaque analyse porte sur les personnes "
+"à qui ses questions ont été posées."
+msgstr ""
+"Some questions were asked only of respondents whose previous answers met a condition (filtered "
+"questions). A question that was not asked is treated as not applicable: it is never counted as a "
+"missing value, and each analysis includes the people who were asked its questions."
 
 msgid "Ces items ne sont pas tous dans le groupe."
 msgstr "These items are not all in the group."
@@ -3994,6 +4012,13 @@ msgstr "The project {name} was changed elsewhere while the command ran (is the i
 msgid "Le projet {path} existe déjà. Utilisez --remplacer pour l'écraser."
 msgstr "The project {path} already exists. Use --replace to overwrite it."
 
+msgid "Le questionnaire comprenait un item de contrôle de l'attention."
+msgstr "The questionnaire included one attention-check item."
+
+#, python-brace-format
+msgid "Le questionnaire comprenait {k} items de contrôle de l'attention."
+msgstr "The questionnaire included {k} attention-check items."
+
 #, python-brace-format
 msgid "Le questionnaire de l'étude est joint ({file})."
 msgstr "The study's questionnaire is attached ({file})."
@@ -4346,6 +4371,9 @@ msgstr "The following hypotheses were formulated:"
 msgid "Les items {items} sont inversés avant le calcul du score."
 msgstr "Items {items} are reversed before the score is computed."
 
+msgid "Les items étaient présentés dans un ordre aléatoire, tiré pour chaque personne."
+msgstr "The items were presented in a random order, drawn for each respondent."
+
 #, python-brace-format
 msgid ""
 "Les liens entre une variable dépendante et ses prédicteurs ont été estimés par une régression "
@@ -4414,6 +4442,10 @@ msgstr ""
 
 msgid "Les propositions sont à réviser dans « Variables »."
 msgstr "The proposals are to be reviewed in \"Variables\"."
+
+#, python-brace-format
+msgid "Les questions filtrées sont les suivantes : {questions}."
+msgstr "The filtered questions are: {questions}."
 
 msgid "Les questions suivantes ont été examinées de façon exploratoire :"
 msgstr "The following questions were examined in an exploratory way:"
@@ -5610,6 +5642,11 @@ msgstr "Percentage of {rows} by {columns}"
 #, python-brace-format
 msgid "Pourcentages calculés dans chaque colonne. χ²({df}, {N} = {n}) = {chi2}, {p}, {V} de Cramér = {v}."
 msgstr "Percentages computed within each column. χ²({df}, {N} = {n}) = {chi2}, {p}, Cramér's {V} = {v}."
+
+msgid ""
+"Pourcentages calculés sur l'effectif de chaque colonne ; pour une question filtrée, parmi les "
+"personnes qui y ont répondu."
+msgstr "Percentages of each column's total; for a filtered question, of the people who answered it."
 
 msgid "Pourcentages calculés sur l'effectif de chaque colonne."
 msgstr "Percentages computed on the size of each column."
@@ -9574,6 +9611,14 @@ msgid "{group} : moins de {n} personnes dans {code}."
 msgstr "{group}: fewer than {n} people in {code}."
 
 #, python-brace-format
+msgid ""
+"{group} : ses items ne sont pas posés aux mêmes personnes (des conditions différentes) ; une "
+"règle de complétude ne s'y applique pas dans cette version."
+msgstr ""
+"{group}: its items are not asked of the same people (different conditions); a completeness rule "
+"does not apply to it in this version."
+
+#, python-brace-format
 msgid "{group} : un item inversé n'a pu être créé, score non calculé."
 msgstr "{group}: a reversed item could not be created, score not computed."
 
@@ -9674,6 +9719,14 @@ msgid "{k} effectifs attendus sur {n} sont sous 5 (minimum {m})."
 msgstr "{k} expected counts out of {n} are below 5 (minimum {m})."
 
 #, python-brace-format
+msgid "{label} (posée si {condition})"
+msgstr "{label} (asked if {condition})"
+
+#, python-brace-format
+msgid "{label} (question posée à {asked} personnes : {shares})"
+msgstr "{label} (asked of {asked} people: {shares})"
+
+#, python-brace-format
 msgid "{label} ({m} = {mean}, {sd} = {sdv})"
 msgstr "{label} ({m} = {mean}, {sd} = {sdv})"
 
@@ -9682,8 +9735,26 @@ msgid "{label} ({m} = {mean}, {sd} = {sdv}, {n} = {count})"
 msgstr "{label} ({m} = {mean}, {sd} = {sdv}, {n} = {count})"
 
 #, python-brace-format
+msgid ""
+"{label} ({m} = {mean}, {sd} = {sdv}, {n} = {count}, parmi les {asked} personnes à qui la question"
+" a été posée)"
+msgstr ""
+"{label} ({m} = {mean}, {sd} = {sdv}, {n} = {count}, of the {asked} people who were asked the "
+"question)"
+
+#, python-brace-format
 msgid "{label} ({shares})"
 msgstr "{label} ({shares})"
+
+#, python-brace-format
+msgid ""
+"{label} : posée seulement si {condition} ; l'analyse porte sur les personnes à qui elle a été "
+"posée."
+msgstr "{label}: asked only if {condition}; the analysis includes the people who were asked it."
+
+#, python-brace-format
+msgid "{label} : question posée à {n} personnes"
+msgstr "{label}: asked of {n} people"
 
 #, python-brace-format
 msgid "{label} : {n} valeurs manquantes"
