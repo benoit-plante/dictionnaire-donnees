@@ -42,9 +42,10 @@ def _as_0_11(data: dict) -> dict:
         questionnaires += [p["questionnaire"] for p in data["design"]["publications"]]
     for questionnaire in questionnaires:
         for section in questionnaire["sections"]:
-            section.pop("condition"), section.pop("shuffle")
+            section.pop("condition"), section.pop("shuffle"), section.pop("condition_unread")
         for question in questionnaire["questions"]:
             question.pop("condition"), question.pop("shuffle"), question.pop("attention")
+            question.pop("condition_unread")
             for row in question["rows"]:
                 row.pop("attention")
     return data
@@ -135,7 +136,7 @@ def test_kept_review_points_keep_their_fingerprint():
     project = projet_concu.project()
     for question in project.questionnaire.questions:
         before = json.loads(json.dumps(question.model_dump(mode="json")))
-        for key in ("condition", "shuffle", "attention"):
+        for key in ("condition", "shuffle", "attention", "condition_unread"):
             before.pop(key)
         for row in before["rows"]:
             row.pop("attention")

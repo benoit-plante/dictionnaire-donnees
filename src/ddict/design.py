@@ -134,7 +134,7 @@ def questionnaire(project: Project) -> Questionnaire:
 # The fields added since 0.11.0 (v0.21, D-172), with their empty value: what a fingerprint
 # leaves out while they are empty, so that a questionnaire without any keeps its fingerprint,
 # its publications and its kept review points.
-_SINCE_0_12 = {"condition": None, "shuffle": False, "attention": None}
+_SINCE_0_12 = {"condition": None, "shuffle": False, "attention": None, "condition_unread": None}
 
 
 def _without_empty(data: dict) -> dict:

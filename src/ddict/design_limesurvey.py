@@ -198,7 +198,7 @@ def _problems(project: Project, number: int | None, question: Question) -> list[
 # --- Conditions as expressions (v0.21, § 5.7.1 of the plan). ---
 
 
-def _variable(project: Project, target: str) -> str | None:
+def variable_name(project: Project, target: str) -> str | None:
     """The name an expression gives to what a term names: the question's code ("enfants"),
     a statement's or an option's ("climat_SQ002"); None for a target gone."""
     found = skip.target_of(design.questionnaire(project), target)
@@ -228,7 +228,7 @@ def _term(project: Project, term: Term) -> str:
     """One term, the empty answer tested first, `.NAOK` everywhere: a question not asked
     reads as empty and makes the term false, never the whole expression (§ 4.3)."""
     found = skip.target_of(design.questionnaire(project), term.target)
-    name = _variable(project, term.target)
+    name = variable_name(project, term.target)
     if found is None or name is None:
         raise Unwritable([_("Une condition vise ce qui a été retiré : {target}.").format(
             target=term.target)])  # fmt: skip
@@ -259,7 +259,7 @@ def expression(project: Project, condition: Condition | None) -> str:
 def _condition_problems(project: Project, where: str, condition: Condition | None) -> list[str]:
     if condition is None:
         return []
-    gone = [t.target for t in condition.terms if _variable(project, t.target) is None]
+    gone = [t.target for t in condition.terms if variable_name(project, t.target) is None]
     if gone:
         return [
             _("{where} : la condition vise ce qui a été retiré ({targets}) ; corrigez-la.").format(

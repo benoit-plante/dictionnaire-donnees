@@ -348,6 +348,18 @@ msgid ", p. {n}"
 msgstr ", p. {n}"
 
 #, python-brace-format
+msgid "- LimeSurvey (non lue) : `{expression}`"
+msgstr "- LimeSurvey (not read): `{expression}`"
+
+#, python-brace-format
+msgid "- LimeSurvey : {condition}"
+msgstr "- LimeSurvey: {condition}"
+
+#, python-brace-format
+msgid "- Projet : {condition}"
+msgstr "- Project: {condition}"
+
+#, python-brace-format
 msgid "- Variables ajoutées (sans équivalent) : {n}"
 msgstr "- Variables added (without a match): {n}"
 
@@ -3295,6 +3307,17 @@ msgstr "The key is refused (or missing). Record it again: ddict ai key."
 #, python-brace-format
 msgid "La condition attend un code qui n'est plus un choix ({values}) : elle ne serait jamais vraie."
 msgstr "The condition expects a code that is no longer a choice ({values}): it would never be true."
+
+msgid ""
+"La condition de LimeSurvey n'est pas de la forme que l'outil écrit : corrigez-la dans LimeSurvey,"
+" ou dans l'outil puis réimportez."
+msgstr ""
+"LimeSurvey's condition is not in the form the tool writes: correct it in LimeSurvey, or in the "
+"tool and import again."
+
+#, python-brace-format
+msgid "La condition de LimeSurvey vise {name}, que le projet n'a pas."
+msgstr "LimeSurvey's condition names {name}, which the project does not have."
 
 #, python-brace-format
 msgid "La condition vise ce qui a été retiré depuis ({targets}) : corrigez-la."
@@ -6508,6 +6531,9 @@ msgstr "Section"
 msgid "Section ajoutée."
 msgstr "Section added."
 
+msgid "Section changée"
+msgstr "Section changed"
+
 msgid ""
 "Section filtrée sans texte d'affichage : un texte qui dit à qui elle s'adresse aide la personne à"
 " suivre."
@@ -7046,6 +7072,9 @@ msgstr "Titles or notes changed: {n}"
 
 msgid "Total"
 msgstr "Total"
+
+msgid "Toujours posée"
+msgstr "Always asked"
 
 msgid "Tous les fichiers"
 msgstr "All files"
@@ -7930,6 +7959,15 @@ msgstr "conclusion"
 msgid "concorde"
 msgstr "agrees"
 
+msgid "condition"
+msgstr "condition"
+
+msgid "condition LimeSurvey non lue, gardée telle quelle"
+msgstr "LimeSurvey condition not read, kept as it is"
+
+msgid "condition que l'outil ne lit pas"
+msgstr "condition the tool does not read"
+
 msgid "confirmatoire"
 msgstr "confirmatory"
 
@@ -8572,6 +8610,12 @@ msgstr "ordinary"
 
 msgid "ordinal"
 msgstr "ordinal"
+
+msgid "ordre aléatoire"
+msgstr "random order"
+
+msgid "ordre aléatoire LimeSurvey non lu"
+msgstr "LimeSurvey random order not read"
 
 msgid "ordre supposé, à vérifier"
 msgstr "assumed order, to check"

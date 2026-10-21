@@ -548,6 +548,9 @@ class Question(Strict):
     condition: Condition | None = None
     shuffle: bool = False
     attention: list[str] | None = Field(default=None, min_length=1)
+    # Read from LimeSurvey (D-169): an expression outside the grammar, kept as it is to be
+    # shown, never guessed into a condition.
+    condition_unread: str | None = None
 
     @model_validator(mode="after")
     def _shaped(self) -> Question:
@@ -574,6 +577,7 @@ class Section(Strict):
     instruction: str | None = None
     condition: Condition | None = None  # v0.21 (D-165), for each of its questions
     shuffle: bool = False  # v0.21 (D-166): its questions in random order
+    condition_unread: str | None = None  # read from LimeSurvey, outside the grammar (D-169)
 
 
 class QuestionnaireText(Strict):

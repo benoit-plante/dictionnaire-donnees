@@ -142,6 +142,9 @@ TO_CHECK = Texts(
         "platform_text_differs": N_("autres mots que dans la base, au même code"),
         "lss_type_unsupported": N_("type de question LimeSurvey que l'outil ne lit pas encore"),
         "lss_expression": N_("contient une expression LimeSurvey entre accolades"),
+        # v0.21 (D-169): kept as it is, never guessed.
+        "lss_condition_unread": N_("condition LimeSurvey non lue, gardée telle quelle"),
+        "lss_order_unread": N_("ordre aléatoire LimeSurvey non lu"),
     }
 )
 KINDS = Texts(

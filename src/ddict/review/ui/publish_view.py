@@ -281,7 +281,14 @@ def _sent(project: Project) -> None:
 
 
 def _difference_text(difference: design_compare.Difference) -> None:
-    """A difference in words, the text changed word by word."""
+    """A difference in words, the text changed word by word; since v0.21, a condition in
+    words on both sides."""
+    if difference.kind == "section":
+        st.markdown(f"**{difference.title}** — {difference.code}")
+        fields = ", ".join(_(design_compare.FIELDS[f]) for f in difference.fields)
+        st.markdown(_("Changé : {fields}.").format(fields=fields))
+        _conditions(difference)
+        return
     question = difference.theirs if difference.mine is None else difference.mine
     head = f"**{difference.title}** — `{difference.code}` : {question.text}"
     if difference.kind == "renamed":
@@ -298,6 +305,7 @@ def _difference_text(difference: design_compare.Difference) -> None:
         for tag, text in difference.words():
             words.append({"=": text, "-": f"~~{text}~~", "+": f"**{text}**"}[tag])
         st.markdown(" ".join(words))
+    _conditions(difference)
     for item in difference.items:
         line = f"{_(ITEM_WHAT[item.what])} {_(ITEM_KINDS[item.kind])} : "
         if item.kind == "recoded":
@@ -307,6 +315,20 @@ def _difference_text(difference: design_compare.Difference) -> None:
         else:
             line += f"`{item.code}` « {item.text} »"
         st.markdown(f"- {line}")
+
+
+def _conditions(difference: design_compare.Difference) -> None:
+    if difference.conditions is not None:
+        mine, theirs = difference.conditions
+        st.markdown(_("- Projet : {condition}").format(condition=mine))
+        if "condition_unread" in difference.fields:
+            st.markdown(_("- LimeSurvey (non lue) : `{expression}`").format(expression=theirs))
+        else:
+            st.markdown(_("- LimeSurvey : {condition}").format(condition=theirs))
+    if difference.refused and (
+        difference.kind == "added" or {"condition", "condition_unread"} & set(difference.fields)
+    ):
+        st.caption(difference.refused)
 
 
 def _browse() -> None:

@@ -9,6 +9,12 @@ LimeSurvey says) or "Garder le projet" (LimeSurvey is then to be corrected).
 
 Two versions of the designed questionnaire (a version sent, the current one) are matched by
 the ids of their questions, which are never given again.
+
+Since v0.21 (D-169), three more kinds of difference: a condition changed (said in words on
+both sides), a condition LimeSurvey has that the tool could not read (it cannot be taken: to
+correct in LimeSurvey or in the tool), a random order changed; for a question, and for a
+section, matched by its rank. Conditions are compared by the codes they name, as LimeSurvey
+names them, "among" one code being "=".
 """
 
 from __future__ import annotations
@@ -18,9 +24,20 @@ from datetime import date
 from difflib import SequenceMatcher
 
 from ddict import design
-from ddict.design import Draft, Item
+from ddict.design import DesignError, Draft, Item
 from ddict.i18n import N_, Texts, _
-from ddict.project.model import Project, Provenance, Publication, Question, Questionnaire
+from ddict.project import skip
+from ddict.project.model import (
+    Condition,
+    Project,
+    Provenance,
+    Publication,
+    Question,
+    Questionnaire,
+    Section,
+    Term,
+)
+from ddict.questionnaire import relevance
 from ddict.questionnaire.read import normalize
 
 KINDS = Texts(
@@ -29,6 +46,7 @@ KINDS = Texts(
         "removed": N_("Question retirée"),
         "renamed": N_("Probablement la même : même texte, autre code"),
         "changed": N_("Question changée"),
+        "section": N_("Section changée"),
     }
 )
 FIELDS = Texts(
@@ -40,6 +58,9 @@ FIELDS = Texts(
         "required": N_("obligatoire"),
         "instruction": N_("consigne"),
         "other": N_("option « autre »"),
+        "condition": N_("condition"),
+        "condition_unread": N_("condition que l'outil ne lit pas"),
+        "shuffle": N_("ordre aléatoire"),
     }
 )
 SENT = Texts(
@@ -74,6 +95,12 @@ class Difference:
     code: str  # the code (or id) it is known by
     fields: list[str] = field(default_factory=list)  # for "changed"
     items: list[ItemChange] = field(default_factory=list)
+    # v0.21: a condition in words, the project's then the other side's; LimeSurvey's on the
+    # ids of the project, to take it (None, with `refused`, when it cannot be).
+    conditions: tuple[str, str] | None = None
+    theirs_condition: Condition | None = None
+    refused: str | None = None
+    sections: tuple[Section, Section] | None = None  # kind "section"
 
     @property
     def title(self) -> str:
@@ -136,6 +163,105 @@ def _item_changes(mine: Question, theirs: Question) -> list[ItemChange]:
     return found
 
 
+# --- Conditions, compared by the codes they name (v0.21). ---
+
+
+@dataclass(frozen=True)
+class _Names:
+    """How each side names its targets: the project's ids and the re-export's, each to the
+    name LimeSurvey gives it ("enfants", "climat_SQ002"), and back for the project."""
+
+    mine: dict[str, str]
+    theirs: dict[str, str]
+    targets: dict[str, str]  # a name -> the project's id
+
+
+def _project_names(project: Project) -> dict[str, str]:
+    from ddict import design_limesurvey  # it imports the Word, which imports design
+
+    found = design.questionnaire(project)
+    ids = []
+    for question in found.questions:
+        ids.append(question.question_id)
+        ids += [r.row_id for r in question.rows] + [o.option_id for o in question.options]
+    named = {i: design_limesurvey.variable_name(project, i) for i in ids}
+    return {i: n.lower() for i, n in named.items() if n}
+
+
+def _names(project: Project, read: Questionnaire) -> _Names:
+    from ddict.questionnaire.lss import names
+
+    mine = _project_names(project)
+    theirs = {target: name.lower() for name, (target, _n, _c) in names(read).items()}
+    return _Names(mine, theirs, {n: i for i, n in mine.items()})
+
+
+def _key(condition: Condition | None, names: dict[str, str] | None) -> tuple | None:
+    found = relevance.canonical(condition)
+    if found is None or names is None:
+        return found
+    combine, terms = found
+    return (combine, tuple((names.get(t, t), o, v) for t, o, v in terms))
+
+
+def _on_project(condition: Condition | None, names: _Names) -> Condition | None:
+    """LimeSurvey's condition on the ids of the project; DesignError when it names what the
+    project does not have."""
+    if condition is None:
+        return None
+    terms = []
+    for term in condition.terms:
+        name = names.theirs.get(term.target)
+        target = names.targets.get(name or "")
+        if target is None:
+            raise DesignError(
+                [_("La condition de LimeSurvey vise {name}, que le projet n'a pas.").format(
+                    name=name or term.target)]
+            )  # fmt: skip
+        terms.append(Term(target=target, operator=term.operator, value=term.value))
+    return Condition(combine=condition.combine, terms=terms)
+
+
+def _condition_fields(mine, theirs, names: _Names | None) -> list[str]:
+    found = []
+    if theirs.condition_unread:
+        found.append("condition_unread")
+    elif _key(mine.condition, names.mine if names else None) != _key(
+        theirs.condition, names.theirs if names else None
+    ):
+        found.append("condition")
+    if mine.shuffle != theirs.shuffle:
+        found.append("shuffle")
+    return found
+
+
+def _said(project: Project, condition: Condition | None) -> str:
+    return skip.team_text(project, condition) if condition else _("Toujours posée")
+
+
+def _with_conditions(project: Project, difference: Difference, names: _Names | None) -> None:
+    """The conditions in words, and LimeSurvey's on the project's ids, to take it."""
+    mine = difference.mine if difference.sections is None else difference.sections[0]
+    theirs = difference.theirs if difference.sections is None else difference.sections[1]
+    if theirs is None or names is None:
+        return
+    if theirs.condition_unread:
+        difference.refused = _(
+            "La condition de LimeSurvey n'est pas de la forme que l'outil écrit : corrigez-la "
+            "dans LimeSurvey, ou dans l'outil puis réimportez."
+        )
+        said = theirs.condition_unread
+    else:
+        try:
+            difference.theirs_condition = _on_project(theirs.condition, names)
+            said = _said(project, difference.theirs_condition)
+        except DesignError as error:
+            difference.refused = error.reasons[0]
+            said = difference.refused
+    if {"condition", "condition_unread"} & set(difference.fields):
+        difference.conditions = (_said(project, mine.condition if mine else None), said)
+
+
 def _fields(mine: Question, theirs: Question) -> list[str]:
     found = []
     if _words(mine.text) != _words(theirs.text):
@@ -150,12 +276,29 @@ def _fields(mine: Question, theirs: Question) -> list[str]:
     return found
 
 
-def _compare(mine: Question, theirs: Question, code: str) -> Difference | None:
-    fields = _fields(mine, theirs)
+def _compare(
+    mine: Question, theirs: Question, code: str, names: _Names | None = None
+) -> Difference | None:
+    fields = _fields(mine, theirs) + _condition_fields(mine, theirs, names)
     items = _item_changes(mine, theirs)
     if not fields and not items:
         return None
     return Difference("changed", mine, theirs, code, fields, items)
+
+
+def _sections(project: Project, read: Questionnaire, names: _Names) -> list[Difference]:
+    """The sections that differ by their condition or their random order, matched by rank."""
+    found = []
+    for mine, theirs in zip(design.questionnaire(project).sections, read.sections, strict=False):
+        fields = _condition_fields(mine, theirs, names)
+        if fields:
+            difference = Difference(
+                "section", None, None, mine.title or mine.section_id, fields,
+                sections=(mine, theirs),
+            )  # fmt: skip
+            _with_conditions(project, difference, names)
+            found.append(difference)
+    return found
 
 
 def with_limesurvey(project: Project, read: Questionnaire) -> list[Difference]:
@@ -163,7 +306,8 @@ def with_limesurvey(project: Project, read: Questionnaire) -> list[Difference]:
     LimeSurvey, in the order of the project, then those added in LimeSurvey."""
     questions = design.questionnaire(project).questions
     theirs = {(q.code or "").lower(): q for q in read.questions}
-    found: list[Difference] = []
+    names = _names(project, read)
+    found: list[Difference] = _sections(project, read, names)
     unmatched_mine: list[Question] = []
     for question in questions:
         code = design.code(project, question)
@@ -171,8 +315,9 @@ def with_limesurvey(project: Project, read: Questionnaire) -> list[Difference]:
         if other is None:
             unmatched_mine.append(question)
             continue
-        difference = _compare(question, other, code)
+        difference = _compare(question, other, code, names)
         if difference is not None:
+            _with_conditions(project, difference, names)
             found.append(difference)
     for question in unmatched_mine:
         code = design.code(project, question)
@@ -183,7 +328,9 @@ def with_limesurvey(project: Project, read: Questionnaire) -> list[Difference]:
         else:
             found.append(Difference("removed", question, None, code))
     for question in theirs.values():
-        found.append(Difference("added", None, question, question.code or question.question_id))
+        difference = Difference("added", None, question, question.code or question.question_id)
+        _with_conditions(project, difference, names)
+        found.append(difference)
     return found
 
 
@@ -254,10 +401,30 @@ def _other_text(mine: Question | None, theirs: Question) -> Question:
     return theirs.model_copy(update={"options": options})
 
 
+def _take_conditions(project: Project, owner: str, difference: Difference, theirs) -> None:
+    """LimeSurvey's condition and random order, once the rest is taken (v0.21)."""
+    if difference.kind == "added" or "condition" in difference.fields:
+        design.set_condition(project, owner, difference.theirs_condition)
+    if difference.kind == "added" or "shuffle" in difference.fields:
+        if theirs.shuffle:
+            design.set_shuffle(project, owner, True)
+        elif "shuffle" in difference.fields:
+            design.set_shuffle(project, owner, False)
+
+
 def take(project: Project, difference: Difference, *, now: str) -> None:
     """ "Reprendre dans le projet": the project says what LimeSurvey says. Raises
-    DesignError, the project unchanged, when the change is refused."""
+    DesignError, the project unchanged, when the change is refused (a condition LimeSurvey
+    has that the tool cannot read, or that names what the project does not have)."""
     found = design.questionnaire(project)
+    if difference.refused and (  # refused before anything changes
+        difference.kind == "added" or {"condition", "condition_unread"} & set(difference.fields)
+    ):
+        raise DesignError([difference.refused])
+    if difference.kind == "section":
+        mine, theirs = difference.sections
+        _take_conditions(project, mine.section_id, difference, theirs)
+        return
     if difference.kind == "removed":
         design.remove_question(project, difference.mine.question_id)
         return
@@ -267,6 +434,7 @@ def take(project: Project, difference: Difference, *, now: str) -> None:
         question_id = design.add_question(project, _draft(theirs, None, section))
         if theirs.code:
             design.decide_code(project, question_id, "write", now=now, value=theirs.code.lower())
+        _take_conditions(project, question_id, difference, theirs)
         return
     mine = difference.mine
     if difference.kind == "renamed":
@@ -276,6 +444,7 @@ def take(project: Project, difference: Difference, *, now: str) -> None:
     theirs = _other_text(mine, difference.theirs)
     section = mine.section or found.sections[0].section_id
     design.modify_question(project, mine.question_id, _draft(theirs, mine, section))
+    _take_conditions(project, mine.question_id, difference, theirs)
 
 
 def _section_of(project: Project, difference: Difference) -> str:
