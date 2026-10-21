@@ -3,12 +3,15 @@ by the AI, in two versions.
 
 - For the ethics committee: what a person answering would read (title, sections and their
   instructions, numbered questions, choices with ○ or ☐, grids as tables, lines to fill,
-  displayed texts, "*" for a required question), in the language of the study. No name, no
-  code, no provenance.
+  displayed texts, "*" for a required question), in the language of the study; since v0.21,
+  the estimated duration, the conditions in words ("Si vous avez répondu « Oui » à la
+  question 3 :") and the random orders. No name, no code, no provenance; an attention check
+  shows as an ordinary question, as a person answering sees it.
 - Working: the same, with under each question its code, its kind and its LimeSurvey type, the
   codes of its choices and items, the reversed items, the provenance, the group and its
-  instrument, its variables; at the end, the review points open and kept. The tool's own
-  words in the language of the interface.
+  instrument, its variables, its condition for the team and its attention checks (v0.21); the
+  formula of the duration; at the end, the review points open and kept. The tool's own words
+  in the language of the interface.
 
 The footer gives the version, the day the questionnaire last changed and its fingerprint,
 never the day of its production: the same questionnaire gives the same bytes.
@@ -28,9 +31,10 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Pt, RGBColor
 
-from ddict import design, design_points, i18n
+from ddict import design, design_duration, design_points, i18n
 from ddict.analysis.deposit import steady_xlsx
 from ddict.i18n import N_, Texts, _
+from ddict.project import skip
 from ddict.project.model import Group, Project, Provenance, Question, Section
 
 Version = Literal["ethics", "working"]
@@ -55,6 +59,16 @@ ANSWERS = Texts(
 )
 PROVENANCES = Texts({"team": N_("tapé par l'équipe"), "source": N_("tiré d'une source")})
 ROUND, SQUARE = "○", "☐"  # one choice, several
+# v0.21 (D-166): what a person answering is told of a random order, in the language of the
+# study; the page "Publier" says the same.
+SHUFFLED = Texts(
+    {
+        "single": N_("(Les choix sont présentés dans un ordre aléatoire.)"),
+        "checkbox": N_("(Les options sont présentées dans un ordre aléatoire.)"),
+        "grid": N_("(Les énoncés de cette question sont présentés dans un ordre aléatoire.)"),
+        "section": N_("(Les questions de cette section sont présentées dans un ordre aléatoire.)"),
+    }
+)
 LINE = "_" * 40
 FONT = "Calibri"
 MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -99,6 +113,55 @@ def numbered(project: Project) -> list[tuple[Section, list[Numbered]]]:
             questions.append(Numbered(number if question.kind != "display" else None, question))
         out.append((section, questions))
     return out
+
+
+def condition_line(project: Project, question: Question) -> str | None:
+    """A question's own condition, as a person answering reads it, before the question:
+    "Si vous avez répondu « Oui » à la question 3 :" (its section's is said under its title)."""
+    if question.condition is None:
+        return None
+    return skip.committee_text(project, question.condition) + i18n.colon().rstrip()
+
+
+def section_lines(project: Project, section: Section) -> list[str]:
+    """Under a section's title: whom it is for, and the random order of its questions."""
+    found = []
+    if section.condition is not None:
+        found.append(skip.committee_text(project, section.condition, section=True) + ".")
+    if section.shuffle:
+        found.append(_(SHUFFLED["section"]))
+    return found
+
+
+def shuffle_line(question: Question) -> str | None:
+    return _(SHUFFLED[question.kind]) if question.shuffle and question.kind in SHUFFLED else None
+
+
+def attention_lines(question: Question) -> list[str]:
+    """The attention checks of a question, for the team: "Item de contrôle : bonne réponse 4
+    (Plutôt d'accord)"."""
+    found = []
+    if question.attention:
+        found.append(
+            _("Item de contrôle : {answers}").format(
+                answers=skip.attention_text(question, question.attention)
+            )
+        )
+    for row in question.rows:
+        if row.attention:
+            found.append(
+                _("Item de contrôle « {row} » : {answers}").format(
+                    row=row.text, answers=skip.attention_text(question, row.attention)
+                )
+            )
+    return found
+
+
+def duration_line(project: Project) -> str | None:
+    if not design.questionnaire(project).questions:
+        return None
+    found = design_duration.estimate(project)
+    return _("Durée estimée : {duration}.").format(duration=design_duration.text(found))
 
 
 def version(project: Project) -> tuple[int, str]:
@@ -245,6 +308,9 @@ def _working_lines(project: Project, question: Question, tool: str) -> list[str]
         provenance = provenance_text(question.provenance)
         if provenance:
             lines.append(_("Provenance : {text}").format(text=provenance))
+        if question.condition is not None:  # v0.21
+            lines.append(skip.team_text(project, question.condition))
+        lines += attention_lines(question)
         group = _group(project, question)
         if group is not None:
             label = group.descriptive_label.value or group.group_id
@@ -259,6 +325,11 @@ def _working_lines(project: Project, question: Question, tool: str) -> list[str]
 
 def _question(document, project: Project, item: Numbered, working: bool, tool: str) -> None:
     question = item.question
+    lead = condition_line(project, question)
+    if lead is not None:
+        paragraph = _plain(document, lead, italic=True)
+        paragraph.paragraph_format.space_before = Pt(10)
+        paragraph.paragraph_format.keep_with_next = True
     if question.kind == "display":
         _plain(document, question.text, italic=True)
     else:
@@ -271,6 +342,9 @@ def _question(document, project: Project, item: Numbered, working: bool, tool: s
             paragraph.add_run(" *").bold = True
     if question.instruction:
         _plain(document, question.instruction, italic=True)
+    shuffled = shuffle_line(question)
+    if shuffled is not None:
+        _plain(document, shuffled, italic=True)
     if question.kind in ("single", "checkbox"):
         _choices(document, question, working)
     elif question.kind == "grid":
@@ -318,6 +392,13 @@ def render(project: Project, which: Version) -> bytes:
                         "relecture. Pour le comité d'éthique, produisez l'autre version."
                     ),
                 )
+        duration = duration_line(project)
+        if duration is not None:
+            _plain(document, duration)
+            if working:
+                with i18n.using(tool):
+                    for line in design_duration.formula(design_duration.estimate(project)):
+                        _grey(document.add_paragraph(), line)
         if any(q.required for q in found.questions):
             _plain(document, _("* Réponse obligatoire."), italic=True)
         for section, questions in numbered(project):
@@ -325,6 +406,11 @@ def render(project: Project, which: Version) -> bytes:
                 document.add_heading(section.title, level=1)
             if section.instruction:
                 _plain(document, section.instruction, italic=True)
+            for line in section_lines(project, section):
+                _plain(document, line, italic=True)
+            if working and section.condition is not None:
+                with i18n.using(tool):
+                    _grey(document.add_paragraph(), skip.team_text(project, section.condition))
             for item in questions:
                 _question(document, project, item, working, tool)
         if working:

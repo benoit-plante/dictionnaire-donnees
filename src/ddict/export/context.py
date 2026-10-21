@@ -382,6 +382,25 @@ def _variables(project: Project) -> list[str]:
     return [*lines, ""]
 
 
+def _presentation(project: Project) -> list[str]:
+    """When a variable was asked and how it was presented (v0.21); nothing for a project
+    without conditions, random order or attention checks."""
+    if not w.has_presentation(project, "final"):
+        return []
+    lines = [_("## Questions filtrées et présentation"), ""]
+    for entry in aside.kept(project):
+        parts = []
+        asked = w.asked_if_text(project, entry, "final")
+        if asked:
+            parts.append(_("posée si {condition}").format(condition=asked))
+        presentation = w.presentation_text(project, entry)
+        if presentation:
+            parts.append(presentation)
+        if parts:
+            lines.append(f"- `{w.final_name(entry)}`{colon()}{semicolon().join(parts)}")
+    return [*lines, ""]
+
+
 def _attention_lines(project: Project) -> list[str]:
     found = _attention(project)
     if not found:
@@ -493,6 +512,7 @@ def render_context(
     omitted = w.omitted_variables(project, omit_groups)
     lines = _header(project) + _rules(project) + _completeness(project)
     lines += _groups(project, omitted) + _recodes(project) + _variables(project)
+    lines += _presentation(project)
     lines += _attention_lines(project)
     if statistics and project.source is not None:
         lines += _statistics(project)

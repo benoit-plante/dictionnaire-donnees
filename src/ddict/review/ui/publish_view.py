@@ -15,6 +15,7 @@ import streamlit as st
 from ddict import design, design_compare, design_limesurvey, design_word, i18n
 from ddict.i18n import N_, Texts, _
 from ddict.io.model import ReadError
+from ddict.project import skip
 from ddict.project.model import Project, Question
 from ddict.questionnaire.lss import read_limesurvey
 from ddict.review.ui import common as c
@@ -42,6 +43,14 @@ def _answer(project: Project, item: design_word.Numbered, names: bool) -> None:
     fields disabled (their label kept, hidden, for a screen reader)."""
     question: Question = item.question
     key = f"publish-{question.question_id}"
+    with i18n.using(project.settings.language):  # as the Word says it (v0.21)
+        lead = design_word.condition_line(project, question)
+        shuffled = design_word.shuffle_line(question)
+    if lead is not None:
+        st.markdown(f"*{lead}*")
+    if names:  # the team's words, in the language of the interface
+        for line in _team_lines(project, question):
+            st.caption(line)
     if question.kind == "display":
         st.markdown(f"*{question.text}*")
         return
@@ -49,6 +58,8 @@ def _answer(project: Project, item: design_word.Numbered, names: bool) -> None:
     st.markdown(label)
     if question.instruction:
         st.caption(question.instruction)
+    if shuffled is not None:
+        st.caption(shuffled)
     hidden = {"key": key, "disabled": True, "label_visibility": "collapsed"}
     if question.kind == "single":
         options = [_option(o.code, o.text, names) for o in question.options]
@@ -75,6 +86,14 @@ def _answer(project: Project, item: design_word.Numbered, names: bool) -> None:
         st.text_input(label, **hidden)
 
 
+def _team_lines(project: Project, question: Question) -> list[str]:
+    """With the names shown: the condition for the team and the attention checks."""
+    found = []
+    if question.condition is not None:
+        found.append(skip.team_text(project, question.condition))
+    return found + design_word.attention_lines(question)
+
+
 def _preview(project: Project) -> None:
     st.subheader(_("Aperçu"))
     st.caption(
@@ -85,16 +104,24 @@ def _preview(project: Project) -> None:
     )
     names = st.toggle(_("Montrer les noms"), key=NAMES)
     found = design.questionnaire(project)
-    if any(q.required for q in found.questions):
-        with i18n.using(project.settings.language):  # as the Word says it
+    with i18n.using(project.settings.language):  # as the Word says it
+        if any(q.required for q in found.questions):
             st.caption(_("* Réponse obligatoire.").replace("*", r"\*", 1))
+        duration = design_word.duration_line(project)
+        under = {s.section_id: design_word.section_lines(project, s) for s in found.sections}
     with st.container(border=True):
         st.markdown(f"### {found.file_name}")
+        if duration is not None:
+            st.markdown(duration)
         for section, questions in design_word.numbered(project):
             if section.title:
                 st.markdown(f"#### {section.title}")
             if section.instruction:
                 st.markdown(f"*{section.instruction}*")
+            for line in under[section.section_id]:
+                st.markdown(f"*{line}*")
+            if names and section.condition is not None:
+                st.caption(skip.team_text(project, section.condition))
             for item in questions:
                 _answer(project, item, names)
                 if names and item.question.kind == "display":
@@ -109,7 +136,8 @@ def _word(project: Project) -> None:
         "ethics": _("Sans nom, sans code, sans provenance : ce que lira une personne qui répond."),
         "working": _(
             "Avec les codes, la nature et le type LimeSurvey de chaque question, la provenance, "
-            "les groupes et les points de relecture."
+            "les groupes, les conditions pour l'équipe, les items de contrôle, la formule de la "
+            "durée et les points de relecture."
         ),
     }
     for column, which in zip((left, right), design_word.VERSIONS, strict=True):

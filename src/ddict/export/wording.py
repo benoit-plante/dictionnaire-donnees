@@ -700,3 +700,57 @@ def completeness_rows(project: Project) -> list[tuple[str, str, str]]:
         )
     )
     return rows
+
+
+# --- Filters, random order, attention checks (v0.21, D-165 to D-170). ---
+
+
+def asked_if_text(project: Project, entry: VariableEntry, kind: ExportKind) -> str:
+    """When the variable is asked, for the team: "enfants = 1 (Oui)"; empty when always; a
+    condition read in a file and not accepted only in a work export, marked as proposed."""
+    from ddict.project import skip
+
+    found = shown(entry.asked_if, kind) if entry.asked_if is not None else None
+    if found is None or not found.value:
+        return ""
+    text = skip.variable_condition(project, found.value, names_of(project))
+    return text + (f" [{_('proposé')}]" if found.pending else "")
+
+
+def presentation_text(project: Project, entry: VariableEntry) -> str:
+    """How its question was presented, in a designed or LimeSurvey questionnaire: in random
+    order, an attention check and its right answers."""
+    from ddict.project import skip
+
+    found = project.questionnaire
+    target = entry.question.value if is_accepted(entry.question) else None
+    if found is None or not target:
+        return ""
+    question = next((q for q in found.questions if q.question_id == target.partition(".")[0]), None)
+    if question is None:
+        return ""
+    section = next((s for s in found.sections if s.section_id == question.section), None)
+    parts = []
+    if question.shuffle or (section is not None and section.shuffle):
+        parts.append(_("Ordre de présentation : aléatoire"))
+    row = next((r for r in question.rows if r.row_id == target), None)
+    correct = (
+        row.attention
+        if row is not None
+        else (question.attention if target == question.question_id else None)
+    )
+    if correct:
+        parts.append(
+            _("Item de contrôle ({answers})").format(answers=skip.attention_text(question, correct))
+        )
+    return semicolon().join(parts)
+
+
+def has_presentation(project: Project, kind: ExportKind) -> bool:
+    """Whether the codebook says when a variable is asked or how it was presented: never for
+    a project without conditions, random order or attention checks, whose files stay as in
+    the 0.20.2."""
+    return any(
+        asked_if_text(project, e, kind) or presentation_text(project, e)
+        for e in aside.kept(project)
+    )

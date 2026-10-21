@@ -310,7 +310,9 @@ def _team_term(term: Term, subject: str, labels: Mapping[str, str], item: str | 
     if term.operator == "answered":
         return _("{subject} a une réponse").format(subject=subject)
     if term.operator == "checked":
-        return _("{subject} : {option} coché").format(subject=subject, option=item or "")
+        if item is None:  # a variable: the option is its own
+            return _("{subject} coché").format(subject=subject)
+        return _("{subject} : {option} coché").format(subject=subject, option=item)
     if term.operator in ("in", "not_in"):
         symbol = "∈" if term.operator == "in" else "∉"
         return f"{subject} {symbol} {{{', '.join(values)}}}"
@@ -355,9 +357,11 @@ def team_text(project: Project, conditions: Condition | Sequence[Condition]) -> 
     )
 
 
-def variable_text(project: Project, conditions: Sequence[Condition]) -> str:
-    """A variable's conditions (`asked_if`), for the codebook: « Posée si enfants = 1 (Oui) »,
-    with the value labels in force."""
+def variable_condition(
+    project: Project, conditions: Sequence[Condition], names: Mapping[str, str] | None = None
+) -> str:
+    """A variable's conditions (`asked_if`) for the codebook, with the value labels in force:
+    "enfants = 1 (Oui)"; `names`: the names the export shows (a renamed variable's)."""
     from ddict.questionnaire.labels import accepted_labels
 
     entries = {e.name: e for e in project.variables}
@@ -369,11 +373,29 @@ def variable_text(project: Project, conditions: Sequence[Condition]) -> str:
             labels = {code_text(v.code): v.label for v in accepted_labels(entry)} if entry else {}
             if term.operator in ("lt", "le", "gt", "ge"):
                 labels = {}
-            terms.append(_team_term(term, term.target, labels, None))
+            subject = (names or {}).get(term.target, term.target)
+            terms.append(_team_term(term, subject, labels, None))
         texts.append(terms)
+    return _joined(texts, [c.combine for c in conditions])
+
+
+def variable_text(
+    project: Project, conditions: Sequence[Condition], names: Mapping[str, str] | None = None
+) -> str:
+    """ "Posée si enfants = 1 (Oui)"."""
     return _("Posée si {condition}").format(
-        condition=_joined(texts, [c.combine for c in conditions])
+        condition=variable_condition(project, conditions, names)
     )
+
+
+def attention_text(question: Question, correct: Sequence[str]) -> str:
+    """The right answers of an attention check, with their texts: "bonne réponse 4 (Plutôt
+    d'accord)", "bonnes réponses 1 (Oui), 2 (Non)"."""
+    codes = choices(question)
+    said = ", ".join(_labelled(c, codes) for c in correct)
+    if len(correct) == 1:
+        return _("bonne réponse {codes}").format(codes=said)
+    return _("bonnes réponses {codes}").format(codes=said)
 
 
 # --- On a table: who was asked (D-167). ---

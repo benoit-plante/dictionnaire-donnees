@@ -131,6 +131,7 @@ def _statistics(p: Profile | None) -> list:
 def _variables(project: Project, kind: w.ExportKind, omitted: set[str]) -> list[list]:
     rows = []
     renamed = w.renamed(project, kind)
+    presented = w.has_presentation(project, kind)  # v0.21: two columns, only when needed
     for e in aside.kept(project):
         reference = w.question_reference(project, e, kind)
         p = e.profile
@@ -152,6 +153,11 @@ def _variables(project: Project, kind: w.ExportKind, omitted: set[str]) -> list[
                 if reference is None
                 else reference.value + (f" [{_('proposé')}]" if reference.pending else ""),
                 w.question_text(project, e, kind, omitted),
+                *(
+                    [w.asked_if_text(project, e, kind), w.presentation_text(project, e)]
+                    if presented
+                    else []
+                ),
                 w.TYPES.get(e.data_type, e.data_type),
                 w.level_text(e, kind),
                 e.file.display_format,
@@ -363,6 +369,9 @@ def write_xlsx(
     book.remove(book.active)
     _sheet(book, _("Informations"), [_("Élément"), _("Valeur")], _about(project, kind, omit_groups))
     header = list(VARIABLE_HEADER)
+    if w.has_presentation(project, kind):  # v0.21: after "Texte de la question"
+        at = header.index(_("Texte de la question")) + 1
+        header[at:at] = [_("Posée si"), _("Présentation")]
     if w.renamed(project, kind):
         header.insert(2, _("Nom d'origine"))
     _sheet(book, _("Variables"), header, _variables(project, kind, omitted))

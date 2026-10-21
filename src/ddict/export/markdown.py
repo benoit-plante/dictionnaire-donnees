@@ -141,6 +141,12 @@ def _variable(
         facts += _statistics(entry, p)
     elif w.missing_codes(entry):
         facts.append(f"{field_label('Codes manquants déclarés')}{w.missing_codes(entry)}")
+    asked = w.asked_if_text(project, entry, kind)  # v0.21: only when there is one
+    if asked:
+        facts.append(f"{field_label('Posée si')}{_inline(asked)}")
+    presentation = w.presentation_text(project, entry)
+    if presentation:
+        facts.append(_inline(presentation))
     group = w.text(entry.group_id, kind)
     if group:
         fact = f"{field_label('Groupe')}{_inline(group)}"

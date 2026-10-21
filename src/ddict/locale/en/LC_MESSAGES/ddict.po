@@ -144,6 +144,9 @@ msgstr "## Several candidates"
 msgid "## Points d'attention"
 msgstr "## Points of attention"
 
+msgid "## Questions filtrées et présentation"
+msgstr "## Filtered questions and presentation"
+
 msgid "## Rattachements aux questions"
 msgstr "## Links to questions"
 
@@ -182,6 +185,18 @@ msgstr "% missing"
 
 msgid "(Déclaré par l'équipe.)"
 msgstr "(Declared by the team.)"
+
+msgid "(Les choix sont présentés dans un ordre aléatoire.)"
+msgstr "(The choices are presented in random order.)"
+
+msgid "(Les options sont présentées dans un ordre aléatoire.)"
+msgstr "(The options are presented in random order.)"
+
+msgid "(Les questions de cette section sont présentées dans un ordre aléatoire.)"
+msgstr "(The questions of this section are presented in random order.)"
+
+msgid "(Les énoncés de cette question sont présentés dans un ordre aléatoire.)"
+msgstr "(The statements of this question are presented in random order.)"
 
 msgid "(aucune étiquette)"
 msgstr "(no label)"
@@ -895,10 +910,12 @@ msgid "Avec le modèle"
 msgstr "With the model"
 
 msgid ""
-"Avec les codes, la nature et le type LimeSurvey de chaque question, la provenance, les groupes et"
-" les points de relecture."
+"Avec les codes, la nature et le type LimeSurvey de chaque question, la provenance, les groupes, "
+"les conditions pour l'équipe, les items de contrôle, la formule de la durée et les points de "
+"relecture."
 msgstr ""
-"With each question's codes, kind and LimeSurvey type, the provenance, the groups and the review "
+"With the codes, the kind and the LimeSurvey type of each question, the provenance, the groups, "
+"the conditions for the team, the attention checks, the formula of the duration and the review "
 "points."
 
 #, python-brace-format
@@ -2196,6 +2213,10 @@ msgid "Durée de passation"
 msgstr "Duration of administration"
 
 #, python-brace-format
+msgid "Durée estimée : {duration}."
+msgstr "Estimated duration: {duration}."
+
+#, python-brace-format
 msgid ""
 "Durée, de {start} à {end} : {n} durées ({invalid} manquantes ou impossibles) ; médiane {median}, "
 "5e centile {p5}, 10e centile {p10}."
@@ -2968,6 +2989,10 @@ msgstr "Reverse the items marked \"inv\" before any score, as their group's scor
 msgid "Item de contrôle"
 msgstr "Attention check"
 
+#, python-brace-format
+msgid "Item de contrôle ({answers})"
+msgstr "Attention check ({answers})"
+
 msgid "Item de contrôle : bonnes réponses"
 msgstr "Attention check: right answers"
 
@@ -2977,6 +3002,10 @@ msgstr "Attention check: right answers (codes; empty: not an attention check)"
 #, python-brace-format
 msgid "Item de contrôle : bonnes réponses {codes}."
 msgstr "Attention check: right answers {codes}."
+
+#, python-brace-format
+msgid "Item de contrôle : {answers}"
+msgstr "Attention check: {answers}"
 
 #, python-brace-format
 msgid "Item de contrôle dont une bonne réponse n'est plus un choix ({codes}) : il serait toujours échoué."
@@ -2989,6 +3018,10 @@ msgstr "Attention check {why}: an empty answer or a question not asked blurs the
 #, python-brace-format
 msgid "Item de contrôle « {row} » : bonnes réponses {codes}."
 msgstr "Attention check “{row}”: right answers {codes}."
+
+#, python-brace-format
+msgid "Item de contrôle « {row} » : {answers}"
+msgstr "Attention check “{row}”: {answers}"
 
 #, python-brace-format
 msgid "Item probablement inversé (corrélation avec le reste de l'échelle : {r})"
@@ -5089,6 +5122,9 @@ msgstr "Random order"
 
 msgid "Ordre aléatoire."
 msgstr "Random order."
+
+msgid "Ordre de présentation : aléatoire"
+msgstr "Order of presentation: random"
 
 msgid "Origine"
 msgstr "Origin"
@@ -7794,6 +7830,14 @@ msgstr "binary"
 msgid "blocs de {n} et {m} variables"
 msgstr "blocks of {n} and {m} variables"
 
+#, python-brace-format
+msgid "bonne réponse {codes}"
+msgstr "right answer {codes}"
+
+#, python-brace-format
+msgid "bonnes réponses {codes}"
+msgstr "right answers {codes}"
+
 msgid "borne basse de l'IC"
 msgstr "lower bound of the CI"
 
@@ -8582,6 +8626,10 @@ msgstr "administration shorter than {seconds} s, from {start} to {end}"
 
 msgid "pondération"
 msgstr "weight"
+
+#, python-brace-format
+msgid "posée si {condition}"
+msgstr "asked if {condition}"
 
 msgid "pour le comité d'éthique"
 msgstr "for the ethics committee"
@@ -10061,6 +10109,10 @@ msgstr "{subject}: {option} ticked"
 #, python-brace-format
 msgid "{subject} a une réponse"
 msgstr "{subject} has an answer"
+
+#, python-brace-format
+msgid "{subject} coché"
+msgstr "{subject} ticked"
 
 #, python-brace-format
 msgid "{target} attend un nombre."
