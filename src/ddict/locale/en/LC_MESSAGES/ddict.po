@@ -744,6 +744,9 @@ msgstr "No warning."
 msgid "Aucun changement à confirmer."
 msgstr "No change to confirm."
 
+msgid "Aucun code des vides."
+msgstr "No code for the blanks."
+
 msgid "Aucun code suspect."
 msgstr "No suspect code."
 
@@ -1539,6 +1542,12 @@ msgstr "Code of the question"
 msgid "Code de la question (radical des noms)"
 msgstr "Code of the question (stem of the names)"
 
+msgid "Code du manquant"
+msgstr "Code of the missing"
+
+msgid "Code du non applicable"
+msgstr "Code of the not applicable"
+
 #, python-brace-format
 msgid "Code en double : {codes}."
 msgstr "Code used twice: {codes}."
@@ -1606,6 +1615,12 @@ msgstr ""
 #, python-brace-format
 msgid "Codes de la question {n} : {codes}"
 msgstr "Codes of question {n}: {codes}"
+
+msgid "Codes des vides dans les scripts SPSS et R"
+msgstr "Codes of the blanks in the SPSS and R scripts"
+
+msgid "Codes des vides dans les scripts de préparation"
+msgstr "Codes of the blanks in the preparation scripts"
 
 msgid "Codes manquants déclarés"
 msgstr "Declared missing codes"
@@ -1951,6 +1966,17 @@ msgid ""
 msgstr ""
 "Creates new variables (reversed items, scores, recodings) according to the team's decisions; no "
 "original variable is changed."
+
+#, python-brace-format
+msgid ""
+"Crée de nouvelles variables (items inversés, scores, recodages) selon les décisions de l'équipe ;"
+" les codes des vides choisis par l'équipe sont écrits dans les cellules vides des variables "
+"numériques du questionnaire (non applicable : {na} ; sans réponse : {missing}), déclarés "
+"manquants."
+msgstr ""
+"Creates new variables (reversed items, scores, recodings) from the team's decisions; the codes of"
+" the blanks chosen by the team are written in the empty cells of the questionnaire's numeric "
+"variables (not applicable: {na}; no answer: {missing}), declared missing."
 
 msgid "Créer le projet"
 msgstr "Create the project"
@@ -2506,6 +2532,9 @@ msgstr "Save the recoding"
 
 msgid "Enregistrer le titre"
 msgstr "Save the title"
+
+msgid "Enregistrer les codes"
+msgstr "Save the codes"
 
 msgid "Enregistrer les noms de base"
 msgstr "Save the base names"
@@ -3691,6 +3720,12 @@ msgstr "The notebook {name} disappeared while the command ran."
 msgid "Le carnet {name} a été modifié ailleurs pendant la commande (l'interface est-elle ouverte ?)."
 msgstr "The notebook {name} was changed elsewhere while the command ran (is the interface open?)."
 
+msgid "Le code d'une question non posée, p. ex. -8."
+msgstr "The code of a question not asked, e.g. -8."
+
+msgid "Le code d'une question posée sans réponse, p. ex. -9."
+msgstr "The code of a question asked and not answered, e.g. -9."
+
 #, python-brace-format
 msgid "Le code de la question n'est pas décidé : ses variables portent son numéro ({id})."
 msgstr "The question's code is not decided: its variables carry its number ({id})."
@@ -3915,6 +3950,9 @@ msgstr "The name of the new variable."
 #, python-brace-format
 msgid "Le nombre minimal d'items répondus dépasse le nombre d'items ({n})."
 msgstr "The minimum of items answered is above the number of items ({n})."
+
+msgid "Le non applicable et le manquant demandent deux codes."
+msgstr "The not applicable and the missing need two codes."
 
 msgid "Le nouvel énoncé."
 msgstr "The new statement."
@@ -4303,6 +4341,16 @@ msgstr "The codes of the \"Missing\" column are missing values: leave them out o
 
 msgid "Les codes des bonnes réponses ; vide : ce n'est pas un item de contrôle."
 msgstr "The codes of the right answers; empty: not an attention check."
+
+msgid "Les codes des vides (non applicable, manquant) des scripts SPSS et R."
+msgstr "The codes of the blanks (not applicable, missing) of the SPSS and R scripts."
+
+msgid ""
+"Les codes des vides : le non applicable dans une cellule vide d'une question non posée, le "
+"manquant dans une cellule vide d'une question posée."
+msgstr ""
+"The codes of the blanks: the not applicable in an empty cell of a question not asked, the missing"
+" in an empty cell of a question asked."
 
 msgid ""
 "Les codes manquants suspects (999, -9…) : lister, dire si c'est un code manquant ou une vraie "
@@ -5002,6 +5050,9 @@ msgstr "No longer allow this project to be sent to the AI; the preview stays all
 
 msgid "Ne plus suivre"
 msgstr "Stop following"
+
+msgid "Ne plus écrire de codes."
+msgstr "No longer write codes."
 
 msgid "Niveau"
 msgstr "Level"
@@ -6037,6 +6088,20 @@ msgstr "Questions in random order in a section that holds {what}: it would end u
 msgid "Questions filtrées"
 msgstr "Filtered questions"
 
+msgid ""
+"Questions filtrées : ddict_posee vaut 1 pour une personne à qui la question a été posée, 0 sinon "
+"(sa condition, sur les réponses telles qu'enregistrées)."
+msgstr ""
+"Filtered questions: ddict_posee is 1 for a person who was asked the question, 0 otherwise (its "
+"condition, on the answers as recorded)."
+
+msgid ""
+"Questions filtrées : ddict_posee vaut TRUE pour une personne à qui la question a été posée (sa "
+"condition, sur les réponses telles qu'enregistrées)."
+msgstr ""
+"Filtered questions: ddict_posee is TRUE for a person who was asked the question (its condition, "
+"on the answers as recorded)."
+
 msgid "Questions trouvées"
 msgstr "Questions found"
 
@@ -6631,6 +6696,11 @@ msgid ""
 " de Windows."
 msgstr "Type the API key, without it showing; it is kept in Windows' Credential Manager."
 
+msgid ""
+"Sans codes choisis, les scripts ne distinguent pas les deux : l'outil, lui, les distingue "
+"toujours."
+msgstr "Without codes chosen, the scripts do not tell the two apart: the tool always does."
+
 msgid "Sans elles, le contexte ne contient que des métadonnées, aucune donnée."
 msgstr "Without them, the context holds metadata only, no data."
 
@@ -6651,6 +6721,9 @@ msgstr "No proposal"
 
 msgid "Sans question"
 msgstr "Without a question"
+
+msgid "Sans réponse"
+msgstr "No answer"
 
 msgid "Score du groupe"
 msgstr "Score of the group"
@@ -7309,6 +7382,10 @@ msgid "Un carnet {name} est apparu pendant la commande."
 msgstr "A notebook {name} appeared while the command ran."
 
 #, python-brace-format
+msgid "Un code des vides est un nombre : {code}."
+msgstr "A code of the blanks is a number: {code}."
+
+#, python-brace-format
 msgid ""
 "Un enregistrement a été interrompu (le {date}) : le fichier {name} est resté. {kept} est le "
 "dernier enregistré en entier ; le fichier {name} peut être supprimé."
@@ -7504,6 +7581,18 @@ msgstr "An administration shorter than SECONDS; requires --source."
 
 msgid "Une question ne peut pas dépendre d'elle-même."
 msgstr "A question cannot depend on itself."
+
+msgid ""
+"Une question non posée (non applicable) et une question posée sans réponse (manquant) sont deux "
+"cellules vides dans la base. Avec deux codes choisis ici, le script de préparation écrit l'un ou "
+"l'autre dans les cellules vides des variables numériques du questionnaire, les déclare manquants "
+"et les étiquette (« Non applicable », « Sans réponse »). Aucun code d'office ; jamais dans la "
+"copie documentée."
+msgstr ""
+"A question not asked (not applicable) and a question asked and not answered (missing) are two "
+"empty cells in the database. With two codes chosen here, the preparation script writes one or the"
+" other in the empty cells of the questionnaire's numeric variables, declares them missing and "
+"labels them (“Not applicable”, “No answer”). No code by default; never in the documented copy."
 
 msgid "Une question ouverte ou un texte d'affichage n'a pas de choix."
 msgstr "An open question or a displayed text has no choices."
@@ -8752,6 +8841,10 @@ msgstr "base names"
 msgid "non"
 msgstr "no"
 
+#, python-brace-format
+msgid "non applicable : {code}"
+msgstr "not applicable: {code}"
+
 msgid "non documenté"
 msgstr "not documented"
 
@@ -9059,6 +9152,10 @@ msgstr "departs from the computation's sure choice: compare with the first quest
 
 msgid "sans origine"
 msgstr "no origin"
+
+#, python-brace-format
+msgid "sans réponse : {code}"
+msgstr "no answer: {code}"
 
 #, python-brace-format
 msgid "score de {group}"
@@ -9797,6 +9894,10 @@ msgid "{name} : **{count}** réponses."
 msgstr "{name}: **{count}** answers."
 
 #, python-brace-format
+msgid "{name} : SPSS accepte au plus {n} codes manquants."
+msgstr "{name}: SPSS takes at most {n} missing codes."
+
+#, python-brace-format
 msgid "{name} : aucun changement à confirmer."
 msgstr "{name}: no change to confirm."
 
@@ -9837,6 +9938,10 @@ msgstr "{name}: the item is no longer reversed."
 #, python-brace-format
 msgid "{name} : la variable n'est plus dans le projet."
 msgstr "{name}: the variable is no longer in the project."
+
+#, python-brace-format
+msgid "{name} : le code {code} y est déjà une valeur, un choix ou un code manquant."
+msgstr "{name}: the code {code} is already a value, a choice or a missing code there."
 
 #, python-brace-format
 msgid "{name} : le format de la date ne correspond pas à celui du fichier."

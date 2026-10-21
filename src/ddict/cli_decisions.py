@@ -140,6 +140,10 @@ def code_lines(project: Project) -> list[str]:
 
 
 def cmd_codes(args: argparse.Namespace) -> int:
+    if args.action in ("vides", "blanks"):  # v0.21: the codes of the blanks
+        from ddict.cli_conditions import cmd_blank_codes
+
+        return cmd_blank_codes(args)
     path = Path(args.projet)
     project = load_project(path)
     action = CODE_ACTIONS[args.action]
@@ -205,4 +209,7 @@ def add_decisions_parsers(commands) -> None:
         sub = _sub(actions, name, alias, text)
         sub.add_argument("code", help=_("Le code, p. ex. -1 ou 999."))
         sub.add_argument("variables", nargs="+", help=_("Les variables, par leur nom."))
+    from ddict.cli_conditions import add_blank_codes_parser
+
+    add_blank_codes_parser(actions)
     command.set_defaults(handler=cmd_codes)

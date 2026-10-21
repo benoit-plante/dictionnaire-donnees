@@ -264,6 +264,59 @@ def _context_section(project: Project, omit: tuple[str, ...], language: str) -> 
     c.show_message("context-write")
 
 
+def _set_blank_codes(project: Project, na: str, missing: str) -> None:
+    from ddict.project import blank
+    from ddict.review.logic import ReviewError
+
+    try:
+        blank.set_codes(project, na.strip() or None, missing.strip() or None)
+    except blank.BlankError as error:
+        raise ReviewError(" ".join(error.reasons)) from error
+
+
+def _blank_codes(project: Project) -> None:
+    """The codes of the blanks (v0.21, D-167): offered once the project has a condition."""
+    from ddict.project import skip
+
+    codes = project.settings.blank_codes
+    if not skip.conditions_of(project) and codes.not_applicable is None and codes.missing is None:
+        return
+    with st.expander(_("Codes des vides dans les scripts de préparation")):
+        st.caption(
+            _(
+                "Une question non posée (non applicable) et une question posée sans réponse "
+                "(manquant) sont deux cellules vides dans la base. Avec deux codes choisis ici, "
+                "le script de préparation écrit l'un ou l'autre dans les cellules vides des "
+                "variables numériques du questionnaire, les déclare manquants et les étiquette "
+                "(« Non applicable », « Sans réponse »). Aucun code d'office ; jamais dans la "
+                "copie documentée."
+            )
+        )
+        if codes.not_applicable is None and codes.missing is None:
+            st.caption(
+                _(
+                    "Sans codes choisis, les scripts ne distinguent pas les deux : l'outil, lui, "
+                    "les distingue toujours."
+                )
+            )
+        na = c.field("export-blank-na", lambda: _code_field("not_applicable"),
+                     label=_("Code du non applicable"))  # fmt: skip
+        missing = c.field("export-blank-missing", lambda: _code_field("missing"),
+                          label=_("Code du manquant"))  # fmt: skip
+        left, right = st.columns(2)
+        left.text_input(_("Code du non applicable"), key=na, placeholder="-8")
+        right.text_input(_("Code du manquant"), key=missing, placeholder="-9")
+        c.button(_("Enregistrer les codes"), "export-blank-save", _set_blank_codes,
+                 c.state(na), c.state(missing))  # fmt: skip
+
+
+def _code_field(which: str) -> str:
+    from ddict.project import skip
+
+    value = getattr(c.project().settings.blank_codes, which)
+    return "" if value is None else skip.code_text(value)
+
+
 def page(project: Project) -> None:
     st.header(_("Export"))
     st.radio(
@@ -388,6 +441,7 @@ def page(project: Project) -> None:
             mime="text/plain",
             key=f"export-download-{program}",
         )
+    _blank_codes(project)
     if preparation_needed(project):
         # v0.8 (D-062): new variables, reversed items and scores, from the team's decisions.
         st.caption(

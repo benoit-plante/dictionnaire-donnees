@@ -767,3 +767,17 @@ def has_presentation(project: Project, kind: ExportKind) -> bool:
         asked_if_text(project, e, kind) or presentation_text(project, e)
         for e in aside.kept(project)
     )
+
+
+def blank_codes_text(project: Project) -> str | None:
+    """The codes of the blanks chosen for SPSS and R (v0.21): "non applicable : -8 ; sans
+    réponse : -9"; None when none is chosen."""
+    codes = project.settings.blank_codes
+    if codes.not_applicable is None and codes.missing is None:
+        return None
+    parts = []
+    if codes.not_applicable is not None:
+        parts.append(_("non applicable : {code}").format(code=code_text(codes.not_applicable)))
+    if codes.missing is not None:
+        parts.append(_("sans réponse : {code}").format(code=code_text(codes.missing)))
+    return semicolon().join(parts)

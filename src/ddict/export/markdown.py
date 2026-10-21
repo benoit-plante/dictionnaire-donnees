@@ -61,6 +61,9 @@ def _overview(project: Project, kind: w.ExportKind) -> list[str]:
         f"- {field_label('Empreinte du codebook')}`{fingerprint.short(project)}` "
         + _("(décisions acceptées)"),
     ]
+    blanks = w.blank_codes_text(project)  # v0.21, only when chosen
+    if blanks:
+        lines.append(f"- {field_label('Codes des vides dans les scripts SPSS et R')}{blanks}")
     if source is not None:  # no counts before the database (v0.20)
         lines.append(
             "- "

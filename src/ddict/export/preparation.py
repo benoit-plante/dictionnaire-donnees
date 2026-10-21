@@ -22,7 +22,7 @@ from pathlib import Path
 from ddict import __version__
 from ddict.export import wording as w
 from ddict.i18n import _, in_language
-from ddict.project import fingerprint, scoring
+from ddict.project import fingerprint, scoring, skip
 from ddict.project.exclusions import members
 from ddict.project.model import (
     ClassesRecode,
@@ -144,11 +144,85 @@ def plan(project: Project) -> tuple[list[Reversal], list[Score], list[str]]:
 
 
 def needed(project: Project) -> bool:
-    """Whether the project has anything to prepare: a reversed item, a scoring, a recoding
-    or an exclusion rule."""
-    return bool(project.exclusions.rules or project.recodes.rules) or any(
-        g.reverse_items or g.scoring is not None for g in project.groups
+    """Whether the project has anything to prepare: a reversed item, a scoring, a recoding,
+    an exclusion rule, or codes of the blanks to write (v0.21)."""
+    return (
+        bool(project.exclusions.rules or project.recodes.rules)
+        or any(g.reverse_items or g.scoring is not None for g in project.groups)
+        or bool(_coded(project))
     )
+
+
+# --- What was asked (v0.21, D-167) --------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class Asked:
+    """A distinct condition of the variables, its flag and the final names it holds for."""
+
+    flag: str  # "ddict_posee1": 1 when the person was asked, 0 when not
+    conditions: tuple  # the conditions, on original names
+    names: tuple[str, ...]  # final names
+
+
+def asked_plan(project: Project) -> list[Asked]:
+    """One flag for each distinct condition of the variables the codebook keeps."""
+    from ddict.questionnaire.relevance import canonical
+
+    names = w.names_of(project)
+    found: dict[tuple, list[str]] = {}
+    conditions: dict[tuple, list] = {}
+    for name, listed in skip.conditions_of(project).items():
+        key = tuple(canonical(c) for c in listed)
+        found.setdefault(key, []).append(names[name])
+        conditions[key] = listed
+    return [
+        Asked(f"ddict_posee{n}", tuple(conditions[key]), tuple(final))
+        for n, (key, final) in enumerate(found.items(), start=1)
+    ]
+
+
+def _flag_of(project: Project) -> dict[str, str]:
+    return {name: a.flag for a in asked_plan(project) for name in a.names}
+
+
+def _coded(project: Project) -> list[tuple[str, str, str]]:
+    """The cells the codes of the blanks are written in: (final name, flag or "", code kind
+    "na" or "missing"), in the codebook's order. An option to tick keeps its empty cell (not
+    ticked): never "missing"."""
+    from ddict.project import blank
+
+    codes = project.settings.blank_codes
+    if codes.not_applicable is None and codes.missing is None:
+        return []
+    names = w.names_of(project)
+    flags = _flag_of(project)
+    boxes = set(skip.boxes_of(project))
+    found = []
+    if codes.not_applicable is not None:
+        found += [(names[e.name], flags[names[e.name]], "na") for e in blank.filtered(project)]
+    if codes.missing is not None:
+        found += [
+            (names[e.name], flags.get(names[e.name], ""), "missing")
+            for e in blank.of_the_questionnaire(project)
+            if e.name not in boxes
+        ]
+    return found
+
+
+def _needs_flags(project: Project) -> bool:
+    flags = _flag_of(project)
+    if not flags:
+        return False
+    names = w.names_of(project)
+    for rule in project.exclusions.rules:
+        if isinstance(rule, ConditionRule) and rule.variable and names.get(rule.variable) in flags:
+            return True
+        if isinstance(rule, CompletenessRule) and any(
+            n in flags for n in _group_items(project, rule.group)
+        ):
+            return True
+    return bool(_coded(project))
 
 
 def _header(project: Project, comment: str, today: str) -> list[str]:
@@ -165,12 +239,29 @@ def _header(project: Project, comment: str, today: str) -> list[str]:
             "À exécuter après le fichier de commandes (ou sur la copie documentée) : il porte "
             "sur les noms finaux, et les codes manquants déclarés sont exclus des calculs."
         ),
-        _(
-            "Crée de nouvelles variables (items inversés, scores, recodages) selon les "
-            "décisions de l'équipe ; aucune variable d'origine n'est modifiée."
-        ),
     ]
+    codes = project.settings.blank_codes
+    if _coded(project):  # v0.21: the codes of the blanks are written in the cells
+        lines.append(
+            _(
+                "Crée de nouvelles variables (items inversés, scores, recodages) selon les "
+                "décisions de l'équipe ; les codes des vides choisis par l'équipe sont écrits "
+                "dans les cellules vides des variables numériques du questionnaire (non "
+                "applicable : {na} ; sans réponse : {missing}), déclarés manquants."
+            ).format(na=_none(codes.not_applicable), missing=_none(codes.missing))
+        )
+    else:
+        lines.append(
+            _(
+                "Crée de nouvelles variables (items inversés, scores, recodages) selon les "
+                "décisions de l'équipe ; aucune variable d'origine n'est modifiée."
+            )
+        )
     return [f"{comment} {line}" for line in lines]
+
+
+def _none(code) -> str:
+    return _("aucun") if code is None else _number(float(code))
 
 
 # --- SPSS ---------------------------------------------------------------------------------
@@ -220,9 +311,108 @@ def spss(project: Project, today: str) -> str:
                 "",
             ]
     lines += _spss_recodes(project)
+    lines += _spss_asked(project, scores)
     lines += _spss_exclusions(project, scores)
+    lines += _spss_blanks(project)
+    if _needs_flags(project):  # PSPP deletes only once the transformations are done
+        lines += [
+            "EXECUTE.",
+            "DELETE VARIABLES " + " ".join(a.flag for a in asked_plan(project)) + ".",
+        ]
     lines.append("EXECUTE.")
     return "\n".join(lines) + "\n"
+
+
+_SYMBOLS = {"eq": "=", "ne": "<>", "lt": "<", "le": "<=", "gt": ">", "ge": ">="}
+
+
+def _spss_term(term, name: str, text: bool) -> str:
+    """A term on the values as recorded (VALUE: a declared missing code is a choice)."""
+    if text:
+        present, x = f"RTRIM({name}) <> ''", f"RTRIM({name})"
+
+        def value(v):
+            return _spss_text(skip.code_text(v))
+    else:
+        present, x = f"NOT SYSMIS({name})", f"VALUE({name})"
+
+        def value(v):
+            return _number(float(v))
+
+    if term.operator == "answered":
+        return f"({present})"
+    if term.operator == "checked":
+        unticked = f"{x} <> 'N' AND {x} <> '0'" if text else f"{x} <> 0"
+        return f"({present} AND {unticked})"
+    values = [value(v) for v in skip.values_of(term)]
+    if term.operator in ("in", "not_in"):
+        test = f"ANY({x}, {', '.join(values)})"
+        return f"({present} AND {'NOT ' if term.operator == 'not_in' else ''}{test})"
+    return f"({present} AND {x} {_SYMBOLS[term.operator]} {values[0]})"
+
+
+def _spss_asked(project: Project, scores: list[Score]) -> list[str]:
+    if not _needs_flags(project):
+        return []
+    final = _final(project, scores)
+    lines = [
+        "* "
+        + _(
+            "Questions filtrées : ddict_posee vaut 1 pour une personne à qui la question a été "
+            "posée, 0 sinon (sa condition, sur les réponses telles qu'enregistrées)."
+        )
+    ]
+    for asked in asked_plan(project):
+        joined = []
+        for condition in asked.conditions:
+            word = " AND " if condition.combine == "all" else " OR "
+            joined.append(
+                "(" + word.join(_spss_term(t, *final[t.target]) for t in condition.terms) + ")"
+            )
+        lines += [
+            f"* {', '.join(asked.names)}.",
+            f"COMPUTE {asked.flag} = ({' AND '.join(joined)}).",
+        ]
+    return [*lines, ""]
+
+
+def _spss_blanks(project: Project) -> list[str]:
+    coded = _coded(project)
+    if not coded:
+        return []
+    codes = project.settings.blank_codes
+    by_final = {w.final_name(e): e for e in project.variables}
+    lines = [
+        "* "
+        + _(
+            "Les codes des vides : le non applicable dans une cellule vide d'une question non "
+            "posée, le manquant dans une cellule vide d'une question posée."
+        )
+    ]
+    done: dict[str, list] = {}
+    for name, flag, kind in coded:
+        if kind == "na":
+            lines.append(
+                f"IF ({flag} = 0 AND SYSMIS({name})) {name} = {_number(codes.not_applicable)}."
+            )
+            done.setdefault(name, []).append((codes.not_applicable, _("Non applicable")))
+        else:
+            asked = f"{flag} = 1 AND " if flag else ""
+            lines.append(f"IF ({asked}SYSMIS({name})) {name} = {_number(codes.missing)}.")
+            done.setdefault(name, []).append((codes.missing, _("Sans réponse")))
+    for name, added in done.items():
+        entry = by_final[name]
+        declared = [m.low for m in entry.file.declared_missing if m.low == m.high]
+        declared += list(w.confirmed_missing(entry))
+        ranges = [m for m in entry.file.declared_missing if m.low != m.high]
+        parts = [f"{_number(m.low)} THRU {_number(m.high)}" for m in ranges]
+        parts += [_number(float(c)) for c in dict.fromkeys([*declared, *(c for c, _l in added)])]
+        labels = " ".join(f"{_number(c)} {_spss_text(label)}" for c, label in added)
+        lines += [
+            f"MISSING VALUES {name} ({', '.join(parts)}).",
+            f"ADD VALUE LABELS {name} {labels}.",
+        ]
+    return [*lines, ""]
 
 
 # --- Exclusions (v0.12, D-094) ----------------------------------------------------------
@@ -392,6 +582,7 @@ def _spss_exclusions(project: Project, scores: list[Score]) -> list[str]:
     if not rules:
         return []
     final = _final(project, scores)
+    flags = _flag_of(project) if _needs_flags(project) else {}
     lines = [
         "* "
         + _(
@@ -404,10 +595,17 @@ def _spss_exclusions(project: Project, scores: list[Score]) -> list[str]:
     for number, rule in enumerate(rules, start=1):
         if isinstance(rule, ConditionRule):
             name, text = final[_key(rule)]
-            conditions.append(_spss_condition(rule, name, text))
+            condition = _spss_condition(rule, name, text)
+            if name in flags:  # v0.21: a question not asked meets no condition
+                condition = f"{flags[name]} = 1 AND {condition}"
+            conditions.append(condition)
         elif isinstance(rule, CompletenessRule):
-            items = ", ".join(_group_items(project, rule.group))
-            conditions.append(f"NVALID({items}) < {rule.min_answered}")
+            listed = _group_items(project, rule.group)
+            items = ", ".join(listed)
+            condition = f"NVALID({items}) < {rule.min_answered}"
+            if listed and listed[0] in flags:  # v0.21: among those asked the group
+                condition = f"{flags[listed[0]]} = 1 AND {condition}"
+            conditions.append(condition)
         elif isinstance(rule, DurationRule):
             start, end = final[rule.start][0], final[rule.end][0]
             if rule.text_format is not None:  # dates in text, read into numbers first
@@ -540,9 +738,112 @@ def r_script(project: Project, today: str) -> str:
                 "",
             ]
     lines += _r_recodes(project)
+    lines += _r_asked(project, scores)
     lines += _r_exclusions(project, scores)
+    lines += _r_blanks(project)
+    if _needs_flags(project):
+        lines += [f"{_r_column(a.flag)} <- NULL" for a in asked_plan(project)]
     lines.append('rm(list = ls(pattern = "^ddict_"))')
     return "\n".join(lines) + "\n"
+
+
+R_HELPERS = [
+    "ddict_vrai <- function(x) !is.na(x) & x",
+    "ddict_brut <- function(x) {",
+    '  as.numeric(if (inherits(x, "vctrs_vctr")) vctrs::vec_data(x) else x)',
+    "}",
+    "ddict_chaine <- function(x) {",
+    '  x <- as.character(if (inherits(x, "vctrs_vctr")) vctrs::vec_data(x) else x)',
+    '  x[!is.na(x) & trimws(x) == ""] <- NA',
+    "  x",
+    "}",
+]
+
+
+def _r_term(term, name: str, text: bool) -> str:
+    """A term on the values as recorded (a declared missing code is a choice)."""
+    x = f"ddict_chaine({_r_column(name)})" if text else f"ddict_brut({_r_column(name)})"
+
+    def value(v):
+        return _r_text(skip.code_text(v)) if text else _number(float(v))
+
+    present = f"!is.na({x})"
+    if term.operator == "answered":
+        return f"({present})"
+    if term.operator == "checked":
+        unticked = f'!({x} %in% c("N", "0"))' if text else f"{x} != 0"
+        return f"ddict_vrai({present} & {unticked})"
+    values = [value(v) for v in skip.values_of(term)]
+    if term.operator in ("in", "not_in"):
+        test = f"{x} %in% c({', '.join(values)})"
+        return f"ddict_vrai({present} & {'!' if term.operator == 'not_in' else ''}({test}))"
+    symbol = {"eq": "==", "ne": "!=", "lt": "<", "le": "<=", "gt": ">", "ge": ">="}[term.operator]
+    return f"ddict_vrai({present} & {x} {symbol} {values[0]})"
+
+
+def _r_asked(project: Project, scores: list[Score]) -> list[str]:
+    if not _needs_flags(project):
+        return []
+    final = _final(project, scores)
+    lines = [
+        "# "
+        + _(
+            "Questions filtrées : ddict_posee vaut TRUE pour une personne à qui la question a "
+            "été posée (sa condition, sur les réponses telles qu'enregistrées)."
+        ),
+        *R_HELPERS,
+    ]
+    for asked in asked_plan(project):
+        joined = []
+        for condition in asked.conditions:
+            word = " & " if condition.combine == "all" else " | "
+            joined.append(
+                "(" + word.join(_r_term(t, *final[t.target]) for t in condition.terms) + ")"
+            )
+        lines += [f"# {', '.join(asked.names)}", f"{_r_column(asked.flag)} <- {' & '.join(joined)}"]
+    return [*lines, ""]
+
+
+R_CODE = [
+    "ddict_code <- function(x, quand, code, etiquette) {",
+    '  valeurs <- as.numeric(if (inherits(x, "vctrs_vctr")) vctrs::vec_data(x) else x)',
+    '  etiquettes <- attr(x, "labels")',
+    "  etiquettes <- stats::setNames(as.numeric(etiquettes), names(etiquettes))",
+    "  valeurs[quand & is.na(valeurs)] <- code",
+    "  haven::labelled_spss(valeurs, labels = c(etiquettes, stats::setNames(code, etiquette)),",
+    '    na_values = unique(c(as.numeric(attr(x, "na_values")), code)),',
+    '    na_range = attr(x, "na_range"), label = attr(x, "label"))',
+    "}",
+]
+
+
+def _r_blanks(project: Project) -> list[str]:
+    coded = _coded(project)
+    if not coded:
+        return []
+    codes = project.settings.blank_codes
+    lines = [
+        "# "
+        + _(
+            "Les codes des vides : le non applicable dans une cellule vide d'une question non "
+            "posée, le manquant dans une cellule vide d'une question posée."
+        ),
+        *R_CODE,
+    ]
+    for name, flag, kind in coded:
+        column = _r_column(name)
+        if kind == "na":
+            lines.append(
+                f"{column} <- ddict_code({column}, !{_r_column(flag)}, "
+                f"{_number(codes.not_applicable)}, {_r_text(_('Non applicable'))})"
+            )
+        else:
+            when = _r_column(flag) if flag else "TRUE"
+            lines.append(
+                f"{column} <- ddict_code({column}, {when}, {_number(codes.missing)}, "
+                f"{_r_text(_('Sans réponse'))})"
+            )
+    return [*lines, ""]
 
 
 # A date and time in text read into seconds, whatever the language of the computer (R's
@@ -595,6 +896,7 @@ def _r_exclusions(project: Project, scores: list[Score]) -> list[str]:
     if not rules:
         return []
     final = _final(project, scores)
+    flags = _flag_of(project) if _needs_flags(project) else {}
     lines = [
         "# "
         + _(
@@ -615,9 +917,14 @@ def _r_exclusions(project: Project, scores: list[Score]) -> list[str]:
         if isinstance(rule, ConditionRule):
             name, text = final[_key(rule)]
             condition = _r_condition(rule, name, text)
+            if name in flags:  # v0.21: a question not asked meets no condition
+                condition = f"{_r_column(flags[name])} & {condition}"
         elif isinstance(rule, CompletenessRule):
-            items = ", ".join(_r_values(n, False) for n in _group_items(project, rule.group))
+            listed = _group_items(project, rule.group)
+            items = ", ".join(_r_values(n, False) for n in listed)
             condition = f"rowSums(!is.na(cbind({items}))) < {rule.min_answered}"
+            if listed and listed[0] in flags:  # v0.21: among those asked the group
+                condition = f"{_r_column(flags[listed[0]])} & {condition}"
         elif isinstance(rule, DurationRule):
             start, end = _r_column(final[rule.start][0]), _r_column(final[rule.end][0])
             if rule.text_format is not None:  # dates in text, read by their format

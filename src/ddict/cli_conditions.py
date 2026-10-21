@@ -130,6 +130,42 @@ def cmd_conditions(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_blank_codes(args: argparse.Namespace) -> int:
+    """`ddict codes vides`: the codes of the blanks for SPSS and R (v0.21, D-167)."""
+    from ddict.export import wording as w
+    from ddict.project import blank
+
+    path = Path(args.projet)
+    project = load_project(path)
+    try:
+        if args.effacer:
+            blank.set_codes(project, None, None)
+        else:
+            blank.set_codes(project, args.non_applicable, args.manquant)
+    except blank.BlankError as refused:
+        return _fail(refused.reasons)
+    save_project(project, path)
+    print(w.blank_codes_text(project) or _("Aucun code des vides."))
+    return 0
+
+
+def add_blank_codes_parser(actions) -> None:
+    """`vides`, an action of `ddict codes`."""
+    blanks = actions.add_parser(
+        "vides", aliases=["blanks"],
+        help=_("Les codes des vides (non applicable, manquant) des scripts SPSS et R."),
+    )  # fmt: skip
+    blanks.add_argument("projet", help=_("Fichier projet (.dd.json)."))
+    blanks.add_argument("--non-applicable", "--not-applicable", dest="non_applicable",
+                        help=_("Le code d'une question non posée, p. ex. -8."))  # fmt: skip
+    blanks.add_argument(
+        "--manquant", "--missing", dest="manquant",
+        help=_("Le code d'une question posée sans réponse, p. ex. -9."),
+    )  # fmt: skip
+    blanks.add_argument("--effacer", "--clear", action="store_true",
+                        help=_("Ne plus écrire de codes."))  # fmt: skip
+
+
 def add_conditions_parser(commands) -> None:
     command = commands.add_parser(
         "conditions",

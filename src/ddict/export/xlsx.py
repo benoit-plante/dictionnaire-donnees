@@ -76,6 +76,11 @@ def _about(project: Project, kind: w.ExportKind, omit_groups: tuple[str, ...]) -
         ],
         [_("Format du projet"), project.schema_version],
         [_("Empreinte du codebook"), fingerprint.short(project)],
+        *(
+            [[_("Codes des vides dans les scripts SPSS et R"), w.blank_codes_text(project)]]
+            if w.blank_codes_text(project)
+            else []
+        ),
         *[[name, value] for name, value in w.dataset_facts(project)],
         *[
             [
