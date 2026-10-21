@@ -41,6 +41,13 @@ KINDS = Texts(
         "duration": N_("Durée de passation"),
         "straightlining": N_("Grille en ligne droite"),
         "duplicate": N_("Doublons"),
+        "attention": N_("Items de contrôle"),  # v0.21 (D-170)
+    }
+)
+EMPTY = Texts(
+    {
+        "failed": N_("compte comme un échec"),
+        "ignored": N_("est ignoré"),
     }
 )
 OPERATORS = Texts(
@@ -106,6 +113,10 @@ def _new_rule(project: Project) -> dict:
         data = quality.duration_rule(project, prepared, _field("start"), _field("end"), seconds)
     elif kind == "straightlining":
         data = {"kind": kind, "group": _field("grid")}
+    elif kind == "attention":
+        chosen = list(_field("attention") or [])
+        checks = [(n, str(_field(f"right-{n}") or "").split(",")) for n in chosen]
+        data = ex.attention_data(project, checks, _field("failed"), _field("empty"))
     else:
         data = {"kind": kind, "variables": list(_field("duplicates") or [])}
     data["reason"] = str(_field("reason") or "").strip()
@@ -291,6 +302,42 @@ def _form(project: Project, prepared: PreparedData | None) -> None:
                 key="method-new-seconds",
                 help=_("L'outil ne propose aucun seuil : c'est un choix de l'équipe."),
             )
+        elif kind == "attention":
+            chosen = st.multiselect(
+                _("Items de contrôle"),
+                [e.name for e in aside.kept(project)],
+                key="method-new-attention",
+                placeholder=_("Choisir les variables"),
+                format_func=shown,
+            )
+            for name in chosen:
+                st.text_input(
+                    _("Bonne réponse de {name} (code ; plusieurs séparés par des virgules)").format(
+                        name=names.get(name, name)
+                    ),
+                    key=f"method-new-right-{name}",
+                )
+                if labels := _value_labels(project, name):
+                    st.caption(_("Valeurs : {labels}").format(labels=labels))
+            st.number_input(
+                _("Exclure à partir de … échecs"),
+                min_value=1,
+                max_value=max(1, len(chosen)),
+                step=1,
+                key="method-new-failed",
+            )
+            st.radio(
+                _("Un item laissé vide"),
+                list(EMPTY),
+                index=None,
+                key="method-new-empty",
+                format_func=EMPTY.__getitem__,
+                horizontal=True,
+                help=_(
+                    "Aucun choix d'office : une réponse sautée à un item de contrôle est-elle de "
+                    "l'inattention ? Les deux se défendent. Un item non posé n'est jamais un échec."
+                ),
+            )
         else:
             st.session_state.setdefault(
                 "method-new-duplicates", quality.duplicate_variables(project)[:1]
@@ -454,6 +501,15 @@ def _signals(project: Project, prepared: PreparedData) -> None:
             )
             _take_up(button, f"method-signal-duplicate-{name}", "duplicate", duplicates=[name])
             c.show_message(f"method-signal-duplicate-{name}")
+    found = quality.attention(project, prepared)  # v0.21 (D-170)
+    if found is not None:
+        st.markdown(_("**Items de contrôle de l'attention**"))
+        text, button = st.columns([3, 1])
+        text.markdown(quality.attention_text(found))
+        fields = {"attention": [n for n, _c in found.checks]}
+        fields |= {f"right-{n}": ", ".join(codes) for n, codes in found.checks}
+        _take_up(button, "method-signal-attention", "attention", **fields)
+        c.show_message("method-signal-attention")
 
 
 def _sample_options(project: Project) -> list[str]:

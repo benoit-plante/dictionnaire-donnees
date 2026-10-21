@@ -19,6 +19,7 @@ import pandas as pd
 from ddict.export import wording as w
 from ddict.project.exclusions import members
 from ddict.project.model import (
+    AttentionRule,
     CompletenessRule,
     ConditionRule,
     DuplicateRule,
@@ -133,9 +134,34 @@ def hits(
         complete = ~pd.concat([blank(data[c]) for c in columns], axis=1).any(axis=1)
         repeated = data.loc[complete, columns].duplicated(keep="first")
         found = repeated.reindex(data.index, fill_value=False)
-    else:  # the attention checks come with v0.21, step 10
-        raise ValueError(f"exclusion rule not computed yet: {rule.kind}")
+    elif isinstance(rule, AttentionRule):  # v0.21 (D-170)
+        found = failures(project, data, rule, not_applicable) >= rule.min_failed
+    else:
+        raise ValueError(f"exclusion rule not computed: {rule.kind}")
     return pd.Series(np.asarray(found, dtype=bool), index=data.index)
+
+
+def failures(
+    project: Project,
+    data: pd.DataFrame,
+    rule: AttentionRule,
+    not_applicable: pd.DataFrame | None = None,
+) -> pd.Series:
+    """How many attention checks each person failed (v0.21, D-170): asked, and answered
+    otherwise than right; or left empty, when the rule counts the empty as a failure. A check
+    not asked is never failed."""
+    names = w.names_of(project)
+    count = pd.Series(0, index=data.index, dtype=int)
+    for check in rule.checks:
+        name = names[check.variable]
+        column = data[name]
+        answered = ~blank(column)
+        right = column.isin([_same_type(column, c) for c in check.correct])
+        failed = answered & ~right
+        if rule.empty == "failed":
+            failed |= ~answered
+        count += (failed & _asked(not_applicable, name, data.index)).astype(int)
+    return count
 
 
 def _group(project: Project, group_id: str):

@@ -173,11 +173,23 @@ def _filtered(
 
 
 def attention_items(project: Project) -> int:
-    """The attention checks of the questionnaire: a single choice, a grid's statement."""
+    """The attention checks: those the questionnaire marks (a single choice, a grid's
+    statement), else those of the rules "attention" (a base without a designed one)."""
+    from ddict.project.model import AttentionRule
+
     found = project.questionnaire
-    if found is None:
-        return 0
-    return sum(bool(q.attention) + sum(bool(r.attention) for r in q.rows) for q in found.questions)
+    marked = 0
+    if found is not None:
+        marked = sum(
+            bool(q.attention) + sum(bool(r.attention) for r in q.rows) for q in found.questions
+        )
+    ruled = {
+        c.variable
+        for r in project.exclusions.rules
+        if isinstance(r, AttentionRule)
+        for c in r.checks
+    }
+    return marked or len(ruled)
 
 
 def facts(project: Project, prepared: PreparedData, notebook: nb.Notebook) -> Facts:

@@ -5,6 +5,13 @@
     "controle_empty": 3,
     "controle_failed": 9
   },
+  "attention_any_empty": 5,
+  "attention_rule": {
+    "min1_failed": 21,
+    "min1_ignored": 16,
+    "min2_failed": 5,
+    "min2_ignored": 5
+  },
   "climat_fewer_than_5": 6,
   "n": 300,
   "nbenfants_missing": 5,

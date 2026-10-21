@@ -666,6 +666,13 @@ def _whole_number(text: str) -> int:
         ) from None
 
 
+# An attention check left empty (v0.21): a failure, or ignored.
+EMPTY_ANSWERS = {
+    "echec": "failed", "échec": "failed", "failed": "failed",
+    "ignore": "ignored", "ignoré": "ignored", "ignored": "ignored",
+}  # fmt: skip
+
+
 def _rule_data(args: argparse.Namespace, project, project_path: Path) -> dict:
     """The fields of the rule the command line describes. Raises ExclusionRefused."""
     from ddict.analysis.quality import duration_rule
@@ -685,6 +692,13 @@ def _rule_data(args: argparse.Namespace, project, project_path: Path) -> dict:
         data = duration_rule(project, prepared, start, end, ex.typed_number(str(seconds)))
     elif args.ligne_droite:
         data = {"kind": "straightlining", "group": args.ligne_droite}
+    elif args.attention:  # v0.21 (D-170): VARIABLE=CODE[,CODE…]
+        checks = []
+        for text in args.attention:
+            name, _sep, codes = text.partition("=")
+            checks.append((name.strip(), codes.split(",")))
+        empty = EMPTY_ANSWERS.get(args.vide or "")
+        data = ex.attention_data(project, checks, args.echecs, empty)
     else:
         names = [ex.original(project, n) for n in args.doublons]
         data = {"kind": "duplicate", "variables": names}
@@ -1627,6 +1641,23 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="VARIABLE",
         help=_("Une réponse qui en répète une autre sur ces variables ; la première est gardée."),
     )
+    kinds.add_argument(
+        "--attention",
+        nargs="+",
+        metavar="VARIABLE=CODE",
+        help=_(
+            "Des items de contrôle et leurs bonnes réponses, p. ex. « climat_SQ007=4 "
+            "controle=1 » ; avec --vide, et --echecs (1 par défaut)."
+        ),
+    )
+    rule_added.add_argument(
+        "--echecs", "--failures", type=int, default=1,
+        help=_("Items de contrôle : exclure à partir de ce nombre d'échecs (1 par défaut)."),
+    )  # fmt: skip
+    rule_added.add_argument(
+        "--vide", "--empty", choices=["echec", "échec", "failed", "ignore", "ignoré", "ignored"],
+        help=_("Items de contrôle : un item laissé vide compte comme un échec, ou est ignoré."),
+    )  # fmt: skip
     rule_added.add_argument(
         "--raison", "--reason", required=True, help=_("La raison, en clair, telle que publiée.")
     )

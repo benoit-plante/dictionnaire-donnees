@@ -264,6 +264,21 @@ def _asked(person: dict, name: str) -> bool | None:
     return consent
 
 
+CHECKS = (("climat_SQ007", 4), ("controle", 1))
+
+
+def _failures(person: dict, empty_fails: bool) -> int:
+    """The attention checks a person failed: asked, and answered otherwise than right, or
+    left empty when the empty counts as a failure; a check not asked is never failed."""
+    found = 0
+    for name, right in CHECKS:
+        if not _asked(person, name):
+            continue
+        value = person.get(name)
+        found += (value is not None and value != right) or (value is None and empty_fails)
+    return found
+
+
 def answer_key(people: list[dict]) -> dict:
     boxes = [f"transport_SQ{k:03d}" for k in (1, 2, 3)]
     found = {}
@@ -308,6 +323,16 @@ def answer_key(people: list[dict]) -> dict:
             "both_failed": len(both),
             "controle_empty": sum(p.get("controle") is None for p in consenting),
         },
+        # The rule "attention" (step 10), on the two checks: how many it would exclude.
+        "attention_rule": {
+            f"min{least}_{empty}": sum(_failures(p, empty == "failed") >= least for p in people)
+            for least in (1, 2)
+            for empty in ("ignored", "failed")
+        },
+        # Asked an attention check and left it empty, at least once.
+        "attention_any_empty": sum(
+            any(_asked(p, name) and p.get(name) is None for name, _right in CHECKS) for p in people
+        ),
         "quick": sum(seconds(p) < 120 for p in people),
         "climat_fewer_than_5": sum(
             1

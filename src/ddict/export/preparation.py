@@ -25,6 +25,7 @@ from ddict.i18n import _, in_language
 from ddict.project import fingerprint, scoring, skip
 from ddict.project.exclusions import members
 from ddict.project.model import (
+    AttentionRule,
     ClassesRecode,
     CompletenessRule,
     ConditionRule,
@@ -220,6 +221,10 @@ def _needs_flags(project: Project) -> bool:
             return True
         if isinstance(rule, CompletenessRule) and any(
             n in flags for n in _group_items(project, rule.group)
+        ):
+            return True
+        if isinstance(rule, AttentionRule) and any(
+            names.get(c.variable) in flags for c in rule.checks
         ):
             return True
     return bool(_coded(project))
@@ -638,8 +643,23 @@ def _spss_exclusions(project: Project, scores: list[Score]) -> list[str]:
                 "DELETE VARIABLES ddict_complet ddict_premier.",
             ]
             conditions.append(f"{flag} = 1")
-        else:  # the attention checks come with v0.21, step 10
-            raise ValueError(f"exclusion rule not written yet: {rule.kind}")
+        elif isinstance(rule, AttentionRule):  # v0.21 (D-170): a counter of failures
+            counter = f"ddict_echecs{number}"
+            lines.append(f"COMPUTE {counter} = 0.")
+            for check in rule.checks:
+                name, text = final[check.variable]
+                present = f"RTRIM({name}) <> ''" if text else f"NOT MISSING({name})"
+                right = ", ".join(_spss_value(v, text) for v in check.correct)
+                asked = f"{flags[name]} = 1 AND " if name in flags else ""
+                lines.append(
+                    f"IF ({asked}{present} AND NOT ANY({name}, {right})) {counter} = {counter} + 1."
+                )
+                if rule.empty == "failed":
+                    lines.append(f"IF ({asked}NOT ({present})) {counter} = {counter} + 1.")
+            conditions.append(f"{counter} >= {rule.min_failed}")
+            temporary.append(counter)
+        else:
+            raise ValueError(f"exclusion rule not written: {rule.kind}")
     lines.append("COMPUTE ddict_exclusion = 0.")
     for number, (rule, condition) in enumerate(zip(rules, conditions, strict=True), start=1):
         lines += [
@@ -958,8 +978,21 @@ def _r_exclusions(project: Project, scores: list[Score]) -> list[str]:
                 "duplicated(ddict_cles[ddict_complet, , drop = FALSE])",
             ]
             condition = "ddict_double"
-        else:  # the attention checks come with v0.21, step 10
-            raise ValueError(f"exclusion rule not written yet: {rule.kind}")
+        elif isinstance(rule, AttentionRule):  # v0.21 (D-170): a counter of failures
+            lines.append("ddict_echecs <- integer(nrow(donnees))")
+            for check in rule.checks:
+                name, text = final[check.variable]
+                x = _r_values(name, text)
+                right = ", ".join(_r_value(v, text) for v in check.correct)
+                asked = f"{_r_column(flags[name])} & " if name in flags else ""
+                lines.append(
+                    f"ddict_echecs <- ddict_echecs + ({asked}!is.na({x}) & !({x} %in% c({right})))"
+                )
+                if rule.empty == "failed":
+                    lines.append(f"ddict_echecs <- ddict_echecs + ({asked}is.na({x}))")
+            condition = f"ddict_echecs >= {rule.min_failed}"
+        else:
+            raise ValueError(f"exclusion rule not written: {rule.kind}")
         lines += [
             f"# {_rule_label(rule)}",
             f"ddict_exclusion[ddict_exclusion == 0 & ({condition})] <- {number}L",

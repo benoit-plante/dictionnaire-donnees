@@ -11,6 +11,7 @@ from pydantic import TypeAdapter, ValidationError
 from ddict.i18n import _
 from ddict.project.decisions import is_accepted
 from ddict.project.model import (
+    AttentionRule,
     CompletenessRule,
     ConditionRule,
     DuplicateRule,
@@ -175,7 +176,36 @@ def refusals(project: Project, rule: ExclusionRule) -> list[str]:
     elif isinstance(rule, DuplicateRule):
         for name in rule.variables:
             _variable(project, name, found)
+    elif isinstance(rule, AttentionRule):  # v0.21 (D-170)
+        _attention(project, rule, found)
     return found
+
+
+def _attention(project: Project, rule: AttentionRule, found: list[str]) -> None:
+    """Each check: a variable of the codebook, never an identifier or a free text, and right
+    answers among its codes."""
+    from ddict.project.asked import codes
+    from ddict.project.skip import code_text
+
+    for check in rule.checks:
+        if not _variable(project, check.variable, found):
+            continue
+        entry = project.variable(check.variable)
+        if entry.privacy.privacy_class.value in NAMING:
+            found.append(
+                _(
+                    "{name} : un identifiant ou un texte libre n'est pas un item de contrôle."
+                ).format(name=check.variable)
+            )
+            continue
+        known = codes(entry)
+        wrong = [code_text(c) for c in check.correct if code_text(c) not in known]
+        if wrong:
+            found.append(
+                _("{name} : {codes} n'est pas un code de la variable.").format(
+                    name=check.variable, codes=", ".join(wrong)
+                )
+            )
 
 
 def _incomplete(error: ValidationError) -> list[str]:
@@ -293,7 +323,19 @@ def rule_text(rule: ExclusionRule) -> str:
         return _("doublon sur {names}, la première réponse gardée").format(
             names=", ".join(rule.variables)
         )
-    raise ValueError(f"exclusion rule not written yet: {rule.kind}")  # v0.21, step 10
+    if isinstance(rule, AttentionRule):  # v0.21 (D-170)
+        checks = ", ".join(
+            f"{c.variable} = {_(' ou ').join(_value(v) for v in c.correct)}" for c in rule.checks
+        )
+        empty = (
+            _("un item laissé vide compte comme un échec")
+            if rule.empty == "failed"
+            else _("un item laissé vide est ignoré")
+        )
+        return _("échec à au moins {n} des {k} items de contrôle ({checks}) ; {empty}").format(
+            n=rule.min_failed, k=len(rule.checks), checks=checks, empty=empty
+        )
+    raise ValueError(f"exclusion rule not written: {rule.kind}")
 
 
 # How a person may write an operator: its code, its symbol, or a French word.
@@ -328,6 +370,38 @@ def condition_data(
         found = [typed(project, what, v) for v in values]
     data["value"] = found if code == "in" else found[0]
     return data
+
+
+def attention_data(
+    project: Project, checks: list[tuple[str, list[str]]], min_failed, empty: str | None
+) -> dict:
+    """The fields of an attention rule as a form or the command line gives them: variables by
+    any of their names, right answers as typed. Raises ExclusionRefused."""
+    from ddict.project.asked import _value as held
+
+    if not checks:
+        raise ExclusionRefused([_("Choisissez au moins un item de contrôle.")])
+    if empty not in ("failed", "ignored"):
+        raise ExclusionRefused(
+            [_("Dites si un item laissé vide compte comme un échec ou est ignoré.")]
+        )
+    found = []
+    for name, answers in checks:
+        answers = [a.strip() for a in answers if str(a).strip()]
+        if not answers:
+            raise ExclusionRefused(
+                [_("{name} : donnez sa bonne réponse (son code).").format(name=name)]
+            )
+        found.append({"variable": original(project, name), "correct": [held(a) for a in answers]})
+    if (min_failed or 1) > len(found):
+        raise ExclusionRefused(
+            [
+                _("{n} échecs exigés, mais la règle compte {k} items de contrôle.").format(
+                    n=min_failed, k=len(found)
+                )
+            ]
+        )
+    return {"kind": "attention", "checks": found, "min_failed": min_failed or 1, "empty": empty}
 
 
 def typed_number(text: str) -> float:

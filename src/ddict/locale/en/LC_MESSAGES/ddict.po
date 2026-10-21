@@ -327,6 +327,9 @@ msgstr "**Estimated duration**: {duration}."
 msgid "**Grilles en ligne droite** (tous les items à la même valeur)"
 msgstr "**Grids in a straight line** (every item at the same value)"
 
+msgid "**Items de contrôle de l'attention**"
+msgstr "**Attention checks**"
+
 msgid "**Posée si**"
 msgstr "**Asked if**"
 
@@ -744,6 +747,13 @@ msgstr "No warning."
 msgid "Aucun changement à confirmer."
 msgstr "No change to confirm."
 
+msgid ""
+"Aucun choix d'office : une réponse sautée à un item de contrôle est-elle de l'inattention ? Les "
+"deux se défendent. Un item non posé n'est jamais un échec."
+msgstr ""
+"No choice by default: is an attention check left unanswered a sign of inattention? Both can be "
+"argued. A check not asked is never a failure."
+
 msgid "Aucun code des vides."
 msgstr "No code for the blanks."
 
@@ -1058,6 +1068,10 @@ msgstr "Right candidate not chosen"
 
 msgid "Bonne question absente des candidates"
 msgstr "Right question not among the candidates"
+
+#, python-brace-format
+msgid "Bonne réponse de {name} (code ; plusieurs séparés par des virgules)"
+msgstr "Right answer of {name} (code; several separated by commas)"
 
 msgid "C'est un code manquant"
 msgstr "It is a missing code"
@@ -1410,6 +1424,9 @@ msgstr "Choose \"Accept\" for the {n} proposed names"
 
 msgid "Choisir…"
 msgstr "Choose…"
+
+msgid "Choisissez au moins un item de contrôle."
+msgstr "Choose at least one attention check."
 
 msgid "Choisissez comment la somme traite les items manquants."
 msgstr "Choose how the sum handles missing items."
@@ -2072,6 +2089,13 @@ msgstr ""
 " decisions: missing codes removed, new names, reversed items, scores. Your file is never changed,"
 " and nothing is sent outside your computer."
 
+msgid ""
+"Des items de contrôle et leurs bonnes réponses, p. ex. « climat_SQ007=4 controle=1 » ; avec "
+"--vide, et --echecs (1 par défaut)."
+msgstr ""
+"Attention checks and their right answers, e.g. “climat_SQ007=4 controle=1”; with --empty, and "
+"--failures (1 by default)."
+
 msgid "Des prédicteurs sont redondants (l'un se déduit exactement des autres) : retirez-en un."
 msgstr "Some predictors are redundant (one follows exactly from the others): remove one."
 
@@ -2196,6 +2220,9 @@ msgstr "Say how many items must be answered, at least (0: all)."
 
 msgid "Dites l'origine des données et leur état quand le plan a été écrit."
 msgstr "Give the origin of the data and their state when the plan was written."
+
+msgid "Dites si un item laissé vide compte comme un échec ou est ignoré."
+msgstr "Say whether a check left empty counts as a failure or is ignored."
 
 msgid "Documenter"
 msgstr "Document"
@@ -2607,6 +2634,9 @@ msgstr "Exclude the administrations shorter than … seconds"
 
 msgid "Exclure qui a répondu à moins de … items"
 msgstr "Exclude who answered fewer than … items"
+
+msgid "Exclure à partir de … échecs"
+msgstr "Exclude from … failures"
 
 msgid "Exclusion de données"
 msgstr "Data exclusion"
@@ -3134,6 +3164,19 @@ msgstr "Item probably reversed (correlation with the rest of the scale: {r})"
 
 msgid "Items"
 msgstr "Items"
+
+msgid "Items de contrôle"
+msgstr "Attention checks"
+
+msgid "Items de contrôle : exclure à partir de ce nombre d'échecs (1 par défaut)."
+msgstr "Attention checks: exclude from this number of failures (1 by default)."
+
+msgid "Items de contrôle : un item laissé vide compte comme un échec, ou est ignoré."
+msgstr "Attention checks: a check left empty counts as a failure, or is ignored."
+
+#, python-brace-format
+msgid "Items de contrôle : {text}"
+msgstr "Attention checks: {text}"
 
 msgid "Items du score"
 msgstr "Items of the score"
@@ -7421,6 +7464,9 @@ msgstr "A group of check boxes has no scoring."
 msgid "Un item inversé ne se recode pas ; recodez l'item d'origine."
 msgstr "A reversed item is not recoded; recode the original item."
 
+msgid "Un item laissé vide"
+msgstr "A check left empty"
+
 msgid "Un khi-carré"
 msgstr "A chi-square test"
 
@@ -8217,6 +8263,9 @@ msgstr "committee"
 msgid "comment obtenir les données"
 msgstr "how the data can be accessed"
 
+msgid "compte comme un échec"
+msgstr "counts as a failure"
+
 msgid "conclusion"
 msgstr "conclusion"
 
@@ -8368,6 +8417,9 @@ msgstr "about {n} minutes"
 
 msgid "est cochée"
 msgstr "is ticked"
+
+msgid "est ignoré"
+msgstr "is ignored"
 
 #, python-brace-format
 msgid "est inférieure à {value}"
@@ -9381,6 +9433,12 @@ msgstr "an identifier"
 msgid "un item de contrôle"
 msgstr "an attention check"
 
+msgid "un item laissé vide compte comme un échec"
+msgstr "a check left empty counts as a failure"
+
+msgid "un item laissé vide est ignoré"
+msgstr "a check left empty is ignored"
+
 msgid "un participant"
 msgstr "a participant"
 
@@ -9920,6 +9978,10 @@ msgid "{name} : des catégories en texte n'ont pas d'ordre ; utilisez = , ≠ ou
 msgstr "{name}: categories written as text have no order; use =, ≠ or among."
 
 #, python-brace-format
+msgid "{name} : donnez sa bonne réponse (son code)."
+msgstr "{name}: give its right answer (its code)."
+
+#, python-brace-format
 msgid "{name} : identifiant, texte libre ou date ; une variable ne se recode pas ainsi."
 msgstr "{name}: identifier, free text or date; such a variable is not recoded."
 
@@ -9997,6 +10059,12 @@ msgstr "{name}: name refused ({why})."
 
 #, python-brace-format
 msgid ""
+"{name} : posée seulement si {condition} ; l'analyse portera sur les personnes à qui elle a été "
+"posée."
+msgstr "{name}: asked only if {condition}; the analysis will include the people who were asked it."
+
+#, python-brace-format
+msgid ""
 "{name} : seul un nombre (une échelle ou un score) se découpe en classes ; des catégories se "
 "regroupent."
 msgstr "{name}: only a number (a scale or a score) is cut into classes; categories are regrouped."
@@ -10014,6 +10082,10 @@ msgstr "{name}: a Word file (.docx) not found."
 #, python-brace-format
 msgid "{name} : un groupe de moins de {n} personnes ({codes})."
 msgstr "{name}: a group of fewer than {n} people ({codes})."
+
+#, python-brace-format
+msgid "{name} : un identifiant ou un texte libre n'est pas un item de contrôle."
+msgstr "{name}: an identifier or a free text is not an attention check."
 
 #, python-brace-format
 msgid ""
@@ -10042,6 +10114,10 @@ msgstr "{name}: unknown variable."
 #, python-brace-format
 msgid "{name} : variable écartée du codebook."
 msgstr "{name}: variable set aside from the codebook."
+
+#, python-brace-format
+msgid "{name} : {codes} n'est pas un code de la variable."
+msgstr "{name}: {codes} is not a code of the variable."
 
 #, python-brace-format
 msgid "{name} : {n} modalités ; choisissez-en deux."
@@ -10404,8 +10480,24 @@ msgid "{n} à recalculer"
 msgstr "{n} to recompute"
 
 #, python-brace-format
+msgid "{n} échecs exigés, mais la règle compte {k} items de contrôle."
+msgstr "{n} failures required, but the rule has {k} attention checks."
+
+#, python-brace-format
 msgid "{old} n'est plus dans ce filtre ; voici la variable suivante : {new}."
 msgstr "{old} is no longer in this filter; here is the next variable: {new}."
+
+#, python-brace-format
+msgid ""
+"{one} personnes ont échoué à au moins un des {k} items de contrôle ; {all} à tous ; {empty} en "
+"ont laissé au moins un vide."
+msgstr ""
+"{one} people failed at least one of the {k} attention checks; {all} failed all; {empty} left at "
+"least one empty."
+
+#, python-brace-format
+msgid "{one} personnes ont échoué à l'item de contrôle ; {empty} l'ont laissé vide."
+msgstr "{one} people failed the attention check; {empty} left it empty."
 
 #, python-brace-format
 msgid "{option} : {new} au lieu de {old}"
@@ -11022,6 +11114,10 @@ msgstr "left out"
 
 msgid "échec"
 msgstr "failed"
+
+#, python-brace-format
+msgid "échec à au moins {n} des {k} items de contrôle ({checks}) ; {empty}"
+msgstr "failed at least {n} of the {k} attention checks ({checks}); {empty}"
 
 msgid "échelle"
 msgstr "scale"

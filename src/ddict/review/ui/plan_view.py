@@ -202,6 +202,28 @@ def _summary(project: Project, hypothesis: Hypothesis) -> str:
     return ""
 
 
+def _filtered(project: Project, hypothesis) -> list[str]:
+    """A filtered variable of the hypothesis (v0.21, D-167): whom it was asked."""
+    from ddict.export import wording as w
+
+    found = []
+    for refs in hypothesis.roles.values():
+        for ref in refs:
+            try:
+                name = nb.resolve(project, ref)
+            except nb.NotebookError:
+                continue
+            words = w.asked_words(project, name)
+            if words:
+                found.append(
+                    _(
+                        "{name} : posée seulement si {condition} ; l'analyse portera sur les "
+                        "personnes à qui elle a été posée."
+                    ).format(name=name, condition=words)
+                )
+    return list(dict.fromkeys(found))
+
+
 def _hypothesis(project, rank, hypothesis, prepared, deviations) -> None:
     total = len(project.plan.hypotheses)
     with st.container(border=True):
@@ -215,6 +237,8 @@ def _hypothesis(project, rank, hypothesis, prepared, deviations) -> None:
             st.error(reason)
         for warning in check.warnings:
             st.warning(warning)
+        for line in _filtered(project, hypothesis):  # v0.21: never a refusal
+            st.info(line)
         if hypothesis.id in deviations:
             st.warning(deviations[hypothesis.id])
         up, down, edit, remove, _space = st.columns([1, 1, 1, 1, 2])

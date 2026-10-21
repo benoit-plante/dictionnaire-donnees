@@ -146,6 +146,77 @@ def duplicates(project: Project, prepared: PreparedData, variables: list[str]) -
     return Duplicates(tuple(variables), count)
 
 
+# --- The attention checks (v0.21, D-170). ---
+
+
+@dataclass(frozen=True)
+class Attention:
+    checks: tuple[tuple[str, tuple[str, ...]], ...]  # original name, right answers
+    failed_one: int  # failed at least one (an empty ignored)
+    failed_all: int  # failed every one
+    empty: int  # asked, left at least one empty
+
+
+def attention_checks(project: Project) -> list[tuple[str, list[str]]]:
+    """The attention checks the questionnaire marks (designed or LimeSurvey), as variables of
+    the codebook with their right answers."""
+    from ddict.project import aside
+
+    found = project.questionnaire
+    if found is None:
+        return []
+    marked = {}
+    for question in found.questions:
+        if question.attention:
+            marked[question.question_id] = question.attention
+        for row in question.rows:
+            if row.attention:
+                marked[row.row_id] = row.attention
+    return [
+        (e.name, list(marked[e.question.value]))
+        for e in aside.kept(project)
+        if e.question.value in marked
+    ]
+
+
+def attention(project: Project, prepared: PreparedData) -> Attention | None:
+    """Among the people the rules keep: who failed the marked attention checks."""
+    from ddict.analysis.exclusions import failures
+    from ddict.project.exclusions import attention_data
+    from ddict.project.model import AttentionRule
+
+    checks = attention_checks(project)
+    if not checks:
+        return None
+    rule = AttentionRule(id="E0", reason="-", **{
+        k: v for k, v in attention_data(project, checks, 1, "ignored").items() if k != "kind"
+    })  # fmt: skip
+    failed = failures(project, prepared.table, rule, prepared.not_applicable)
+    with_empty = failures(
+        project, prepared.table, rule.model_copy(update={"empty": "failed"}),
+        prepared.not_applicable,
+    )  # fmt: skip
+    return Attention(
+        tuple((n, tuple(c)) for n, c in checks),
+        int((failed >= 1).sum()),
+        int((failed >= len(checks)).sum()),
+        int((with_empty > failed).sum()),
+    )
+
+
+def attention_text(found: Attention) -> str:
+    from ddict.i18n import _
+
+    if len(found.checks) == 1:
+        return _(
+            "{one} personnes ont échoué à l'item de contrôle ; {empty} l'ont laissé vide."
+        ).format(one=found.failed_one, empty=found.empty)
+    return _(
+        "{one} personnes ont échoué à au moins un des {k} items de contrôle ; {all} à tous ; "
+        "{empty} en ont laissé au moins un vide."
+    ).format(one=found.failed_one, k=len(found.checks), all=found.failed_all, empty=found.empty)
+
+
 def seconds_text(value: float | None) -> str:
     """ "312 s (5 min 12 s)"; a dash when there is no duration."""
     if value is None:
@@ -230,6 +301,9 @@ def signal_lines(
         )
     if not sets:
         lines.append(_("Doublons : aucune variable proposée."))
+    found_attention = attention(project, prepared)  # v0.21
+    if found_attention is not None:
+        lines.append(_("Items de contrôle : {text}").format(text=attention_text(found_attention)))
     return lines
 
 
